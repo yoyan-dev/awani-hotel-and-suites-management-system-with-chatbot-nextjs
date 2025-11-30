@@ -91,24 +91,45 @@ export type Database = {
           },
         ];
       };
-      banquet: {
+      banquet_menus: {
         Row: {
+          category: string[] | null;
           created_at: string;
           id: string;
+          name: string | null;
+        };
+        Insert: {
+          category?: string[] | null;
+          created_at?: string;
+          id?: string;
+          name?: string | null;
+        };
+        Update: {
+          category?: string[] | null;
+          created_at?: string;
+          id?: string;
+          name?: string | null;
+        };
+        Relationships: [];
+      };
+      banquet_packages: {
+        Row: {
+          created_at: string;
+          id: number;
           name: string | null;
           package: string[] | null;
           price: number | null;
         };
         Insert: {
           created_at?: string;
-          id?: string;
+          id?: number;
           name?: string | null;
           package?: string[] | null;
           price?: number | null;
         };
         Update: {
           created_at?: string;
-          id?: string;
+          id?: number;
           name?: string | null;
           package?: string[] | null;
           price?: number | null;
@@ -135,6 +156,7 @@ export type Database = {
       };
       bookings: {
         Row: {
+          amount_paid: number | null;
           booking_number: string | null;
           booking_source: string | null;
           check_in: string | null;
@@ -148,6 +170,7 @@ export type Database = {
           payment_status: string | null;
           places_last_visited: string | null;
           purpose: string | null;
+          recent_sickness: string | null;
           room_id: string | null;
           room_type_id: string | null;
           special_requests: Json[] | null;
@@ -156,6 +179,7 @@ export type Database = {
           total_add_ons: string | null;
         };
         Insert: {
+          amount_paid?: number | null;
           booking_number?: string | null;
           booking_source?: string | null;
           check_in?: string | null;
@@ -169,6 +193,7 @@ export type Database = {
           payment_status?: string | null;
           places_last_visited?: string | null;
           purpose?: string | null;
+          recent_sickness?: string | null;
           room_id?: string | null;
           room_type_id?: string | null;
           special_requests?: Json[] | null;
@@ -177,6 +202,7 @@ export type Database = {
           total_add_ons?: string | null;
         };
         Update: {
+          amount_paid?: number | null;
           booking_number?: string | null;
           booking_source?: string | null;
           check_in?: string | null;
@@ -190,6 +216,7 @@ export type Database = {
           payment_status?: string | null;
           places_last_visited?: string | null;
           purpose?: string | null;
+          recent_sickness?: string | null;
           room_id?: string | null;
           room_type_id?: string | null;
           special_requests?: Json[] | null;
@@ -220,6 +247,48 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      "function-rooms": {
+        Row: {
+          bookings: Json[] | null;
+          created_at: string;
+          description: string | null;
+          id: string;
+          image: string | null;
+          max_guest: number | null;
+          remarks: string | null;
+          room_number: number | null;
+          size: string | null;
+          status: string | null;
+          type: string | null;
+        };
+        Insert: {
+          bookings?: Json[] | null;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image?: string | null;
+          max_guest?: number | null;
+          remarks?: string | null;
+          room_number?: number | null;
+          size?: string | null;
+          status?: string | null;
+          type?: string | null;
+        };
+        Update: {
+          bookings?: Json[] | null;
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image?: string | null;
+          max_guest?: number | null;
+          remarks?: string | null;
+          room_number?: number | null;
+          size?: string | null;
+          status?: string | null;
+          type?: string | null;
+        };
+        Relationships: [];
       };
       guest: {
         Row: {
@@ -335,6 +404,7 @@ export type Database = {
           image: string | null;
           max_guest: number | null;
           name: string | null;
+          peak_season_price: number | null;
           price: number | null;
           room_size: string | null;
         };
@@ -346,6 +416,7 @@ export type Database = {
           image?: string | null;
           max_guest?: number | null;
           name?: string | null;
+          peak_season_price?: number | null;
           price?: number | null;
           room_size?: string | null;
         };
@@ -357,6 +428,7 @@ export type Database = {
           image?: string | null;
           max_guest?: number | null;
           name?: string | null;
+          peak_season_price?: number | null;
           price?: number | null;
           room_size?: string | null;
         };
