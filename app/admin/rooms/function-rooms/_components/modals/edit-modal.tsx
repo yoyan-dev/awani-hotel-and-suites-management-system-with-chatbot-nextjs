@@ -124,7 +124,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                           labelPlacement="outside"
                           placeholder="0.00"
                           startContent={
-                            <span className="text-default-400 text-small">
+                            <span className="text-default-600 dark:text-default-300 text-small">
                               $
                             </span>
                           }

@@ -1,6 +1,13 @@
 import React from "react";
-import { Input, Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/react";
-import { Search, ChevronDown } from 'lucide-react';
+import {
+  Input,
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@heroui/react";
+import { Search, ChevronDown } from "lucide-react";
 import { columns, statusOptions } from "./constants";
 import { capitalize } from "@/app/utils/capitalize";
 import AddModal from "../modals/add-modal";
@@ -33,7 +40,10 @@ export const TableTopContent: React.FC<Props> = ({
       <div className="flex justify-between gap-3 items-end">
         <Input
           isClearable
-          classNames={{ base: "w-full sm:max-w-[44%]", inputWrapper: "border-1" }}
+          classNames={{
+            base: "w-full sm:max-w-[44%]",
+            inputWrapper: "border-1",
+          }}
           placeholder="Search by name..."
           size="sm"
           startContent={<Search className="text-default-300" />}
@@ -45,7 +55,11 @@ export const TableTopContent: React.FC<Props> = ({
         <div className="flex gap-3">
           <Dropdown>
             <DropdownTrigger className="hidden sm:flex">
-              <Button endContent={<ChevronDown className="text-small" />} size="sm" variant="flat">
+              <Button
+                endContent={<ChevronDown className="text-small" />}
+                size="sm"
+                variant="flat"
+              >
                 Status
               </Button>
             </DropdownTrigger>
@@ -66,7 +80,11 @@ export const TableTopContent: React.FC<Props> = ({
           </Dropdown>
           <Dropdown>
             <DropdownTrigger className="hidden sm:flex">
-              <Button endContent={<ChevronDown className="text-small" />} size="sm" variant="flat">
+              <Button
+                endContent={<ChevronDown className="text-small" />}
+                size="sm"
+                variant="flat"
+              >
                 Columns
               </Button>
             </DropdownTrigger>
@@ -89,8 +107,10 @@ export const TableTopContent: React.FC<Props> = ({
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-default-400 text-small">Total {usersCount} users</span>
-        <label className="flex items-center text-default-400 text-small">
+        <span className="text-default-600 dark:text-default-300 text-small">
+          Total {usersCount} users
+        </span>
+        <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 10
         </label>
       </div>

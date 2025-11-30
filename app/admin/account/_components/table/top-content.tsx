@@ -106,7 +106,7 @@ export const TableTopContent: React.FC<Props> = ({
         <span className="text-default-600 text-small">
           Total {usersCount} users
         </span>
-        <label className="flex items-center text-default-400 text-small">
+        <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 10
         </label>
       </div>

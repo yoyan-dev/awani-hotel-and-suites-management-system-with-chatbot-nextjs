@@ -51,7 +51,11 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     q = q.eq("status", status);
   }
 
-  const { data: roomData, error, count } = await q.range(from, to);
+  const {
+    data: roomData,
+    error,
+    count,
+  } = await q.range(from, to).order("room_type_id", { ascending: true });
 
   const orderByRoomTypes = roomData?.sort((a: any, b: any) => {
     return a.room_type?.name.localeCompare(b.room_type?.name);

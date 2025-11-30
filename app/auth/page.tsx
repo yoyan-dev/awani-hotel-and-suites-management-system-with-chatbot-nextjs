@@ -64,7 +64,7 @@ export default function Auth() {
             isRequired
             color="primary"
             endContent={
-              <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+              <MailIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
             }
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -78,7 +78,7 @@ export default function Auth() {
             isRequired
             color="primary"
             endContent={
-              <LockIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+              <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
             }
             value={password}
             onChange={(e) => setPassword(e.target.value)}

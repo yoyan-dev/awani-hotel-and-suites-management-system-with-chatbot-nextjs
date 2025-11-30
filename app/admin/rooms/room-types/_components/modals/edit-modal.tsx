@@ -158,7 +158,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                         labelPlacement="outside"
                         placeholder="0.00"
                         startContent={
-                          <span className="text-default-400 text-small">₱</span>
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
                         }
                         value={formData.price?.toString() ?? ""}
                         onChange={(e) =>
@@ -179,7 +181,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                         labelPlacement="outside"
                         placeholder="0.00"
                         startContent={
-                          <span className="text-default-400 text-small">₱</span>
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
                         }
                         value={formData.peak_season_price?.toString() ?? ""}
                         onChange={(e) =>

@@ -1,6 +1,7 @@
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import React from "react";
-import AddModal from "./modals/add-modal";
+import Link from "next/link";
+import { Button } from "@heroui/button";
 
 export default function BookingHeader() {
   return (
@@ -34,7 +35,16 @@ export default function BookingHeader() {
           </select>
         </div>
 
-        <AddModal />
+        <Button
+          as={Link}
+          href="/admin/bookings/room-bookings/add-booking"
+          color="primary"
+          size="sm"
+          fullWidth
+        >
+          <Plus />
+          Booking
+        </Button>
       </div>
     </div>
   );

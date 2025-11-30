@@ -127,7 +127,9 @@ export default function AddModal() {
                         labelPlacement="outside"
                         placeholder="0.00"
                         startContent={
-                          <span className="text-default-400 text-small">₱</span>
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
                         }
                       />
                       <Input
@@ -141,7 +143,9 @@ export default function AddModal() {
                         labelPlacement="outside"
                         placeholder="0.00"
                         startContent={
-                          <span className="text-default-400 text-small">₱</span>
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
                         }
                       />
                     </div>

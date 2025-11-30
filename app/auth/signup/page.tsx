@@ -128,7 +128,9 @@ export default function Auth() {
             <Input
               isRequired
               color="primary"
-              startContent={<User className="text-default-400 shrink-0" />}
+              startContent={
+                <User className="text-default-600 dark:text-default-300 shrink-0" />
+              }
               name="full_name"
               id="full_name"
               label="Full Name"
@@ -141,7 +143,9 @@ export default function Auth() {
             <Input
               isRequired
               color="primary"
-              startContent={<Contact className="text-default-400 shrink-0" />}
+              startContent={
+                <Contact className="text-default-600 dark:text-default-300 shrink-0" />
+              }
               name="contact_number"
               id="contact_number"
               label="Contact Number"
@@ -154,7 +158,9 @@ export default function Auth() {
           <Textarea
             isRequired
             color="primary"
-            startContent={<Home className="text-default-400 shrink-0" />}
+            startContent={
+              <Home className="text-default-600 dark:text-default-300 shrink-0" />
+            }
             name="address"
             id="address"
             label="Home Address"
@@ -167,7 +173,9 @@ export default function Auth() {
               fullWidth
               isRequired
               color="primary"
-              startContent={<Flag className="text-default-400 shrink-0" />}
+              startContent={
+                <Flag className="text-default-600 dark:text-default-300 shrink-0" />
+              }
               name="nationality"
               id="nationality"
               label="Nationality"
@@ -186,7 +194,7 @@ export default function Auth() {
               labelPlacement="outside"
               radius="sm"
               startContent={
-                <Transgender className="text-default-400 shrink-0" />
+                <Transgender className="text-default-600 dark:text-default-300 shrink-0" />
               }
               placeholder="Select gender"
               isRequired
@@ -280,7 +288,9 @@ export default function Auth() {
           <Input
             isRequired
             color="primary"
-            startContent={<MailIcon className="text-default-400 shrink-0" />}
+            startContent={
+              <MailIcon className="text-default-600 dark:text-default-300 shrink-0" />
+            }
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             name="email"
@@ -295,7 +305,9 @@ export default function Auth() {
           <Input
             isRequired
             color="primary"
-            startContent={<LockIcon className="text-default-400 shrink-0" />}
+            startContent={
+              <LockIcon className="text-default-600 dark:text-default-300 shrink-0" />
+            }
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             name="password"

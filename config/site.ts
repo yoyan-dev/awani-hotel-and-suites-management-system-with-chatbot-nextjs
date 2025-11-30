@@ -16,6 +16,8 @@ import {
   Users,
   ArrowRightLeft,
   House,
+  SatelliteDish,
+  ChefHatIcon,
 } from "lucide-react";
 
 export type SiteConfig = typeof siteConfig;
@@ -55,6 +57,16 @@ export const siteConfig = {
           label: "Function Room Reservation",
           href: "/admin/bookings/function-reservation",
         },
+      ],
+    },
+    {
+      label: "Banquet",
+      href: "/admin/banquet",
+      isExpandable: true,
+      icon: ChefHatIcon,
+      Children: [
+        { label: "Banquet Menu", href: "/admin/banquet/menus" },
+        { label: "Banquet Packages", href: "/admin/banquet/packages" },
       ],
     },
     {
