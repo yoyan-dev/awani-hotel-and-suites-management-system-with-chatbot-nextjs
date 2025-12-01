@@ -1,27 +1,25 @@
 "use client";
 import Header from "./_components/header";
-import BookingTable from "./_components/table/booking-table";
+import FunctionHallBookingTable from "./_components/table/booking-table";
 import React from "react";
-import { Booking, FetchBookingParams } from "@/types/booking";
-import { useBookings } from "@/hooks/use-bookings";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/booking";
-import { HousekeepingTask } from "@/types/housekeeping";
-import { useHousekeeping } from "@/hooks/use-housekeeping";
-import { useRooms } from "@/hooks/use-rooms";
-import { Room } from "@/types/room";
+import {
+  columns,
+  INITIAL_VISIBLE_COLUMNS,
+} from "@/app/constants/function-hall-booking";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { FetchFunctionHallBookingParams } from "@/types/function-room-booking";
 
 export default function BookingList() {
   const {
-    bookings,
+    function_hall_bookings,
     pagination,
     isLoading,
     error,
     fetchBookings,
     updateBooking,
-  } = useBookings();
-  const { updateRoom } = useRooms();
+  } = useFunctionHallBookings();
 
-  const [query, setQuery] = React.useState<FetchBookingParams>({});
+  const [query, setQuery] = React.useState<FetchFunctionHallBookingParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
     new Set(INITIAL_VISIBLE_COLUMNS)
@@ -38,23 +36,11 @@ export default function BookingList() {
     fetchBookings(query);
   }, [query]);
 
-  async function handleSubmit(booking: Booking, room: Room) {
-    await updateBooking({
-      id: booking.id,
-      room_id: room.room_id,
-      status: "confirmed",
-    } as Booking);
-
-    await updateRoom({
-      id: room.id,
-      bookings: [...(room.bookings || []), booking],
-    });
-  }
   return (
     <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded space-y-2">
       <Header />
-      <BookingTable
-        bookings={bookings}
+      <FunctionHallBookingTable
+        bookings={function_hall_bookings}
         pagination={pagination}
         query={query}
         setQuery={setQuery}
@@ -64,7 +50,6 @@ export default function BookingList() {
         selectedKeys={selectedKeys}
         setSelectedKeys={setSelectedKeys}
         bookingLoading={isLoading}
-        handleSubmit={handleSubmit}
       />
     </div>
   );

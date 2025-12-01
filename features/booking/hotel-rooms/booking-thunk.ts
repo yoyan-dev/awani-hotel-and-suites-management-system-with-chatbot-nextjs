@@ -6,7 +6,7 @@ import {
 } from "@/types/booking";
 import { addToast } from "@heroui/react";
 
-const apiUrl = "/api/bookings";
+const apiUrl = "/api/bookings/hotel-rooms";
 
 export const fetchBookings = createAsyncThunk<
   { data: Booking[]; pagination: BookingPagination },

@@ -12,29 +12,30 @@ import {
 import { RenderCell } from "./render-cell";
 import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";
-import {
-  Booking,
-  BookingPagination,
-  FetchBookingParams,
-} from "@/types/booking";
 import { ColumnType } from "@/types/column";
 import { Room } from "@/types/room";
+import {
+  FetchFunctionHallBookingParams,
+  FunctionHallBooking,
+  FunctionHallBookingPagination,
+} from "@/types/function-room-booking";
 
 interface BookingTableProps {
-  bookings: Booking[];
-  pagination: BookingPagination;
-  query: FetchBookingParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
+  bookings: FunctionHallBooking[];
+  pagination: FunctionHallBookingPagination;
+  query: FetchFunctionHallBookingParams;
+  setQuery: React.Dispatch<
+    React.SetStateAction<FetchFunctionHallBookingParams>
+  >;
   headerColumns: ColumnType[];
   visibleColumns: Set<string>;
   setVisibleColumns: React.Dispatch<React.SetStateAction<Set<string>>>;
   selectedKeys: Selection;
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
   bookingLoading: boolean;
-  handleSubmit: (booking: Booking, room: Room) => void;
 }
 
-export default function BookingTable({
+export default function FunctionHallBookingTable({
   bookings,
   pagination,
   query,
@@ -45,7 +46,6 @@ export default function BookingTable({
   selectedKeys,
   setSelectedKeys,
   bookingLoading,
-  handleSubmit,
 }: BookingTableProps) {
   return (
     <Table
@@ -78,7 +78,6 @@ export default function BookingTable({
           selectedKeys={selectedKeys}
           setSelectedKeys={setSelectedKeys}
           bookingLoading={bookingLoading}
-          handleSubmit={handleSubmit}
           bookingsCount={pagination.total}
         />
       }
@@ -116,7 +115,6 @@ export default function BookingTable({
                 <RenderCell
                   booking={item}
                   columnKey={columnKey as string}
-                  onAssign={handleSubmit}
                   bookingLoading={bookingLoading}
                 />
               </TableCell>

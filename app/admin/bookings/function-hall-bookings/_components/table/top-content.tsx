@@ -2,134 +2,162 @@ import React from "react";
 import {
   Input,
   Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
   Select,
   SelectItem,
   DateRangePicker,
-  Selection,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@heroui/react";
-import { Search, ChevronDown, Plus, RefreshCw } from "lucide-react";
+import { Search, Plus, Filter, RefreshCw } from "lucide-react";
 import { bookingStatusOptions } from "@/app/constants/booking";
-import {
-  Booking,
-  BookingPagination,
-  FetchBookingParams,
-} from "@/types/booking";
 import { CalendarDate } from "@heroui/system/dist/types";
-import ExpandedBookingTable from "../modals/expanded-table-modal";
-import { ColumnType } from "@/types/column";
-import { Room } from "@/types/room";
 import Link from "next/link";
 import { useBookings } from "@/hooks/use-bookings";
+import {
+  FetchFunctionHallBookingParams,
+  FunctionHallBooking,
+  FunctionHallBookingPagination,
+} from "@/types/function-room-booking";
 
 interface Props {
-  bookings: Booking[];
-  pagination: BookingPagination;
-  query: FetchBookingParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
-  selectedKeys: Selection;
-  setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
+  bookings: FunctionHallBooking[];
+  pagination: FunctionHallBookingPagination;
+  query: FetchFunctionHallBookingParams;
+  setQuery: React.Dispatch<
+    React.SetStateAction<FetchFunctionHallBookingParams>
+  >;
+  selectedKeys: any;
+  setSelectedKeys: React.Dispatch<React.SetStateAction<any>>;
   bookingLoading: boolean;
-  handleSubmit: (booking: Booking, room: Room) => void;
   bookingsCount: number;
 }
 
 export const TableTopContent: React.FC<Props> = ({
-  bookings,
-  pagination,
   query,
   setQuery,
-  selectedKeys,
-  setSelectedKeys,
-  bookingLoading,
-  handleSubmit,
   bookingsCount,
 }) => {
   const { fetchBookings } = useBookings();
+
+  const formatDate = (date: CalendarDate | null) =>
+    date
+      ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
+          date.day
+        ).padStart(2, "0")}`
+      : null;
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-3 items-end">
-        {/* <Input
+      <div className="flex justify-between items-end gap-3 flex-wrap">
+        <Input
           isClearable
           classNames={{
-            base: "w-full sm:max-w-[44%]",
+            base: "w-full sm:w-[45%]",
             inputWrapper: "border-1",
           }}
-          placeholder="Search by name..."
+          placeholder="Search bookings..."
           size="sm"
           startContent={<Search className="text-default-300" />}
-          value={query.query}
+          value={query.query || ""}
           variant="bordered"
           onClear={() => setQuery({ ...query, query: "" })}
           onValueChange={(value) => setQuery({ ...query, query: value })}
-        /> */}
-        <DateRangePicker
-          variant="bordered"
-          size="sm"
-          radius="sm"
-          className="max-w-xs"
-          label="Stay duration"
-          onChange={(e) => {
-            const toDateString = (date: CalendarDate | null) =>
-              date
-                ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`
-                : null;
-
-            setQuery({
-              ...query,
-              date_range: {
-                start: toDateString(e?.start ?? null),
-                end: toDateString(e?.end ?? null),
-              },
-            });
-          }}
         />
+        <div className="flex gap-4">
+          <Popover placement="bottom-end">
+            <PopoverTrigger>
+              <Button
+                size="sm"
+                radius="sm"
+                variant="bordered"
+                startContent={<Filter size={16} />}
+              >
+                Filters
+              </Button>
+            </PopoverTrigger>
 
-        <div className="flex gap-3">
-          <Select
-            size="sm"
-            radius="sm"
-            items={bookingStatusOptions}
-            className="min-w-32"
-            placeholder="Select Status"
-            onChange={(e) => setQuery({ ...query, status: e.target.value })}
-          >
-            {(item) => <SelectItem key={item.uid}>{item.name}</SelectItem>}
-          </Select>
+            <PopoverContent className="p-4 w-72 space-y-4">
+              <h4 className="text-sm font-medium text-default-700">
+                Filter Options
+              </h4>
+
+              <div className="space-y-1">
+                <label className="text-xs text-default-500">Date Range</label>
+                <DateRangePicker
+                  variant="bordered"
+                  size="sm"
+                  radius="sm"
+                  onChange={(e) =>
+                    setQuery({
+                      ...query,
+                      date_range: {
+                        start: formatDate(e?.start ?? null),
+                        end: formatDate(e?.end ?? null),
+                      },
+                    })
+                  }
+                />
+              </div>
+
+              <div className="space-y-1 w-full">
+                <label className="text-xs text-default-500">Status</label>
+                <Select
+                  size="sm"
+                  radius="sm"
+                  fullWidth
+                  placeholder="Select status"
+                  items={bookingStatusOptions}
+                  onChange={(e) =>
+                    setQuery({ ...query, status: e.target.value })
+                  }
+                >
+                  {(item) => (
+                    <SelectItem key={item.uid}>{item.name}</SelectItem>
+                  )}
+                </Select>
+              </div>
+
+              <Button
+                size="sm"
+                fullWidth
+                color="primary"
+                onPress={() => fetchBookings(query)}
+              >
+                Apply Filters
+              </Button>
+            </PopoverContent>
+          </Popover>
+
           <Button
             as={Link}
-            href="/admin/bookings/room-bookings/add-booking"
+            href="/admin/bookings/function-hall/add-booking"
             color="primary"
             size="sm"
-            fullWidth
+            startContent={<Plus size={16} />}
           >
-            Booking <Plus />
+            Booking
           </Button>
-          <ExpandedBookingTable
-            bookings={bookings}
-            pagination={pagination}
-            query={query}
-            setQuery={setQuery}
-            selectedKeys={selectedKeys}
-            setSelectedKeys={setSelectedKeys}
-            bookingLoading={bookingLoading}
-            handleSubmit={handleSubmit}
-          />
         </div>
       </div>
+
+      {/* FOOTER: total + refresh */}
       <div className="flex justify-between items-center">
         <span className="text-default-600 dark:text-default-300 text-small">
           Total {bookingsCount} bookings
         </span>
-        <label className="flex items-center gap-4 text-default-600 dark:text-default-300 text-small">
+
+        <div className="flex items-center gap-3 text-small">
           <div>Rows per page: 10</div>
-          <Button isIconOnly size="sm" onPress={() => fetchBookings(query)}>
-            <RefreshCw />
+          <Button
+            isIconOnly
+            size="sm"
+            variant="flat"
+            onPress={() => fetchBookings(query)}
+          >
+            <RefreshCw size={16} />
           </Button>
-        </label>
+        </div>
       </div>
     </div>
   );

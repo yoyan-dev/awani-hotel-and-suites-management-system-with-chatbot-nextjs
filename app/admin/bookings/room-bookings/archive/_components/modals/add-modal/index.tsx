@@ -1,4 +1,4 @@
-import { addBooking } from "@/features/booking/booking-thunk";
+import { addBooking } from "@/features/booking/hotel-rooms/booking-thunk";
 import { fetchGuests } from "@/features/guest/guest-thunk";
 import { fetchRoomTypes } from "@/features/room-types/room-types-thunk";
 import { fetchRooms } from "@/features/room/room-thunk";

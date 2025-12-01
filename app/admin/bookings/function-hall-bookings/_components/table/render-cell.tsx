@@ -1,59 +1,62 @@
 import React from "react";
 import { Chip } from "@heroui/react";
-import { bookingStatusColorMap } from "@/app/constants/booking";
-import { Booking } from "@/types/booking";
-import { formatPHP } from "@/lib/format-php";
-import { calculateBookingPrice, getNights } from "@/utils/pricing";
-import { Room } from "@/types/room";
+import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
+import { FunctionHallBooking } from "@/types/function-room-booking";
 import BookingActionsDropdown from "../actions/booking-actions";
 
 interface RenderCellProps {
-  booking: Booking;
+  booking: FunctionHallBooking;
   columnKey: string;
-  onAssign: (booking: Booking, room: Room) => void;
   bookingLoading: boolean;
 }
 
-export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
-  const cellValue = booking[columnKey as keyof Booking];
-  const nights = getNights(booking.check_in, booking.check_out);
+export const RenderCell = ({
+  booking,
+  columnKey,
+  bookingLoading,
+}: RenderCellProps) => {
+  const cellValue = booking[columnKey as keyof FunctionHallBooking];
 
   switch (columnKey) {
-    case "room":
-      return booking.room?.room_number || "N/A";
-    case "guest_name":
+    case "guest":
       return (
         <div className="flex flex-col w-48">
           <p className="text-bold text-small capitalize">
-            {booking.user?.full_name || "undefined"}
-          </p>
-          <p className="text-bold text-tiny capitalize text-default-600 dark:text-default-300 flex ">
-            {booking.check_in} to {booking.check_out}
+            {booking.guest?.full_name || "N/A"}
           </p>
         </div>
       );
 
-    case "room_type":
-      return <Chip>{booking.room_type?.name}</Chip>;
-    case "nights":
-      return nights;
+    case "room":
+      return booking.room?.room_number || booking.room?.name || "N/A";
 
-    case "amount_paid":
-      return formatPHP(Number(booking.amount_paid));
-    case "total_price":
-      return formatPHP(Number(booking.total));
+    case "banquet_package":
+      return booking.banquet_package?.name || "N/A";
+
+    case "event_date":
+      return booking.event_date
+        ? new Date(booking.event_date).toLocaleDateString()
+        : "N/A";
+    case "event_duration":
+      return booking.event_duration?.start, "-", booking.event_duration?.end;
+
     case "status":
       return (
         <Chip
           size="sm"
-          className={`px-2 rounded-full  font-medium ${bookingStatusColorMap[booking.status]}`}
+          className={`px-2 rounded-full font-medium ${
+            bookingStatusColorMap[booking.status || "default"]
+          }`}
         >
-          {booking.status}
+          {booking.status || "N/A"}
         </Chip>
       );
-    case "actions":
-      return <BookingActionsDropdown booking={booking} />;
+
+    // ACTIONS
+    // case "actions":
+    //   return <BookingActionsDropdown booking={booking} disabled={bookingLoading} />;
+
     default:
-      return cellValue;
+      return cellValue ?? "N/A";
   }
 };

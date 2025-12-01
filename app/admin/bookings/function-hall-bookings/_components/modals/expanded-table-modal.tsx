@@ -20,16 +20,22 @@ import { ColumnType } from "@/types/column";
 import { Room } from "@/types/room";
 import BookingTable from "../table/booking-table";
 import { columns, VISIBLE_COLUMNS } from "@/app/constants/booking";
+import {
+  FetchFunctionHallBookingParams,
+  FunctionHallBooking,
+  FunctionHallBookingPagination,
+} from "@/types/function-room-booking";
 
 interface ExpandedTableProps {
-  bookings: Booking[];
-  pagination: BookingPagination;
-  query: FetchBookingParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
+  bookings: FunctionHallBooking[];
+  pagination: FunctionHallBookingPagination;
+  query: FetchFunctionHallBookingParams;
+  setQuery: React.Dispatch<
+    React.SetStateAction<FetchFunctionHallBookingParams>
+  >;
   selectedKeys: Selection;
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
   bookingLoading: boolean;
-  handleSubmit: (booking: Booking, room: Room) => void;
 }
 
 export default function ExpandedBookingTable({
@@ -40,7 +46,6 @@ export default function ExpandedBookingTable({
   selectedKeys,
   setSelectedKeys,
   bookingLoading,
-  handleSubmit,
 }: ExpandedTableProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
@@ -64,11 +69,11 @@ export default function ExpandedBookingTable({
             <>
               <ModalHeader className="flex flex-col gap-1">
                 <div>
-                  <h1 className="text-2xl font-bold">Hotel Bookings</h1>
-                  <p className="text-sm text-gray-600">
+                  <h1 className="text-2xl font-bold">Function Hall Bookings</h1>
+                  {/* <p className="text-sm text-gray-600">
                     View and manage room reservations, guest details, and
                     check-in/check-out statuses for the hotel.
-                  </p>
+                  </p> */}
                 </div>
               </ModalHeader>
               <ModalBody>
@@ -83,7 +88,6 @@ export default function ExpandedBookingTable({
                   selectedKeys={selectedKeys}
                   setSelectedKeys={setSelectedKeys}
                   bookingLoading={bookingLoading}
-                  handleSubmit={handleSubmit}
                 />
               </ModalBody>
               <ModalFooter className="gap-1 w-full bg-primary flex justify-center items-center text-white text-sm font-thin">

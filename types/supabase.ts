@@ -93,19 +93,19 @@ export type Database = {
       };
       banquet_menus: {
         Row: {
-          category: string[] | null;
+          category: string | null;
           created_at: string;
           id: string;
           name: string | null;
         };
         Insert: {
-          category?: string[] | null;
+          category?: string | null;
           created_at?: string;
           id?: string;
           name?: string | null;
         };
         Update: {
-          category?: string[] | null;
+          category?: string | null;
           created_at?: string;
           id?: string;
           name?: string | null;
@@ -115,23 +115,23 @@ export type Database = {
       banquet_packages: {
         Row: {
           created_at: string;
-          id: number;
+          id: string;
+          menus: string[] | null;
           name: string | null;
-          package: string[] | null;
           price: number | null;
         };
         Insert: {
           created_at?: string;
-          id?: number;
+          id?: string;
+          menus?: string[] | null;
           name?: string | null;
-          package?: string[] | null;
           price?: number | null;
         };
         Update: {
           created_at?: string;
-          id?: number;
+          id?: string;
+          menus?: string[] | null;
           name?: string | null;
-          package?: string[] | null;
           price?: number | null;
         };
         Relationships: [];
@@ -244,6 +244,67 @@ export type Database = {
             columns: ["room_type_id"];
             isOneToOne: false;
             referencedRelation: "room_types";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      function_hall_bookings: {
+        Row: {
+          banquet_package_id: string | null;
+          created_at: string;
+          event_date: string | null;
+          event_duration: Json | null;
+          event_type: string | null;
+          guest_id: string | null;
+          id: string;
+          notes: string | null;
+          room_id: string | null;
+          status: string | null;
+        };
+        Insert: {
+          banquet_package_id?: string | null;
+          created_at?: string;
+          event_date?: string | null;
+          event_duration?: Json | null;
+          event_type?: string | null;
+          guest_id?: string | null;
+          id?: string;
+          notes?: string | null;
+          room_id?: string | null;
+          status?: string | null;
+        };
+        Update: {
+          banquet_package_id?: string | null;
+          created_at?: string;
+          event_date?: string | null;
+          event_duration?: Json | null;
+          event_type?: string | null;
+          guest_id?: string | null;
+          id?: string;
+          notes?: string | null;
+          room_id?: string | null;
+          status?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "function_room_bookings_banquet_package_id_fkey";
+            columns: ["banquet_package_id"];
+            isOneToOne: false;
+            referencedRelation: "banquet_packages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "function_room_bookings_guest_id_fkey";
+            columns: ["guest_id"];
+            isOneToOne: false;
+            referencedRelation: "guest";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "function_room_bookings_room_id_fkey";
+            columns: ["room_id"];
+            isOneToOne: false;
+            referencedRelation: "function-rooms";
             referencedColumns: ["id"];
           },
         ];
