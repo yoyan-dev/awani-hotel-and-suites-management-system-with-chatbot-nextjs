@@ -41,6 +41,7 @@ export const INITIAL_VISIBLE_COLUMNS = [
   "description",
   "status",
   "remarks",
+  "actions",
 ];
 
 export const HOUSEKEEPING_INITIAL_VISIBLE_COLUMNS = [

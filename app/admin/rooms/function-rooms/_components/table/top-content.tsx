@@ -13,7 +13,6 @@ import { columns, statusOptions } from "@/app/constants/rooms";
 import { capitalize } from "@/app/utils/capitalize";
 import DeleteSelectedModal from "../modals/delete-selected-modal";
 import { FetchFunctionRoomParams } from "@/types/function-room";
-import AddModal from "../modals/add-modal";
 
 interface Props {
   query: FetchFunctionRoomParams;
@@ -100,7 +99,15 @@ export const TableTopContent: React.FC<Props> = ({
               ))}
             </DropdownMenu>
           </Dropdown>
-          <AddModal />
+          <Button
+            as={Link}
+            href="/admin/rooms/function-rooms/new-room"
+            size="sm"
+            color="primary"
+          >
+            <Plus />
+            Room
+          </Button>
           {(selectedKeys instanceof Set && selectedKeys.size > 0) ||
           selectedKeys === "all" ? (
             <DeleteSelectedModal selectedKeys={selectedKeys} />

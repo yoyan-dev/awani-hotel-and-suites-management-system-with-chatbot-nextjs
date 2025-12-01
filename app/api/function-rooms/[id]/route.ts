@@ -11,26 +11,13 @@ export async function GET(
   const { id } = await context.params;
 
   const { data: room, error } = await supabase
-    .from("rooms")
-    .select(
-      `
-    id,
-    room_id,
-    room_number,
-    room_type_id,
-    room_type:room_type_id (*),
-    area,
-    description,
-    status,
-    images,
-    remarks
-  `
-    )
+    .from("function-rooms")
+    .select(`*`)
     .eq("id", id)
     .single();
 
   if (error) {
-    console.error("Error fetching room:", error.message);
+    console.error("Error fetching function room:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -67,7 +54,7 @@ export async function PUT(
   const body = await req.json();
 
   const { data, error } = await supabase
-    .from("rooms")
+    .from("function-rooms")
     .update(body)
     .eq("id", id)
     .select()
@@ -95,7 +82,7 @@ export async function PUT(
         success: false,
         message: {
           title: "Error",
-          description: "Room not found",
+          description: "Function Room not found",
           color: "error",
         },
       },
@@ -107,7 +94,7 @@ export async function PUT(
     success: true,
     message: {
       title: "Success",
-      description: "Room updated successfully",
+      description: "Function Hall updated successfully",
       color: "success",
     },
     data: data,
@@ -121,7 +108,7 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
-  const { error } = await supabase.from("rooms").delete().eq("id", id);
+  const { error } = await supabase.from("function-rooms").delete().eq("id", id);
 
   if (error) {
     console.error("Delete error:", error);
@@ -143,7 +130,7 @@ export async function DELETE(
       success: true,
       message: {
         title: "Success",
-        description: "Room deleted successfully",
+        description: "Function Room deleted successfully",
         color: "success",
       },
     },

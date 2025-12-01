@@ -37,13 +37,13 @@ export const fetchFunctionRoom = createAsyncThunk<FunctionRoom, string>(
   "room/fetchFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/function-function-rooms/${id}`);
+      const res = await fetch(`/api/function-rooms/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch room"
+          data.message?.description ?? "Failed to fetch function room"
         );
       }
       return data.data;
@@ -119,7 +119,7 @@ export const updateFunctionRoom = createAsyncThunk<
   { rejectValue: string }
 >("room/updateFunctionRoom", async (room, { rejectWithValue }) => {
   try {
-    const res = await fetch(`/api/function-function-rooms/${room.id}`, {
+    const res = await fetch(`/api/function-rooms/${room.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(room),
@@ -150,7 +150,7 @@ export const deleteFunctionRoom = createAsyncThunk<string, string>(
   "room/deleteFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/function-function-rooms/${id}`, {
+      const res = await fetch(`/api/function-rooms/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();

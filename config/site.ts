@@ -55,7 +55,7 @@ export const siteConfig = {
         { label: "Room Bookings", href: "/admin/bookings/room-bookings" },
         {
           label: "Function Room Reservation",
-          href: "/admin/bookings/function-reservation",
+          href: "/admin/bookings/function-hall-bookings",
         },
       ],
     },

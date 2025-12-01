@@ -92,11 +92,11 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
             onClose={() => setViewOpen(false)}
           />
 
-          <div className="relative flex justify-end items-center gap-2 md:hidden">
+          <div className="relative flex justify-end items-center gap-2">
             <Dropdown className="bg-background border-1 border-default-200">
               <DropdownTrigger>
                 <Button isIconOnly radius="full" size="sm" variant="light">
-                  <EllipsisVertical className="text-default-400" />
+                  <EllipsisVertical className="text-default-700 dark:text-default-300" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
@@ -115,7 +115,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
                 <DropdownItem
                   key="edit"
                   as={Link}
-                  href={`room/room-list/update-room/${room.id}`}
+                  href={`/admin/rooms/function-rooms/update-room/${room.id}`}
                   color="success"
                   className="text-success"
                 >
@@ -138,37 +138,6 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              color="primary"
-              isIconOnly
-              variant="flat"
-              onPress={() => {
-                setViewOpen(true);
-              }}
-            >
-              <Eye size={15} />
-            </Button>
-            <Button
-              as={Link}
-              href={`room/room-list/update-room/${room.id}`}
-              color="success"
-              isIconOnly
-              variant="flat"
-            >
-              <Edit size={15} />
-            </Button>
-            <Button
-              color="danger"
-              onPress={() => {
-                setDeleteOpen(true);
-              }}
-              isIconOnly
-              variant="flat"
-            >
-              <Trash size={15} />
-            </Button>
           </div>
         </>
       );

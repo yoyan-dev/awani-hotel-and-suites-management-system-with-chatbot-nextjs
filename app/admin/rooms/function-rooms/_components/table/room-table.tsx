@@ -88,14 +88,14 @@ export default function RoomTable({
       <TableBody
         isLoading={isLoading}
         loadingContent={<Spinner label="Loading..." />}
-        emptyContent="No rooms found"
+        emptyContent="No function hall found"
         items={rooms}
         className="overflow-x-auto"
       >
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell className="capitalize min-w-40">
+              <TableCell className="capitalize">
                 <RenderCell room={item} columnKey={columnKey as string} />
               </TableCell>
             )}

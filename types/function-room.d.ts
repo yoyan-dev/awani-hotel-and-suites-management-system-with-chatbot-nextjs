@@ -2,7 +2,7 @@ export interface FunctionRoom {
   id?: string;
   image?: string;
   room_number?: number;
-  type?: "half" | "full";
+  type?: string;
   max_guest?: number;
   size?: string;
   description?: string;
