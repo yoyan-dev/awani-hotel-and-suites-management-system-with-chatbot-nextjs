@@ -20,20 +20,28 @@ export default function Chatbot() {
     { from: "bot", text: "Hello 👋! How can I assist you today?" },
   ]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) return;
 
     const newChat = [...chat, { from: "user", text: message }];
     setChat(newChat);
     setMessage("");
 
-    // Simulate bot response
-    setTimeout(() => {
-      setChat([
-        ...newChat,
-        { from: "bot", text: "Thanks! I’ll get back to you on that. 😊" },
-      ]);
-    }, 700);
+    const res = await fetch("/api/chatbot", {
+      method: "POST",
+      body: JSON.stringify({ message: message }),
+    });
+
+    const reader = res.body!.getReader();
+    let botReply = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      botReply += new TextDecoder().decode(value);
+      setChat([...newChat, { from: "bot", text: botReply }]);
+    }
   };
 
   return (
