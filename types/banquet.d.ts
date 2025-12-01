@@ -7,7 +7,7 @@ export interface BanquetMenu {
 export interface BanquetPackage {
   id?: string;
   name?: string;
-  package?: string[];
+  menus?: string[];
   price?: number;
   created_at?: any;
 }

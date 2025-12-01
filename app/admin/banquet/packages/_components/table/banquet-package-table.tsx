@@ -117,7 +117,7 @@ export default function BanquetPackageTable({
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell className="capitalize">
+              <TableCell className="capitalize ">
                 <RenderCell
                   banquetPackage={item}
                   columnKey={columnKey as string}

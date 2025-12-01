@@ -2,22 +2,20 @@ import React from "react";
 import { Button, Card, CardBody, Image } from "@heroui/react";
 
 const SAMPLE_IMAGES = [
-  // replace these with your preferred royalty-free images or hosted assets
-  "https://images.pexels.com/photos/29410669/pexels-photo-29410669.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  "https://images.pexels.com/photos/14636170/pexels-photo-14636170.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  "https://images.pexels.com/photos/3184407/pexels-photo-3184407.jpeg?auto=compress&cs=tinysrgb&w=1600",
-  "https://images.pexels.com/photos/259962/pexels-photo-259962.jpeg?auto=compress&cs=tinysrgb&w=1600",
+  "/banquet/image-1.jpg",
+  "/banquet/image-4.jpg",
+  "/banquet/image-5.jpg",
+  "/banquet/image-8.jpg",
 ];
 
 export default function BanquetSection() {
   return (
-    <section className="bg-white text-gray-900">
-      {/* Banner */}
+    <section className="bg-white dark:bg-gray-900">
       <div
         className="h-72 md:h-96 flex items-center justify-center bg-cover bg-center relative"
         style={{
           backgroundImage:
-            "linear-gradient(to bottom, rgba(12,12,12,0.45), rgba(12,12,12,0.45)), url('https://images.pexels.com/photos/29410669/pexels-photo-29410669.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            "linear-gradient(to bottom, rgba(12,12,12,0.45), rgba(12,12,12,0.45)), url('/banquet/image-3.jpg')",
         }}
         aria-hidden={false}
       >
@@ -41,18 +39,15 @@ export default function BanquetSection() {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="max-w-6xl mx-auto px-6 py-12 grid gap-10 md:grid-cols-2">
-        {/* Left: Image / Feature */}
         <Card className="shadow-lg">
           <Image
-            src={SAMPLE_IMAGES[1]}
+            src="/banquet/image-2.jpg"
             alt="Banquet function room"
             className="object-cover w-full h-96 rounded-lg"
           />
         </Card>
 
-        {/* Right: Details */}
         <div className="flex flex-col justify-between">
           <div>
             <h3 className="text-2xl font-semibold mb-3">Grand Function Hall</h3>
@@ -86,7 +81,6 @@ export default function BanquetSection() {
         </div>
       </div>
 
-      {/* Gallery */}
       <div id="gallery" className="max-w-6xl mx-auto px-6 pb-16">
         <h4 className="text-2xl font-semibold text-center mb-6">Gallery</h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -102,8 +96,7 @@ export default function BanquetSection() {
         </div>
       </div>
 
-      {/* Contact / CTA */}
-      <div id="contact" className="bg-gray-50 py-10">
+      <div id="contact" className="bg-gray-50 dark:bg-gray-800 py-10">
         <div className="max-w-4xl mx-auto text-center px-6">
           <h5 className="text-xl font-semibold mb-2">
             Ready to plan your event?
@@ -116,9 +109,6 @@ export default function BanquetSection() {
             <Button color="primary" as="a" href="/contact">
               Contact Events Team
             </Button>
-            {/* <Button as="a" href="/book">
-              Request a Quote
-            </Button> */}
           </div>
         </div>
       </div>

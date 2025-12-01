@@ -6,24 +6,28 @@ import {
   ModalFooter,
   Button,
 } from "@heroui/react";
-import { Inventory } from "@/types/inventory";
-import { useInventory } from "@/hooks/use-inventory";
+import { BanquetPackage } from "@/types/banquet";
+import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 
 interface DeleteModalProps {
-  inventory: Inventory;
+  banquetPackage: BanquetPackage;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({
-  inventory,
+  banquetPackage,
   isOpen,
   onClose,
 }) => {
-  const { isLoading, deleteItem } = useInventory();
+  const { isLoading, error, deleteBanquetPackage, fetchBanquetPackages } =
+    useBanquetPackages();
 
   function handleDelete() {
-    deleteItem(inventory.id || "");
+    deleteBanquetPackage(banquetPackage.id || "");
+    if (!error) {
+      fetchBanquetPackages();
+    }
   }
 
   return (
@@ -31,6 +35,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
       <Modal
         backdrop="blur"
         isOpen={isOpen}
+        onClose={onClose}
         onOpenChange={(open) => !open && onClose}
       >
         <ModalContent>

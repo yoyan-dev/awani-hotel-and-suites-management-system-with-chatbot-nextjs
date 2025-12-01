@@ -16,10 +16,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   let q = supabase.from(tableName).select(`*`, { count: "exact" });
 
   if (query) {
-    q = q.or(`
-    name.ilike.%${query}%,
-    category.ilike.%${query}%,
-  `);
+    q = q.or(`name.ilike.%${query}%,category.ilike.%${query}%`);
   }
 
   const {

@@ -43,7 +43,8 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const formData = await req.formData();
 
     const formObj = Object.fromEntries(formData.entries());
-    const newData = { ...formObj };
+    const menus = JSON.parse(formObj.menus as string);
+    const newData = { ...formObj, menus: menus };
     const { data, error } = await supabase
       .from(tableName)
       .insert([newData])
