@@ -96,7 +96,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
             <Dropdown className="bg-background border-1 border-default-200">
               <DropdownTrigger>
                 <Button isIconOnly radius="full" size="sm" variant="light">
-                  <EllipsisVertical className="text-default-400" />
+                  <EllipsisVertical className="text-default-500" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu>
@@ -141,9 +141,10 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
           </div>
           <div className="flex gap-2">
             <Button
-              color="primary"
+              color="default"
               isIconOnly
-              variant="flat"
+              variant="light"
+              size="sm"
               onPress={() => {
                 setViewOpen(true);
               }}
@@ -152,10 +153,11 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
             </Button>
             <Button
               as={Link}
-              href={`room/room-list/update-room/${room.id}`}
+              href={`hotel-rooms/update-room/${room.id}`}
               color="success"
               isIconOnly
-              variant="flat"
+              variant="light"
+              size="sm"
             >
               <Edit size={15} />
             </Button>
@@ -165,7 +167,8 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
                 setDeleteOpen(true);
               }}
               isIconOnly
-              variant="flat"
+              variant="light"
+              size="sm"
             >
               <Trash size={15} />
             </Button>

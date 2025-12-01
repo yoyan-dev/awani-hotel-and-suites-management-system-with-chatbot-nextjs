@@ -116,25 +116,21 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                         />
                         <Input
                           className="flex-1"
-                          label="Price"
-                          name="price"
+                          label="Max Guest"
+                          name="max_guest"
                           type="number"
                           variant="bordered"
                           radius="none"
-                          labelPlacement="outside"
-                          placeholder="0.00"
-                          startContent={
-                            <span className="text-default-400 text-small">
-                              $
-                            </span>
-                          }
-                          value={formData.price?.toString() ?? ""}
+                          value={formData.max_guest?.toString() ?? ""}
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              price: Number(e.target.value),
+                              max_guest: Number(e.target.value),
                             })
                           }
+                          labelPlacement="outside"
+                          min={1}
+                          placeholder="0"
                         />
                       </div>
                       <Textarea
@@ -149,6 +145,51 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                           setFormData({
                             ...formData,
                             description: e.target.value,
+                          })
+                        }
+                      />
+                      <Input
+                        className="flex-1"
+                        label="Price"
+                        name="price"
+                        type="number"
+                        variant="bordered"
+                        radius="none"
+                        labelPlacement="outside"
+                        placeholder="0.00"
+                        startContent={
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
+                        }
+                        value={formData.price?.toString() ?? ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            price: Number(e.target.value),
+                          })
+                        }
+                      />
+                      <Input
+                        isRequired
+                        fullWidth
+                        label="Peak Season Price"
+                        name="peak_season_price"
+                        type="number"
+                        variant="bordered"
+                        radius="none"
+                        labelPlacement="outside"
+                        placeholder="0.00"
+                        startContent={
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
+                        }
+                        value={formData.peak_season_price?.toString() ?? ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            peak_season_price: Number(e.target.value),
                           })
                         }
                       />
@@ -191,28 +232,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                         className="hidden"
                         onChange={handleFileChange}
                       />
-                      <Input
-                        className="flex-1"
-                        label="Max Guest"
-                        name="max_guest"
-                        type="number"
-                        variant="bordered"
-                        radius="none"
-                        value={formData.max_guest?.toString() ?? ""}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            max_guest: Number(e.target.value),
-                          })
-                        }
-                        labelPlacement="outside"
-                        min={1}
-                        placeholder="0"
-                      />
+                      <AddOnsInput addOns={addOns} setAddOns={setAddOns} />
                     </div>
                   </div>
-
-                  <AddOnsInput addOns={addOns} setAddOns={setAddOns} />
 
                   <div className="flex justify-end gap-4 w-full pb-4">
                     <Button onPress={onClose} variant="bordered" radius="sm">

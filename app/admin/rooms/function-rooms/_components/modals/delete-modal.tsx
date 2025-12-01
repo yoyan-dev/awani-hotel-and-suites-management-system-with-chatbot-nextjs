@@ -8,19 +8,22 @@ import {
   Button,
 } from "@heroui/react";
 import { useRooms } from "@/hooks/use-rooms";
+import { FunctionRoom } from "@/types/function-room";
+import { useFunctionRooms } from "@/hooks/use-function-rooms";
 
 interface DeleteModalProps {
-  room: Room;
+  room: FunctionRoom;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({ room, isOpen, onClose }) => {
-  const { isLoading, deleteRoom, fetchRooms } = useRooms();
+  const { isLoading, deleteFunctionRoom, fetchFunctionRooms } =
+    useFunctionRooms();
 
   async function handleDelete() {
-    await deleteRoom(room.id || "");
-    fetchRooms(null);
+    await deleteFunctionRoom(room.id || "");
+    fetchFunctionRooms(null);
   }
   return (
     <>

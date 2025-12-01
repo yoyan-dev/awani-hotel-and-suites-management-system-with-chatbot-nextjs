@@ -1,67 +1,56 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  Booking,
-  BookingPagination,
-  FetchBookingParams,
-} from "@/types/booking";
 import { addToast } from "@heroui/react";
+import {
+  BanquetMenu,
+  BanquetMenuFetchParams,
+  BanquetMenuPagination,
+} from "@/types/banquet";
 
-const apiUrl = "/api/bookings";
+const api = "/api/banquet/banquet-menus";
 
-export const fetchBookings = createAsyncThunk<
-  { data: Booking[]; pagination: BookingPagination },
-  FetchBookingParams | undefined
->("booking/fetchBookings", async (params, { rejectWithValue }) => {
+export const fetchBanquetMenus = createAsyncThunk<
+  { data: BanquetMenu[]; pagination: BanquetMenuPagination },
+  BanquetMenuFetchParams | undefined
+>("banquet-menus/fetchBanquetMenus", async (params, { rejectWithValue }) => {
   try {
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.append("page", String(params.page));
-    if (params?.query) searchParams.append("query", params.query);
-    if (params?.guest_id) searchParams.append("guest_id", params.guest_id);
-    if (params?.check_in) searchParams.append("check_in", params.check_in);
-    if (params?.check_out) searchParams.append("check_out", params.check_out);
-    if (params?.date_range) {
-      searchParams.append("start", params.date_range.start);
-      searchParams.append("end", params.date_range.end);
-    }
-    if (params?.roomTypeID)
-      searchParams.append("roomTypeID", params.roomTypeID);
-    if (params?.status) searchParams.append("status", params.status);
+    if (params?.query) searchParams.append("q", params.query);
 
-    const res = await fetch(`${apiUrl}?${searchParams}`);
+    const res = await fetch(`${api}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
-      addToast(data.message);
-      return rejectWithValue(
-        data.message?.description ?? "Failed to fetch bookings"
-      );
+      addToast(data.message ?? "Failed to fetch menus");
+      return rejectWithValue(data.message ?? "Failed to fetch menus");
     }
+
     return data as {
-      data: Booking[];
-      pagination: BookingPagination;
+      data: BanquetMenu[];
+      pagination: BanquetMenuPagination;
     };
   } catch (error: any) {
     return rejectWithValue(error.message);
   }
 });
 
-export const fetchBooking = createAsyncThunk<Booking, string>(
-  "booking/fetchBooking",
+export const fetchBanquetMenu = createAsyncThunk<BanquetMenu, string>(
+  "banquet-menus/fetchBanquetMenu",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await fetch(`${api}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch booking"
+          data.message?.description ?? "Failed to fetch menu"
         );
       }
       return data.data;
     } catch (error: any) {
       addToast({
-        title: "Thunk Error",
+        title: "Error",
         description: error.message,
         color: "danger",
       });
@@ -70,11 +59,11 @@ export const fetchBooking = createAsyncThunk<Booking, string>(
   }
 );
 
-export const addBooking = createAsyncThunk<Booking, FormData>(
-  "booking/addBooking",
+export const addBanquetMenu = createAsyncThunk<BanquetMenu, FormData>(
+  "banquet-menus/addBanquetMenu",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await fetch(api, {
         method: "POST",
         body: formData,
       });
@@ -82,7 +71,7 @@ export const addBooking = createAsyncThunk<Booking, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add booking"
+          data.message?.description ?? "Failed to add menu"
         );
       }
       return data.data;
@@ -99,16 +88,16 @@ export const addBooking = createAsyncThunk<Booking, FormData>(
 );
 
 // UPDATE
-export const updateBooking = createAsyncThunk<
-  Booking,
-  Booking,
+export const updateBanquetMenu = createAsyncThunk<
+  BanquetMenu,
+  BanquetMenu,
   { rejectValue: string }
->("booking/updateBooking", async (booking, { rejectWithValue }) => {
+>("banquet-menus/updateBanquetMenu", async (menu, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${apiUrl}/${booking.id}`, {
+    const res = await fetch(`${api}/${menu.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(booking),
+      body: JSON.stringify(menu),
     });
 
     const data = await res.json();
@@ -116,11 +105,11 @@ export const updateBooking = createAsyncThunk<
 
     if (!res.ok || !data.success) {
       return rejectWithValue(
-        data.message?.description ?? "Failed to update booking"
+        data.message?.description ?? "Failed to update menu"
       );
     }
 
-    return data.room;
+    return data.data;
   } catch (err: any) {
     addToast({
       title: "Error",
@@ -132,17 +121,17 @@ export const updateBooking = createAsyncThunk<
 });
 
 // DELETE
-export const deleteBooking = createAsyncThunk<string, string>(
-  "booking/deleteBooking",
+export const deleteBanquetMenu = createAsyncThunk<string, string>(
+  "banquet-menus/deleteBanquetMenu",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await fetch(`${api}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete booking"
+          data.message?.description ?? "Failed to delete menu"
         );
       }
 
@@ -159,18 +148,18 @@ export const deleteBooking = createAsyncThunk<string, string>(
 );
 
 //  delete selected rooms or all
-export const deleteSelectedBooking = createAsyncThunk<
-  Booking[],
+export const deletBanquetMenus = createAsyncThunk<
+  BanquetMenu[],
   { selectedValues: Set<number> | "all" },
   { rejectValue: string }
->("booking/deleteSelectedBooking", async ({ selectedValues }, thunkAPI) => {
+>("banquet-menus/deletBanquetMenus", async ({ selectedValues }, thunkAPI) => {
   try {
     const body =
       selectedValues === "all"
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch(apiUrl, {
+    const res = await fetch(api, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

@@ -79,10 +79,10 @@ export const TableTopContent: React.FC<Props> = ({
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-default-400 text-small">
+        <span className="text-default-600 dark:text-default-300 text-small">
           Total {itemsCount} room types
         </span>
-        <label className="flex items-center text-default-400 text-small">
+        <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 5
         </label>
       </div>

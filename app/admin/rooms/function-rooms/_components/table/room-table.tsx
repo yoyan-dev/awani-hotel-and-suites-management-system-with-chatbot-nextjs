@@ -8,21 +8,21 @@ import {
   TableCell,
   Spinner,
 } from "@heroui/react";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/rooms";
 import { RenderCell } from "./render-cell";
 import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";
-import { useSelector, useDispatch } from "react-redux";
-import { fetchRooms } from "@/features/room/room-thunk";
-import type { RootState, AppDispatch } from "@/store/store";
-import { FetchRoomsParams, Room, RoomPagination } from "@/types/room";
 import { ColumnType } from "@/types/column";
+import {
+  FetchFunctionRoomParams,
+  FunctionRoom,
+  FunctionRoomPagination,
+} from "@/types/function-room";
 
 interface RoomTableProps {
-  rooms: Room[];
-  pagination: RoomPagination | null;
-  query: FetchRoomsParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchRoomsParams>>;
+  rooms: FunctionRoom[];
+  pagination: FunctionRoomPagination | null;
+  query: FetchFunctionRoomParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchFunctionRoomParams>>;
   selectedKeys: any;
   setSelectedKeys: React.Dispatch<React.SetStateAction<any>>;
   visibleColumns: any;
@@ -49,13 +49,15 @@ export default function RoomTable({
       isHeaderSticky
       classNames={{ wrapper: ["shadow-none", "dark:bg-gray-900", "p-0"] }}
       bottomContent={
-        <TableBottomContent
-          query={query}
-          setQuery={setQuery}
-          pages={pagination?.totalPages ?? 0}
-          selectedKeys={selectedKeys}
-          roomsCount={pagination?.total}
-        />
+        pagination?.total && pagination?.total > 0 ? (
+          <TableBottomContent
+            query={query}
+            setQuery={setQuery}
+            pages={pagination?.totalPages ?? 0}
+            selectedKeys={selectedKeys}
+            roomsCount={pagination?.total}
+          />
+        ) : null
       }
       bottomContentPlacement="outside"
       selectedKeys={selectedKeys}
@@ -86,14 +88,14 @@ export default function RoomTable({
       <TableBody
         isLoading={isLoading}
         loadingContent={<Spinner label="Loading..." />}
-        emptyContent="No rooms found"
+        emptyContent="No function hall found"
         items={rooms}
         className="overflow-x-auto"
       >
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell className="capitalize min-w-40">
+              <TableCell className="capitalize">
                 <RenderCell room={item} columnKey={columnKey as string} />
               </TableCell>
             )}

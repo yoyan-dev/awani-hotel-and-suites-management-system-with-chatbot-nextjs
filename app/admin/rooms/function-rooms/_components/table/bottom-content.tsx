@@ -1,10 +1,11 @@
 import React from "react";
 import { Pagination } from "@heroui/react";
 import { FetchRoomsParams } from "@/types/room";
+import { FetchFunctionRoomParams } from "@/types/function-room";
 
 interface Props {
-  query: FetchRoomsParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchRoomsParams>>;
+  query: FetchFunctionRoomParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchFunctionRoomParams>>;
   pages: number;
   selectedKeys: any;
   roomsCount: any;

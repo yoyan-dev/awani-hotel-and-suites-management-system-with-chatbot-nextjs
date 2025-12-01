@@ -4,7 +4,7 @@ import {
   fetchBooking,
   fetchBookings,
   updateBooking,
-} from "@/features/booking/booking-thunk";
+} from "@/features/booking/hotel-rooms/booking-thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Booking, FetchBookingParams } from "@/types/booking";
 

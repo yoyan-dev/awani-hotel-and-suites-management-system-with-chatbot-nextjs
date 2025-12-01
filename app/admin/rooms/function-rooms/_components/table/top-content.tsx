@@ -12,11 +12,11 @@ import { Search, ChevronDown, Plus } from "lucide-react";
 import { columns, statusOptions } from "@/app/constants/rooms";
 import { capitalize } from "@/app/utils/capitalize";
 import DeleteSelectedModal from "../modals/delete-selected-modal";
-import { FetchRoomsParams } from "@/types/room";
+import { FetchFunctionRoomParams } from "@/types/function-room";
 
 interface Props {
-  query: FetchRoomsParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchRoomsParams>>;
+  query: FetchFunctionRoomParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchFunctionRoomParams>>;
   visibleColumns: any;
   setVisibleColumns: (val: any) => void;
   roomsCount: any;
@@ -100,13 +100,13 @@ export const TableTopContent: React.FC<Props> = ({
             </DropdownMenu>
           </Dropdown>
           <Button
-            size="sm"
             as={Link}
+            href="/admin/rooms/function-rooms/new-room"
+            size="sm"
             color="primary"
-            href="room/new-room"
-            variant="solid"
           >
-            Add New <Plus />
+            <Plus />
+            Room
           </Button>
           {(selectedKeys instanceof Set && selectedKeys.size > 0) ||
           selectedKeys === "all" ? (
@@ -115,10 +115,10 @@ export const TableTopContent: React.FC<Props> = ({
         </div>
       </div>
       <div className="flex justify-between items-center">
-        <span className="text-default-400 text-small">
+        <span className="text-default-600 dark:text-default-300 text-small">
           Total {roomsCount} rooms
         </span>
-        <label className="flex items-center text-default-400 text-small">
+        <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 10
         </label>
       </div>

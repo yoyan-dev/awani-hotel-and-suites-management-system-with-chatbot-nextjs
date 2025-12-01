@@ -14,8 +14,9 @@ import {
 import { Room } from "@/types/room";
 import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { Copyright } from "lucide-react";
+import { FunctionRoom } from "@/types/function-room";
 interface RoomDetailsProps {
-  room: Room;
+  room: FunctionRoom;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -39,27 +40,18 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
               </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-6 w-full">
-                  {room.images && room.images.length > 0 && (
-                    <Carousel className="w-full rounded-2xl overflow-hidden">
-                      {room.images.map((img, idx) => (
-                        <CarouselItem key={idx}>
-                          <Image
-                            src={img}
-                            alt={`Room image ${idx + 1}`}
-                            width="100%"
-                            className="object-cover w-full h-[300px] md:h-[400px]"
-                          />
-                        </CarouselItem>
-                      ))}
-                    </Carousel>
-                  )}
+                  <Image
+                    src={room.image || "/bg.jpg"}
+                    alt={`Room image`}
+                    width="100%"
+                    className="object-cover w-full h-[300px] md:h-[400px]"
+                  />
 
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h1 className="text-2xl font-bold">
-                        {room.room_type?.name} – Room #{room.room_number}
+                        {room.type} – Room #{room.room_number}
                       </h1>
-                      <p className="text-gray-500">{room.area}</p>
                     </div>
                     <Chip
                       color={
@@ -84,9 +76,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       <CardHeader className="text-sm font-medium">
                         Size
                       </CardHeader>
-                      <CardBody className="text-lg">
-                        {room.room_type?.room_size}
-                      </CardBody>
+                      <CardBody className="text-lg">{room.size}</CardBody>
                     </Card>
                     <Card
                       className="shadow-none bg-gray-50 dark:bg-gray-900"
@@ -95,9 +85,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       <CardHeader className="text-sm font-medium">
                         Max Guests
                       </CardHeader>
-                      <CardBody className="text-lg">
-                        {room.room_type?.max_guest || 1}
-                      </CardBody>
+                      <CardBody className="text-lg">{room.max_guest}</CardBody>
                     </Card>
                     <Card
                       className="shadow-none bg-gray-50 dark:bg-gray-900"
@@ -106,9 +94,9 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       <CardHeader className="text-sm font-medium">
                         Price/Night
                       </CardHeader>
-                      <CardBody className="text-lg">
+                      {/* <CardBody className="text-lg">
                         ₱{room.room_type?.price?.toLocaleString()}
-                      </CardBody>
+                      </CardBody> */}
                     </Card>
                   </div>
 

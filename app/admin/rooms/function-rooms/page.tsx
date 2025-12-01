@@ -4,10 +4,15 @@ import Header from "./_components/header";
 import RoomTable from "./_components/table/room-table";
 import React from "react";
 import { FetchRoomsParams } from "@/types/room";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/rooms";
+import {
+  columns,
+  INITIAL_VISIBLE_COLUMNS,
+} from "@/app/constants/function-rooms";
+import { useFunctionRooms } from "@/hooks/use-function-rooms";
 
-export default function RoomList() {
-  const { rooms, pagination, isLoading, fetchRooms } = useRooms();
+export default function FunctionRooms() {
+  const { function_rooms, pagination, isLoading, fetchFunctionRooms } =
+    useFunctionRooms();
   const [query, setQuery] = React.useState<FetchRoomsParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
@@ -22,14 +27,14 @@ export default function RoomList() {
   }, [visibleColumns]);
 
   React.useEffect(() => {
-    fetchRooms(query);
+    fetchFunctionRooms(query);
   }, [query]);
 
   return (
     <div className="p-2 bg-white dark:bg-gray-900 rounded ">
       <Header />
       <RoomTable
-        rooms={rooms}
+        rooms={function_rooms}
         pagination={pagination}
         query={query}
         setQuery={setQuery}

@@ -30,7 +30,7 @@ export default function AddModal() {
               <ModalBody>
                 <Input
                   endContent={
-                    <MailIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+                    <MailIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
                   }
                   label="Email"
                   placeholder="Enter your email"
@@ -38,7 +38,7 @@ export default function AddModal() {
                 />
                 <Input
                   endContent={
-                    <LockIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />
+                    <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
                   }
                   label="Password"
                   placeholder="Enter your password"

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { motion } from "framer-motion";
 import Footer from "./_components/footer";
 import Navbar from "./_components/navbar";
 import { User } from "@/types/users";
@@ -38,14 +39,52 @@ export default function HousekeepingLayout({
   // );
   return (
     <>
-      <div className="flex gap-4 h-screen text-surface-600 bg-gray-50 dark:bg-gray-800">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="flex gap-4 h-screen text-surface-600 bg-gray-50 dark:bg-gray-800"
+      >
         <main className="w-full min-h-screen space-y-4">
-          <Navbar user={state.user} isLoading={state.isLoading} />
-          <div className="dark:bg-gray-800 rounded">{children}</div>
-          <Footer />
+          {/* Navbar animation */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            <Navbar user={state.user} isLoading={state.isLoading} />
+          </motion.div>
+
+          {/* Children content animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            viewport={{ once: true }}
+            className="dark:bg-gray-800 rounded"
+          >
+            {children}
+          </motion.div>
+
+          {/* Footer animation */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <Footer />
+          </motion.div>
         </main>
-      </div>
-      <Chatbot />
+      </motion.div>
+
+      {/* Chatbot Floating Animation */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut", delay: 0.3 }}
+      >
+        <Chatbot />
+      </motion.div>
     </>
   );
 }

@@ -42,6 +42,8 @@ export const RenderCell: React.FC<RenderCellProps> = ({
       );
     case "price":
       return formatPHP(Number(room_type.price));
+    case "peak_season_price":
+      return formatPHP(Number(room_type.peak_season_price));
     case "actions":
       return (
         <div className="relative flex justify-end items-center gap-2">
@@ -63,7 +65,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({
           <Dropdown className="bg-background border-1 border-default-200 ">
             <DropdownTrigger>
               <Button isIconOnly radius="full" size="sm" variant="light">
-                <EllipsisVertical className="text-default-400" />
+                <EllipsisVertical />
               </Button>
             </DropdownTrigger>
             <DropdownMenu>

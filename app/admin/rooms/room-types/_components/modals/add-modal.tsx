@@ -74,6 +74,7 @@ export default function AddModal() {
                   <div className="flex flex-col md:flex-row gap-4 w-full">
                     <div className="flex-1 w-full md:border-r md:border-gray-300 md:pr-4 space-y-6">
                       <Input
+                        isRequired
                         className="w-full"
                         label="Name"
                         placeholder="Item room type"
@@ -84,6 +85,7 @@ export default function AddModal() {
                       />
                       <div className="flex flex-col sm:flex-row gap-4">
                         <Input
+                          isRequired
                           className="flex-1"
                           label="Room Size"
                           placeholder="Room size"
@@ -93,28 +95,58 @@ export default function AddModal() {
                           labelPlacement="outside"
                         />
                         <Input
+                          isRequired
                           className="flex-1"
-                          label="Price"
-                          name="price"
+                          label="Max Guest"
+                          name="max_guest"
                           type="number"
                           variant="bordered"
                           radius="none"
                           labelPlacement="outside"
-                          placeholder="0.00"
-                          startContent={
-                            <span className="text-default-400 text-small">
-                              $
-                            </span>
-                          }
+                          min={1}
+                          placeholder="0"
                         />
                       </div>
                       <Textarea
+                        isRequired
                         name="description"
                         placeholder="Item description"
                         label="Description"
                         labelPlacement="outside"
                         variant="bordered"
                         radius="none"
+                      />
+                      <Input
+                        isRequired
+                        className="flex-1"
+                        label="Price"
+                        name="price"
+                        type="number"
+                        variant="bordered"
+                        radius="none"
+                        labelPlacement="outside"
+                        placeholder="0.00"
+                        startContent={
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
+                        }
+                      />
+                      <Input
+                        isRequired
+                        fullWidth
+                        label="Peak Season Price"
+                        name="peak_season_price"
+                        type="number"
+                        variant="bordered"
+                        radius="none"
+                        labelPlacement="outside"
+                        placeholder="0.00"
+                        startContent={
+                          <span className="text-default-600 dark:text-default-300 text-small">
+                            ₱
+                          </span>
+                        }
                       />
                     </div>
 
@@ -142,6 +174,7 @@ export default function AddModal() {
                         )}
                       </label>
                       <Input
+                        isRequired
                         id="image-upload"
                         type="file"
                         name="image"
@@ -149,21 +182,9 @@ export default function AddModal() {
                         className="hidden"
                         onChange={handleFileChange}
                       />
-                      <Input
-                        className="flex-1"
-                        label="Max Guest"
-                        name="max_guest"
-                        type="number"
-                        variant="bordered"
-                        radius="none"
-                        labelPlacement="outside"
-                        min={1}
-                        placeholder="0"
-                      />
+                      <AddOnsInput addOns={addOns} setAddOns={setAddOns} />
                     </div>
                   </div>
-
-                  <AddOnsInput addOns={addOns} setAddOns={setAddOns} />
 
                   <div className="flex justify-end gap-4 w-full pb-4">
                     <Button onPress={onClose} variant="bordered" radius="none">

@@ -20,6 +20,7 @@ export interface RoomType {
   room_size?: string;
   max_guest?: number;
   price?: number;
+  peak_season_price?: number;
 }
 
 export interface RoomTypeState {
