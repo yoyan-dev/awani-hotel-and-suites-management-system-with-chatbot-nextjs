@@ -58,9 +58,9 @@ export default function Calendar() {
 
   return (
     <div className="  space-y-4">
-      <h1 className="text-2xl font-bold text-center bg-primary text-white py-2">
+      {/* <h1 className="text-2xl font-bold text-center bg-primary text-white py-2">
         Booking Calendar
-      </h1>
+      </h1> */}
       <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
         <CalendarView
           calendarRef={calendarRef}

@@ -9,7 +9,7 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Image, Input, User } from "@heroui/react";
+import { cn, Image, Input, Listbox, ListboxItem, User } from "@heroui/react";
 import { Link } from "@heroui/link";
 import { SearchIcon } from "lucide-react";
 import NextLink from "next/link";
@@ -80,36 +80,31 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarMenu className="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80">
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.housekeepingNavMenuItems.map((item) => (
-            <NavbarMenuItem key={item.href}>
-              <Link
-                as={NextLink}
-                href={item.href}
-                color={pathname === item.href ? "primary" : "foreground"}
-                size="lg"
-                className={`${
-                  pathname === item.href
-                    ? "font-semibold text-primary-600 dark:text-primary-400"
-                    : "text-gray-700 dark:text-gray-300 hover:text-primary-500"
-                } transition`}
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
+        {siteConfig.housekeepingNavMenuItems.map((item: any) => {
+          const isActive = pathname === item.href;
 
-          <NavbarMenuItem key="logout">
-            <Link
-              href="/"
-              color="danger"
-              size="lg"
-              className="font-semibold text-red-500 hover:text-red-600 transition"
-            >
-              Logout
-            </Link>
-          </NavbarMenuItem>
-        </div>
+          return (
+            <div key={item.label} className="mb-1">
+              <Listbox aria-label="menu">
+                <ListboxItem
+                  key={item.href}
+                  as={NextLink}
+                  href={item.href}
+                  className={cn(
+                    "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
+                    isActive
+                      ? "text-primary-600 font-semibold"
+                      : item.label === "Logout"
+                        ? "text-red-500 hover:text-red-600"
+                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                  )}
+                >
+                  {item.label}
+                </ListboxItem>
+              </Listbox>
+            </div>
+          );
+        })}
       </NavbarMenu>
     </HeroUINavbar>
   );
