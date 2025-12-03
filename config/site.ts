@@ -18,6 +18,7 @@ import {
   House,
   SatelliteDish,
   ChefHatIcon,
+  Calendar,
 } from "lucide-react";
 
 export type SiteConfig = typeof siteConfig;
@@ -134,11 +135,11 @@ export const siteConfig = {
       href: "/housekeeping",
       icon: LayoutDashboard,
     },
-    // {
-    //   label: "Tasks",
-    //   href: "/housekeeping/tasks",
-    //   icon: Paintbrush,
-    // },
+    {
+      label: "Calendar",
+      href: "/housekeeping/calendar",
+      icon: Calendar,
+    },
     {
       label: "Room Status",
       href: "/housekeeping/rooms",

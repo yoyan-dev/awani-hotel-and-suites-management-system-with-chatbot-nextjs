@@ -55,44 +55,42 @@ export default function Sidebar() {
         </div>
 
         <nav className="flex-1 overflow-y-auto scrollbar-hide px-2 mt-3">
-          <Listbox
-            items={siteConfig.housekeepingNavMenuItems}
-            aria-label="Admin Navigation"
-            variant="faded"
-            className="space-y-1"
-          >
-            {(item) => {
-              const isActive = pathname === item.href;
-              return (
-                <ListboxItem
-                  key={item.href}
-                  as={NextLink}
-                  href={item.href}
-                  className={cn(
-                    "group flex items-center gap-3 py-3 px-3 rounded-lg transition-all duration-200 ",
-                    isActive
-                      ? "text-primary-600 font-semibold"
-                      : item.label === "Logout"
-                        ? "text-red-500 hover:text-red-600 border-transparent"
-                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 border-transparent hover:bg-gray-100 dark:hover:bg-gray-800"
-                  )}
-                  startContent={
-                    <item.icon
-                      size={20}
-                      className={cn(
-                        "transition-colors",
-                        isActive
-                          ? "text-primary-500"
-                          : "text-gray-400 group-hover:text-primary-500"
-                      )}
-                    />
-                  }
-                >
-                  {!collapsed ? item.label : ""}
-                </ListboxItem>
-              );
-            }}
-          </Listbox>
+          {siteConfig.housekeepingNavMenuItems.map((item: any) => {
+            const isActive = pathname === item.href;
+
+            return (
+              <div key={item.label} className="mb-1">
+                <Listbox aria-label="menu">
+                  <ListboxItem
+                    key={item.href}
+                    as={!item.isExpandable ? NextLink : undefined}
+                    href={!item.isExpandable ? item.href : undefined}
+                    className={cn(
+                      "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
+                      isActive
+                        ? "text-primary-600 font-semibold"
+                        : item.label === "Logout"
+                          ? "text-red-500 hover:text-red-600"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    )}
+                    startContent={
+                      <item.icon
+                        size={20}
+                        className={cn(
+                          "transition-all duration-300",
+                          isActive
+                            ? "text-primary-500"
+                            : "text-gray-400 group-hover:text-primary-500"
+                        )}
+                      />
+                    }
+                  >
+                    {!collapsed && item.label}
+                  </ListboxItem>
+                </Listbox>
+              </div>
+            );
+          })}
         </nav>
 
         <div className="mt-auto mb-3 px-4 text-xs text-gray-400 dark:text-gray-500">
