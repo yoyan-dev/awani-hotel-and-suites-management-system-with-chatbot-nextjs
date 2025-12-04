@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import BookingHeader from "./_components/header";
 import KeyPerformanceIndicator from "./_components/key-performance-indicator";
 import BookingTable from "./_components/table/booking-table";
-import { Booking } from "@/types/booking";
+import { Booking, FetchBookingParams } from "@/types/booking";
 import CenterRow from "./_components/center-row";
 import { useBookings } from "@/hooks/use-bookings";
 import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/booking";
@@ -12,6 +12,7 @@ import { formatDate } from "@/utils/format-date";
 
 export default function Overview() {
   const {
+    pagination,
     bookings,
     isLoading: bookingLoading,
     error: bookingError,
@@ -24,17 +25,11 @@ export default function Overview() {
     fetchAvailableRooms,
   } = useRooms();
 
-  const [filterValue, setFilterValue] = React.useState("");
+  const [query, setQuery] = React.useState<FetchBookingParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
     new Set(INITIAL_VISIBLE_COLUMNS)
   );
-  const [statusFilter, setStatusFilter] = React.useState<any>("all");
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [page, setPage] = React.useState(1);
-
-  const pages = Math.ceil(bookings.length / rowsPerPage);
-  const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
@@ -43,31 +38,11 @@ export default function Overview() {
     );
   }, [visibleColumns]);
 
-  const filteredItems = React.useMemo(() => {
-    let filteredBookings = [...bookings];
-
-    if (hasSearchFilter) {
-      filteredBookings = filteredBookings.filter((item) =>
-        item.user.full_name?.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-
-    if (statusFilter !== "all" && Array.from(statusFilter).length) {
-      filteredBookings = filteredBookings.filter((item) =>
-        Array.from(statusFilter).includes(item.status)
-      );
-    }
-
-    return filteredBookings;
-  }, [bookings, filterValue, statusFilter, hasSearchFilter]);
-
-  const items = React.useMemo(() => {
-    const start = (page - 1) * rowsPerPage;
-    return filteredItems.slice(start, start + rowsPerPage);
-  }, [page, filteredItems, rowsPerPage]);
+  React.useEffect(() => {
+    fetchBookings(query);
+  }, [query]);
 
   React.useEffect(() => {
-    fetchBookings({});
     fetchAvailableRooms({ selectedDate: formatDate(new Date()) });
   }, []);
 
@@ -105,13 +80,13 @@ export default function Overview() {
         <CenterRow rooms={available_rooms} roomLoading={roomLoading} />
 
         <BookingTable
-          items={items}
-          bookings={filteredBookings}
+          bookings={bookings}
+          pagination={pagination}
+          query={query}
+          setQuery={setQuery}
           headerColumns={headerColumns}
-          hasSearchFilter={hasSearchFilter}
-          page={page}
-          setPage={setPage}
-          pages={pages}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
           selectedKeys={selectedKeys}
           setSelectedKeys={setSelectedKeys}
           bookingLoading={bookingLoading}

@@ -15,6 +15,7 @@ import { Room } from "@/types/room";
 import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { Copyright } from "lucide-react";
 import { FunctionRoom } from "@/types/function-room";
+import { statusColorMap } from "@/app/constants/rooms";
 interface RoomDetailsProps {
   room: FunctionRoom;
   isOpen: boolean;
@@ -54,13 +55,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       </h1>
                     </div>
                     <Chip
-                      color={
-                        room.status === "available"
-                          ? "success"
-                          : room.status === "maintenance"
-                            ? "warning"
-                            : "secondary"
-                      }
+                      color={statusColorMap[room.status || "default"]}
                       className="uppercase"
                     >
                       {room.status}

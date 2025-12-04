@@ -10,98 +10,109 @@ import {
   Selection,
 } from "@heroui/react";
 import { RenderCell } from "./render-cell";
-import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";
-import { Booking } from "@/types/booking";
+import {
+  Booking,
+  BookingPagination,
+  FetchBookingParams,
+} from "@/types/booking";
 import { ColumnType } from "@/types/column";
+import { Room } from "@/types/room";
 
 interface BookingTableProps {
-  items: Booking[];
   bookings: Booking[];
-
+  pagination: BookingPagination;
+  query: FetchBookingParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
   headerColumns: ColumnType[];
-  hasSearchFilter: boolean;
-
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  pages: number;
-
+  visibleColumns: Set<string>;
+  setVisibleColumns: React.Dispatch<React.SetStateAction<Set<string>>>;
   selectedKeys: Selection;
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
-
   bookingLoading: boolean;
-  handleSubmit: (payload: Booking) => void;
+  handleSubmit: (booking: Booking, room: Room) => void;
 }
 
 export default function BookingTable({
-  items,
   bookings,
+  pagination,
+  query,
+  setQuery,
   headerColumns,
-  hasSearchFilter,
-  page,
-  setPage,
-  pages,
+  visibleColumns,
+  setVisibleColumns,
   selectedKeys,
   setSelectedKeys,
   bookingLoading,
   handleSubmit,
 }: BookingTableProps) {
   return (
-    <Table
-      className="mt-4"
-      isHeaderSticky
-      classNames={{
-        wrapper: ["shadow-none", "dark:bg-gray-900", "p-0", "table-auto"],
-      }}
-      aria-label="Rooms Table"
-      rowHeight={40}
-      bottomContent={
-        <TableBottomContent
-          hasSearchFilter={hasSearchFilter}
-          page={page}
-          setPage={setPage}
-          pages={pages}
-          selectedKeys={selectedKeys}
-          itemsLength={items.length}
-        />
-      }
-      bottomContentPlacement="outside"
-      topContent={<TableTopContent bookingsCount={bookings.length} />}
-      topContentPlacement="outside"
-      onSelectionChange={setSelectedKeys}
-    >
-      <TableHeader columns={headerColumns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-            allowsSorting={column.sortable}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody
-        isLoading={bookingLoading}
-        loadingContent={<Spinner label="Loading..." />}
-        emptyContent="No bookings found"
-        items={items}
+    <div className="mt-4">
+      <h1 className="text-lg pb-4">Bookings</h1>
+      <Table
+        isHeaderSticky
+        radius="none"
+        classNames={{
+          wrapper: ["shadow-none", "dark:bg-gray-900", "p-0", "table-auto"],
+          th: "bg-primary text-white",
+        }}
+        aria-label="Rooms Table"
+        rowHeight={40}
+        bottomContent={
+          <TableBottomContent
+            query={query}
+            setQuery={setQuery}
+            pages={pagination.totalPages}
+            selectedKeys={selectedKeys}
+            itemsLength={pagination.total}
+          />
+        }
+        bottomContentPlacement="outside"
+        selectedKeys={selectedKeys}
+        selectionMode="multiple"
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
       >
-        {(item) => (
-          <TableRow key={item.id}>
-            {(columnKey) => (
-              <TableCell className="capitalize">
-                <RenderCell
-                  booking={item}
-                  columnKey={columnKey as string}
-                  onAssign={handleSubmit}
-                  bookingLoading={bookingLoading}
-                />
-              </TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        <TableHeader columns={headerColumns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          isLoading={bookingLoading}
+          loadingContent={<Spinner label="Loading..." />}
+          emptyContent="No bookings found"
+          items={bookings}
+        >
+          {(item) => (
+            <TableRow
+              key={item.id}
+              className={
+                bookings.indexOf(item) % 2 === 0
+                  ? "bg-white dark:bg-gray-800"
+                  : "bg-gray-100 dark:bg-gray-900"
+              }
+            >
+              {(columnKey) => (
+                <TableCell className="capitalize">
+                  <RenderCell
+                    booking={item}
+                    columnKey={columnKey as string}
+                    onAssign={handleSubmit}
+                    bookingLoading={bookingLoading}
+                  />
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

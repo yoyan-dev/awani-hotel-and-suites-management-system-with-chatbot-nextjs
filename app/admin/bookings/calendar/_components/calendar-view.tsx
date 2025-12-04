@@ -27,23 +27,22 @@ const localizer = dateFnsLocalizer({
 const DnDCalendar = withDragAndDrop(Calendar);
 
 export function CalendarView({
+  available_rooms,
   calendarRef,
-  rooms,
   bookings,
   selectedName,
   selectedRoomType,
   setSelectedRoomType,
   roomType,
 }: {
+  available_rooms: Room[];
   calendarRef: any;
-  rooms: Room[];
   bookings: Booking[];
   selectedName: string;
   selectedRoomType: string;
   setSelectedRoomType: React.Dispatch<React.SetStateAction<string>>;
   roomType: RoomType[];
 }) {
-  const { updateBooking } = useBookings();
   const [events, setEvents] = React.useState<any[]>([]);
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedData, setSelectedData] = React.useState<any>();
@@ -89,6 +88,14 @@ export function CalendarView({
     },
   });
 
+  const resources = React.useMemo(() => {
+    if (!available_rooms) return [];
+    return available_rooms.map((room) => ({
+      id: room.id,
+      title: `${String(room.room_number)} - ${room.status?.toUpperCase()}`,
+    }));
+  }, [available_rooms]);
+
   return (
     <div className="p-4">
       <ViewModal
@@ -97,6 +104,7 @@ export function CalendarView({
         onClose={() => setIsOpen(false)}
       />
       <DnDCalendar
+        resources={resources}
         localizer={localizer}
         events={events}
         defaultView={Views.WEEK}
@@ -112,6 +120,7 @@ export function CalendarView({
         components={{
           toolbar: (props) => (
             <CalendarHeader
+              selectedView={props.view}
               label={props.label}
               onNavigate={props.onNavigate}
               onView={props.onView}
