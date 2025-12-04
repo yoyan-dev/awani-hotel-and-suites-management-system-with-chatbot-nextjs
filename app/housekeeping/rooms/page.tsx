@@ -8,13 +8,25 @@ import {
   columns,
   HOUSEKEEPING_INITIAL_VISIBLE_COLUMNS,
 } from "@/app/constants/rooms";
+import RoomStats from "./_components/room-stats";
+import { formatDate } from "@/utils/format-date";
 
 export default function RoomList() {
-  const { rooms, pagination, isLoading, fetchRooms } = useRooms();
+  const {
+    rooms,
+    available_rooms,
+    pagination,
+    isLoading,
+    fetchRooms,
+    fetchAvailableRooms,
+  } = useRooms();
   const [query, setQuery] = React.useState<FetchRoomsParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
     new Set(HOUSEKEEPING_INITIAL_VISIBLE_COLUMNS)
+  );
+  const [selectedDate, setSelectedDate] = React.useState(
+    formatDate(new Date())
   );
 
   const headerColumns = React.useMemo(() => {
@@ -28,9 +40,14 @@ export default function RoomList() {
     fetchRooms(query);
   }, [query]);
 
+  React.useEffect(() => {
+    fetchAvailableRooms({ selectedDate: selectedDate });
+  }, [selectedDate]);
+
   return (
     <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded ">
       <Header />
+      <RoomStats available_rooms={available_rooms} />
       <RoomTable
         rooms={rooms}
         pagination={pagination}

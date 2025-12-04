@@ -122,7 +122,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       ...formObj,
       room_id: `RM-${roomNumber}`,
       images: imageUrls,
-      status: "available",
     };
 
     const { data, error } = await supabase

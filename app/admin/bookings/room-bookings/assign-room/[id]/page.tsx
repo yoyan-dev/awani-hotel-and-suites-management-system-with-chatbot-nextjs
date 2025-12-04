@@ -38,7 +38,7 @@ export default function AssignRoomPage() {
     error,
   } = useBookings();
   const {
-    rooms,
+    available_rooms,
     isLoading: roomLoading,
     fetchAvailableRooms,
     updateRoom,
@@ -69,7 +69,7 @@ export default function AssignRoomPage() {
 
     await updateRoom({
       id: room.id,
-      bookings: [...(room.bookings || []), booking],
+      status: "booked",
     });
     fetchBooking(id as string);
   }
@@ -90,7 +90,7 @@ export default function AssignRoomPage() {
       <Divider className="mb-6" />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {rooms.map((room) => (
+        {available_rooms.map((room) => (
           <Card
             key={room.id}
             isPressable
@@ -119,11 +119,13 @@ export default function AssignRoomPage() {
               </p>
               <Chip
                 size="sm"
-                color="success"
+                color={
+                  room.availability === "available" ? "success" : "warning"
+                }
                 variant="flat"
                 className="w-fit mt-2"
               >
-                {room.status}
+                {room.availability}
               </Chip>
             </CardBody>
             {booking.room_id !== room.id ? (

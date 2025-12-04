@@ -14,7 +14,7 @@ export const columns: ColumnType[] = [
 
 export const statusOptions = [
   { name: "Stock Room", uid: "stock-room" },
-  { name: "VC", uid: "vaccant" },
+  { name: "VC", uid: "vacant" },
   { name: "OS", uid: "out_of_service" },
   { name: "OCC", uid: "occupied" },
   { name: "Maintenance", uid: "maintenance" },

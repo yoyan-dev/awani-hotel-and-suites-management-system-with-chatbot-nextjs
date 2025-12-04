@@ -2,13 +2,14 @@ import { Pagination } from "@supabase/supabase-js";
 import { Booking } from "./booking";
 
 export type RoomStatus =
-  | "available"
+  | "vacant"
   | "cleaning"
   | "reserved"
   | "occupied"
   | "dirty"
   | "maintenance"
   | "out_of_service"
+  | "booked"
   | undefined;
 
 export interface RoomType {
@@ -65,10 +66,12 @@ export interface FetchRoomsParams {
   maxPrice?: number;
   checkIn?: any;
   checkOut?: any;
+  selectedDate?: any;
 }
 export interface RoomState {
   rooms: Room[];
   room: Room;
+  available_rooms: Room[];
   pagination: RoomPagination | null;
   isLoading: boolean;
   error?: string;

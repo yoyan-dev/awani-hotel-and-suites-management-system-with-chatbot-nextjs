@@ -11,6 +11,7 @@ import { Filter } from "lucide-react";
 import { NavigateAction, View } from "react-big-calendar";
 
 interface CalendarHeaderProps {
+  selectedView: string;
   label: string;
   onNavigate: (action: NavigateAction) => void;
   onView: (view: View) => void;
@@ -22,6 +23,7 @@ interface CalendarHeaderProps {
 }
 
 const CalendarHeader: React.FC<CalendarHeaderProps> = ({
+  selectedView,
   label,
   onNavigate,
   onView,
@@ -53,6 +55,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
               variant="bordered"
               size="sm"
               radius="none"
+              color={selectedView === view ? "primary" : "default"}
               onPress={() => onView(view)}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}

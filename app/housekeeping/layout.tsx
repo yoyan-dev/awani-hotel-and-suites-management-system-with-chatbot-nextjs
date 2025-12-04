@@ -13,12 +13,10 @@ export default function HousekeepingLayout({
       <div className="flex">
         <Sidebar />
 
-        <div className="flex flex-col flex-1 min-h-screen transition-all duration-300 ease-in-out">
+        <div className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4 transition-all duration-300 ease-in-out">
           <Navbar />
 
-          <main className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4 pb-sm">
-            {children}
-          </main>
+          <main className="w-full space-y-4 pb-sm">{children}</main>
         </div>
       </div>
       <FooterNav />

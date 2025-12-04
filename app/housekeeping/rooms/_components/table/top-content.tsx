@@ -7,6 +7,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Link,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Search, ChevronDown, Plus } from "lucide-react";
 import { columns, statusOptions } from "@/app/constants/rooms";
@@ -41,32 +43,16 @@ export const TableTopContent: React.FC<Props> = ({
           onClear={() => setQuery({ ...query, query: "" })}
           onValueChange={(value) => setQuery({ ...query, query: value })}
         />
-        <div className="flex gap-3">
-          <Dropdown>
-            <DropdownTrigger className="hidden sm:flex">
-              <Button
-                endContent={<ChevronDown className="text-small" />}
-                size="sm"
-                variant="flat"
-              >
-                Status
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Table Columns"
-              closeOnSelect={false}
-              selectionMode="single"
-              selectedKeys={query.status || "all"}
-              onSelectionChange={(val) => console.log(val)}
-            >
-              {statusOptions.map((status) => (
-                <DropdownItem key={status.uid} className="capitalize">
-                  {capitalize(status.name)}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
+        <div className="flex gap-3 w-44">
+          <Select
+            fullWidth
+            placeholder="Room Status"
+            items={statusOptions}
+            size="sm"
+            onChange={(e) => setQuery({ ...query, status: e.target.value })}
+          >
+            {(item) => <SelectItem key={item.uid}>{item.name}</SelectItem>}
+          </Select>
         </div>
       </div>
       <div className="flex justify-between items-center">

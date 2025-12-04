@@ -61,18 +61,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       </h1>
                       <p className="text-gray-500">{room.area}</p>
                     </div>
-                    <Chip
-                      color={
-                        room.status === "available"
-                          ? "success"
-                          : room.status === "maintenance"
-                            ? "warning"
-                            : "secondary"
-                      }
-                      className="uppercase"
-                    >
-                      {room.status}
-                    </Chip>
+                    <Chip className="uppercase">{room.status}</Chip>
                   </div>
 
                   {/* Key Info */}

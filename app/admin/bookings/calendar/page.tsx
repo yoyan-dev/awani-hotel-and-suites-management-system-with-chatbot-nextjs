@@ -17,8 +17,7 @@ import { useRoomTypes } from "@/hooks/use-room-types";
 import { useRooms } from "@/hooks/use-rooms";
 import { useBookings } from "@/hooks/use-bookings";
 import { CalendarView } from "./_components/calendar-view";
-import { Filter } from "lucide-react";
-import CalendarHeader from "./_components/calendar-custom/calendar-header";
+import { formatDate } from "@/utils/format-date";
 
 export default function Calendar() {
   const calendarRef = React.useRef(null);
@@ -28,7 +27,11 @@ export default function Calendar() {
     fetchRoomTypes,
   } = useRoomTypes();
 
-  const { rooms, isLoading: roomLoading, fetchRooms } = useRooms();
+  const {
+    available_rooms,
+    isLoading: roomLoading,
+    fetchAvailableRooms,
+  } = useRooms();
   const { bookings, isLoading: bookingsLoading, fetchBookings } = useBookings();
 
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>("");
@@ -46,7 +49,10 @@ export default function Calendar() {
   React.useEffect(() => {
     if (!selectedRoomType) return;
     const timer = setTimeout(() => {
-      fetchRooms({ roomTypeID: selectedRoomType });
+      fetchAvailableRooms({
+        roomTypeID: selectedRoomType,
+        selectedDate: formatDate(new Date()),
+      });
       fetchBookings({ roomTypeID: selectedRoomType });
     }, 300);
     return () => clearTimeout(timer);
@@ -61,10 +67,11 @@ export default function Calendar() {
       <h1 className="text-2xl font-bold text-center bg-primary text-white py-2">
         Booking Calendar
       </h1>
-      <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
+      <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
+        {/* <RoomAvailability available_rooms={available_rooms} /> */}
         <CalendarView
+          available_rooms={available_rooms}
           calendarRef={calendarRef}
-          rooms={rooms}
           bookings={bookings}
           selectedName={selectedName}
           selectedRoomType={selectedRoomType}

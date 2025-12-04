@@ -1,128 +1,57 @@
 import React from "react";
-import {
-  User,
-  Chip,
-  Button,
-  Dropdown,
-  DropdownMenu,
-  DropdownTrigger,
-  DropdownItem,
-  Link,
-} from "@heroui/react";
+import { Chip } from "@heroui/react";
 import { bookingStatusColorMap } from "@/app/constants/booking";
-import {
-  Bed,
-  CalendarArrowDown,
-  CalendarArrowUp,
-  EllipsisVertical,
-  Eye,
-} from "lucide-react";
 import { Booking } from "@/types/booking";
 import { formatPHP } from "@/lib/format-php";
 import { calculateBookingPrice, getNights } from "@/utils/pricing";
 import { Room } from "@/types/room";
-import AssignRoomModal from "../modals/assign-room-modal";
 
 interface RenderCellProps {
   booking: Booking;
   columnKey: string;
-  onAssign: (payload: Booking) => void;
+  onAssign: (booking: Booking, room: Room) => void;
   bookingLoading: boolean;
 }
 
-export const RenderCell = ({
-  booking,
-  columnKey,
-  onAssign,
-  bookingLoading,
-}: RenderCellProps) => {
+export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
   const cellValue = booking[columnKey as keyof Booking];
   const nights = getNights(booking.check_in, booking.check_out);
-  const [assignModalOpen, setAssignModalOpen] = React.useState(false);
 
   switch (columnKey) {
     case "room":
-      return booking.room?.room_number || "No yet assigned";
+      return booking.room?.room_number || "N/A";
     case "guest_name":
-      return booking.user?.full_name || "undefined";
+      return (
+        <div className="flex flex-col w-48">
+          <p className="text-bold text-small capitalize">
+            {booking.user?.full_name || "undefined"}
+          </p>
+          <p className="text-bold text-tiny capitalize text-default-600 dark:text-default-300 flex ">
+            {booking.check_in} to {booking.check_out}
+          </p>
+        </div>
+      );
+
     case "room_type":
-      return booking.room_type?.name;
+      return <Chip>{booking.room_type?.name}</Chip>;
     case "nights":
       return nights;
-    case "check_in":
-      return (
-        <div className="flex gap-2">
-          <Chip
-            startContent={<CalendarArrowDown size={18} />}
-            color="success"
-            variant="flat"
-          >
-            {booking.check_in}
-          </Chip>
-          -
-          <Chip
-            startContent={<CalendarArrowUp size={18} />}
-            color="warning"
-            variant="flat"
-          >
-            {booking.check_out}
-          </Chip>
-        </div>
-      );
+
+    case "amount_paid":
+      return formatPHP(Number(booking.amount_paid));
     case "total_price":
-      return formatPHP(
-        calculateBookingPrice(booking) + Number(booking.total_add_ons || 0)
-      );
+      return formatPHP(Number(booking.total));
     case "status":
       return (
-        <span
-          className={`px-2 py-1 rounded-full text-xs font-medium ${bookingStatusColorMap[booking.status]}`}
+        <Chip
+          size="sm"
+          className={`px-2 rounded-full  font-medium ${bookingStatusColorMap[booking.status]}`}
         >
           {booking.status}
-        </span>
+        </Chip>
       );
-    case "actions":
-      return (
-        <div className="relative flex justify-end items-center gap-2">
-          <AssignRoomModal
-            isOpen={assignModalOpen}
-            onClose={() => setAssignModalOpen(false)}
-            onAssign={onAssign}
-            booking={booking}
-            bookingLoading={bookingLoading}
-          />
-          <Dropdown className="bg-background border-1 border-default-200">
-            <DropdownTrigger>
-              <Button isIconOnly radius="full" size="sm" variant="light">
-                <EllipsisVertical className="text-default-400" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu>
-              <DropdownItem
-                key="view"
-                as={Link}
-                href={`booking/${booking.id}`}
-                color="primary"
-              >
-                <div className="flex items-center gap-2">
-                  <Eye size={15} /> View
-                </div>
-              </DropdownItem>
-              <DropdownItem
-                key="assign"
-                onPress={() => setAssignModalOpen(true)}
-                className="text-blue-600"
-              >
-                <div className="flex items-center gap-2">
-                  <Bed size={15} /> Assign Room
-                </div>
-              </DropdownItem>
-              <DropdownItem key="edit">Edit</DropdownItem>
-              <DropdownItem key="delete">Delete</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-      );
+    // case "actions":
+    //   return <BookingActionsDropdown booking={booking} />;
     default:
       return cellValue;
   }

@@ -14,7 +14,8 @@ export const columns: ColumnType[] = [
 
 export const statusOptions = [
   { name: "Stock Room", uid: "stock-room" },
-  { name: "VC", uid: "vaccant" },
+  { name: "VC", uid: "vacant" },
+  { name: "Booked", uid: "booked" },
   { name: "OS", uid: "out_of_service" },
   { name: "OCC", uid: "occupied" },
   { name: "Maintenance", uid: "maintenance" },
@@ -24,12 +25,12 @@ export const statusColorMap: Record<
   string,
   "success" | "danger" | "warning" | "secondary" | "default"
 > = {
-  available: "success",
+  vacant: "success",
   cleaning: "secondary",
   reserved: "warning",
   occupied: "warning",
-  maintenance: "danger",
-  out_of_service: "default",
+  maintenance: "default",
+  out_of_service: "danger",
 };
 
 export const INITIAL_VISIBLE_COLUMNS = [
