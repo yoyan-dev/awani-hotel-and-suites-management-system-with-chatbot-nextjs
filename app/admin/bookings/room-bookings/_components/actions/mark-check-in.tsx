@@ -5,12 +5,13 @@ import { CircleCheck } from "lucide-react";
 import React from "react";
 
 export default function CheckInButton({ booking }: { booking: Booking }) {
-  const { updateBooking } = useBookings();
+  const { updateBooking, fetchBookings } = useBookings();
   const { updateRoom } = useRooms();
 
   async function markCheckIn() {
-    updateBooking({ id: booking.id, status: "check-in" } as Booking);
-    updateRoom({ id: booking.room_id, status: "dirty" });
+    await updateBooking({ id: booking.id, status: "check-in" } as Booking);
+    fetchBookings({});
+    updateRoom({ id: booking.room_id, status: "occupied" });
   }
   return (
     <div onClick={markCheckIn} className="flex gap-2 items-center">

@@ -160,7 +160,7 @@ export default function BookingActionsDropdown({
           </DropdownItem>
           {booking.status === "confirmed" || booking.status === "pending" ? (
             <DropdownItem key="cancel" color="danger">
-              <MarkCancelled id={booking.id} />
+              <MarkCancelled booking={booking} />
             </DropdownItem>
           ) : null}
         </DropdownMenu>

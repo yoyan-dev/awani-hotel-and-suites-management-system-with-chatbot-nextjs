@@ -6,12 +6,13 @@ import React from "react";
 
 export default function CheckOutButton({ booking }: { booking: Booking }) {
   const [isLoading, setIsloading] = React.useState(false);
-  const { updateBooking } = useBookings();
+  const { updateBooking, fetchBookings } = useBookings();
   const { updateRoom } = useRooms();
 
   async function markCheckOut() {
     setIsloading(true);
     await updateBooking({ id: booking.id, status: "check-out" } as Booking);
+    fetchBookings({});
     await updateRoom({ id: booking.room_id, status: "dirty" });
 
     setIsloading(false);

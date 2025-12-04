@@ -25,7 +25,12 @@ export default function EditBookingPage() {
     fetchBooking,
     updateBooking,
   } = useBookings();
-  const { rooms, isLoading: roomLoading, fetchAvailableRooms } = useRooms();
+  const {
+    available_rooms,
+    isLoading: roomLoading,
+    fetchAvailableRooms,
+    updateRoom,
+  } = useRooms();
   const [formData, setFormData] = React.useState<Booking>({} as Booking);
   const [specialRequests, setSpecialRequests] = React.useState<
     { name: string; price: string; quantity: number; max_quantity: number }[]
@@ -87,6 +92,11 @@ export default function EditBookingPage() {
         number_of_guests: formData.number_of_guests,
         status: formData.room_id ? "confirmed" : "pending",
       } as Booking);
+
+      if (formData.room_id !== booking.room_id) {
+        updateRoom({ id: booking.room_id, status: "vacant" });
+        updateRoom({ id: formData.room_id, status: "booked" });
+      }
     } catch (err) {
       console.error("Failed to update booking", err);
     }
@@ -106,7 +116,7 @@ export default function EditBookingPage() {
                 formData={formData}
                 setFormData={setFormData}
                 room_types={room_types}
-                rooms={rooms}
+                rooms={available_rooms}
                 specialRequests={specialRequests}
                 setSpecialRequests={setSpecialRequests}
                 typesLoading={typesLoading}

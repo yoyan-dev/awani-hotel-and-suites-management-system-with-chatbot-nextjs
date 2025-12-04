@@ -11,6 +11,11 @@ export interface FunctionHallBooking {
   status?: string;
   guest?: any;
   banquet_package?: any;
+  payment_status?: string;
+  payment_method?: string;
+  booking_source?: "walk-in" | "online";
+  amount_paid?: number;
+  total_amount?: number;
   room?: any;
 }
 

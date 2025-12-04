@@ -81,48 +81,48 @@ export const RenderCell = ({
           {booking.status}
         </span>
       );
-    case "actions":
-      return (
-        <div className="relative flex justify-end items-center gap-2">
-          <AssignRoomModal
-            isOpen={assignModalOpen}
-            onClose={() => setAssignModalOpen(false)}
-            onAssign={onAssign}
-            booking={booking}
-            bookingLoading={bookingLoading}
-          />
-          <Dropdown className="bg-background border-1 border-default-200">
-            <DropdownTrigger>
-              <Button isIconOnly radius="full" size="sm" variant="light">
-                <EllipsisVertical className="text-default-400" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu>
-              <DropdownItem
-                key="view"
-                as={Link}
-                href={`booking/${booking.id}`}
-                color="primary"
-              >
-                <div className="flex items-center gap-2">
-                  <Eye size={15} /> View
-                </div>
-              </DropdownItem>
-              <DropdownItem
-                key="assign"
-                onPress={() => setAssignModalOpen(true)}
-                className="text-blue-600"
-              >
-                <div className="flex items-center gap-2">
-                  <Bed size={15} /> Assign Room
-                </div>
-              </DropdownItem>
-              <DropdownItem key="edit">Edit</DropdownItem>
-              <DropdownItem key="delete">Delete</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-      );
+    // case "actions":
+    //   return (
+    //     <div className="relative flex justify-end items-center gap-2">
+    //       <AssignRoomModal
+    //         isOpen={assignModalOpen}
+    //         onClose={() => setAssignModalOpen(false)}
+    //         onAssign={onAssign}
+    //         booking={booking}
+    //         bookingLoading={bookingLoading}
+    //       />
+    //       <Dropdown className="bg-background border-1 border-default-200">
+    //         <DropdownTrigger>
+    //           <Button isIconOnly radius="full" size="sm" variant="light">
+    //             <EllipsisVertical className="text-default-400" />
+    //           </Button>
+    //         </DropdownTrigger>
+    //         <DropdownMenu>
+    //           <DropdownItem
+    //             key="view"
+    //             as={Link}
+    //             href={`booking/${booking.id}`}
+    //             color="primary"
+    //           >
+    //             <div className="flex items-center gap-2">
+    //               <Eye size={15} /> View
+    //             </div>
+    //           </DropdownItem>
+    //           <DropdownItem
+    //             key="assign"
+    //             onPress={() => setAssignModalOpen(true)}
+    //             className="text-blue-600"
+    //           >
+    //             <div className="flex items-center gap-2">
+    //               <Bed size={15} /> Assign Room
+    //             </div>
+    //           </DropdownItem>
+    //           <DropdownItem key="edit">Edit</DropdownItem>
+    //           <DropdownItem key="delete">Delete</DropdownItem>
+    //         </DropdownMenu>
+    //       </Dropdown>
+    //     </div>
+    //   );
     default:
       return cellValue;
   }

@@ -13,6 +13,7 @@ import {
 const initialState: RoomState = {
   rooms: [],
   room: {} as Room,
+  available_rooms: [],
   pagination: {} as RoomPagination,
   isLoading: false,
   error: undefined,
@@ -75,7 +76,7 @@ const roomSlice = createSlice({
         fetchAvailableRooms.fulfilled,
         (state, action: PayloadAction<{ data: Room[] }>) => {
           state.isLoading = false;
-          state.rooms = action.payload.data;
+          state.available_rooms = action.payload.data;
           state.error = undefined;
         }
       )

@@ -13,6 +13,8 @@ export const fetchRooms = createAsyncThunk<
     if (params?.roomTypeID)
       searchParams.append("roomTypeID", params.roomTypeID);
     if (params?.status) searchParams.append("status", params.status);
+    if (params?.selectedDate)
+      searchParams.append("selectedDate", params.selectedDate);
 
     const res = await fetch(`/api/rooms?${searchParams.toString()}`);
     const data = await res.json();

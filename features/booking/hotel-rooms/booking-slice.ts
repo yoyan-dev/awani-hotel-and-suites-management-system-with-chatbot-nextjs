@@ -98,12 +98,6 @@ const bookingSlice = createSlice({
         (state, action: PayloadAction<Booking>) => {
           state.isLoading = false;
           state.error = undefined;
-          const index = state.bookings.findIndex(
-            (r) => r.id === action.payload.id
-          );
-          if (index !== -1) {
-            state.bookings[index] = action.payload;
-          }
         }
       )
       .addCase(updateBooking.rejected, (state, action) => {

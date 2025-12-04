@@ -13,12 +13,12 @@ import { setLoading } from "@/features/room/room-slice";
 
 export function useRooms() {
   const dispatch = useAppDispatch();
-  const { rooms, room, pagination, isLoading, error } = useAppSelector(
-    (state) => state.room
-  );
+  const { rooms, room, available_rooms, pagination, isLoading, error } =
+    useAppSelector((state) => state.room);
   return {
     rooms,
     room,
+    available_rooms,
     pagination,
     isLoading,
     error,

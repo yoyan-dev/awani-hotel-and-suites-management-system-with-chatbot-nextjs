@@ -2,7 +2,6 @@ import { Select, SelectItem, Input, Chip, Button } from "@heroui/react";
 import { Minus, Plus } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 import React from "react";
-import { getAvailableRooms } from "@/app/utils/room-availability";
 
 interface Props {
   room_types: any[];
@@ -179,13 +178,13 @@ export default function BookingDetailsSection({
                       color={
                         room.status === "available"
                           ? "success"
-                          : room.status === "occupied"
+                          : room.status === "no available"
                             ? "danger"
                             : "warning"
                       }
                       className="capitalize"
                     >
-                      {room.status}
+                      {room.availability}
                     </Chip>
                   </div>
                 </div>

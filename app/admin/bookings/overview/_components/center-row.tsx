@@ -1,6 +1,26 @@
+import { statusOptions } from "@/app/constants/rooms";
 import React from "react";
 
-export default function CenterRow() {
+export default function CenterRow({
+  rooms,
+  roomLoading,
+}: {
+  rooms: any;
+  roomLoading: boolean;
+}) {
+  const statusCounts = rooms.reduce(
+    (acc: Record<string, number>, room: any) => {
+      if (acc[room.status]) acc[room.status] += 1;
+      else acc[room.status] = 1;
+      return acc;
+    },
+    {}
+  );
+
+  const status = Object.entries(statusCounts).map(([name, count]) => ({
+    name,
+    count,
+  }));
   return (
     <div className="flex flex-col w-full gap-4 flex-wrap md:flex-row">
       <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
@@ -18,24 +38,27 @@ export default function CenterRow() {
       </div>
 
       <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
-        <div className="font-medium mb-3">Room status</div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="font-medium">Room Status</div>
+          <div className="text-sm text-slate-500">
+            {new Date().toLocaleDateString()}
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-2">
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900">
-            <div className="text-xs text-slate-500">Available</div>
-            <div className="font-semibold text-lg">12</div>
-          </div>
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900">
-            <div className="text-xs text-slate-500">Occupied</div>
-            <div className="font-semibold text-lg">3</div>
-          </div>
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900">
-            <div className="text-xs text-slate-500">Cleaning</div>
-            <div className="font-semibold text-lg">2</div>
-          </div>
-          <div className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900">
-            <div className="text-xs text-slate-500">Maintenance</div>
-            <div className="font-semibold text-lg">1</div>
-          </div>
+          {status.map((item: any) => {
+            const options = statusOptions.find((s) => s.uid === item.name);
+            return (
+              <div
+                className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900"
+                key={item.name}
+              >
+                <div className="text-xs text-slate-500">
+                  {options?.name || item.name}
+                </div>
+                <div className="font-semibold text-lg">{item.count}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
 

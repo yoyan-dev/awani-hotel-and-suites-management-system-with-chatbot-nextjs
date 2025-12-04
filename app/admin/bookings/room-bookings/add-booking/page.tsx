@@ -24,7 +24,12 @@ export default function AddBookingPage() {
     fetchRoomTypes,
   } = useRoomTypes();
   const { isLoading: bookingIsLoading, error, addBooking } = useBookings();
-  const { rooms, isLoading: roomLoading, fetchAvailableRooms } = useRooms();
+  const {
+    available_rooms,
+    isLoading: roomLoading,
+    fetchAvailableRooms,
+    updateRoom,
+  } = useRooms();
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
   const [selectedGuest, setSelectedGuest] = React.useState<string>();
   const [roomType, setRoomType] = React.useState<RoomType>({});
@@ -126,6 +131,11 @@ export default function AddBookingPage() {
       console.log(formData);
       formData.append("special_requests", JSON.stringify(specialRequests));
       await addBooking(formData);
+      const roomId = formData.get("room_id");
+      await updateRoom({
+        id: roomId?.toString(),
+        status: "booked",
+      });
     } catch (e: any) {
       addToast({
         title: "Error!",
@@ -148,7 +158,7 @@ export default function AddBookingPage() {
         <Form onSubmit={(e) => handleSubmit(e, summary)}>
           <BookingDetailsSection
             room_types={room_types}
-            rooms={rooms}
+            rooms={available_rooms}
             selectedRoomType={selectedRoomType}
             setSelectedRoomType={setSelectedRoomType}
             specialRequests={specialRequests}

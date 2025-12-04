@@ -7,6 +7,8 @@ import { Booking } from "@/types/booking";
 import CenterRow from "./_components/center-row";
 import { useBookings } from "@/hooks/use-bookings";
 import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/booking";
+import { useRooms } from "@/hooks/use-rooms";
+import { formatDate } from "@/utils/format-date";
 
 export default function Overview() {
   const {
@@ -16,6 +18,11 @@ export default function Overview() {
     fetchBookings,
     updateBooking,
   } = useBookings();
+  const {
+    available_rooms,
+    isLoading: roomLoading,
+    fetchAvailableRooms,
+  } = useRooms();
 
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
@@ -59,14 +66,10 @@ export default function Overview() {
     return filteredItems.slice(start, start + rowsPerPage);
   }, [page, filteredItems, rowsPerPage]);
 
-  const onRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(Number(e.target.value));
-    setPage(1);
-  };
-
   React.useEffect(() => {
-    fetchBookings(undefined);
-  }, [bookingError]);
+    fetchBookings({});
+    fetchAvailableRooms({ selectedDate: formatDate(new Date()) });
+  }, []);
 
   async function handleSubmit(payload: Booking) {
     console.log(payload);
@@ -99,7 +102,7 @@ export default function Overview() {
       <div className="max-w-7xl mx-auto spcae-y-4">
         <BookingHeader />
         <KeyPerformanceIndicator stats={stats} />
-        <CenterRow />
+        <CenterRow rooms={available_rooms} roomLoading={roomLoading} />
 
         <BookingTable
           items={items}

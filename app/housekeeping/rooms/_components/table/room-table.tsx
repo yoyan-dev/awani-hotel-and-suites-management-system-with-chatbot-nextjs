@@ -58,7 +58,7 @@ export default function RoomTable({
           roomsCount={pagination?.total}
         />
       }
-      bottomContentPlacement="outside"
+      bottomContentPlacement="inside"
       selectedKeys={selectedKeys}
       topContent={
         <TableTopContent
