@@ -3,7 +3,7 @@
 import BookingForm from "./_components/booking-form";
 import SelectedRoom from "./_components/selected-room";
 import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
 import { supabase } from "@/lib/supabase/supabase-client";
@@ -11,11 +11,13 @@ import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
 import { FetchRoomTypesParams } from "@/types/room";
+import { generateSummary } from "@/utils/generate-summary";
+import { Booking } from "@/types/booking";
 
 export default function Page() {
   const { id } = useParams();
+  const router = useRouter();
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
-  const { guest, isLoading: guestIsLoading, fetchGuest } = useGuests();
   const [selectedRoom, setSelectedRoom] = React.useState(id || null);
   const [guestId, setGuestId] = React.useState<string | null>(null);
   const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
@@ -36,7 +38,6 @@ export default function Page() {
     if (query.checkIn && query.checkOut) {
       fetchAvailableRoomTypes(query);
     }
-    // getCurrentUser();
   }, [query]);
 
   const room = React.useMemo(() => {
@@ -61,7 +62,30 @@ export default function Page() {
     }
   }, [room]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const summary = React.useMemo(() => {
+    if (
+      specialRequests.length === 0 ||
+      !room ||
+      !query.checkIn ||
+      !query.checkOut
+    )
+      return null;
+    return generateSummary(
+      {
+        check_in: query.checkIn,
+        check_out: query.checkOut,
+        room_type: room,
+        payment_method: "",
+        amount_paid: 0,
+      } as Booking,
+      specialRequests
+    );
+  }, [specialRequests, room, query]);
+
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>,
+    payload: any
+  ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
@@ -70,7 +94,7 @@ export default function Page() {
     );
 
     const check_in_date = formData.get("check_in") || "";
-    await fetchBookings({ guest_id: guest.id, check_in: check_in_date });
+    await fetchBookings({ guest_id: guestId || "", check_in: check_in_date });
     if (!bookingIsLoading && bookings.length > 0) {
       addToast({
         title: "Error!",
@@ -80,20 +104,23 @@ export default function Page() {
       });
       return;
     }
-    formData.append("guest_id", guest.id || "");
+    formData.append("guest_id", guestId || "");
+    formData.append("total", payload?.total);
+    formData.append("total_add_ons", payload?.totalAddOnsPrice);
     formData.append(
       "special_requests",
       JSON.stringify(filtereSpecialRequest || [])
     );
     console.log(formData);
     await addBooking(formData);
-    if (!error) {
+    if (error === undefined) {
       addToast({
         title: "Booking Successful",
         description:
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
+      router.push("/");
     }
   }
 
@@ -105,7 +132,7 @@ export default function Page() {
         </CardHeader>
         <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
           <BookingForm
-            onSubmit={handleSubmit}
+            onSubmit={(e) => handleSubmit(e, summary)}
             query={query}
             setQuery={setQuery}
             guestId={guestId}

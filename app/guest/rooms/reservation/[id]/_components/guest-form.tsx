@@ -42,10 +42,8 @@ export default function GuestForm({
     formData.append("id", id);
 
     await addGuest(formData);
-    if (guest) {
-      setGuestId(guest.id);
-    }
-    console.log(guest);
+    setGuestId(id);
+    console.log(id);
   }
 
   return (
@@ -231,7 +229,7 @@ export default function GuestForm({
             placeholder="Enter your email"
             variant="bordered"
           />
-
+          {guestId}
           <Button
             type="submit"
             color="primary"

@@ -5,7 +5,7 @@ import { ApiResponse } from "@/types/response";
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
-  const roomTypeID = searchParams.get("roomTypeID") || "";
+  const roomTypeID = searchParams.get("roomTypeId") || "";
   const status = searchParams.get("status") || "";
 
   const checkIn = searchParams.get("checkIn") || "";

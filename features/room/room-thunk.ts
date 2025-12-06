@@ -65,7 +65,7 @@ export const fetchAvailableRooms = createAsyncThunk<
   try {
     const searchParams = new URLSearchParams();
     if (params?.roomTypeID)
-      searchParams.append("roomTypeID", params.roomTypeID);
+      searchParams.append("roomTypeId", params.roomTypeID);
     if (params?.status) searchParams.append("status", params.status);
     if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);

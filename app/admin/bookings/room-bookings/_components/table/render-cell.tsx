@@ -35,6 +35,10 @@ export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
 
     case "room_type":
       return <Chip>{booking.room_type?.name}</Chip>;
+    case "request_messages":
+      return booking.request_messages || "N/A";
+    case "payment_method":
+      return booking.payment_method || "N/A";
     case "nights":
       return nights;
 
