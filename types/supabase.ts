@@ -250,7 +250,9 @@ export type Database = {
       };
       function_hall_bookings: {
         Row: {
+          amount_paid: number | null;
           banquet_package_id: string | null;
+          booking_source: string | null;
           created_at: string;
           event_date: string | null;
           event_duration: Json | null;
@@ -258,11 +260,16 @@ export type Database = {
           guest_id: string | null;
           id: string;
           notes: string | null;
+          payment_method: string | null;
+          payment_status: string | null;
           room_id: string | null;
           status: string | null;
+          total_amount: number | null;
         };
         Insert: {
+          amount_paid?: number | null;
           banquet_package_id?: string | null;
+          booking_source?: string | null;
           created_at?: string;
           event_date?: string | null;
           event_duration?: Json | null;
@@ -270,11 +277,16 @@ export type Database = {
           guest_id?: string | null;
           id?: string;
           notes?: string | null;
+          payment_method?: string | null;
+          payment_status?: string | null;
           room_id?: string | null;
           status?: string | null;
+          total_amount?: number | null;
         };
         Update: {
+          amount_paid?: number | null;
           banquet_package_id?: string | null;
+          booking_source?: string | null;
           created_at?: string;
           event_date?: string | null;
           event_duration?: Json | null;
@@ -282,8 +294,11 @@ export type Database = {
           guest_id?: string | null;
           id?: string;
           notes?: string | null;
+          payment_method?: string | null;
+          payment_status?: string | null;
           room_id?: string | null;
           status?: string | null;
+          total_amount?: number | null;
         };
         Relationships: [
           {
@@ -619,7 +634,37 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      get_available_room_types: {
+        Args: { check_in: string; check_out: string };
+        Returns: {
+          add_ons: Json[];
+          description: string;
+          id: string;
+          image: string;
+          max_guest: number;
+          name: string;
+          peak_season_price: number;
+          price: number;
+          room_size: string;
+        }[];
+      };
       get_full_analytics: { Args: never; Returns: Json };
+      get_room_availability: {
+        Args: {
+          check_in: string;
+          check_out: string;
+          room_status: string;
+          room_type_id: string;
+          selected_date: string;
+        };
+        Returns: {
+          availability: string;
+          id: string;
+          room_number: string;
+          room_type_id: string;
+          status: string;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

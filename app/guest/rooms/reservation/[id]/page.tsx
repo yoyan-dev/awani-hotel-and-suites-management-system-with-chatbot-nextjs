@@ -10,12 +10,16 @@ import { supabase } from "@/lib/supabase/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
+import { FetchRoomTypesParams } from "@/types/room";
 
 export default function Page() {
   const { id } = useParams();
+  const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
   const { guest, isLoading: guestIsLoading, fetchGuest } = useGuests();
   const [selectedRoom, setSelectedRoom] = React.useState(id || null);
-  const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
+  const [guestId, setGuestId] = React.useState<string | null>(null);
+  const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
+    useRoomTypes();
   const {
     bookings,
     isLoading: bookingIsLoading,
@@ -28,29 +32,19 @@ export default function Page() {
     { name: string; price: string; quantity: number }[]
   >([]);
 
-  async function getCurrentUser() {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    console.log(user);
-    if (user?.id) {
-      await fetchGuest(user.id);
-      return;
-    }
-  }
-
   React.useEffect(() => {
-    fetchRoomTypes({});
-    getCurrentUser();
-  }, []);
+    if (query.checkIn && query.checkOut) {
+      fetchAvailableRoomTypes(query);
+    }
+    // getCurrentUser();
+  }, [query]);
 
   const room = React.useMemo(() => {
     if (selectedRoom) {
-      return room_types.find((room) => room.id === selectedRoom);
+      return availabel_room_types.find((room) => room.id === selectedRoom);
     }
     return null;
-  }, [room_types, selectedRoom]);
+  }, [availabel_room_types, selectedRoom]);
 
   React.useEffect(() => {
     if (room?.add_ons) {
@@ -112,9 +106,11 @@ export default function Page() {
         <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
           <BookingForm
             onSubmit={handleSubmit}
-            guest={guest}
-            guestIsLoading={guestIsLoading}
-            room_types={room_types}
+            query={query}
+            setQuery={setQuery}
+            guestId={guestId}
+            setGuestId={setGuestId}
+            roomTypes={availabel_room_types}
             room={room || null}
             isLoading={isLoading}
             selectedRoom={selectedRoom}
@@ -127,7 +123,7 @@ export default function Page() {
             <SelectedRoom room={room} isLoading={isLoading} />
           ) : (
             <AvailableRooms
-              rooms={room_types}
+              rooms={availabel_room_types}
               isLoading={isLoading}
               setSelectedRoom={setSelectedRoom}
             />

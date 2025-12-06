@@ -15,26 +15,9 @@ import BanquetSection from "./_components/sections/banquet-section";
 
 export default function page() {
   const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
-  const [state, setState] = React.useState<{
-    user: User | null;
-    isLoading: boolean;
-  }>({ user: null, isLoading: true });
-
-  React.useEffect(() => {
-    async function getCurrentUser() {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      setState({ user: (user as User) ?? null, isLoading: false });
-    }
-
-    getCurrentUser();
-    fetchRoomTypes({});
-  }, []);
   return (
     <div>
-      <HeroBanner user={state.user} isLoading={state.isLoading} />
+      <HeroBanner />
       <About />
       <Stats />
       <RoomsCarousel rooms={room_types} isLoading={isLoading} />

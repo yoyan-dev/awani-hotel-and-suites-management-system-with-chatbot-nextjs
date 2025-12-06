@@ -15,7 +15,7 @@ import {
 } from "@heroui/react";
 import React from "react";
 import SkeletonLoader from "../../_components/skeleton-loader";
-import { User } from "@/types/users";
+import { User, UserSquare } from "lucide-react";
 
 interface RoomProps {
   rooms: RoomType[];
@@ -61,6 +61,9 @@ export const RoomsList: React.FC<RoomProps> = ({ rooms, typesLoading }) => {
                     <div className="space-y-2">
                       <span className="text-gray-500 line-clamp-2">
                         {room.description}
+                      </span>
+                      <span className="text-gray-500 flex gap-4 line-clamp-2">
+                        <UserSquare size={18} /> {room.max_guest}
                       </span>
                       <p className="font-semibold text-primary">
                         {formatPHP(Number(room.price))} / night

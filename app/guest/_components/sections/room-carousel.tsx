@@ -79,8 +79,6 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
               <CarouselItem key={room.id}>
                 <Card
                   isFooterBlurred
-                  as={Link}
-                  href={`/guest/rooms/reservation/${room.id}`}
                   className={`w-full h-[320px] rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all relative
                   ${
                     isPeakSeason

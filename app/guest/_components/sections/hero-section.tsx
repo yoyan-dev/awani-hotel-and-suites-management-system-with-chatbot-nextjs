@@ -6,12 +6,7 @@ import LoginPromptModal from "../modals/login-prompt-modal";
 import { peakSeason } from "@/lib/peak-season-dates";
 import { useMemo } from "react";
 
-interface Props {
-  user: User | null;
-  isLoading: boolean;
-}
-
-export const HeroBanner: React.FC<Props> = ({ user, isLoading }) => {
+export default function HeroBanner() {
   const isPeakSeason = useMemo(() => peakSeason(), []);
 
   return (
@@ -64,32 +59,20 @@ export const HeroBanner: React.FC<Props> = ({ user, isLoading }) => {
         </p>
 
         {/* Button */}
-        {user?.id && !isLoading ? (
-          <Button
-            className={`mt-6 font-semibold px-6 py-2 rounded-xl transition-all
+        <Button
+          className={`mt-6 font-semibold px-6 py-2 rounded-xl transition-all
               ${
                 isPeakSeason
                   ? "bg-yellow-300 text-red-900 shadow-lg hover:bg-yellow-200 hover:scale-105 dark:bg-yellow-400 dark:hover:bg-yellow-300"
                   : "bg-primary text-white hover:scale-105"
               }
             `}
-            as={Link}
-            href="/guest/rooms/reservation/null"
-          >
-            {isPeakSeason ? "Book Peak Season Stay ✨" : "Book Apartments"}
-          </Button>
-        ) : (
-          <div className="mt-6">
-            <LoginPromptModal
-              name={
-                isPeakSeason ? "Book Peak Season Stay ✨" : "Book Apartments"
-              }
-            />
-          </div>
-        )}
+          as={Link}
+          href="/guest/rooms/reservation/null"
+        >
+          {isPeakSeason ? "Book Peak Season Stay ✨" : "Book Apartments"}
+        </Button>
       </div>
     </section>
   );
-};
-
-export default HeroBanner;
+}

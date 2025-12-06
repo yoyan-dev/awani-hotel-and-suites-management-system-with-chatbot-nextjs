@@ -11,7 +11,7 @@ export const fetchRoomTypes = createAsyncThunk<
   try {
     const searchParams = new URLSearchParams();
     if (params?.query) searchParams.append("q", params.query);
-    if (params?.max_guest) searchParams.append("max_guest", params.max_guest);
+    if (params?.maxGuest) searchParams.append("maxGuest", params.maxGuest);
     const res = await fetch(`${apiUrl}?${searchParams}`);
     const data = await res.json();
 
@@ -51,6 +51,30 @@ export const fetchRoomType = createAsyncThunk<RoomType, string>(
     }
   }
 );
+
+export const fetchAvailableRoomTypes = createAsyncThunk<
+  RoomType[],
+  FetchRoomTypesParams | undefined
+>("roomTypes/fetchAvailableRoomTypes", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
+    if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
+    if (params?.maxGuest) searchParams.append("maxGuest", params.maxGuest);
+    const res = await fetch(`${apiUrl}/available-room-types?${searchParams}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      addToast(data.message);
+      return rejectWithValue(
+        data.message?.description ?? "Failed to fetch room types"
+      );
+    }
+    return data.data;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
 
 export const addRoomType = createAsyncThunk<RoomType, FormData>(
   "roomTypes/addRoomType",

@@ -27,13 +27,16 @@ export interface RoomType {
 export interface RoomTypeState {
   room_types: RoomType[];
   room_type: RoomType;
+  availabel_room_types: RoomType[];
   isLoading: boolean;
   error?: string;
 }
 
 export interface FetchRoomTypesParams {
   query?: string;
-  max_guest?: string;
+  maxGuest?: string;
+  checkIn?: any;
+  checkOut?: any;
 }
 
 export interface Room {
@@ -58,12 +61,12 @@ export interface RoomPagination {
   totalPages: number;
 }
 export interface FetchRoomsParams {
+  minPrice?: number;
+  maxPrice?: number;
   page?: number;
   query?: string;
   roomTypeID?: string;
   status?: string | undefined;
-  minPrice?: number;
-  maxPrice?: number;
   checkIn?: any;
   checkOut?: any;
   selectedDate?: any;

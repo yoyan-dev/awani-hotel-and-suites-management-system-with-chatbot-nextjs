@@ -10,6 +10,7 @@ import {
 } from "@/app/constants/rooms";
 import RoomStats from "./_components/room-stats";
 import { formatDate } from "@/utils/format-date";
+import { useRoomTypes } from "@/hooks/use-room-types";
 
 export default function RoomList() {
   const {
@@ -20,6 +21,7 @@ export default function RoomList() {
     fetchRooms,
     fetchAvailableRooms,
   } = useRooms();
+  const { room_types, fetchRoomTypes } = useRoomTypes();
   const [query, setQuery] = React.useState<FetchRoomsParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
@@ -44,12 +46,17 @@ export default function RoomList() {
     fetchAvailableRooms({ selectedDate: selectedDate });
   }, [selectedDate]);
 
+  React.useEffect(() => {
+    fetchRoomTypes({});
+  }, []);
+
   return (
     <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded ">
       <Header />
       <RoomStats available_rooms={available_rooms} />
       <RoomTable
         rooms={rooms}
+        roomTypes={room_types}
         pagination={pagination}
         query={query}
         setQuery={setQuery}

@@ -1,5 +1,5 @@
 import { Booking } from "@/types/booking";
-import { RoomType } from "@/types/room";
+import { FetchRoomTypesParams, RoomType } from "@/types/room";
 import {
   Button,
   Chip,
@@ -22,11 +22,14 @@ import ViewModal from "./modals/view-modal";
 import { Guest } from "@/types/guest";
 import PolicyModal from "./modals/policy-modal";
 import { formatPHP } from "@/lib/format-php";
+import GuestForm from "./guest-form";
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  guest: Guest;
-  guestIsLoading: boolean;
-  room_types: RoomType[];
+  query: FetchRoomTypesParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchRoomTypesParams>>;
+  guestId: string | null;
+  setGuestId: React.Dispatch<React.SetStateAction<string | null>>;
+  roomTypes: RoomType[];
   room: RoomType | null;
   isLoading: boolean;
   selectedRoom: any;
@@ -40,9 +43,11 @@ interface BookingFormProps {
 
 export default function BookingForm({
   onSubmit,
-  guest,
-  guestIsLoading,
-  room_types,
+  query,
+  setQuery,
+  guestId,
+  setGuestId,
+  roomTypes,
   room,
   isLoading,
   selectedRoom,
@@ -54,10 +59,12 @@ export default function BookingForm({
   const [selectedPurpose, SetSelectedPurpose] = useState<string>("");
   const [policySignature, setPolicySignature] = useState("");
 
+  if (!guestId) return <GuestForm guestId={guestId} setGuestId={setGuestId} />;
+
   return (
     <Form onSubmit={onSubmit} className="flex-1 px-4 w-full space-y-4">
       <div className="space-y-4 w-full">
-        <div className="flex justify-between flex-wrap">
+        {/* <div className="flex justify-between flex-wrap">
           <h1>
             <Chip color="primary" className="text-sm">
               1
@@ -72,8 +79,8 @@ export default function BookingForm({
               <Info />
             </Tooltip>
           </div>
-        </div>
-        {guestIsLoading ? (
+        </div> */}
+        {/* {guestIsLoading ? (
           <div className="w-full flex justify-between">
             <Spinner />
           </div>
@@ -115,7 +122,7 @@ export default function BookingForm({
               placeholder="Enter your name"
             />
           </>
-        )}
+        )} */}
       </div>
       <div className="space-y-4 w-full">
         <h1>
@@ -131,6 +138,32 @@ export default function BookingForm({
           <div className="flex w-full justify-end md:hidden">
             <ViewModal room={room} />
           </div>
+        ) : null}
+        <div className="flex gap-4">
+          <Input
+            fullWidth
+            variant="underlined"
+            isRequired
+            type="date"
+            label="Check-in Date"
+            name="check_in"
+            value={query.checkIn}
+            onChange={(e) => setQuery({ ...query, checkIn: e.target.value })}
+          />
+
+          <Input
+            fullWidth
+            variant="underlined"
+            isRequired
+            type="date"
+            label="Check-out Date"
+            name="check_out"
+            value={query.checkOut}
+            onChange={(e) => setQuery({ ...query, checkOut: e.target.value })}
+          />
+        </div>
+        {query.checkIn && query.checkOut && roomTypes.length <= 0 ? (
+          <div>No Available rooms on a selected date</div>
         ) : null}
         <div className="py-4">
           <Select
@@ -148,7 +181,7 @@ export default function BookingForm({
             placeholder="Select Room Type"
             variant="bordered"
           >
-            {room_types.map((type) => (
+            {roomTypes.map((type) => (
               <SelectItem key={type.id} textValue={type.name}>
                 <div className="flex flex-col">
                   <span className="text-small">{type.name}</span>
@@ -170,25 +203,7 @@ export default function BookingForm({
           label="Company (Optional)"
           placeholder="Company name"
         />
-        <div className="flex gap-4">
-          <Input
-            fullWidth
-            variant="underlined"
-            isRequired
-            type="date"
-            label="Check-in Date"
-            name="check_in"
-          />
 
-          <Input
-            fullWidth
-            variant="underlined"
-            isRequired
-            type="date"
-            label="Check-out Date"
-            name="check_out"
-          />
-        </div>
         {specialRequests ? (
           <div>
             <label>Special requests</label>
@@ -264,6 +279,9 @@ export default function BookingForm({
           placeholder="0"
           label="Number of Guests"
           name="number_of_guests"
+          min={1}
+          max={room?.max_guest}
+          errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
         />
       </div>
       <div className="space-y-4">
