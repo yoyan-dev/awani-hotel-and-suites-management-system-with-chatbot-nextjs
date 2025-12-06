@@ -11,11 +11,11 @@ import { useRoomTypes } from "@/hooks/use-room-types";
 export default function Rooms() {
   const {
     rooms,
-    available_rooms,
+    analytics,
     pagination,
     isLoading,
     fetchRooms,
-    fetchAvailableRooms,
+    fetchAnalytics,
   } = useRooms();
   const { room_types, fetchRoomTypes } = useRoomTypes();
   const [query, setQuery] = React.useState<FetchRoomsParams>({});
@@ -35,14 +35,14 @@ export default function Rooms() {
   }, [query]);
 
   React.useEffect(() => {
-    fetchAvailableRooms({});
+    fetchAnalytics();
     fetchRoomTypes({});
   }, []);
 
   return (
     <div className="p-2 bg-white dark:bg-gray-900 rounded ">
       <Header />
-      <RoomStats available_rooms={available_rooms} />
+      <RoomStats analytics={analytics} />
       <RoomTable
         rooms={rooms}
         roomTypes={room_types}

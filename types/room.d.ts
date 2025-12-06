@@ -65,6 +65,7 @@ export interface FetchRoomsParams {
   maxPrice?: number;
   page?: number;
   query?: string;
+  isStatusSelected?: boolean;
   roomTypeID?: string;
   status?: string | undefined;
   checkIn?: any;
@@ -72,6 +73,7 @@ export interface FetchRoomsParams {
   selectedDate?: any;
 }
 export interface RoomState {
+  analytics: any;
   rooms: Room[];
   room: Room;
   available_rooms: Room[];

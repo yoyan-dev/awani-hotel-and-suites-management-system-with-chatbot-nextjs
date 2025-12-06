@@ -54,6 +54,7 @@ export default function EditBookingPage() {
         roomTypeID: formData?.room_type_id,
         checkIn: formData.check_in,
         checkOut: formData.check_out,
+        isStatusSelected: true,
       });
     }
   }, [formData?.room_type_id, formData?.check_in, formData?.check_out]);

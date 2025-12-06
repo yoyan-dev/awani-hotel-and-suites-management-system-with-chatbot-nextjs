@@ -27,11 +27,7 @@ export default function Calendar() {
     fetchRoomTypes,
   } = useRoomTypes();
 
-  const {
-    available_rooms,
-    isLoading: roomLoading,
-    fetchAvailableRooms,
-  } = useRooms();
+  const { rooms, isLoading: roomLoading, fetchRooms } = useRooms();
   const { bookings, isLoading: bookingsLoading, fetchBookings } = useBookings();
 
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>("");
@@ -49,9 +45,8 @@ export default function Calendar() {
   React.useEffect(() => {
     if (!selectedRoomType) return;
     const timer = setTimeout(() => {
-      fetchAvailableRooms({
+      fetchRooms({
         roomTypeID: selectedRoomType,
-        selectedDate: formatDate(new Date()),
       });
       fetchBookings({ roomTypeID: selectedRoomType });
     }, 300);
@@ -70,7 +65,7 @@ export default function Calendar() {
       <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
         {/* <RoomAvailability available_rooms={available_rooms} /> */}
         <CalendarView
-          available_rooms={available_rooms}
+          rooms={rooms}
           calendarRef={calendarRef}
           bookings={bookings}
           selectedName={selectedName}

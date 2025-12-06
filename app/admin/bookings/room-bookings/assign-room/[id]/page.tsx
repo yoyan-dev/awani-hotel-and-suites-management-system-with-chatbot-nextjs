@@ -56,6 +56,7 @@ export default function AssignRoomPage() {
         roomTypeID: booking.room_type_id,
         checkIn: booking.check_in,
         checkOut: booking.check_out,
+        isStatusSelected: true,
       });
     }
   }, [booking.room_type_id]);

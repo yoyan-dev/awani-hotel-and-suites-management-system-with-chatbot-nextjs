@@ -1,40 +1,108 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
+import { Room } from "@/types/room";
+import { Booking } from "@/types/booking";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
+  const isStatusSelected = searchParams.get("isStatusSelected") || false;
   const roomTypeID = searchParams.get("roomTypeId") || "";
   const status = searchParams.get("status") || "";
-
   const checkIn = searchParams.get("checkIn") || "";
   const checkOut = searchParams.get("checkOut") || "";
 
-  const selectedDate = searchParams.get("selectedDate") || "";
+  const allowedStatuses = [
+    "vacant",
+    "dirty",
+    "occupied",
+    "available",
+    "booked",
+  ];
 
-  const { data, error } = await supabase.rpc("get_room_availability", {
-    check_in: checkIn || null,
-    check_out: checkOut || null,
-    selected_date: selectedDate || null,
-    room_type_id: roomTypeID || null,
-    room_status: status || null,
-  });
+  let queryRooms = supabase.from("rooms").select(
+    `
+    id,
+    room_id,
+    room_number,
+    room_type_id,
+    room_type:room_type_id (*),
+    area,
+    description,
+    status,
+    images,
+    remarks
+  `
+  );
+  let queryBookings = supabase.from("bookings").select(`
+    id,
+    booking_number,
+    room_id,
+    guest_id,
+    room_type_id,
+    check_in,
+    check_out
+  `);
 
-  if (error) {
-    console.error("Error fetching rooms:", error.message);
+  if (isStatusSelected) queryRooms = queryRooms.in("status", allowedStatuses);
+
+  if (roomTypeID) {
+    queryRooms = queryRooms.eq("room_type_id", roomTypeID);
+    queryBookings = queryBookings.eq("room_type_id", roomTypeID);
+  }
+
+  if (status) {
+    queryRooms = queryRooms.eq("status", status);
+  }
+
+  if (checkIn && checkOut) {
+    queryBookings = queryBookings
+      .lte("check_in", checkOut)
+      .gte("check_out", checkIn);
+  }
+
+  const { data: rooms, error: roomError } = await queryRooms;
+  const { data: bookings, error: bookingError } = await queryBookings;
+
+  if (roomError || bookingError) {
+    console.error(
+      "Error fetching rooms:",
+      roomError?.message || bookingError?.message
+    );
     return NextResponse.json(
       {
         success: false,
         message: {
           title: "Error",
-          description: error.message,
+          description: roomError?.message || bookingError?.message,
           color: "danger",
         },
       },
       { status: 500 }
     );
   }
+
+  const availableRooms = () => {
+    return (
+      rooms?.map((room) => {
+        const roomBookings = bookings.filter((b: any) => b.room_id === room.id);
+
+        const hasOverlap = roomBookings.some((b: any) => {
+          return b.check_in <= checkOut && b.check_out >= checkIn;
+        });
+
+        return {
+          ...room,
+          availability: hasOverlap
+            ? "Not available on the selected date"
+            : "Available on the selected date",
+        };
+      }) || []
+    );
+  };
+
+  console.log("Room data:", rooms);
 
   return NextResponse.json(
     {
@@ -44,7 +112,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: data || [],
+      data: availableRooms(),
     },
     { status: 200 }
   );

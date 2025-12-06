@@ -15,11 +15,11 @@ import { useRoomTypes } from "@/hooks/use-room-types";
 export default function RoomList() {
   const {
     rooms,
-    available_rooms,
+    analytics,
     pagination,
     isLoading,
     fetchRooms,
-    fetchAvailableRooms,
+    fetchAnalytics,
   } = useRooms();
   const { room_types, fetchRoomTypes } = useRoomTypes();
   const [query, setQuery] = React.useState<FetchRoomsParams>({});
@@ -43,7 +43,7 @@ export default function RoomList() {
   }, [query]);
 
   React.useEffect(() => {
-    fetchAvailableRooms({ selectedDate: selectedDate });
+    fetchAnalytics();
   }, [selectedDate]);
 
   React.useEffect(() => {
@@ -53,7 +53,7 @@ export default function RoomList() {
   return (
     <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded ">
       <Header />
-      <RoomStats available_rooms={available_rooms} />
+      <RoomStats analytics={analytics} />
       <RoomTable
         rooms={rooms}
         roomTypes={room_types}

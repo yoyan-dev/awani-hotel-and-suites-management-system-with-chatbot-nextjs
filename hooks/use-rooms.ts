@@ -3,6 +3,7 @@ import {
   addRoom,
   deleteRoom,
   deleteRooms,
+  fetchAnalytics,
   fetchAvailableRooms,
   fetchRoom,
   fetchRooms,
@@ -13,9 +14,17 @@ import { setLoading } from "@/features/room/room-slice";
 
 export function useRooms() {
   const dispatch = useAppDispatch();
-  const { rooms, room, available_rooms, pagination, isLoading, error } =
-    useAppSelector((state) => state.room);
+  const {
+    analytics,
+    rooms,
+    room,
+    available_rooms,
+    pagination,
+    isLoading,
+    error,
+  } = useAppSelector((state) => state.room);
   return {
+    analytics,
     rooms,
     room,
     available_rooms,
@@ -23,6 +32,7 @@ export function useRooms() {
     isLoading,
     error,
     setLoading: () => dispatch(setLoading(true)),
+    fetchAnalytics: () => dispatch(fetchAnalytics()),
     fetchRooms: (payload: FetchRoomsParams | null) =>
       dispatch(fetchRooms(payload || {})),
     fetchRoom: (id: string) => dispatch(fetchRoom(id)),
