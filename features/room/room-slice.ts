@@ -8,9 +8,11 @@ import {
   deleteRoom,
   deleteRooms,
   fetchAvailableRooms,
+  fetchAnalytics,
 } from "./room-thunk";
 
 const initialState: RoomState = {
+  analytics: [],
   rooms: [],
   room: {} as Room,
   available_rooms: [],
@@ -29,7 +31,23 @@ const roomSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // get single room
+      // get basic analytics
+      .addCase(fetchAnalytics.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        fetchAnalytics.fulfilled,
+        (state, action: PayloadAction<Room>) => {
+          state.isLoading = false;
+          state.analytics = action.payload;
+          state.error = undefined;
+        }
+      )
+      .addCase(fetchAnalytics.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
       .addCase(fetchRoom.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;

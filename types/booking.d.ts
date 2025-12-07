@@ -1,11 +1,9 @@
 export type BookingStatus =
   | "pending"
-  | "procedding"
+  | "proceding"
   | "reserved"
   | "confirmed"
   | "cancelled"
-  | "seposit"
-  | "paid"
   | "check-in"
   | "check-out";
 

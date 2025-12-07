@@ -2,6 +2,26 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { FetchRoomsParams, Room, RoomPagination } from "@/types/room";
 import { addToast } from "@heroui/react";
 
+//analytics
+export const fetchAnalytics = createAsyncThunk<any>(
+  "room/fetchAnalytics",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`/api/rooms/analytics`);
+      const data = await res.json();
+
+      return data.data;
+    } catch (error: any) {
+      addToast({
+        title: "Error",
+        description: error.message,
+        color: "danger",
+      });
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchRooms = createAsyncThunk<
   { data: Room[]; pagination: RoomPagination },
   FetchRoomsParams | undefined
@@ -64,8 +84,10 @@ export const fetchAvailableRooms = createAsyncThunk<
 >("room/fetchAvailableRooms", async (params, { rejectWithValue }) => {
   try {
     const searchParams = new URLSearchParams();
+    if (params?.isStatusSelected)
+      searchParams.append("isStatusSelected", String(params.isStatusSelected));
     if (params?.roomTypeID)
-      searchParams.append("roomTypeID", params.roomTypeID);
+      searchParams.append("roomTypeId", params.roomTypeID);
     if (params?.status) searchParams.append("status", params.status);
     if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);

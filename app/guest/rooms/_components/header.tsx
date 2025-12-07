@@ -5,14 +5,14 @@ import { User } from "lucide-react";
 import React from "react";
 
 export default function Header({
-  roomQuery,
-  setRoomQuery,
+  query,
+  setQuery,
   desiredGuest,
   setDesiredGuest,
   checkAvailability,
 }: {
-  roomQuery: FetchRoomsParams;
-  setRoomQuery: React.Dispatch<React.SetStateAction<FetchRoomsParams>>;
+  query: FetchRoomTypesParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchRoomTypesParams>>;
   desiredGuest: string | undefined;
   setDesiredGuest: React.Dispatch<React.SetStateAction<string | undefined>>;
   checkAvailability: () => void;
@@ -33,16 +33,16 @@ export default function Header({
             radius="none"
             variant="bordered"
             labelPlacement="outside"
-            value={roomQuery.checkIn}
-            onChange={(e) => setRoomQuery({ ...roomQuery, checkIn: e })}
+            value={query.checkIn}
+            onChange={(e) => setQuery({ ...query, checkIn: e })}
           />
           <DatePicker
             label="Check out"
             radius="none"
             variant="bordered"
             labelPlacement="outside"
-            value={roomQuery.checkOut}
-            onChange={(e) => setRoomQuery({ ...roomQuery, checkOut: e })}
+            value={query.checkOut}
+            onChange={(e) => setQuery({ ...query, checkOut: e })}
           />
           <Input
             type="number"

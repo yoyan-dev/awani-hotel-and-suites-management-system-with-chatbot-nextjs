@@ -15,11 +15,12 @@ import { TableBottomContent } from "./bottom-content";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchRooms } from "@/features/room/room-thunk";
 import type { RootState, AppDispatch } from "@/store/store";
-import { FetchRoomsParams, Room, RoomPagination } from "@/types/room";
+import { FetchRoomsParams, Room, RoomPagination, RoomType } from "@/types/room";
 import { ColumnType } from "@/types/column";
 
 interface RoomTableProps {
   rooms: Room[];
+  roomTypes: RoomType[];
   pagination: RoomPagination | null;
   query: FetchRoomsParams;
   setQuery: React.Dispatch<React.SetStateAction<FetchRoomsParams>>;
@@ -33,6 +34,7 @@ interface RoomTableProps {
 
 export default function RoomTable({
   rooms,
+  roomTypes,
   pagination,
   query,
   setQuery,
@@ -61,6 +63,7 @@ export default function RoomTable({
       selectedKeys={selectedKeys}
       topContent={
         <TableTopContent
+          roomTypes={roomTypes}
           query={query}
           setQuery={setQuery}
           visibleColumns={visibleColumns}

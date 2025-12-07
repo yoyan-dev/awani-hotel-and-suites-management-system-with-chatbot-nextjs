@@ -12,23 +12,6 @@ export default function HousekeepingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [state, setState] = React.useState<{
-    user: User | null;
-    isLoading: boolean;
-  }>({ user: null, isLoading: true });
-
-  React.useEffect(() => {
-    async function getCurrentUser() {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      setState({ user: (user as User) ?? null, isLoading: false });
-    }
-
-    getCurrentUser();
-  }, []);
-
   // const enhancedChildren = React.Children.map(children, (child) =>
   //   React.isValidElement(child)
   //     ? React.cloneElement(child, {
@@ -52,7 +35,7 @@ export default function HousekeepingLayout({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <Navbar user={state.user} isLoading={state.isLoading} />
+            <Navbar />
           </motion.div>
 
           {/* Children content animation */}

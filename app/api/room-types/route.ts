@@ -10,7 +10,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
   const query = searchParams.get("q") || "";
-  const max_guest = searchParams.get("max_guest") || "";
+  const max_guest = searchParams.get("maxGuest") || "";
   let q = supabase.from("room_types").select("*");
 
   if (query) {

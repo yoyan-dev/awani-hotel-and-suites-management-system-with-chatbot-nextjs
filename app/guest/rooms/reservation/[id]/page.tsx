@@ -3,19 +3,25 @@
 import BookingForm from "./_components/booking-form";
 import SelectedRoom from "./_components/selected-room";
 import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
+import { FetchRoomTypesParams } from "@/types/room";
+import { generateSummary } from "@/utils/generate-summary";
+import { Booking } from "@/types/booking";
 
 export default function Page() {
   const { id } = useParams();
-  const { guest, isLoading: guestIsLoading, fetchGuest } = useGuests();
+  const router = useRouter();
+  const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
   const [selectedRoom, setSelectedRoom] = React.useState(id || null);
-  const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
+  const [guestId, setGuestId] = React.useState<string | null>(null);
+  const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
+    useRoomTypes();
   const {
     bookings,
     isLoading: bookingIsLoading,
@@ -28,29 +34,18 @@ export default function Page() {
     { name: string; price: string; quantity: number }[]
   >([]);
 
-  async function getCurrentUser() {
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    console.log(user);
-    if (user?.id) {
-      await fetchGuest(user.id);
-      return;
-    }
-  }
-
   React.useEffect(() => {
-    fetchRoomTypes({});
-    getCurrentUser();
-  }, []);
+    if (query.checkIn && query.checkOut) {
+      fetchAvailableRoomTypes(query);
+    }
+  }, [query]);
 
   const room = React.useMemo(() => {
     if (selectedRoom) {
-      return room_types.find((room) => room.id === selectedRoom);
+      return availabel_room_types.find((room) => room.id === selectedRoom);
     }
     return null;
-  }, [room_types, selectedRoom]);
+  }, [availabel_room_types, selectedRoom]);
 
   React.useEffect(() => {
     if (room?.add_ons) {
@@ -67,7 +62,30 @@ export default function Page() {
     }
   }, [room]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const summary = React.useMemo(() => {
+    if (
+      specialRequests.length === 0 ||
+      !room ||
+      !query.checkIn ||
+      !query.checkOut
+    )
+      return null;
+    return generateSummary(
+      {
+        check_in: query.checkIn,
+        check_out: query.checkOut,
+        room_type: room,
+        payment_method: "",
+        amount_paid: 0,
+      } as Booking,
+      specialRequests
+    );
+  }, [specialRequests, room, query]);
+
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>,
+    payload: any
+  ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
@@ -76,7 +94,7 @@ export default function Page() {
     );
 
     const check_in_date = formData.get("check_in") || "";
-    await fetchBookings({ guest_id: guest.id, check_in: check_in_date });
+    await fetchBookings({ guest_id: guestId || "", check_in: check_in_date });
     if (!bookingIsLoading && bookings.length > 0) {
       addToast({
         title: "Error!",
@@ -86,20 +104,23 @@ export default function Page() {
       });
       return;
     }
-    formData.append("guest_id", guest.id || "");
+    formData.append("guest_id", guestId || "");
+    formData.append("total", payload?.total);
+    formData.append("total_add_ons", payload?.totalAddOnsPrice);
     formData.append(
       "special_requests",
       JSON.stringify(filtereSpecialRequest || [])
     );
     console.log(formData);
     await addBooking(formData);
-    if (!error) {
+    if (error === undefined) {
       addToast({
         title: "Booking Successful",
         description:
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
+      router.push("/");
     }
   }
 
@@ -111,10 +132,12 @@ export default function Page() {
         </CardHeader>
         <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
           <BookingForm
-            onSubmit={handleSubmit}
-            guest={guest}
-            guestIsLoading={guestIsLoading}
-            room_types={room_types}
+            onSubmit={(e) => handleSubmit(e, summary)}
+            query={query}
+            setQuery={setQuery}
+            guestId={guestId}
+            setGuestId={setGuestId}
+            roomTypes={availabel_room_types}
             room={room || null}
             isLoading={isLoading}
             selectedRoom={selectedRoom}
@@ -127,7 +150,7 @@ export default function Page() {
             <SelectedRoom room={room} isLoading={isLoading} />
           ) : (
             <AvailableRooms
-              rooms={room_types}
+              rooms={availabel_room_types}
               isLoading={isLoading}
               setSelectedRoom={setSelectedRoom}
             />

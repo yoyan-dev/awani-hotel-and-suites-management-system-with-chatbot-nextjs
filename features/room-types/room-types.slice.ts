@@ -6,11 +6,13 @@ import {
   addRoomType,
   updateRoomType,
   deleteRoomType,
+  fetchAvailableRoomTypes,
 } from "./room-types-thunk";
 
 const initialState: RoomTypeState = {
   room_types: [],
   room_type: {} as RoomType,
+  availabel_room_types: [],
   isLoading: false,
   error: undefined,
 };
@@ -57,6 +59,24 @@ const roomTypeSlice = createSlice({
         }
       )
       .addCase(fetchRoomTypes.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      // get all available rooms
+      .addCase(fetchAvailableRoomTypes.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        fetchAvailableRoomTypes.fulfilled,
+        (state, action: PayloadAction<RoomType[]>) => {
+          state.isLoading = false;
+          state.availabel_room_types = action.payload;
+          state.error = undefined;
+        }
+      )
+      .addCase(fetchAvailableRoomTypes.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       })

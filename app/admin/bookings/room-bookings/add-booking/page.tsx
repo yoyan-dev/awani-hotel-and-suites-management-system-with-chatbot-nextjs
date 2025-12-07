@@ -57,6 +57,7 @@ export default function AddBookingPage() {
         roomTypeID: selectedRoomType,
         checkIn: checkInDate,
         checkOut: checkOutDate,
+        isStatusSelected: true,
       });
     }
   }, [selectedRoomType, checkInDate, checkOutDate]);

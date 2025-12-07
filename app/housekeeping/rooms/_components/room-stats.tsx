@@ -4,30 +4,10 @@ import { Room } from "@/types/room";
 import { formatDate } from "@/utils/format-date";
 import React from "react";
 
-export default function RoomStats({
-  available_rooms,
-}: {
-  available_rooms: Room[];
-}) {
-  const statusCounts = React.useMemo(() => {
-    const stats = available_rooms.reduce(
-      (acc: Record<string, number>, room: any) => {
-        if (acc[room.status]) acc[room.status] += 1;
-        else acc[room.status] = 1;
-        return acc;
-      },
-      {}
-    );
-    return stats;
-  }, [available_rooms]);
-
-  const status = Object.entries(statusCounts).map(([name, count]) => ({
-    name,
-    count,
-  }));
+export default function RoomStats({ analytics }: { analytics: Room[] }) {
   return (
     <div className="flex gap-4 flex-wrap px-2 pb-4">
-      {status.map((item: any) => {
+      {analytics.map((item: any) => {
         const options = statusOptions.find((s) => s.uid === item.name);
         return (
           <div

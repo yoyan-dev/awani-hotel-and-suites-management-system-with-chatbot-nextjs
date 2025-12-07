@@ -19,11 +19,7 @@ export default function Overview() {
     fetchBookings,
     updateBooking,
   } = useBookings();
-  const {
-    available_rooms,
-    isLoading: roomLoading,
-    fetchAvailableRooms,
-  } = useRooms();
+  const { analytics, isLoading: roomLoading, fetchAnalytics } = useRooms();
 
   const [query, setQuery] = React.useState<FetchBookingParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
@@ -43,7 +39,7 @@ export default function Overview() {
   }, [query]);
 
   React.useEffect(() => {
-    fetchAvailableRooms({ selectedDate: formatDate(new Date()) });
+    fetchAnalytics();
   }, []);
 
   async function handleSubmit(payload: Booking) {
@@ -64,20 +60,12 @@ export default function Overview() {
     return { totalRevenue, upcoming, occupied };
   }, [bookings]);
 
-  const filteredBookings = React.useMemo(() => {
-    const statusToFilter = ["confirmed", "check-in"];
-    return (
-      bookings.filter((booking) => statusToFilter.includes(booking.status)) ||
-      ([] as Booking[])
-    );
-  }, [bookings]);
-
   return (
     <div className="min-h-screen p-4 bg-gradient-to-b from-slate-50 to-white dark:from-gray-900 dark:to-gray-900">
       <div className="max-w-7xl mx-auto spcae-y-4">
         <BookingHeader />
         <KeyPerformanceIndicator stats={stats} />
-        <CenterRow rooms={available_rooms} roomLoading={roomLoading} />
+        <CenterRow analytics={analytics} roomLoading={roomLoading} />
 
         <BookingTable
           bookings={bookings}

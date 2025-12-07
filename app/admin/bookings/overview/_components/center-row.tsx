@@ -2,25 +2,12 @@ import { statusOptions } from "@/app/constants/rooms";
 import React from "react";
 
 export default function CenterRow({
-  rooms,
+  analytics,
   roomLoading,
 }: {
-  rooms: any;
+  analytics: any;
   roomLoading: boolean;
 }) {
-  const statusCounts = rooms.reduce(
-    (acc: Record<string, number>, room: any) => {
-      if (acc[room.status]) acc[room.status] += 1;
-      else acc[room.status] = 1;
-      return acc;
-    },
-    {}
-  );
-
-  const status = Object.entries(statusCounts).map(([name, count]) => ({
-    name,
-    count,
-  }));
   return (
     <div className="flex flex-col w-full gap-4 flex-wrap md:flex-row">
       <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
@@ -45,7 +32,7 @@ export default function CenterRow({
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {status.map((item: any) => {
+          {analytics.map((item: any) => {
             const options = statusOptions.find((s) => s.uid === item.name);
             return (
               <div

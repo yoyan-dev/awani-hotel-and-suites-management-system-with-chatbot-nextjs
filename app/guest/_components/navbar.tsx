@@ -18,12 +18,7 @@ import { User as UserType } from "@/types/users";
 import { AvatarPopover } from "./avatar";
 import React from "react";
 
-interface NavbarProps {
-  user: UserType | null;
-  isLoading: boolean;
-}
-
-const Navbar: React.FC<NavbarProps> = ({ user, isLoading }) => {
+export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
   return (
@@ -51,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, isLoading }) => {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      <NavbarContent className="hidden sm:flex gap-4" justify="end">
         {siteConfig.guestNavMenuItems.map((item) => (
           <NavbarItem key={item.href}>
             <Link
@@ -62,56 +57,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, isLoading }) => {
             </Link>
           </NavbarItem>
         ))}
-      </NavbarContent>
-
-      <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
-        justify="end"
-      >
-        <NavbarItem className="hidden sm:flex gap-2">
+        <Link>
           <ThemeSwitch />
-          {isLoading ? (
-            <div className="max-w-[300px] w-full flex items-center gap-3">
-              <div>
-                <Skeleton className="flex rounded-full w-10 h-10" />
-              </div>
-              <div className="w-full flex flex-col gap-2">
-                <Skeleton className="h-3 w-3/5 rounded-lg" />
-                <Skeleton className="h-3 w-4/5 rounded-lg" />
-              </div>
-            </div>
-          ) : user?.id ? (
-            <User
-              as="button"
-              avatarProps={{
-                src:
-                  user.user_metadata.image ??
-                  "https://i.pravatar.cc/150?u=a04258114e29026702d",
-              }}
-              className="transition-transform"
-              description=""
-              name=""
-            />
-          ) : (
-            <Button as={Link} href="/auth" color="primary" variant="bordered">
-              Sign Up
-            </Button>
-          )}
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <ThemeSwitch />
-
-        {isLoading ? (
-          <Skeleton className="flex rounded-full w-10 h-10" />
-        ) : user?.id ? (
-          <AvatarPopover user={user} />
-        ) : (
-          <Button as={Link} href="/auth" color="primary" variant="bordered">
-            Sign Up
-          </Button>
-        )}
+        </Link>
       </NavbarContent>
 
       <NavbarMenu>
@@ -126,10 +74,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, isLoading }) => {
               </Link>
             </NavbarMenuItem>
           ))}
+          <ThemeSwitch />
         </div>
       </NavbarMenu>
     </HeroUINavbar>
   );
-};
-
-export default Navbar;
+}
