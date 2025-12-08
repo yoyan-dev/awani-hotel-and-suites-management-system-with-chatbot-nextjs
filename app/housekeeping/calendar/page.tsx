@@ -1,24 +1,11 @@
 "use client";
 
 import React from "react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Button,
-  Listbox,
-  ListboxItem,
-  Spinner,
-  Skeleton,
-  Card,
-} from "@heroui/react";
 
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useRooms } from "@/hooks/use-rooms";
 import { useBookings } from "@/hooks/use-bookings";
 import { CalendarView } from "./_components/calendar-view";
-import { Filter } from "lucide-react";
-import CalendarHeader from "./_components/calendar-custom/calendar-header";
 
 export default function Calendar() {
   const calendarRef = React.useRef(null);
@@ -46,7 +33,9 @@ export default function Calendar() {
   React.useEffect(() => {
     if (!selectedRoomType) return;
     const timer = setTimeout(() => {
-      fetchRooms({ roomTypeID: selectedRoomType });
+      fetchRooms({
+        roomTypeID: selectedRoomType,
+      });
       fetchBookings({ roomTypeID: selectedRoomType });
     }, 300);
     return () => clearTimeout(timer);
@@ -58,13 +47,14 @@ export default function Calendar() {
 
   return (
     <div className="  space-y-4">
-      {/* <h1 className="text-2xl font-bold text-center bg-primary text-white py-2">
+      <h1 className="text-2xl font-bold text-center bg-primary text-white py-2">
         Booking Calendar
-      </h1> */}
-      <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
+      </h1>
+      <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
+        {/* <RoomAvailability available_rooms={available_rooms} /> */}
         <CalendarView
-          calendarRef={calendarRef}
           rooms={rooms}
+          calendarRef={calendarRef}
           bookings={bookings}
           selectedName={selectedName}
           selectedRoomType={selectedRoomType}
