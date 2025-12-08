@@ -27,23 +27,22 @@ const localizer = dateFnsLocalizer({
 const DnDCalendar = withDragAndDrop(Calendar);
 
 export function CalendarView({
-  calendarRef,
   rooms,
+  calendarRef,
   bookings,
   selectedName,
   selectedRoomType,
   setSelectedRoomType,
   roomType,
 }: {
-  calendarRef: any;
   rooms: Room[];
+  calendarRef: any;
   bookings: Booking[];
   selectedName: string;
   selectedRoomType: string;
   setSelectedRoomType: React.Dispatch<React.SetStateAction<string>>;
   roomType: RoomType[];
 }) {
-  const { updateBooking } = useBookings();
   const [events, setEvents] = React.useState<any[]>([]);
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedData, setSelectedData] = React.useState<any>();
@@ -55,10 +54,10 @@ export function CalendarView({
       title: `${booking.user?.full_name || "Unknown Guest"} ● ${getNights(
         booking.check_in,
         booking.check_out
-      )} night/nights (Room ${booking.room.room_number} - ${booking.room_type.name})`,
+      )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
       start: new Date(booking.check_in),
       end: new Date(booking.check_out),
-      resourceId: booking.room_id,
+      resourceId: booking.room_id || "no assigned",
       allDay: false,
       color:
         bookingStatusHexColorMap[booking.status] ||
@@ -89,6 +88,14 @@ export function CalendarView({
     },
   });
 
+  const resources = React.useMemo(() => {
+    if (!rooms) return [];
+    return rooms.map((room) => ({
+      id: room.id,
+      title: `${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
+    }));
+  }, [rooms]);
+
   return (
     <div className="p-4">
       <ViewModal
@@ -97,6 +104,7 @@ export function CalendarView({
         onClose={() => setIsOpen(false)}
       />
       <DnDCalendar
+        resources={resources}
         localizer={localizer}
         events={events}
         defaultView={Views.WEEK}
@@ -112,6 +120,7 @@ export function CalendarView({
         components={{
           toolbar: (props) => (
             <CalendarHeader
+              selectedView={props.view}
               label={props.label}
               onNavigate={props.onNavigate}
               onView={props.onView}
