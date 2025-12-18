@@ -117,12 +117,8 @@ export const siteConfig = {
       href: "/admin/housekeeping",
     },
     {
-      label: "Guest",
-      href: "/admin/guest",
-    },
-    {
       label: "Account Management",
-      href: "/admin/account",
+      href: "/admin/accounts",
     },
     {
       label: "Settings",

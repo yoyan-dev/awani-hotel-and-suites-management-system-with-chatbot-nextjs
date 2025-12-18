@@ -11,16 +11,21 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [state, setState] = React.useState<{
-    user: User;
-    isLoading: boolean;
-  }>({ user: {} as User, isLoading: false });
+  const [user, setUser] = React.useState<User>();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   async function fetchCurrentUser() {
-    setState({ user: {} as User, isLoading: true });
-    const { user, error } = await getCurrentUser();
+    try {
+      setIsLoading(true);
+      const { user, error } = await getCurrentUser();
+      setUser(user as User);
 
-    setState({ user: user as User, isLoading: false });
+      console.log(user);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   React.useEffect(() => {
@@ -30,7 +35,7 @@ export default function AdminLayout({
     <div className="flex  h-screen  bg-slate-50 dark:bg-gray-800">
       <Sidebar />
       <main className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4">
-        <AdminNavbar state={state} />
+        <AdminNavbar user={user} isLoading={isLoading} />
         <div className=" rounded ml-4">{children}</div>
       </main>
     </div>

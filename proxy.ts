@@ -10,7 +10,7 @@ export async function proxy(req: NextRequest) {
     data: { session },
     error,
   } = await supabase.auth.getSession();
-  console.log("Middleware user:", session, "Error:", error);
+
   const user = session?.user;
   const { pathname } = req.nextUrl;
 

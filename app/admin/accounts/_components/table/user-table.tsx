@@ -18,10 +18,11 @@ import type { RootState, AppDispatch } from "@/store/store";
 import { fetchUsers } from "@/features/users/user-thunk";
 import { Staff } from "@/types/staff";
 import { ColumnType } from "@/types/column";
+import { User } from "@/types/users";
 
 interface StaffTableProps {
-  items: Staff[];
-  lists: Staff[];
+  items: User[];
+  users: User[];
 
   headerColumns: ColumnType[];
   visibleColumns: Set<string>;
@@ -47,7 +48,7 @@ interface StaffTableProps {
 
 export default function StaffTable({
   items,
-  lists,
+  users,
   headerColumns,
   visibleColumns,
   setVisibleColumns,
@@ -92,7 +93,7 @@ export default function StaffTable({
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
           onRowsPerPageChange={onRowsPerPageChange}
-          usersCount={lists.length}
+          usersCount={users.length}
         />
       }
       topContentPlacement="outside"
@@ -112,14 +113,14 @@ export default function StaffTable({
       <TableBody
         isLoading={isLoading}
         loadingContent={<Spinner label="Loading..." />}
-        emptyContent="No rooms found"
+        emptyContent="No user found"
         items={items}
       >
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
               <TableCell className="capitalize">
-                <RenderCell item={item} columnKey={columnKey as string} />
+                <RenderCell user={item} columnKey={columnKey as string} />
               </TableCell>
             )}
           </TableRow>

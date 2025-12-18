@@ -25,11 +25,11 @@ import { ChevronDown } from "lucide-react";
 import { User } from "@/types/users";
 
 interface Props {
-  user: User;
+  user: User | undefined;
   isLoading: boolean;
 }
 
-export default function AdminNavbar({ state }: { state: Props }) {
+export default function AdminNavbar({ user, isLoading }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
@@ -65,18 +65,16 @@ export default function AdminNavbar({ state }: { state: Props }) {
       >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
-          {state.isLoading ? (
+          {isLoading ? (
             <Spinner />
           ) : (
             <UserAccount
-              name={
-                state.user?.user_metadata?.full_name ||
-                state.user?.user_metadata?.name
-              }
-              description={state.user?.app_metadata?.roles?.[0] || "admin"}
+              name={user?.user_metadata?.full_name || user?.user_metadata?.name}
+              description={user?.app_metadata?.roles?.[0] || "admin"}
               avatarProps={{
                 src:
-                  state.user?.user_metadata?.image || "/avatar-placeholder.png",
+                  user?.user_metadata?.image ||
+                  "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
               }}
               className="cursor-pointer"
             />
