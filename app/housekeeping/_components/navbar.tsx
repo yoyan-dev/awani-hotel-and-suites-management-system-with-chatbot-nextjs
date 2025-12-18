@@ -9,15 +9,29 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { cn, Image, Input, Listbox, ListboxItem, User } from "@heroui/react";
+import {
+  cn,
+  Image,
+  Input,
+  Listbox,
+  ListboxItem,
+  Spinner,
+  User as UserAccount,
+} from "@heroui/react";
 import { Link } from "@heroui/link";
 import { SearchIcon } from "lucide-react";
 import NextLink from "next/link";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
+import { User } from "@/types/users";
 
-export default function Navbar() {
+interface Props {
+  user: User | undefined;
+  isLoading: boolean;
+}
+
+export default function Navbar({ user, isLoading }: Props) {
   const pathname = usePathname();
 
   return (
@@ -53,25 +67,21 @@ export default function Navbar() {
       </NavbarContent>
 
       <NavbarContent className="hidden sm:flex gap-3" justify="end">
-        <Input
-          startContent={<SearchIcon size={16} />}
-          placeholder="Search..."
-          classNames={{
-            inputWrapper:
-              "bg-gray-100 dark:bg-gray-800 border border-transparent hover:border-gray-300 dark:hover:border-gray-700 transition",
-            input: "text-sm",
-          }}
-          size="sm"
-        />
         <ThemeSwitch />
-        <User
-          name="Admin"
-          description="Housekeeping"
-          avatarProps={{
-            src: "/avatar-placeholder.png",
-          }}
-          className="cursor-pointer"
-        />
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <UserAccount
+            name={user?.user_metadata?.full_name || user?.user_metadata?.name}
+            description={user?.app_metadata?.roles?.[0] || "admin"}
+            avatarProps={{
+              src:
+                user?.user_metadata?.image ||
+                "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
+            }}
+            className="cursor-pointer"
+          />
+        )}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-2" justify="end">

@@ -8,14 +8,28 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { cn, Image, Link, Listbox, ListboxItem } from "@heroui/react";
+import {
+  cn,
+  Image,
+  Link,
+  Listbox,
+  ListboxItem,
+  Spinner,
+  User as UserAccount,
+} from "@heroui/react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
+import { User } from "@/types/users";
 
-export default function AdminNavbar() {
+interface Props {
+  user: User | undefined;
+  isLoading: boolean;
+}
+
+export default function AdminNavbar({ user, isLoading }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
@@ -51,6 +65,20 @@ export default function AdminNavbar() {
       >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <UserAccount
+              name={user?.user_metadata?.full_name || user?.user_metadata?.name}
+              description={user?.app_metadata?.roles?.[0] || "admin"}
+              avatarProps={{
+                src:
+                  user?.user_metadata?.image ||
+                  "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
+              }}
+              className="cursor-pointer"
+            />
+          )}
         </NavbarItem>
       </NavbarContent>
 

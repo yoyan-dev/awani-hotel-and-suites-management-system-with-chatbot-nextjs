@@ -4,7 +4,7 @@ import { Card } from "@heroui/react";
 export default function RoomStatusCard({ analytics }: { analytics: any }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {analytics.map((item: any) => {
+      {analytics?.map((item: any) => {
         const options = statusOptions.find((s) => s.uid === item.name);
         return (
           <Card

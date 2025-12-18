@@ -15,7 +15,7 @@ import {
 } from "@heroui/react";
 import { User as UserType } from "@/types/users";
 import { LogOut } from "lucide-react";
-import { logout } from "@/lib/auth/index";
+// import { logout } from "@/lib/auth/index";
 
 interface AvatarProps {
   user: UserType;
@@ -81,7 +81,6 @@ export const UserTwitterCard: React.FC<AvatarProps> = ({ user }) => {
             className="text-waning"
             color="warning"
             startContent={<LogOut />}
-            onPress={logout}
           >
             Log out
           </ListboxItem>

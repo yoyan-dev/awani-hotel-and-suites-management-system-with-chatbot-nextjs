@@ -4,6 +4,7 @@ import { Input, Button, Checkbox, Link, Form, Image } from "@heroui/react";
 import { MailIcon, LockIcon } from "lucide-react";
 import { supabase } from "@/lib/supabase-client";
 import { useRouter } from "next/navigation";
+import { login } from "@/lib/auth/actions";
 
 export default function Auth() {
   const [email, setEmail] = React.useState<string>("");
@@ -19,24 +20,15 @@ export default function Auth() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await login(email, password);
 
       if (error) {
-        setMessage({ error: true, message: error.message });
+        setMessage({ error: true, message: error });
         return;
       } else {
         setMessage({ error: false, message: "Logged in successfully!" });
-        console.log(data);
       }
 
-      const roles = data?.user?.app_metadata?.roles || [];
-      if (roles.includes("admin")) router.push("/admin");
-      else if (roles?.includes("front-office")) router?.push("/front-office");
-      else if (roles?.includes("housekeeping")) router?.push("/housekeeping");
-      else router.push("/guest");
       setIsLoading(false);
     } catch (e) {
       setMessage({ error: true, message: "Unknow Error!" });
@@ -102,12 +94,12 @@ export default function Auth() {
           >
             Login
           </Button>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             Don't have an account yet?
             <Link color="primary" href="/auth/signup" size="sm">
               Sign up
             </Link>
-          </div>
+          </div> */}
         </Form>
       </div>
     </div>

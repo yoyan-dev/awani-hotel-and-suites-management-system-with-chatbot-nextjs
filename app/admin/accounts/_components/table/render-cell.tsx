@@ -14,14 +14,15 @@ import { EllipsisVertical } from "lucide-react";
 import DeleteModal from "../modals/delete-modal";
 import EditModal from "../modals/edit-modal";
 import { Staff } from "@/types/staff";
+import { User } from "@/types/users";
 
 interface RenderCellProps {
-  item: Staff;
+  user: User;
   columnKey: string;
 }
 
-const RenderCell: React.FC<RenderCellProps> = ({ item, columnKey }) => {
-  const cellValue = item[columnKey as keyof Staff];
+const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
+  const cellValue = user[columnKey as keyof User];
 
   switch (columnKey) {
     case "name":
@@ -29,38 +30,27 @@ const RenderCell: React.FC<RenderCellProps> = ({ item, columnKey }) => {
         <UserUi
           avatarProps={{ radius: "full", size: "sm", src: "" }}
           classNames={{ description: "text-default-500" }}
-          description={item.email}
-          name={item.full_name}
+          description={user.email}
+          name={user.user_metadata.full_name || user.user_metadata.name}
         />
       );
     case "role":
       return (
         <div className="flex flex-col">
           <p className="text-bold text-small capitalize">
-            {item.role || "Guest"}
+            {user.app_metadata.roles?.[0] || "Guest"}
           </p>
           <p className="text-bold text-tiny capitalize text-default-500">
-            {item.role || "Guest"}
+            {user.app_metadata.roles?.[0] || "Guest"}
           </p>
         </div>
       );
-    case "position":
-      return (
-        <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">
-            {item.position || "N/A"}
-          </p>
-          <p className="text-bold text-tiny capitalize text-default-500">
-            {item.position || "N/A"}
-          </p>
-        </div>
-      );
-    case "phone":
-      return (
-        <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">{item.phone}</p>
-        </div>
-      );
+    // case "phone":
+    //   return (
+    //     <div className="flex flex-col">
+    //       <p className="text-bold text-small capitalize">{user.}</p>
+    //     </div>
+    //   );
     case "status":
       return (
         <Chip

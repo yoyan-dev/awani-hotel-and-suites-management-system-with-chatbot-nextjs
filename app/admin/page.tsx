@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
       <SectionHeader title="Room Status Overview" />
       <div>
-        <RoomStatusCard analytics={analytics} />
+        {roomLoading ? "Loading..." : <RoomStatusCard analytics={analytics} />}
       </div>
 
       <SectionHeader title="Function Hall Status" />

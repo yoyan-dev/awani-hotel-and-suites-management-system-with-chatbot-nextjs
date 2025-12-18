@@ -1,12 +1,9 @@
-import { supabase } from "@/lib/supabase/supabase-client";
-export async function logout() {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error("Logout error:", error.message);
-  }
-}
+"use server";
+
+import { createClient } from "../supabase/server";
 
 export async function getCurrentUser() {
+  const supabase = await createClient();
   const {
     data: { user },
     error,

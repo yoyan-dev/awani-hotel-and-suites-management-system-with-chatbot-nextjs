@@ -7,9 +7,10 @@ import {
   columns,
   INITIAL_VISIBLE_COLUMNS,
 } from "./_components/table/constants";
+import { useUsers } from "@/hooks/use-users";
 
-export default function Staff() {
-  const { lists, isLoading, error, fetchAllStaff } = useStaff();
+export default function Accounts() {
+  const { users, isLoading, error, fetchUsers } = useUsers();
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
@@ -19,7 +20,7 @@ export default function Staff() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [page, setPage] = React.useState(1);
 
-  const pages = Math.ceil(lists.length / rowsPerPage);
+  const pages = Math.ceil(users.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
@@ -30,22 +31,24 @@ export default function Staff() {
   }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
-    let filteredStaff = [...lists];
+    let filteredUsers = [...users];
 
     if (hasSearchFilter) {
-      filteredStaff = filteredStaff.filter((staff) =>
-        staff.full_name?.toLowerCase().includes(filterValue.toLowerCase())
+      filteredUsers = filteredUsers.filter((staff) =>
+        staff.user_metadata.full_name
+          ?.toLowerCase()
+          .includes(filterValue.toLowerCase())
       );
     }
 
     if (rolesStatusFilter !== "all" && Array.from(rolesStatusFilter).length) {
-      filteredStaff = filteredStaff.filter((item) =>
-        Array.from(rolesStatusFilter).includes(item.role)
+      filteredUsers = filteredUsers.filter((item) =>
+        Array.from(rolesStatusFilter).includes(item.app_metadata.roles?.[0])
       );
     }
 
-    return filteredStaff;
-  }, [lists, filterValue, rolesStatusFilter, hasSearchFilter]);
+    return filteredUsers;
+  }, [users, filterValue, rolesStatusFilter, hasSearchFilter]);
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -58,14 +61,14 @@ export default function Staff() {
   };
 
   React.useEffect(() => {
-    fetchAllStaff;
-  }, [error]);
+    fetchUsers();
+  }, []);
   return (
     <div className="p-2 bg-white dark:bg-gray-900 rounded space-y-2">
       <Header />
       <UserTable
         items={items}
-        lists={lists}
+        users={users}
         headerColumns={headerColumns}
         visibleColumns={visibleColumns}
         setVisibleColumns={setVisibleColumns}
