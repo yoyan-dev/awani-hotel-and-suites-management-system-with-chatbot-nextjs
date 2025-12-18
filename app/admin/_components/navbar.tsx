@@ -8,14 +8,28 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { cn, Image, Link, Listbox, ListboxItem } from "@heroui/react";
+import {
+  cn,
+  Image,
+  Link,
+  Listbox,
+  ListboxItem,
+  Spinner,
+  User as UserAccount,
+} from "@heroui/react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
+import { User } from "@/types/users";
 
-export default function AdminNavbar() {
+interface Props {
+  user: User;
+  isLoading: boolean;
+}
+
+export default function AdminNavbar({ state }: { state: Props }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
@@ -51,6 +65,22 @@ export default function AdminNavbar() {
       >
         <NavbarItem className="hidden sm:flex gap-2">
           <ThemeSwitch />
+          {state.isLoading ? (
+            <Spinner />
+          ) : (
+            <UserAccount
+              name={
+                state.user?.user_metadata?.full_name ||
+                state.user?.user_metadata?.name
+              }
+              description={state.user?.app_metadata?.roles?.[0] || "admin"}
+              avatarProps={{
+                src:
+                  state.user?.user_metadata?.image || "/avatar-placeholder.png",
+              }}
+              className="cursor-pointer"
+            />
+          )}
         </NavbarItem>
       </NavbarContent>
 

@@ -90,7 +90,7 @@ export const siteConfig = {
     },
     {
       label: "Log out",
-      href: "/",
+      href: "/api/auth/signout",
       isExpandable: false,
       icon: LogOut,
     },
@@ -167,7 +167,7 @@ export const siteConfig = {
     },
     {
       label: "Logout",
-      href: "/",
+      href: "/api/auth/signout",
       icon: LogOut,
     },
   ],
