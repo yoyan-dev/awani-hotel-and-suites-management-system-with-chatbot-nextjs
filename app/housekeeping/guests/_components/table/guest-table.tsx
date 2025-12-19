@@ -48,7 +48,7 @@ export default function TaskTable({
         <TableBottomContent
           query={query}
           setQuery={setQuery}
-          pages={pagination?.totalPages ?? 0}
+          pages={pagination?.total_pages ?? 0}
         />
       }
       bottomContentPlacement="outside"

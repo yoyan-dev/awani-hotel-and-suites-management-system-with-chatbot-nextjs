@@ -4,19 +4,22 @@ export interface BanquetMenu {
   category?: string;
   created_at?: any;
 }
+
 export interface BanquetPackage {
-  id?: string;
-  name?: string;
-  menus?: string[];
-  price?: number;
-  created_at?: any;
+  id: string;
+  name: string;
+  menuCategory: string;
+  pricePerCover: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BanquetMenuPagination {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  total_pages: number;
 }
 export interface BanquetMenuFetchParams {
   page?: number;

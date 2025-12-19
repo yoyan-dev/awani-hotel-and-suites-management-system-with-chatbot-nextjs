@@ -1,68 +1,33 @@
 import { NextResponse } from "next/server";
-import type { Room } from "@/types/room";
 import { supabase } from "@/lib/supabase-client";
-import { uploadRoomImage } from "@/lib/upload-room-image";
 import { ApiResponse } from "@/types/response";
+
+const tableName = "banquet_packages";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
   const query = searchParams.get("q") || "";
-  const roomTypeID = searchParams.get("roomTypeID") || "";
-  const status = searchParams.get("status") || "";
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
   const page = Number(searchParams.get("page") || "1");
+  const category = searchParams.get("category") || "";
   const limit = 10;
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let q = supabase.from("rooms").select(
-    `
-    id,
-    room_id,
-    room_number,
-    room_type_id,
-    room_type:room_type_id (*),
-    area,
-    description,
-    status,
-    images,
-    remarks,
-    bookings
-  `,
-    { count: "exact" }
-  );
+  let q = supabase.from(tableName).select(`*`, { count: "exact" });
 
   if (query) {
-    q = q.or(`
-    room_id.ilike.%${query}%,
-    description.ilike.%${query}%,
-    remarks.ilike.%${query}%,
-    area.ilike.%${query}%
-  `);
-  }
-
-  if (roomTypeID) {
-    q = q.eq("room_type_id", roomTypeID);
-  }
-
-  if (status) {
-    q = q.eq("status", status);
+    q = q.or(`name.ilike.%${query}%,category.price_per_cover.%${query}%`);
   }
 
   const {
-    data: roomData,
+    data: item,
     error,
     count,
-  } = await q.range(from, to).order("room_type_id", { ascending: true });
-
-  const orderByRoomTypes = roomData?.sort((a: any, b: any) => {
-    return a.room_type?.name.localeCompare(b.room_type?.name);
-  });
+  } = await q.range(from, to).order("name", { ascending: true });
 
   if (error) {
-    console.error("Error fetching rooms:", error.message);
+    console.error("Error fetching banquet menus:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -76,8 +41,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
-  console.log("Room data:", orderByRoomTypes);
-  const rooms = orderByRoomTypes || [];
+  console.log("Banquet Packages data:", item);
   return NextResponse.json(
     {
       success: true,
@@ -86,7 +50,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: rooms,
+      data: item || [],
       pagination: {
         page,
         limit,
@@ -98,35 +62,17 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   );
 }
 
-// CREATE room
+// CREATE
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
-    const roomNumber = Number(formData.get("room_number"));
+
     const formObj = Object.fromEntries(formData.entries());
-
-    // const beds = JSON.parse(formObj.beds as string);
-    // const facilities = JSON.parse(formObj.facilities as string);
-    const images = formData.getAll("images") as File[];
-
-    const imageUrls = await Promise.all(
-      images.map(async (file) => {
-        if (!file || file.size === 0) throw new Error("File missing or empty");
-
-        const imageUrl = await uploadRoomImage(file, Number(roomNumber));
-        return imageUrl;
-      })
-    );
-
-    const newRoom = {
-      ...formObj,
-      room_id: `RM-${roomNumber}`,
-      images: imageUrls,
-    };
-
+    const menus = JSON.parse(formObj.menus as string);
+    const newData = { ...formObj, menus: menus };
     const { data, error } = await supabase
-      .from("rooms")
-      .insert([newRoom])
+      .from(tableName)
+      .insert([newData])
       .select();
 
     if (error) {
@@ -137,7 +83,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             success: false,
             message: {
               title: "Error",
-              description: "Room number already exists.",
+              description: "Item already exists.",
               color: "danger",
             },
           },
@@ -162,7 +108,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         success: true,
         message: {
           title: "Success",
-          description: "Room added successfully",
+          description: "Banquet Package successfully added.",
           color: "success",
         },
         data: data[0],
@@ -185,7 +131,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 }
 
-//DELETE MANY
 export async function DELETE(
   request: Request
 ): Promise<NextResponse<ApiResponse>> {
@@ -193,7 +138,7 @@ export async function DELETE(
     const body = await request.json();
     const selectedValues: number[] | "all" = body.selectedValues;
 
-    let query = supabase.from("rooms").delete();
+    let query = supabase.from(tableName).delete();
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
@@ -220,7 +165,7 @@ export async function DELETE(
           success: false,
           message: {
             title: "Error",
-            description: "Failed to delete rooms",
+            description: "Failed to delete items.",
             color: "error",
           },
           error: error.message,
@@ -235,11 +180,11 @@ export async function DELETE(
         title: "Success",
         description:
           selectedValues === "all"
-            ? "All rooms deleted successfully"
-            : "Selected rooms deleted successfully",
+            ? "All banquet packages deleted successfully"
+            : "Selected banquet packages deleted successfully",
         color: "success",
       },
-      data: data,
+      data,
     });
   } catch (err: any) {
     return NextResponse.json(
@@ -247,7 +192,7 @@ export async function DELETE(
         success: false,
         message: {
           title: "Error",
-          description: "Something went wrong",
+          description: err.message,
           color: "error",
         },
         error: err.message,

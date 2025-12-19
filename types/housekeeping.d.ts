@@ -16,7 +16,7 @@ export interface HousekeepingPagination {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  total_pages: number;
 }
 export interface FetchHousekeepingParams {
   page?: number;

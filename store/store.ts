@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "@/features/counter/counter-slice";
 import roomReducer from "@/features/room/room-slice";
 import banquetMenuReducer from "@/features/banquet/banquet-menus/baanquet-menu-slice";
-import banquetPackageReducer from "@/features/banquet/banquet-packages/baanquet-package-slice";
+import banquetPackageReducer from "@/features/banquet-packages/baanquet-package-slice";
 import functionRoomReducer from "@/features/function-room/function-room-slice";
 import roomTypeReducer from "@/features/room-types/room-types.slice";
 import inventoryReducer from "@/features/inventory/inventory-slice";

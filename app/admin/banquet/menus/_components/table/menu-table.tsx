@@ -53,7 +53,7 @@ export default function MenuTable({
         <TableBottomContent
           query={query}
           setQuery={setQuery}
-          pages={pagination?.totalPages ?? 0}
+          pages={pagination?.total_pages ?? 0}
           selectedKeys={selectedKeys}
           totalMenus={pagination?.total}
         />

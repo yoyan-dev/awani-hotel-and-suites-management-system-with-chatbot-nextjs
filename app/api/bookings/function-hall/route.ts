@@ -89,7 +89,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         page,
         limit,
         total: count ?? 0,
-        totalPages: Math.ceil((count ?? 0) / limit),
+        total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
     { status: 201 }
