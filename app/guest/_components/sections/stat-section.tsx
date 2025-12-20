@@ -1,5 +1,6 @@
 import { Card, CardBody } from "@heroui/react";
 import { motion } from "framer-motion";
+import { CountUp } from "../count-up";
 
 const stats = [
   { value: "98%", label: "Positive Feedback" },
@@ -31,7 +32,7 @@ export default function Stats() {
             >
               <CardBody className="text-center py-10">
                 <p className="text-4xl font-extrabold text-primary">
-                  {s.value}
+                  <CountUp value={s.value} />
                 </p>
                 <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm tracking-wide">
                   {s.label}

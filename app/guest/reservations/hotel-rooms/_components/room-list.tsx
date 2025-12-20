@@ -14,7 +14,7 @@ import {
   Button,
 } from "@heroui/react";
 import React from "react";
-import SkeletonLoader from "../../_components/skeleton-loader";
+import SkeletonLoader from "@/app/guest/_components/skeleton-loader";
 import { User, UserSquare } from "lucide-react";
 
 interface RoomProps {
@@ -71,7 +71,7 @@ export const RoomsList: React.FC<RoomProps> = ({ rooms, typesLoading }) => {
                     </div>
                     <Button
                       as={Link}
-                      href={`/guest/rooms/reservation/${room.id}`}
+                      href={`/guest/reservations/hotel-rooms/reservation/${room.id}`}
                       fullWidth
                       color="primary"
                     >

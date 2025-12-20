@@ -12,6 +12,8 @@ import { supabase } from "@/lib/supabase/supabase-client";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import PeakSeasonDate from "./_components/sections/peak-season.date";
 import BanquetSection from "./_components/sections/banquet-section";
+import { motion } from "framer-motion";
+import Footer from "./_components/footer";
 
 export default function page() {
   const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
@@ -26,6 +28,13 @@ export default function page() {
       <HotelPoolSection />
       {/* <RoomsAndSuites rooms={room_types} isLoading={isLoading} /> */}
       <Testimonials />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
+        <Footer />
+      </motion.div>
     </div>
   );
 }

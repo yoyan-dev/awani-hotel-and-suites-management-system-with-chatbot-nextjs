@@ -111,7 +111,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
                       required
                       label="Price"
                       placeholder="00.00"
-                      name="price"
+                      name="price_per_cover"
                       startContent="₱"
                       variant="bordered"
                       radius="sm"
@@ -120,7 +120,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          price: Number(e.target.value),
+                          price_per_cover: Number(e.target.value),
                         }))
                       }
                     />

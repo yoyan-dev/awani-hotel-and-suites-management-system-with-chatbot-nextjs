@@ -45,7 +45,7 @@ export default function AddModal() {
     const data = new FormData(e.currentTarget);
 
     // Add selected menus JSON
-    data.append("menus", JSON.stringify(selectedMenus));
+    data.append("categories", JSON.stringify(selectedMenus));
 
     await addBanquetPackage(data);
     if (!error) {
@@ -102,7 +102,7 @@ export default function AddModal() {
                       required
                       label="Price"
                       placeholder="00.00"
-                      name="price"
+                      name="price_per_cover"
                       startContent="₱"
                       variant="bordered"
                       radius="sm"
