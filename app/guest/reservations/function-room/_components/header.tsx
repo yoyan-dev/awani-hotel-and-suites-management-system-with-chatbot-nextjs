@@ -21,9 +21,6 @@ export default function header() {
           private celebrations.
         </p>
         <div className="mt-6 flex items-center justify-center gap-3">
-          <Button color="primary" as="a" href="#packages">
-            View Packages
-          </Button>
           <Button as="a" href="#contact">
             Contact Coordinator
           </Button>

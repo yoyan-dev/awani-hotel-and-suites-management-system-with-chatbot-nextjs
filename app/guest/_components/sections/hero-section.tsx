@@ -22,7 +22,7 @@ export default function HeroBanner() {
         className={`absolute inset-0 transition-all duration-500 backdrop-blur-[2px]
           ${
             isPeakSeason
-              ? "bg-gradient-to-b from-red-600/70 via-red-900/60 to-black/70 dark:from-red-900/60 dark:via-red-950/60 dark:to-black/80"
+              ? "bg-linear-to-b from-red-600/70 via-red-900/60 to-black/70 dark:from-red-900/60 dark:via-red-950/60 dark:to-black/80"
               : "bg-black/50 dark:bg-black/60"
           }
         `}
