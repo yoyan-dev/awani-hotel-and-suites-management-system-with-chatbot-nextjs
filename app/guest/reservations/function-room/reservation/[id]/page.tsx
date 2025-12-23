@@ -15,24 +15,26 @@ import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
 import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { BanquetPackageFetchParams } from "@/types/banquet-package";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
 
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
   const [selectedPackage, setSelectedPackage] = React.useState(id || null);
   const [guestId, setGuestId] = React.useState<string | null>(null);
+  const [eventDate, setEventDate] = React.useState();
+  const [EventDuration, setEventDuration] = React.useState({
+    start: "",
+    end: "",
+  });
   const { items, isLoading, fetchBanquetPackages } = useBanquetPackages();
   const {
-    bookings,
+    function_hall_bookings,
     isLoading: bookingIsLoading,
     error,
     fetchBookings,
     addBooking,
-  } = useBookings();
-
-  const [specialRequests, setSpecialRequests] = React.useState<
-    { name: string; price: string; quantity: number }[]
-  >([]);
+  } = useFunctionHallBookings();
 
   React.useEffect(() => {
     fetchBanquetPackages({} as BanquetPackageFetchParams);
@@ -45,20 +47,12 @@ export default function Page() {
     return null;
   }, [items, selectedPackage]);
 
-  async function handleSubmit(
-    e: React.FormEvent<HTMLFormElement>,
-    payload: any
-  ) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const filtereSpecialRequest = specialRequests.filter(
-      (req) => req.quantity > 0
-    );
-
-    const check_in_date = formData.get("check_in") || "";
-    await fetchBookings({ guest_id: guestId || "", check_in: check_in_date });
-    if (!bookingIsLoading && bookings.length > 0) {
+    await fetchBookings({ guest_id: guestId || "", event_date: eventDate });
+    if (!bookingIsLoading && function_hall_bookings.length > 0) {
       addToast({
         title: "Error!",
         description:
@@ -68,17 +62,13 @@ export default function Page() {
       return;
     }
     formData.append("guest_id", guestId || "");
-    formData.append("total", payload?.total);
-    formData.append("total_add_ons", payload?.totalAddOnsPrice);
-    formData.append(
-      "special_requests",
-      JSON.stringify(filtereSpecialRequest || [])
-    );
+    formData.append("event_duration", JSON.stringify(EventDuration));
+
     console.log(formData);
     await addBooking(formData);
     if (error === undefined) {
       addToast({
-        title: "Booking Successful",
+        title: "Reservation Successful",
         description:
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
@@ -95,7 +85,7 @@ export default function Page() {
         </CardHeader>
         <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
           <BookingForm
-            onSubmit={(e) => handleSubmit(e, {})}
+            onSubmit={handleSubmit}
             guestId={guestId}
             setGuestId={setGuestId}
             items={items}
@@ -103,6 +93,10 @@ export default function Page() {
             isLoading={isLoading}
             selectedPackage={selectedPackage}
             setSelectedPackage={setSelectedPackage}
+            eventDate={eventDate}
+            setEventDate={setEventDate}
+            eventDuration={EventDuration}
+            setEventDuration={setEventDuration}
             bookingIsLoading={bookingIsLoading}
           />
           {/* {room ? (

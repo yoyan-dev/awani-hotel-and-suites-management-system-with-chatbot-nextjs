@@ -1,67 +1,60 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
 import { GenerateBookingNumber } from "@/lib/generate-booking-number";
-
-let bookings: Booking[];
+import { FunctionHallBooking } from "@/types/function-room-booking";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
-  const query = searchParams.get("query") || "";
-  const roomTypeID = searchParams.get("roomTypeID") || "";
   const guest_id = searchParams.get("guest_id") || "";
-  const check_in = searchParams.get("check_in");
-  const check_out = searchParams.get("check_out");
+  const room_id = searchParams.get("room_id") || "";
+  const status = searchParams.get("status") || "";
   const start = searchParams.get("start");
   const end = searchParams.get("end");
-  const status = searchParams.get("status") || "";
   const page = Number(searchParams.get("page") || "1");
   const limit = 10;
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let q = supabase.from("function_hall_bookings").select(
-    `
-     id,
-    guest_id,
-    event_type,
-    event_date,
-    event_duration,
-    banquet_package_id,
-    room_id,
-    notes,
-    status,
-    guest: guest_id(*),
-    banquet_package: banquet_package_id(*),
-    room: room_id(*)
-  `,
-    { count: "exact" }
-  );
+  let q = supabase
+    .from("function_hall_bookings")
+    .select(
+      `
+      id,
+      guest_id,
+      event_type,
+      event_date,
+      event_duration,
+      banquet_package_id,
+      number_of_guest,
+      room_id,
+      notes,
+      status,
+      booking_source,
+      created_at,
+      guest: guest_id(*),
+      banquet_package: banquet_package_id(*),
+      room: room_id(*)
+    `,
+      { count: "exact" }
+    )
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
-  if (roomTypeID) q = q.eq("room_type_id", roomTypeID);
   if (guest_id) q = q.eq("guest_id", guest_id);
-  if (check_in) q = q.eq("check_in", check_in);
-  if (check_out) q = q.eq("check_out", check_out);
-  if (start && end) q = q.gte("check_in", start).lte("check_in", end);
+  if (room_id) q = q.eq("room_id", room_id);
   if (status) q = q.eq("status", status);
 
-  if (query) {
-    //   q = q.or(`
-    //   r.ilike.%${query}%,
-    // `);
+  // DATE + TIME filter (JSONB)
+  if (start && end) {
+    q = q.gte("event_duration->>start", start).lte("event_duration->>end", end);
   }
 
-  const {
-    data: bookingData,
-    error,
-    count,
-  } = await q.order("created_at", { ascending: false }).range(from, to);
+  const { data, error, count } = await q;
 
   if (error) {
-    console.error("Error fetching bookings:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -75,16 +68,15 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
-  console.log("Function hall Bookings data:", bookingData);
   return NextResponse.json(
     {
       success: true,
       message: {
-        title: "success",
+        title: "Success",
         description: "",
         color: "success",
       },
-      data: bookingData || [],
+      data: data ?? [],
       pagination: {
         page,
         limit,
@@ -92,56 +84,70 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
-    { status: 201 }
+    { status: 200 }
   );
 }
 
-// CREATE
+/*CREATE */
+
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-    const specialRequests = JSON.parse(formObj.special_requests as string);
 
-    const bookingNumber = await GenerateBookingNumber();
+    // Parse JSON safely
+    const eventDuration =
+      typeof formObj.event_duration === "string"
+        ? JSON.parse(formObj.event_duration)
+        : null;
 
-    if (!bookingNumber) {
+    if (!eventDuration?.start || !eventDuration?.end) {
       return NextResponse.json(
         {
           success: false,
           message: {
-            title: "Unknown Error!",
-            description: "Unknow Error, Please try again",
+            title: "Invalid Data",
+            description: "Event duration is required",
             color: "warning",
           },
         },
         { status: 400 }
       );
     }
-    const newData = {
-      ...formObj,
-      booking_number: bookingNumber,
-      special_requests: specialRequests,
-    } as Booking;
 
-    const guestId = formObj.guest_id;
-    const newCheckIn = new Date(newData.check_in);
-    const newCheckOut = new Date(newData.check_out);
+    const bookingNumber = await GenerateBookingNumber();
+    if (!bookingNumber) throw new Error("Failed to generate booking number");
 
-    // Check existing bookings for this guest
-    const { data: existingBookings, error: checkError } = await supabase
-      .from("bookings")
-      .select("id, check_in, check_out, status")
-      .eq("guest_id", guestId)
-      .not("status", "in", "(cancelled, completed, check-out)");
+    const newBooking = {
+      guest_id: formObj.guest_id as string,
+      event_type: formObj.event_type as string,
+      event_date: formObj.event_date as string,
+      event_duration: eventDuration,
+      banquet_package_id: formObj.banquet_package_id as string,
+      number_of_guest: Number(formObj.number_of_guest),
+      room_id: formObj.room_id as string,
+      notes: formObj.notes as string,
+    } as FunctionHallBooking;
 
-    if (checkError) throw checkError;
+    const { data: existing, error: overlapError } = await supabase
+      .from("function_hall_bookings")
+      .select("id, event_date, event_duration, status")
+      .eq("room_id", newBooking.room_id)
+      .not("status", "in", "(cancelled,completed)");
 
-    const hasOverlap = existingBookings?.some((booking) => {
-      const existingIn = new Date(booking.check_in);
-      const existingOut = new Date(booking.check_out);
+    if (overlapError) throw overlapError;
 
-      return newCheckIn <= existingOut && newCheckOut >= existingIn;
+    const hasOverlap = existing?.some((b) => {
+      const eventDate = new Date(b.event_date);
+      const existingStart = new Date(b.event_duration.start);
+      const existingEnd = new Date(b.event_duration.end);
+      const newStart = new Date(eventDuration.start);
+      const newEnd = new Date(eventDuration.end);
+
+      return (
+        (newStart < existingEnd && newEnd > existingStart) ||
+        eventDate === new Date(formObj.event_date as string)
+      );
     });
 
     if (hasOverlap) {
@@ -149,48 +155,24 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         {
           success: false,
           message: {
-            title: "Booking Restricted",
-            description:
-              "Guest already has an active booking during this period.",
+            title: "Booking Conflict",
+            description: "Room already booked for this time range.",
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 409 }
       );
     }
+
+    /* INSERT */
 
     const { data, error } = await supabase
-      .from("bookings")
-      .insert([newData])
-      .select();
+      .from("function_hall_bookings")
+      .insert([newBooking])
+      .select()
+      .single();
 
-    if (error) {
-      console.error("Supabase insert error:", error);
-      if (error.code === "23505") {
-        return NextResponse.json(
-          {
-            success: false,
-            message: {
-              title: "Error",
-              description: "Booking already exists.",
-              color: "danger",
-            },
-          },
-          { status: 400 }
-        );
-      }
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 500 }
-      );
-    }
+    if (error) throw error;
 
     return NextResponse.json(
       {
@@ -200,12 +182,11 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           description: "Reservation successfully added.",
           color: "success",
         },
-        data: data[0],
+        data,
       },
       { status: 201 }
     );
   } catch (err: any) {
-    console.error("Unexpected error:", err);
     return NextResponse.json(
       {
         success: false,
@@ -220,16 +201,17 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 }
 
-export async function DELETE(
-  request: Request
-): Promise<NextResponse<ApiResponse>> {
+/* DELETE — BULK DELETE*/
+
+export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    const body = await request.json();
+    const body = await req.json();
     const selectedValues: number[] | "all" = body.selectedValues;
 
-    let query = supabase.from("bookings").delete();
+    let query = supabase.from("function_hall_bookings").delete();
 
     if (selectedValues === "all") {
+      // delete all
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
       query = query.in("id", selectedValues);
     } else {
@@ -237,8 +219,8 @@ export async function DELETE(
         {
           success: false,
           message: {
-            title: "Error",
-            description: selectedValues,
+            title: "Invalid Request",
+            description: "No items selected",
             color: "warning",
           },
         },
@@ -246,35 +228,20 @@ export async function DELETE(
       );
     }
 
-    const { data, error } = await query;
+    const { error } = await query;
+    if (error) throw error;
 
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete items.",
-            color: "error",
-          },
-          error: error.message,
+    return NextResponse.json(
+      {
+        success: true,
+        message: {
+          title: "Success",
+          description: "Items deleted successfully",
+          color: "success",
         },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description:
-          selectedValues === "all"
-            ? "All items deleted successfully"
-            : "Selected items deleted successfully",
-        color: "success",
       },
-      data,
-    });
+      { status: 200 }
+    );
   } catch (err: any) {
     return NextResponse.json(
       {
@@ -282,9 +249,8 @@ export async function DELETE(
         message: {
           title: "Error",
           description: err.message,
-          color: "error",
+          color: "danger",
         },
-        error: err.message,
       },
       { status: 500 }
     );

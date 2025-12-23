@@ -17,6 +17,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  DateRangePicker,
 } from "@heroui/react";
 import { ArrowLeft, ArrowRight, Info, Link, Minus, Plus } from "lucide-react";
 import React, { useState } from "react";
@@ -26,6 +27,7 @@ import PolicyModal from "./modals/policy-modal";
 import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
 import { BanquetPackage } from "@/types/banquet-package";
+import { parseZonedDateTime } from "@internationalized/date";
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   guestId: string | null;
@@ -35,6 +37,12 @@ interface BookingFormProps {
   isLoading: boolean;
   selectedPackage: any;
   setSelectedPackage: React.Dispatch<React.SetStateAction<any>>;
+  eventDate: any;
+  setEventDate: React.Dispatch<React.SetStateAction<any>>;
+  eventDuration: { start: any; end: any };
+  setEventDuration: React.Dispatch<
+    React.SetStateAction<{ start: any; end: any }>
+  >;
   bookingIsLoading: boolean;
 }
 
@@ -47,6 +55,10 @@ export default function BookingForm({
   isLoading,
   selectedPackage,
   setSelectedPackage,
+  eventDate,
+  setEventDate,
+  eventDuration,
+  setEventDuration,
   bookingIsLoading,
 }: BookingFormProps) {
   const [selectedPurpose, SetSelectedPurpose] = useState<string>("");
@@ -54,7 +66,7 @@ export default function BookingForm({
 
   return (
     <>
-      {guestId ? (
+      {!guestId ? (
         <GuestForm guestId={guestId} setGuestId={setGuestId} />
       ) : (
         <Card className="w-full max-w-3xl mx-auto shadow-md rounded-2xl border border-gray-100 dark:border-gray-700">
@@ -95,17 +107,35 @@ export default function BookingForm({
                     type="date"
                     name="event_date"
                     label="Event Date"
+                    onChange={(e) => setEventDate(e.target.value)}
                     labelPlacement="outside"
                     variant="underlined"
                     fullWidth
                   />
-
                   <Input
                     isRequired
-                    type="number"
-                    min={1}
-                    name="event_duration"
-                    label="Duration (Hours)"
+                    type="time"
+                    label="Start"
+                    onChange={(e) =>
+                      setEventDuration({
+                        ...eventDuration,
+                        start: e.target.value,
+                      })
+                    }
+                    labelPlacement="outside"
+                    variant="underlined"
+                    fullWidth
+                  />
+                  <Input
+                    isRequired
+                    type="time"
+                    label="End"
+                    onChange={(e) =>
+                      setEventDuration({
+                        ...eventDuration,
+                        end: e.target.value,
+                      })
+                    }
                     labelPlacement="outside"
                     variant="underlined"
                     fullWidth

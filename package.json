@@ -27,6 +27,8 @@
     "@heroui/switch": "2.2.24",
     "@heroui/system": "2.4.23",
     "@heroui/theme": "2.4.23",
+    "@internationalized/date": "^3.10.0",
+    "@react-aria/i18n": "^3.12.13",
     "@react-aria/ssr": "3.9.10",
     "@react-aria/visually-hidden": "3.8.28",
     "@reduxjs/toolkit": "^2.11.0",

@@ -7,7 +7,7 @@ export default function header() {
       className="h-72 md:h-96 flex items-center justify-center bg-cover bg-center relative"
       style={{
         backgroundImage:
-          "linear-gradient(to bottom, rgba(12,12,12,0.45), rgba(12,12,12,0.45)), url('/banquet/image-3.jpg')",
+          "linear-gradient(to bottom, rgba(12,12,12,0.45), rgba(12,12,12,0.45)), url('/banquet/image-3.png')",
       }}
       aria-hidden={false}
     >
