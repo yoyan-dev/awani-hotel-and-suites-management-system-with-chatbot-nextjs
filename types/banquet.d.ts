@@ -1,7 +1,9 @@
 export interface BanquetMenu {
   id?: string;
   name?: string;
+  description?: string;
   category?: string;
+  price?: number;
   created_at?: any;
 }
 

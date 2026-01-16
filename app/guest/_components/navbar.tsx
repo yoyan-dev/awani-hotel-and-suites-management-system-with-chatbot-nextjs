@@ -80,109 +80,111 @@ export default function Navbar() {
         </NavbarContent>
 
         {/* ───────── DESKTOP MENU ───────── */}
-        <NavbarContent className="hidden sm:flex gap-6" justify="end">
-          {siteConfig.guestNavMenuItems.map((item: any) => {
-            const isActive =
-              pathname === item.href ||
-              item?.Children?.some((child: any) => child.href === pathname);
-            const isExpanded = expandedDesktop === item.label;
+        <NavbarContent className="hidden sm:flex " justify="end">
+          <div className="w-full sm:flex gap-6 items-center">
+            {siteConfig.guestNavMenuItems.map((item: any) => {
+              const isActive =
+                pathname === item.href ||
+                item?.Children?.some((child: any) => child.href === pathname);
+              const isExpanded = expandedDesktop === item.label;
 
-            return (
-              <div key={item.label} className="relative">
-                {/* MAIN ITEM */}
-                {item.isExpandable ? (
-                  <button
-                    onClick={() =>
-                      item.isExpandable
-                        ? setExpandedDesktop((p) =>
-                            p === item.label ? null : item.label
-                          )
-                        : null
-                    }
-                    className={cn(
-                      "relative px-2 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "text-primary-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
-                    )}
-                  >
-                    {item.label}
+              return (
+                <div key={item.label} className="relative">
+                  {/* MAIN ITEM */}
+                  {item.isExpandable ? (
+                    <button
+                      onClick={() =>
+                        item.isExpandable
+                          ? setExpandedDesktop((p) =>
+                              p === item.label ? null : item.label
+                            )
+                          : null
+                      }
+                      className={cn(
+                        "relative px-2 py-2 text-sm font-medium transition-colors",
+                        isActive
+                          ? "text-primary-600"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
+                      )}
+                    >
+                      {item.label}
 
-                    {/* 🔥 Animated underline */}
-                    {isActive && (
-                      <motion.span
-                        layoutId="navbar-underline"
-                        className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </button>
-                ) : (
-                  <NextLink
-                    href={item.href}
-                    className={cn(
-                      "relative px-2 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "text-primary-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
-                    )}
-                  >
-                    {item.label}
+                      {/* 🔥 Animated underline */}
+                      {isActive && (
+                        <motion.span
+                          layoutId="navbar-underline"
+                          className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </button>
+                  ) : (
+                    <NextLink
+                      href={item.href}
+                      className={cn(
+                        "relative px-2 py-2 text-sm font-medium transition-colors",
+                        isActive
+                          ? "text-primary-600"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
+                      )}
+                    >
+                      {item.label}
 
-                    {/* 🔥 Animated underline */}
-                    {isActive && (
-                      <motion.span
-                        layoutId="navbar-underline"
-                        className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                  </NextLink>
-                )}
+                      {/* 🔥 Animated underline */}
+                      {isActive && (
+                        <motion.span
+                          layoutId="navbar-underline"
+                          className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
+                          transition={{
+                            type: "spring",
+                            stiffness: 380,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                    </NextLink>
+                  )}
 
-                {/* SUBMENU */}
-                <AnimatePresence>
-                  {item.isExpandable && isExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="
+                  {/* SUBMENU */}
+                  <AnimatePresence>
+                    {item.isExpandable && isExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.2 }}
+                        className="
                         absolute left-0  min-w-[180px]
                         rounded-sm bg-white dark:bg-gray-900
                         shadow-lg border border-gray-200 dark:border-gray-700
                         p-2
                       "
-                    >
-                      {item.Children?.map((child: any) => (
-                        <NextLink
-                          key={child.href}
-                          href={child.href}
-                          className={cn(
-                            "block px-3 py-2 text-sm rounded-md transition",
-                            pathname === child.href
-                              ? "bg-primary-50 text-primary-600"
-                              : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-                          )}
-                        >
-                          {child.label}
-                        </NextLink>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
+                      >
+                        {item.Children?.map((child: any) => (
+                          <NextLink
+                            key={child.href}
+                            href={child.href}
+                            className={cn(
+                              "block px-3 py-2 text-sm rounded-md transition",
+                              pathname === child.href
+                                ? "bg-primary-50 text-primary-600"
+                                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            )}
+                          >
+                            {child.label}
+                          </NextLink>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
 
           <ThemeSwitch />
         </NavbarContent>

@@ -94,7 +94,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-
+    const roomId = formObj.room_id as string;
     // Parse JSON safely
     const eventDuration =
       typeof formObj.event_duration === "string"
@@ -114,54 +114,56 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         { status: 400 }
       );
     }
+    console.log(formObj);
 
-    const bookingNumber = await GenerateBookingNumber();
+    const bookingNumber = await GenerateBookingNumber("function-room");
     if (!bookingNumber) throw new Error("Failed to generate booking number");
 
     const newBooking = {
+      booking_number: bookingNumber,
       guest_id: formObj.guest_id as string,
       event_type: formObj.event_type as string,
       event_date: formObj.event_date as string,
-      event_duration: eventDuration,
       banquet_package_id: formObj.banquet_package_id as string,
       number_of_guest: Number(formObj.number_of_guest),
-      room_id: formObj.room_id as string,
+      event_duration: eventDuration,
+      // room_id: roomId,
       notes: formObj.notes as string,
-    } as FunctionHallBooking;
+    };
 
-    const { data: existing, error: overlapError } = await supabase
-      .from("function_hall_bookings")
-      .select("id, event_date, event_duration, status")
-      .eq("room_id", newBooking.room_id)
-      .not("status", "in", "(cancelled,completed)");
+    if (newBooking.guest_id) {
+      const { data: existing, error: overlapError } = await supabase
+        .from("function_hall_bookings")
+        .select("id, event_date, event_duration, status")
+        .eq("guest", newBooking.guest_id)
+        .not("status", "in", "(cancelled,completed)");
 
-    if (overlapError) throw overlapError;
+      const hasOverlap = existing?.some((b) => {
+        const eventDate = new Date(b.event_date);
+        const existingStart = new Date(b.event_duration.start);
+        const existingEnd = new Date(b.event_duration.end);
+        const newStart = new Date(eventDuration.start);
+        const newEnd = new Date(eventDuration.end);
 
-    const hasOverlap = existing?.some((b) => {
-      const eventDate = new Date(b.event_date);
-      const existingStart = new Date(b.event_duration.start);
-      const existingEnd = new Date(b.event_duration.end);
-      const newStart = new Date(eventDuration.start);
-      const newEnd = new Date(eventDuration.end);
+        return (
+          (newStart < existingEnd && newEnd > existingStart) ||
+          eventDate === new Date(formObj.event_date as string)
+        );
+      });
 
-      return (
-        (newStart < existingEnd && newEnd > existingStart) ||
-        eventDate === new Date(formObj.event_date as string)
-      );
-    });
-
-    if (hasOverlap) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Booking Conflict",
-            description: "Room already booked for this time range.",
-            color: "warning",
+      if (hasOverlap) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: {
+              title: "Booking Conflict",
+              description: "Room already booked for this time range.",
+              color: "warning",
+            },
           },
-        },
-        { status: 409 }
-      );
+          { status: 409 }
+        );
+      }
     }
 
     /* INSERT */

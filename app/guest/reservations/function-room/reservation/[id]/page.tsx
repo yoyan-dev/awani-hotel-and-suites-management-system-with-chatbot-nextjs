@@ -64,7 +64,6 @@ export default function Page() {
     formData.append("guest_id", guestId || "");
     formData.append("event_duration", JSON.stringify(EventDuration));
 
-    console.log(formData);
     await addBooking(formData);
     if (error === undefined) {
       addToast({
@@ -73,7 +72,7 @@ export default function Page() {
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
-      router.push("/");
+      // router.push("/");
     }
   }
 

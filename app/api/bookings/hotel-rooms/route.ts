@@ -127,7 +127,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const formObj = Object.fromEntries(formData.entries());
     const specialRequests = JSON.parse(formObj.special_requests as string);
 
-    const bookingNumber = await GenerateBookingNumber();
+    const bookingNumber = await GenerateBookingNumber("hotel-room");
 
     if (!bookingNumber) {
       return NextResponse.json(

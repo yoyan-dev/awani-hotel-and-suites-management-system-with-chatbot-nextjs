@@ -191,18 +191,23 @@ export const siteConfig = {
       ],
     },
     {
+      label: "Menus",
+      href: "/guest/menus",
+      isExpandable: false,
+    },
+    {
       label: "Your Stay",
       href: "/guest/booking",
       isExpandable: false,
     },
     {
       label: "About Us",
-      href: "/guest/about",
+      href: "/guest/about-us",
       isExpandable: false,
     },
     {
       label: "Contact",
-      href: "/guest/contact",
+      href: "#contact",
       isExpandable: false,
     },
   ],

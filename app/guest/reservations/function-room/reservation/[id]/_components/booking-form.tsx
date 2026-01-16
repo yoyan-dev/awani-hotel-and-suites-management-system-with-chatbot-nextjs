@@ -160,6 +160,7 @@ export default function BookingForm({
                   labelPlacement="outside"
                   placeholder="Select package"
                   variant="bordered"
+                  defaultSelectedKeys={[selectedPackage]}
                   value={selectedPackage}
                   onChange={(e) => setSelectedPackage(e.target.value)}
                 >
@@ -232,7 +233,11 @@ export default function BookingForm({
               </div>
 
               <div className="flex justify-end">
-                <Button color="primary" type="submit">
+                <Button
+                  color="primary"
+                  type="submit"
+                  isLoading={bookingIsLoading}
+                >
                   Submit Booking
                 </Button>
               </div>

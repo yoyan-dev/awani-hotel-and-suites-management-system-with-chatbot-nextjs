@@ -1,5 +1,6 @@
 export interface FunctionHallBooking {
   id: string;
+  booking_number?: string;
   guest_id?: string;
   event_type?: string;
   event_date?: any;
