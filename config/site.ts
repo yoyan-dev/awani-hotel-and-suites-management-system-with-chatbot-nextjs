@@ -197,7 +197,7 @@ export const siteConfig = {
     },
     {
       label: "Your Stay",
-      href: "/guest/booking",
+      href: "/guest/guest-request",
       isExpandable: false,
     },
     {
