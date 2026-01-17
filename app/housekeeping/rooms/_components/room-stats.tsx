@@ -1,46 +1,77 @@
-import { statusOptions } from "@/app/constants/rooms";
-import { useRooms } from "@/hooks/use-rooms";
-import { Room } from "@/types/room";
-import { formatDate } from "@/utils/format-date";
-import React from "react";
+import { useState } from "react";
+import { Card, Badge, Button } from "@heroui/react";
+import {
+  DoorOpen,
+  Users,
+  CheckCircle,
+  BedDouble,
+  Wrench,
+  Archive,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
-export default function RoomStats({ analytics }: { analytics: Room[] }) {
+interface AnalyticsItem {
+  name: string;
+  count: number;
+}
+
+interface Props {
+  analytics: AnalyticsItem[];
+}
+
+const STATUS_UI: Record<string, { color: any; icon: any }> = {
+  vacant: { color: "success", icon: DoorOpen },
+  occupied: { color: "warning", icon: Users },
+  clean: { color: "success", icon: CheckCircle },
+  dirty: { color: "danger", icon: BedDouble },
+  maintenance: { color: "secondary", icon: Wrench },
+  out_of_service: { color: "danger", icon: Archive },
+};
+
+export default function RoomStats({ analytics }: Props) {
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
-    <div className="flex gap-4 flex-wrap px-2 pb-4">
-      {analytics.map((item: any) => {
-        const options = statusOptions.find((s) => s.uid === item.name);
-        return (
-          <div
-            className="flex-1 p-3 rounded-lg bg-slate-50 dark:bg-gray-900"
-            key={item.name}
-          >
-            <div className="text-xs text-slate-500 capitalize">
-              {options?.name || item.name}
-            </div>
-            <div className="font-semibold text-lg">{item.count}</div>
-          </div>
-        );
-      })}
-    </div>
-    // <div className="flex flex-col w-full gap-4 flex-wrap md:flex-row">
+    <Card className="p-4 rounded-md shadow-sm flex flex-col gap-2">
+      <div
+        className="flex items-center justify-between cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <h2 className="text-lg font-semibold text-gray-800">Room Stats</h2>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </div>
 
-    //   <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
-    //   </div>
+      {/* Collapsible content */}
+      {isOpen && (
+        <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mt-4 transition-all ease-in-out">
+          {analytics.map((stat) => {
+            const config = STATUS_UI[stat.name] || {
+              color: "primary",
+              icon: CheckCircle,
+            };
+            const Icon = config.icon;
 
-    //   {/* <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
-    //     <div className="font-medium mb-3">Quick actions</div>
-    //     <div className="flex flex-col gap-2">
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-primary-600 text-white">
-    //         Create Booking
-    //       </button>
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-slate-50 dark:bg-gray-900">
-    //         Sync Calendar
-    //       </button>
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-slate-50 dark:bg-gray-900">
-    //         Export CSV
-    //       </button>
-    //     </div>
-    //   </div> */}
-    // </div>
+            return (
+              <Card
+                key={stat.name}
+                className="p-4 rounded-md shadow-sm flex flex-col gap-2"
+              >
+                <div className="flex items-center justify-between">
+                  <Badge color={config.color}>{stat.name}</Badge>
+                  <Icon size={18} className="text-gray-500" />
+                </div>
+
+                <div className="text-2xl font-semibold text-gray-800">
+                  {stat.count}
+                </div>
+
+                <span className="text-xs text-gray-500">Rooms</span>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </Card>
   );
 }
