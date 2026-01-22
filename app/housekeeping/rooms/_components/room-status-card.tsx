@@ -1,4 +1,4 @@
-import { JSX, useState } from "react";
+import React, { JSX, useState } from "react";
 import {
   Card,
   Badge,
@@ -21,9 +21,11 @@ import {
   Archive,
   DoorOpen,
   CalendarCheck,
+  Edit,
 } from "lucide-react";
 import type { Room } from "@/types/room";
 import { statusOptions } from "@/app/constants/rooms";
+import UpdateModal from "./modals/update-modal";
 
 interface Props {
   room: Room;
@@ -86,22 +88,22 @@ export default function RoomStatusCard({ room, onUpdateStatus }: Props) {
     },
   };
 
+  const [updateOpen, setUpdateOpen] = React.useState(false);
   const status = room.status ?? "dirty";
   const config = STATUS_MAP[status];
 
   const openModal = (status: string) => {
     setNextStatus(status);
-    setRemarks("");
-    setOpen(true);
-  };
-
-  const handleSave = () => {
-    onUpdateStatus?.(room.id, nextStatus, remarks);
-    setOpen(false);
+    setUpdateOpen(true);
   };
 
   return (
     <>
+      <UpdateModal
+        room={room}
+        isOpen={updateOpen}
+        onClose={() => setUpdateOpen(false)}
+      />
       <Card className="rounded-md shadow-sm flex flex-col gap-4 border  border-primary">
         <div className="flex items-center justify-between bg-primary text-white p-4">
           <h3 className="text-lg font-semibold">Room {room.room_number}</h3>
@@ -127,40 +129,17 @@ export default function RoomStatusCard({ room, onUpdateStatus }: Props) {
         )}
 
         <div className="flex gap-2 mt-auto pb-4 px-4">
-          <Select
-            items={statusOptions}
-            defaultSelectedKeys={[status]}
-            onChange={() => openModal("clean")}
-            radius="sm"
+          <Button
+            fullWidth
+            size="sm"
+            color="default"
+            onPress={() => setUpdateOpen(true)}
           >
-            {(item) => <SelectItem key={item.uid}>{item.name}</SelectItem>}
-          </Select>
+            <Edit size={13} />{" "}
+            <span className="hidden md:block">Change status</span>
+          </Button>
         </div>
       </Card>
-
-      <Modal isOpen={open} onClose={() => setOpen(false)} size="sm">
-        <ModalContent>
-          <ModalHeader>Add Remarks</ModalHeader>
-
-          <ModalBody>
-            <Textarea
-              label="Housekeeping Notes"
-              placeholder="e.g. Changed linens, bathroom cleaned"
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
-          </ModalBody>
-
-          <ModalFooter>
-            <Button size="sm" variant="light" onPress={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button size="sm" color="primary" onPress={handleSave}>
-              Save
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </>
   );
 }

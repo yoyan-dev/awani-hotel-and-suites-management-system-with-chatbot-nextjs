@@ -30,7 +30,7 @@ const STATUS_UI: Record<string, { color: any; icon: any }> = {
 };
 
 export default function RoomStats({ analytics }: Props) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Card className="p-4 rounded-md shadow-sm flex flex-col gap-2">
@@ -39,7 +39,17 @@ export default function RoomStats({ analytics }: Props) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <h2 className="text-lg font-semibold text-gray-800">Room Stats</h2>
-        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        {isOpen ? (
+          <div className="flex items-center gap-2">
+            close
+            <ChevronUp size={20} />
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            view stats
+            <ChevronDown size={20} />
+          </div>
+        )}
       </div>
 
       {/* Collapsible content */}

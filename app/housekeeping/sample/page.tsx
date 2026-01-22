@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import GuestTabs from "./_components/guest-tabs";
+import React, { useState, useMemo } from "react";
 import GuestCard from "./_components/guest-card";
+import { Tabs, Tab } from "@heroui/react";
 
 interface GuestMovement {
   id: string;
   guestName: string;
   roomNumber: string | number;
   nights: number;
-  arrival: string; // ISO date string
-  departure: string; // ISO date string
+  arrival: string;
+  departure: string;
 }
 
 export default function GuestMovementPage() {
@@ -33,31 +33,26 @@ export default function GuestMovementPage() {
     },
   ];
 
-  const [activeTab, setActiveTab] = useState<"arrival" | "departure">(
-    "arrival"
-  );
-
-  const filteredGuests = useMemo(() => {
-    return guests.slice().sort((a, b) => {
-      const dateA = new Date(a[activeTab]).getTime();
-      const dateB = new Date(b[activeTab]).getTime();
-      return dateA - dateB;
-    });
-  }, [guests, activeTab]);
+  const [activeTab, setActiveTab] = React.useState("arrival");
 
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-2xl font-bold text-gray-800">Guest Movements</h1>
 
-      <GuestTabs activeTab={activeTab} onChange={setActiveTab} />
+      <Tabs
+        aria-label="Tabs form"
+        selectedKey={activeTab}
+        onSelectionChange={(key) => setActiveTab(String(key))}
+      >
+        <Tab value="arrival">Arrival</Tab>
+        <Tab value="departure">Departure</Tab>
+      </Tabs>
 
       <div className="grid gap-4 mt-4">
-        {filteredGuests.length === 0 ? (
+        {guests.length === 0 ? (
           <p className="text-gray-500 text-center py-10">No guests found</p>
         ) : (
-          filteredGuests.map((guest) => (
-            <GuestCard key={guest.id} guest={guest} />
-          ))
+          guests.map((guest) => <GuestCard key={guest.id} guest={guest} />)
         )}
       </div>
     </div>
