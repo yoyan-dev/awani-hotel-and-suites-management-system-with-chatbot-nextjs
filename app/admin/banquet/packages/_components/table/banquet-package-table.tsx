@@ -13,51 +13,35 @@ import { RenderCell } from "./render-cell";
 import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";
 import { ColumnType } from "@/types/column";
-import { BanquetPackage } from "@/types/banquet";
+import {
+  BanquetPackage,
+  BanquetPackageFetchParams,
+  BanquetPackagePagination,
+} from "@/types/banquet-package";
 
 interface BanquetPackageTableProps {
   items: BanquetPackage[];
-  banquetPackages: BanquetPackage[];
-
+  pagination: BanquetPackagePagination | null;
+  query: BanquetPackageFetchParams;
+  setQuery: React.Dispatch<React.SetStateAction<BanquetPackageFetchParams>>;
+  selectedKeys: any;
+  setSelectedKeys: React.Dispatch<React.SetStateAction<any>>;
+  visibleColumns: any;
+  setVisibleColumns: React.Dispatch<React.SetStateAction<any>>;
   headerColumns: ColumnType[];
-  visibleColumns: Set<string>;
-  setVisibleColumns: React.Dispatch<React.SetStateAction<Set<string>>>;
-
-  onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-
-  hasSearchFilter: boolean;
-  filterValue: string;
-  setFilterValue: React.Dispatch<React.SetStateAction<string>>;
-  statusFilter: any;
-  setStatusFilter: React.Dispatch<React.SetStateAction<any | "all">>;
-
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
-  pages: number;
-
-  selectedKeys: Selection;
-  setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>;
-
   isLoading: boolean;
 }
 
 export default function BanquetPackageTable({
   items,
-  banquetPackages,
-  headerColumns,
-  visibleColumns,
-  setVisibleColumns,
-  onRowsPerPageChange,
-  hasSearchFilter,
-  filterValue,
-  setFilterValue,
-  statusFilter,
-  setStatusFilter,
-  page,
-  setPage,
-  pages,
+  pagination,
+  query,
+  setQuery,
   selectedKeys,
   setSelectedKeys,
+  visibleColumns,
+  setVisibleColumns,
+  headerColumns,
   isLoading,
 }: BanquetPackageTableProps) {
   return (
@@ -66,14 +50,13 @@ export default function BanquetPackageTable({
       classNames={{ wrapper: ["shadow-none", "dark:bg-gray-900", "p-0"] }}
       aria-label="Rooms Table"
       bottomContent={
-        banquetPackages.length > 0 && (
+        items.length > 0 && (
           <TableBottomContent
-            hasSearchFilter={hasSearchFilter}
-            page={page}
-            setPage={setPage}
-            pages={pages}
+            query={query}
+            setQuery={setQuery}
+            pages={pagination?.total_pages || 0}
             selectedKeys={selectedKeys}
-            itemsLength={items.length}
+            totalItems={pagination?.total}
           />
         )
       }
@@ -82,15 +65,11 @@ export default function BanquetPackageTable({
       selectionMode="multiple"
       topContent={
         <TableTopContent
-          filterValue={filterValue}
-          onSearchChange={setFilterValue}
-          setFilterValue={setFilterValue}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
+          query={query}
+          setQuery={setQuery}
           visibleColumns={visibleColumns}
           setVisibleColumns={setVisibleColumns}
-          onRowsPerPageChange={onRowsPerPageChange}
-          itemsCount={banquetPackages.length}
+          totalItems={pagination?.total}
           selectedKeys={selectedKeys}
         />
       }
@@ -101,7 +80,11 @@ export default function BanquetPackageTable({
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
+            align={
+              column.uid === "actions" || column.uid === "menus"
+                ? "center"
+                : "start"
+            }
             allowsSorting={column.sortable}
           >
             {column.name}
@@ -115,11 +98,19 @@ export default function BanquetPackageTable({
         items={items}
       >
         {(item) => (
-          <TableRow key={item.id}>
+          <TableRow
+            key={item.id}
+            className={
+              items.indexOf(item) % 2 === 0
+                ? "bg-white dark:bg-gray-800"
+                : "bg-gray-100 dark:bg-gray-900"
+            }
+          >
             {(columnKey) => (
               <TableCell className="capitalize ">
                 <RenderCell
-                  banquetPackage={item}
+                  items={items}
+                  item={item}
                   columnKey={columnKey as string}
                 />
               </TableCell>

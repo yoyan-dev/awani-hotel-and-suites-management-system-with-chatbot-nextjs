@@ -38,7 +38,7 @@ export const RenderCell = ({
         ? new Date(booking.event_date).toLocaleDateString()
         : "N/A";
     case "event_duration":
-      return booking.event_duration?.start, "-", booking.event_duration?.end;
+      return (booking.event_duration?.start, "-", booking.event_duration?.end);
 
     case "status":
       return (
@@ -52,9 +52,10 @@ export const RenderCell = ({
         </Chip>
       );
 
-    // ACTIONS
-    // case "actions":
-    //   return <BookingActionsDropdown booking={booking} disabled={bookingLoading} />;
+    case "actions":
+      return (
+        <BookingActionsDropdown booking={booking} disabled={bookingLoading} />
+      );
 
     default:
       return cellValue ?? "N/A";

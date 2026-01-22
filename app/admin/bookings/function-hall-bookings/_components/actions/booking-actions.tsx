@@ -1,4 +1,3 @@
-import { Booking } from "@/types/booking";
 import {
   Dropdown,
   DropdownTrigger,
@@ -25,37 +24,40 @@ import ExtendModal from "../modals/extend-modal";
 import { generateSummary } from "@/utils/generate-summary";
 import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
+import { FunctionHallBooking } from "@/types/function-room-booking";
 
 export default function BookingActionsDropdown({
   booking,
+  disabled,
 }: {
-  booking: Booking;
+  booking: FunctionHallBooking;
+  disabled: boolean;
 }) {
   const [extendOpen, setExtendOpen] = React.useState(false);
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
 
-  const summary = React.useMemo(() => {
-    return generateSummary(booking, booking.special_requests);
-  }, [booking, isViewSummaryOpen]);
+  // const summary = React.useMemo(() => {
+  //   return generateSummary(booking, booking.special_requests);
+  // }, [booking, isViewSummaryOpen]);
   return (
     <>
-      <ExtendModal
+      {/* <ExtendModal
         booking={booking}
         isOpen={extendOpen}
         onClose={() => setExtendOpen(false)}
-      />
-      <ViewSummary
+      /> */}
+      {/* <ViewSummary
         isOpen={isViewSummaryOpen}
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
-      />
-      <AddPaymentModal
+      /> */}
+      {/* <AddPaymentModal
         isOpen={addPaymentOpen}
         onClose={() => setAddPaymentOpen(false)}
         summary={summary}
         id={booking.id}
-      />
+      /> */}
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly variant="light" size="sm">
@@ -67,7 +69,7 @@ export default function BookingActionsDropdown({
           <DropdownItem
             key="view"
             startContent={<Eye className="w-4 h-4" />}
-            href={`/admin/bookings/room-bookings/${booking.id}`}
+            href={`/admin/bookings/function-hall-bookings/${booking.id}`}
             color="primary"
           >
             View Details
@@ -109,17 +111,17 @@ export default function BookingActionsDropdown({
               Transfer Room
             </DropdownItem>
           )}
-          {!["check-in", "pending"].includes(booking.status) ? (
+          {/* {!["check-in", "pending"].includes(booking.status || "default") ? (
             <DropdownItem key="checkin">
               <CheckInButton booking={booking} />
             </DropdownItem>
-          ) : null}
+          ) : null} */}
 
-          {booking.status === "check-in" ? (
+          {/* {booking.status === "check-in" ? (
             <DropdownItem key="checkout">
               <CheckOutButton booking={booking} />
             </DropdownItem>
-          ) : null}
+          ) : null} */}
           <DropdownItem
             key="extend"
             startContent={<RotateCcw className="w-4 h-4 text-orange-500" />}

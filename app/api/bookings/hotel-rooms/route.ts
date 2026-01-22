@@ -113,7 +113,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         page,
         limit,
         total: count ?? 0,
-        totalPages: Math.ceil((count ?? 0) / limit),
+        total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
     { status: 201 }
@@ -127,7 +127,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const formObj = Object.fromEntries(formData.entries());
     const specialRequests = JSON.parse(formObj.special_requests as string);
 
-    const bookingNumber = await GenerateBookingNumber();
+    const bookingNumber = await GenerateBookingNumber("hotel-room");
 
     if (!bookingNumber) {
       return NextResponse.json(

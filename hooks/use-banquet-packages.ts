@@ -5,24 +5,30 @@ import {
   fetchBanquetPackage,
   fetchBanquetPackages,
   updateBanquetPackage,
-} from "@/features/banquet/banquet-packages/banquet-package-thunk";
+} from "@/features/banquet-packages/banquet-package-thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { BanquetMenu } from "@/types/banquet";
+import {
+  BanquetPackage,
+  BanquetPackageFetchParams,
+} from "@/types/banquet-package";
 
 export function useBanquetPackages() {
   const dispatch = useAppDispatch();
-  const { banquet_package, banquet_packages, isLoading, error } =
-    useAppSelector((state) => state.banquet_package);
+  const { item, items, pagination, isLoading, error } = useAppSelector(
+    (state) => state.banquet_package
+  );
   return {
-    banquet_packages,
-    banquet_package,
+    item,
+    items,
+    pagination,
     isLoading,
     error,
-    fetchBanquetPackages: () => dispatch(fetchBanquetPackages()),
+    fetchBanquetPackages: (payload: BanquetPackageFetchParams | undefined) =>
+      dispatch(fetchBanquetPackages(payload)),
     fetchBanquetPackage: (id: string) => dispatch(fetchBanquetPackage(id)),
     addBanquetPackage: (payload: FormData) =>
       dispatch(addBanquetPackage(payload)),
-    updateBanquetPackage: (payload: BanquetMenu) =>
+    updateBanquetPackage: (payload: BanquetPackage) =>
       dispatch(updateBanquetPackage(payload)),
     deleteBanquetPackage: (id: string) => dispatch(deleteBanquetPackage(id)),
     deleteBanquetPackages: (selectedKeys: Set<number> | "all") =>

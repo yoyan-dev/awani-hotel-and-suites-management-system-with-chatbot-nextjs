@@ -1,4 +1,12 @@
 import type { ColumnType } from "@/types/column";
+import {
+  Archive,
+  BedDouble,
+  CheckCircle,
+  DoorOpen,
+  Users,
+  Wrench,
+} from "lucide-react";
 
 export const columns: ColumnType[] = [
   { name: "ID", uid: "id", sortable: true },
@@ -31,6 +39,39 @@ export const statusColorMap: Record<
   occupied: "warning",
   maintenance: "default",
   out_of_service: "danger",
+};
+
+export const ROOM_STATUS_CONFIG = {
+  vacant: {
+    label: "Vacant",
+    color: "success",
+    icon: DoorOpen,
+  },
+  occupied: {
+    label: "Occupied",
+    color: "warning",
+    icon: Users,
+  },
+  clean: {
+    label: "Clean",
+    color: "success",
+    icon: CheckCircle,
+  },
+  dirty: {
+    label: "Dirty",
+    color: "danger",
+    icon: BedDouble,
+  },
+  maintenance: {
+    label: "Maintenance",
+    color: "secondary",
+    icon: Wrench,
+  },
+  out_of_service: {
+    label: "Out of Service",
+    color: "danger",
+    icon: Archive,
+  },
 };
 
 export const INITIAL_VISIBLE_COLUMNS = [

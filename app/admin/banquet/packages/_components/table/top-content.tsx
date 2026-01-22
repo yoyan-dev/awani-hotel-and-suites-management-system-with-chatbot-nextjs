@@ -6,36 +6,29 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Selection,
+  Link,
 } from "@heroui/react";
-import { Search, ChevronDown } from "lucide-react";
-import { columns, statusOptions } from "./constants";
+import { Search, ChevronDown, Plus } from "lucide-react";
+import { columns, statusOptions } from "@/app/constants/banquet-menus";
 import { capitalize } from "@/app/utils/capitalize";
 import AddModal from "../modals/add-modal";
+import { BanquetPackageFetchParams } from "@/types/banquet-package";
 
 interface Props {
-  filterValue: string;
-  onSearchChange: (value: string) => void;
-  setFilterValue: (val: string) => void;
-  statusFilter: any;
-  setStatusFilter: (val: any) => void;
+  query: BanquetPackageFetchParams;
+  setQuery: React.Dispatch<React.SetStateAction<BanquetPackageFetchParams>>;
   visibleColumns: any;
   setVisibleColumns: (val: any) => void;
-  onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  itemsCount: number;
-  selectedKeys: Selection;
+  totalItems: any;
+  selectedKeys: Set<number> | "all";
 }
 
 export const TableTopContent: React.FC<Props> = ({
-  filterValue,
-  onSearchChange,
-  setFilterValue,
-  statusFilter,
-  setStatusFilter,
+  query,
+  setQuery,
   visibleColumns,
   setVisibleColumns,
-  onRowsPerPageChange,
-  itemsCount,
+  totalItems,
   selectedKeys,
 }) => {
   return (
@@ -47,40 +40,15 @@ export const TableTopContent: React.FC<Props> = ({
             base: "w-full sm:max-w-[44%]",
             inputWrapper: "border-1",
           }}
-          placeholder="Search by name..."
+          placeholder="Search something..."
           size="sm"
           startContent={<Search className="text-default-300" />}
-          value={filterValue}
+          value={query.query || ""}
           variant="bordered"
-          onClear={() => setFilterValue("")}
-          onValueChange={onSearchChange}
+          onClear={() => setQuery({ ...query, query: "" })}
+          onValueChange={(value) => setQuery({ ...query, query: value })}
         />
         <div className="flex gap-3">
-          <Dropdown>
-            <DropdownTrigger className="hidden sm:flex">
-              <Button
-                endContent={<ChevronDown className="text-small" />}
-                size="sm"
-                variant="flat"
-              >
-                Status
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Table Columns"
-              closeOnSelect={false}
-              selectedKeys={statusFilter}
-              selectionMode="multiple"
-              onSelectionChange={setStatusFilter}
-            >
-              {statusOptions.map((status) => (
-                <DropdownItem key={status.uid} className="capitalize">
-                  {capitalize(status.name)}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
           <Dropdown>
             <DropdownTrigger className="hidden sm:flex">
               <Button
@@ -107,11 +75,15 @@ export const TableTopContent: React.FC<Props> = ({
             </DropdownMenu>
           </Dropdown>
           <AddModal />
+          {/* {(selectedKeys instanceof Set && selectedKeys.size > 0) ||
+          selectedKeys === "all" ? (
+            <DeleteSelectedModal selectedKeys={selectedKeys} />
+          ) : null} */}
         </div>
       </div>
       <div className="flex justify-between items-center">
         <span className="text-default-600 dark:text-default-300 text-small">
-          Total {itemsCount} items
+          Total {totalItems} packages
         </span>
         <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 10

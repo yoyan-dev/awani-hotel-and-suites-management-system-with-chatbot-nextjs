@@ -13,12 +13,12 @@ import { Search, Plus, Filter, RefreshCw } from "lucide-react";
 import { bookingStatusOptions } from "@/app/constants/booking";
 import { CalendarDate } from "@heroui/system/dist/types";
 import Link from "next/link";
-import { useBookings } from "@/hooks/use-bookings";
 import {
   FetchFunctionHallBookingParams,
   FunctionHallBooking,
   FunctionHallBookingPagination,
 } from "@/types/function-room-booking";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
 
 interface Props {
   bookings: FunctionHallBooking[];
@@ -38,7 +38,7 @@ export const TableTopContent: React.FC<Props> = ({
   setQuery,
   bookingsCount,
 }) => {
-  const { fetchBookings } = useBookings();
+  const { fetchBookings } = useFunctionHallBookings();
 
   const formatDate = (date: CalendarDate | null) =>
     date

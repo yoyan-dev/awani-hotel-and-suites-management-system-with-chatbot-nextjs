@@ -50,6 +50,7 @@ export const INITIAL_VISIBLE_COLUMNS = [
   "notes",
   "status",
   "guest",
+  "actions",
 ];
 
 export const VISIBLE_COLUMNS = [
@@ -62,6 +63,7 @@ export const VISIBLE_COLUMNS = [
   "notes",
   "status",
   "guest",
+  "actions",
 ];
 
 export const INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS = [

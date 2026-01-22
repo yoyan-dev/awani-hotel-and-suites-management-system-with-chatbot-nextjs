@@ -6,7 +6,10 @@ import {
   ModalFooter,
   Button,
 } from "@heroui/react";
-import { BanquetPackage } from "@/types/banquet";
+import {
+  BanquetPackage,
+  BanquetPackageFetchParams,
+} from "@/types/banquet-package";
 import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 
 interface DeleteModalProps {
@@ -26,7 +29,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({
   function handleDelete() {
     deleteBanquetPackage(banquetPackage.id || "");
     if (!error) {
-      fetchBanquetPackages();
+      fetchBanquetPackages({} as BanquetPackageFetchParams);
     }
   }
 

@@ -9,40 +9,64 @@ import {
   DropdownItem,
 } from "@heroui/react";
 import { statusColorMap } from "./constants";
-import { Edit, EllipsisVertical, Eye, Menu, Tags, Trash } from "lucide-react";
+import {
+  Edit,
+  EllipsisVertical,
+  Eye,
+  Menu,
+  MenuIcon,
+  Tags,
+  Trash,
+  UtensilsIcon,
+} from "lucide-react";
 import UpdateModal from "../modals/edit-modal";
 import DeleteModal from "../modals/delete-modal";
 import { formatPHP } from "@/lib/format-php";
-import { BanquetPackage } from "@/types/banquet";
+import { BanquetPackage } from "@/types/banquet-package";
+import { menuCategory } from "@/app/constants/banquet-package";
 
 interface RenderCellProps {
-  banquetPackage: BanquetPackage;
+  items: BanquetPackage[];
+  item: BanquetPackage;
   columnKey: string;
 }
 
 export const RenderCell: React.FC<RenderCellProps> = ({
-  banquetPackage,
+  items,
+  item,
   columnKey,
 }) => {
-  const cellValue = banquetPackage[columnKey as keyof BanquetPackage];
+  const cellValue = item[columnKey as keyof BanquetPackage];
   const [viewOpen, setViewOpen] = React.useState(false);
   const [editOpen, setEditOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
 
   switch (columnKey) {
+    case "id":
+      return items.indexOf(item) + 1;
     case "price":
-      return banquetPackage.price ? formatPHP(banquetPackage.price) : "free";
+      return formatPHP(item.price_per_cover);
     case "menus":
       return (
         <div className="flex gap-2">
           <Chip color="default" size="sm">
             <div className="flex items-center gap-1">
               <Tags size={14} className="opacity-70" />
-              {banquetPackage.menus?.length}
+              {item.categories?.length}
             </div>
           </Chip>
-          <div className="flex flex-wrap space-x-4 max-w-72">
-            {banquetPackage.menus?.map((menu) => <span>{menu},</span>)}
+          <div className="flex flex-wrap space-x-4 space-y-2 max-w-96 ">
+            {item.categories?.map((category, index) => {
+              const menu = menuCategory.find((cat) => cat.uid === category);
+              return (
+                <Chip color="primary" variant="flat" key={index}>
+                  <div className="flex gap-2 items-center text-sm">
+                    <UtensilsIcon size={10} />{" "}
+                    <span>{menu?.name || category}</span>
+                  </div>
+                </Chip>
+              );
+            })}
           </div>
         </div>
       );
@@ -64,12 +88,12 @@ export const RenderCell: React.FC<RenderCellProps> = ({
       return (
         <div className="relative flex justify-end items-center gap-2">
           <UpdateModal
-            banquetPackage={banquetPackage}
+            banquetPackage={item}
             isOpen={editOpen}
             onClose={() => setEditOpen(false)}
           />
           <DeleteModal
-            banquetPackage={banquetPackage}
+            banquetPackage={item}
             isOpen={deleteOpen}
             onClose={() => setDeleteOpen(false)}
           />

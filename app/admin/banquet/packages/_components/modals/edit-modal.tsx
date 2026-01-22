@@ -10,7 +10,7 @@ import {
   Divider,
   Chip,
 } from "@heroui/react";
-import { BanquetPackage } from "@/types/banquet";
+import { BanquetPackage } from "@/types/banquet-package";
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,7 +36,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     React.useState<BanquetPackage>(banquetPackage);
 
   const [selectedMenus, setSelectedMenus] = React.useState<any[]>(
-    banquetPackage.menus || []
+    banquetPackage.categories || []
   );
 
   function toggleMenuSelection(menu: any) {
@@ -83,7 +83,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
                 <Form
                   className="w-full space-y-6"
                   onSubmit={(e) =>
-                    onSubmit(e, { ...formData, menus: selectedMenus })
+                    onSubmit(e, { ...formData, categories: selectedMenus })
                   }
                 >
                   <div className="flex gap-4 w-full">
@@ -111,16 +111,16 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
                       required
                       label="Price"
                       placeholder="00.00"
-                      name="price"
+                      name="price_per_cover"
                       startContent="₱"
                       variant="bordered"
                       radius="sm"
                       labelPlacement="outside"
-                      value={formData.price?.toString()}
+                      value={formData.price_per_cover?.toString()}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          price: Number(e.target.value),
+                          price_per_cover: Number(e.target.value),
                         }))
                       }
                     />

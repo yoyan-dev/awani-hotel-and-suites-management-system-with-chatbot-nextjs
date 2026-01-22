@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export default function HotelPoolSection() {
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
+    <section className="py-20 bg-linear-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
       <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
         {/* Image Side */}
         <motion.div

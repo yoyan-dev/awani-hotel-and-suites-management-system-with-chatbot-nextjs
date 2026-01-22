@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { Booking } from "@/types/booking";
+import { FunctionHallBooking } from "@/types/function-room-booking";
 
 //GET ONE
 export async function GET(
@@ -11,42 +12,24 @@ export async function GET(
   const { id } = await context.params;
 
   const { data: booking, error } = await supabase
-    .from("bookings")
+    .from("function_hall_bookings")
     .select(
       `
       id,
-    booking_number,
-    room_id,
-    guest_id,
-    room_type_id,
-    check_in,
-    check_out,
-    total_add_ons,
-    total,
-    company,
-    special_requests,
-    number_of_guests,
-    recent_sickness,
-    payment_status,
-    payment_method,
-    booking_source,
-    amount_paid,
-    status,
-    created_at,
-    room_type:room_type_id(*),
-    room:room_id (
-      id,
+      guest_id,
+      event_type,
+      event_date,
+      event_duration,
+      banquet_package_id,
+      number_of_guest,
       room_id,
-      room_number,
-      room_type_id,
-      room_type:room_type_id(*),
-      area,
-      description,
+      notes,
       status,
-      images,
-      remarks
-    ),
-    user:guest_id (*)
+      booking_source,
+      created_at,
+      guest: guest_id(*),
+      banquet_package: banquet_package_id(*),
+      room: room_id(*)
     `
     )
     .eq("id", id)
@@ -75,7 +58,7 @@ export async function GET(
         description: "",
         color: "success",
       },
-      data: booking as Booking,
+      data: booking as FunctionHallBooking,
     },
     { status: 201 }
   );

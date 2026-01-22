@@ -1,5 +1,6 @@
 export interface FunctionHallBooking {
   id: string;
+  booking_number?: string;
   guest_id?: string;
   event_type?: string;
   event_date?: any;
@@ -23,7 +24,7 @@ export interface FunctionHallBookingPagination {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  total_pages: number;
 }
 export interface FetchFunctionHallBookingParams {
   page?: number;

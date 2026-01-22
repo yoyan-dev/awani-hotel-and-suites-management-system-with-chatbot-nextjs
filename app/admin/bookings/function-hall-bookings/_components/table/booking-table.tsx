@@ -61,7 +61,7 @@ export default function FunctionHallBookingTable({
         <TableBottomContent
           query={query}
           setQuery={setQuery}
-          pages={pagination.totalPages}
+          pages={pagination.total_pages}
           selectedKeys={selectedKeys}
           itemsLength={pagination.total}
         />

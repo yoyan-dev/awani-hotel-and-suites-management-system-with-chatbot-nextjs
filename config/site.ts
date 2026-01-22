@@ -19,7 +19,9 @@ import {
   SatelliteDish,
   ChefHatIcon,
   Calendar,
+  Utensils,
 } from "lucide-react";
+import { Children } from "react";
 
 export type SiteConfig = typeof siteConfig;
 
@@ -46,6 +48,16 @@ export const siteConfig = {
       ],
     },
     {
+      label: "Banquet",
+      href: "/admin/banquet",
+      isExpandable: true,
+      icon: ChefHatIcon,
+      Children: [
+        { label: "Banquet Menu", href: "/admin/banquet/menus" },
+        { label: "Banquet Packages", href: "/admin/banquet/packages" },
+      ],
+    },
+    {
       label: "Bookings",
       href: "/admin/bookings",
       isExpandable: true,
@@ -60,16 +72,12 @@ export const siteConfig = {
         },
       ],
     },
-    {
-      label: "Banquet",
-      href: "/admin/banquet",
-      isExpandable: true,
-      icon: ChefHatIcon,
-      Children: [
-        { label: "Banquet Menu", href: "/admin/banquet/menus" },
-        { label: "Banquet Packages", href: "/admin/banquet/packages" },
-      ],
-    },
+    // {
+    //   label: "Restaurant Menus",
+    //   href: "/admin/restaurant-menus",
+    //   isExpandable: true,
+    //   icon: Utensils,
+    // },
     {
       label: "Guest",
       href: "/admin/guest",
@@ -171,22 +179,36 @@ export const siteConfig = {
     {
       label: "Home",
       href: "/guest",
+      isExpandable: false,
     },
     {
-      label: "Rooms",
-      href: "/guest/rooms",
+      label: "Reservations",
+      href: "",
+      isExpandable: true,
+      Children: [
+        { label: "Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
+        { label: "Function Room", href: "/guest/reservations/function-room" },
+      ],
+    },
+    {
+      label: "Menus",
+      href: "/guest/menus",
+      isExpandable: false,
     },
     {
       label: "Your Stay",
-      href: "/guest/booking",
+      href: "/guest/guest-request",
+      isExpandable: false,
     },
     {
       label: "About Us",
-      href: "/guest/about",
+      href: "/guest/about-us",
+      isExpandable: false,
     },
     {
       label: "Contact",
-      href: "/guest/contact",
+      href: "#contact",
+      isExpandable: false,
     },
   ],
 };

@@ -2,7 +2,7 @@ export interface Pagination {
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  total_pages: number;
 }
 export interface ApiResponse<T = any> {
   success: boolean;

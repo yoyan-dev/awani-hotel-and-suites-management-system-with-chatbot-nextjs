@@ -1,38 +1,36 @@
 import React from "react";
 import { Pagination } from "@heroui/react";
+import { BanquetPackageFetchParams } from "@/types/banquet-package";
 
 interface Props {
-  hasSearchFilter: boolean;
-  page: number;
-  setPage: (val: number) => void;
+  query: BanquetPackageFetchParams;
+  setQuery: React.Dispatch<React.SetStateAction<BanquetPackageFetchParams>>;
   pages: number;
   selectedKeys: any;
-  itemsLength: number;
+  totalItems: any;
 }
 
 export const TableBottomContent: React.FC<Props> = ({
-  hasSearchFilter,
-  page,
-  setPage,
+  query,
+  setQuery,
   pages,
   selectedKeys,
-  itemsLength,
+  totalItems,
 }) => {
   return (
     <div className="py-2 px-2 flex justify-between items-center">
       <Pagination
         showControls
         color="primary"
-        isDisabled={hasSearchFilter}
-        page={page}
+        page={query.page}
         total={pages}
         variant="light"
-        onChange={setPage}
+        onChange={(page: number) => setQuery({ ...query, page: page })}
       />
       <span className="text-small text-default-400">
         {selectedKeys === "all"
           ? "All items selected"
-          : `${selectedKeys.size} of ${itemsLength} selected`}
+          : `${selectedKeys.size} of ${totalItems} selected`}
       </span>
     </div>
   );
