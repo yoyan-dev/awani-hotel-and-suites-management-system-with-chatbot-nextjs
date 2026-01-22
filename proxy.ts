@@ -1,22 +1,23 @@
+// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 
 export async function proxy(req: NextRequest) {
-  const res = NextResponse.next();
+  let res = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
+        get(name) {
           return req.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
+        set(name, value, options) {
           res.cookies.set({ name, value, ...options });
         },
-        remove(name: string, options: any) {
+        remove(name, options) {
           res.cookies.set({ name, value: "", ...options });
         },
       },
@@ -30,12 +31,12 @@ export async function proxy(req: NextRequest) {
   const user = session?.user;
   const { pathname } = req.nextUrl;
 
-  // redirect root
+  // root redirect
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/guest", req.url));
   }
 
-  // prevent logged-in users from visiting /auth
+  // block /auth for logged-in users
   if (pathname.startsWith("/auth") && user) {
     const roles = user.app_metadata?.roles || user.user_metadata?.roles;
     let redirectTo = "/guest";
