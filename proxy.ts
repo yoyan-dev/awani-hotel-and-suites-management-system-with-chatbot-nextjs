@@ -1,64 +1,76 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createClient } from "./lib/supabase/server";
+import { createServerClient } from "@supabase/auth-helpers-nextjs";
 
 export async function proxy(req: NextRequest) {
-  let res = NextResponse.next();
-  const supabase = await createClient();
+  const res = NextResponse.next();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies.get(name)?.value;
+        },
+        set(name: string, value: string, options: any) {
+          res.cookies.set({ name, value, ...options });
+        },
+        remove(name: string, options: any) {
+          res.cookies.set({ name, value: "", ...options });
+        },
+      },
+    },
+  );
 
   const {
     data: { session },
-    error,
   } = await supabase.auth.getSession();
 
   const user = session?.user;
   const { pathname } = req.nextUrl;
 
-  // redirect root to guest
+  // redirect root
   if (pathname === "/") {
     return NextResponse.redirect(new URL("/guest", req.url));
   }
 
-  // prevent logged in user from visiting /auth
+  // prevent logged-in users from visiting /auth
   if (pathname.startsWith("/auth") && user) {
-    let redirectTo = "/auth";
     const roles = user.app_metadata?.roles || user.user_metadata?.roles;
+    let redirectTo = "/guest";
 
-    if (roles?.includes("admin")) {
-      redirectTo = "/admin";
-    } else if (roles?.includes("housekeeping")) {
-      redirectTo = "/housekeeping";
-    }
+    if (roles?.includes("admin")) redirectTo = "/admin";
+    else if (roles?.includes("housekeeping")) redirectTo = "/housekeeping";
 
     return NextResponse.redirect(new URL(redirectTo, req.url));
   }
 
-  // route protections
-  if (pathname.startsWith("/admin")) {
-    if (
-      !user ||
+  // admin guard
+  if (
+    pathname.startsWith("/admin") &&
+    (!user ||
       !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "admin"
-      )
-    ) {
-      return NextResponse.redirect(new URL("/auth", req.url));
-    }
+        "admin",
+      ))
+  ) {
+    return NextResponse.redirect(new URL("/auth", req.url));
   }
 
-  if (pathname.startsWith("/housekeeping")) {
-    if (
-      !user ||
+  // housekeeping guard
+  if (
+    pathname.startsWith("/housekeeping") &&
+    (!user ||
       !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "housekeeping"
-      )
-    ) {
-      return NextResponse.redirect(new URL("/auth", req.url));
-    }
+        "housekeeping",
+      ))
+  ) {
+    return NextResponse.redirect(new URL("/auth", req.url));
   }
 
   return res;
 }
 
 export const config = {
-  matcher: ["/", "/auth", "/admin/:path*", "/housekeeping/:path*"],
+  matcher: ["/", "/auth/:path*", "/admin/:path*", "/housekeeping/:path*"],
 };
