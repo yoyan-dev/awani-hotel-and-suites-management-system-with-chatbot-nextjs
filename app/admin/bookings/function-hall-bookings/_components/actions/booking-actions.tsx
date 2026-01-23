@@ -78,7 +78,7 @@ export default function BookingActionsDropdown({
             <DropdownItem
               key="edit"
               startContent={<Pencil className="w-4 h-4" />}
-              href={`/admin/bookings/room-bookings/edit-booking/${booking.id}`}
+              href={`/admin/bookings/function-hall-bookings/edit-booking/${booking.id}`}
             >
               Edit Booking
             </DropdownItem>
@@ -98,7 +98,7 @@ export default function BookingActionsDropdown({
           {!booking.room_id ? (
             <DropdownItem
               key="assign"
-              href={`/admin/bookings/room-bookings/assign-room/${booking.id}`}
+              href={`/admin/bookings/function-hall-bookings/assign-room/${booking.id}`}
               startContent={<Bed className="w-4 h-4" />}
             >
               Assign Room

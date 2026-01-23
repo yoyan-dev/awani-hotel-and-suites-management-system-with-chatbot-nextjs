@@ -6,18 +6,18 @@ import { ApiResponse } from "@/types/response";
 //Get room
 export async function GET(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
-  const { data: room, error } = await supabase
+  const { data: function_rooms, error } = await supabase
     .from("function-rooms")
-    .select(`*`)
+    .select("*")
     .eq("id", id)
     .single();
 
   if (error) {
-    console.error("Error fetching function room:", error.message);
+    console.error("Error fetching function rooms:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -27,7 +27,7 @@ export async function GET(
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -39,16 +39,16 @@ export async function GET(
         description: "",
         color: "success",
       },
-      data: room,
+      data: function_rooms,
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
 // UPDATE
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
   const body = await req.json();
@@ -72,7 +72,7 @@ export async function PUT(
         },
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -86,7 +86,7 @@ export async function PUT(
           color: "error",
         },
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -104,7 +104,7 @@ export async function PUT(
 // DELETE
 export async function DELETE(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
@@ -121,7 +121,7 @@ export async function DELETE(
           color: "error",
         },
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -134,6 +134,6 @@ export async function DELETE(
         color: "success",
       },
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

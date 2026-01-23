@@ -22,7 +22,7 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
           className={`space-y-8 py-16 transition-all duration-500 
           ${
             isPeakSeason
-              ? "bg-gradient-to-b from-yellow-50 via-orange-100 to-red-100 dark:from-red-900 dark:via-red-950 dark:to-black animate-[pulse_3s_ease-in-out_infinite]"
+              ? "bg-linear-to-b from-yellow-50 via-orange-100 to-red-100 dark:from-red-900 dark:via-red-950 dark:to-black animate-[pulse_3s_ease-in-out_infinite]"
               : "bg-gray-50 dark:bg-gray-900"
           }`}
         >

@@ -114,25 +114,28 @@ export type Database = {
       };
       banquet_packages: {
         Row: {
+          categories: string[] | null;
           created_at: string;
           id: string;
-          menus: string[] | null;
+          is_active: boolean | null;
           name: string | null;
-          price: number | null;
+          price_per_cover: number | null;
         };
         Insert: {
+          categories?: string[] | null;
           created_at?: string;
           id?: string;
-          menus?: string[] | null;
+          is_active?: boolean | null;
           name?: string | null;
-          price?: number | null;
+          price_per_cover?: number | null;
         };
         Update: {
+          categories?: string[] | null;
           created_at?: string;
           id?: string;
-          menus?: string[] | null;
+          is_active?: boolean | null;
           name?: string | null;
-          price?: number | null;
+          price_per_cover?: number | null;
         };
         Relationships: [];
       };
@@ -141,16 +144,19 @@ export type Database = {
           count: number | null;
           created_at: string;
           id: number;
+          type: string | null;
         };
         Insert: {
           count?: number | null;
           created_at?: string;
           id?: number;
+          type?: string | null;
         };
         Update: {
           count?: number | null;
           created_at?: string;
           id?: number;
+          type?: string | null;
         };
         Relationships: [];
       };
@@ -252,6 +258,7 @@ export type Database = {
         Row: {
           amount_paid: number | null;
           banquet_package_id: string | null;
+          booking_number: string | null;
           booking_source: string | null;
           created_at: string;
           event_date: string | null;
@@ -260,6 +267,7 @@ export type Database = {
           guest_id: string | null;
           id: string;
           notes: string | null;
+          number_of_guest: number | null;
           payment_method: string | null;
           payment_status: string | null;
           room_id: string | null;
@@ -269,6 +277,7 @@ export type Database = {
         Insert: {
           amount_paid?: number | null;
           banquet_package_id?: string | null;
+          booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
           event_date?: string | null;
@@ -277,6 +286,7 @@ export type Database = {
           guest_id?: string | null;
           id?: string;
           notes?: string | null;
+          number_of_guest?: number | null;
           payment_method?: string | null;
           payment_status?: string | null;
           room_id?: string | null;
@@ -286,6 +296,7 @@ export type Database = {
         Update: {
           amount_paid?: number | null;
           banquet_package_id?: string | null;
+          booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
           event_date?: string | null;
@@ -294,6 +305,7 @@ export type Database = {
           guest_id?: string | null;
           id?: string;
           notes?: string | null;
+          number_of_guest?: number | null;
           payment_method?: string | null;
           payment_status?: string | null;
           room_id?: string | null;
@@ -302,24 +314,24 @@ export type Database = {
         };
         Relationships: [
           {
-            foreignKeyName: "function_room_bookings_banquet_package_id_fkey";
-            columns: ["banquet_package_id"];
-            isOneToOne: false;
-            referencedRelation: "banquet_packages";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "function_room_bookings_guest_id_fkey";
+            foreignKeyName: "function_hall_bookings_guest_id_fkey";
             columns: ["guest_id"];
             isOneToOne: false;
             referencedRelation: "guest";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "function_room_bookings_room_id_fkey";
+            foreignKeyName: "function_hall_bookings_room_id_fkey";
             columns: ["room_id"];
             isOneToOne: false;
             referencedRelation: "function-rooms";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "function_room_bookings_banquet_package_id_fkey";
+            columns: ["banquet_package_id"];
+            isOneToOne: false;
+            referencedRelation: "banquet_packages";
             referencedColumns: ["id"];
           },
         ];
@@ -635,7 +647,7 @@ export type Database = {
     };
     Functions: {
       get_available_room_types: {
-        Args: { check_in: string; check_out: string };
+        Args: { check_in: string; check_out: string; guests: number };
         Returns: {
           add_ons: Json[];
           description: string;
@@ -648,7 +660,6 @@ export type Database = {
           room_size: string;
         }[];
       };
-      get_full_analytics: { Args: never; Returns: Json };
       get_room_availability: {
         Args: {
           check_in: string;

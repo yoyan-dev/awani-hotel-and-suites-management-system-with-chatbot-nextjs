@@ -66,7 +66,7 @@ export default function AddBookingPage() {
     () =>
       guests.find((guest) => guest.id === selectedGuest) ||
       ({ full_name: "", contact_number: "", address: "" } as Guest),
-    [selectedGuest]
+    [selectedGuest],
   );
 
   React.useEffect(() => {
@@ -78,7 +78,7 @@ export default function AddBookingPage() {
           name: item.name,
           price: item.price,
           quantity: 0,
-        }))
+        })),
       );
     } else {
       setSpecialRequests([]);
@@ -101,13 +101,13 @@ export default function AddBookingPage() {
         payment_method: paymentDetail.method,
         amount_paid: paymentDetail.amountPaid,
       } as Booking,
-      specialRequests
+      specialRequests,
     );
   }, [specialRequests, roomType, checkInDate, checkOutDate, paymentDetail]);
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>,
-    payload: any
+    payload: any,
   ) {
     e.preventDefault();
     try {
@@ -127,7 +127,7 @@ export default function AddBookingPage() {
       formData.append("total_add_ons", payload?.totalAddOnsPrice);
       formData.append(
         "payment_status",
-        payload?.balance >= 0 ? payload?.status : "pending"
+        payload?.balance >= 0 ? payload?.status : "pending",
       );
       console.log(formData);
       formData.append("special_requests", JSON.stringify(specialRequests));
@@ -170,10 +170,6 @@ export default function AddBookingPage() {
             setCheckOutDate={setCheckOutDate}
             typesLoading={typesLoading}
             roomLoading={roomLoading}
-          />
-          <HealthDeclarationSection
-            selectedPurpose={selectedPurpose}
-            setSelectedPurpose={setSelectedPurpose}
           />
           {summary ? (
             <PaymentSection

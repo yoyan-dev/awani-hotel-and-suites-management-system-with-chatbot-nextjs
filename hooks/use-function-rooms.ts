@@ -5,6 +5,7 @@ import {
   addFunctionRoom,
   deleteFunctionRoom,
   deleteFunctionRooms,
+  fetchAvailableFunctionRooms,
   fetchFunctionRoom,
   fetchFunctionRooms,
   updateFunctionRoom,
@@ -24,6 +25,8 @@ export function useFunctionRooms() {
     fetchFunctionRooms: (payload: FetchFunctionRoomParams | null) =>
       dispatch(fetchFunctionRooms(payload || {})),
     fetchFunctionRoom: (id: string) => dispatch(fetchFunctionRoom(id)),
+    fetchAvailableFunctionRooms: (payload: FetchFunctionRoomParams) =>
+      dispatch(fetchAvailableFunctionRooms(payload)),
     addFunctionRoom: (payload: FormData) => dispatch(addFunctionRoom(payload)),
     updateFunctionRoom: (payload: FunctionRoom) =>
       dispatch(updateFunctionRoom(payload)),
