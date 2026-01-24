@@ -15,7 +15,6 @@ export async function proxy(req: NextRequest) {
           return req.cookies.get(name)?.value;
         },
         set(name, value, options) {
-          s;
           res.cookies.set({ name, value, ...options });
         },
         remove(name, options) {

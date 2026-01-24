@@ -25,6 +25,7 @@ import { generateSummary } from "@/utils/generate-summary";
 import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { BanquetPackage } from "@/types/banquet";
 
 export default function BookingActionsDropdown({
   booking,
@@ -37,9 +38,26 @@ export default function BookingActionsDropdown({
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
 
-  // const summary = React.useMemo(() => {
-  //   return generateSummary(booking, booking.special_requests);
-  // }, [booking, isViewSummaryOpen]);
+  const summary = React.useMemo(() => {
+    return {
+      banquet_package: booking.banquet_package as BanquetPackage,
+      number_of_guest: booking.number_of_guest,
+      total_amount:
+        booking.banquet_package.pricePerCover * (booking.number_of_guest || 0),
+      balance:
+        booking.banquet_package.pricePerCover * (booking.number_of_guest || 0),
+      status: booking.payment_status,
+      payment_method: booking.payment_method,
+    } as {
+      banquet_package: BanquetPackage;
+      package_price: number;
+      number_of_guest: number;
+      total_amount: number;
+      balance: number;
+      status: string;
+      payment_method: string;
+    };
+  }, [booking, isViewSummaryOpen]);
   return (
     <>
       {/* <ExtendModal
@@ -47,11 +65,11 @@ export default function BookingActionsDropdown({
         isOpen={extendOpen}
         onClose={() => setExtendOpen(false)}
       /> */}
-      {/* <ViewSummary
+      <ViewSummary
         isOpen={isViewSummaryOpen}
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
-      /> */}
+      />
       {/* <AddPaymentModal
         isOpen={addPaymentOpen}
         onClose={() => setAddPaymentOpen(false)}
@@ -74,7 +92,7 @@ export default function BookingActionsDropdown({
           >
             View Details
           </DropdownItem>
-          {booking.status === "pending" ? (
+          {/* {booking.status === "pending" ? (
             <DropdownItem
               key="edit"
               startContent={<Pencil className="w-4 h-4" />}
@@ -82,35 +100,22 @@ export default function BookingActionsDropdown({
             >
               Edit Booking
             </DropdownItem>
-          ) : null}
+          ) : null} */}
 
-          <DropdownItem
+          {/* <DropdownItem
             key="message"
             startContent={<MessageSquare className="w-4 h-4 text-gray-600" />}
           >
             View Messages
+          </DropdownItem> */}
+          <DropdownItem
+            key="assign"
+            href={`/admin/bookings/function-hall-bookings/assign-room/${booking.id}`}
+            startContent={<Bed className="w-4 h-4" />}
+          >
+            Assign Room
           </DropdownItem>
 
-          <DropdownItem isReadOnly key="div">
-            <div className="border-t border-gray-200 my-1"></div>
-          </DropdownItem>
-
-          {!booking.room_id ? (
-            <DropdownItem
-              key="assign"
-              href={`/admin/bookings/function-hall-bookings/assign-room/${booking.id}`}
-              startContent={<Bed className="w-4 h-4" />}
-            >
-              Assign Room
-            </DropdownItem>
-          ) : (
-            <DropdownItem
-              key="assign"
-              startContent={<Bed className="w-4 h-4" />}
-            >
-              Transfer Room
-            </DropdownItem>
-          )}
           {/* {!["check-in", "pending"].includes(booking.status || "default") ? (
             <DropdownItem key="checkin">
               <CheckInButton booking={booking} />
@@ -123,25 +128,13 @@ export default function BookingActionsDropdown({
             </DropdownItem>
           ) : null} */}
           <DropdownItem
-            key="extend"
-            startContent={<RotateCcw className="w-4 h-4 text-orange-500" />}
-            onClick={() => setExtendOpen(true)}
-          >
-            Extend Stay
-          </DropdownItem>
-
-          <DropdownItem isReadOnly key="div2">
-            <div className="border-t border-gray-200 my-1"></div>
-          </DropdownItem>
-
-          <DropdownItem
-            key="invoice"
+            key="summary"
             startContent={<FileText className="w-4 h-4 text-gray-700" />}
             onClick={() => setIsViewSummaryOpen(true)}
           >
-            Download Invoice
+            Summary
           </DropdownItem>
-          {booking.payment_status !== "paid" ? (
+          {/* {booking.payment_status !== "paid" ? (
             <DropdownItem
               key="payment"
               startContent={<Wallet className="w-4 h-4 text-gray-700" />}
@@ -149,13 +142,7 @@ export default function BookingActionsDropdown({
             >
               Add Payment
             </DropdownItem>
-          ) : null}
-          <DropdownItem
-            key="clean"
-            startContent={<BrushCleaning className="w-4 h-4 text-purple-600" />}
-          >
-            Request Cleaning
-          </DropdownItem>
+          ) : null} */}
 
           <DropdownItem isReadOnly key="div3">
             <div className="border-t border-gray-200 my-1"></div>

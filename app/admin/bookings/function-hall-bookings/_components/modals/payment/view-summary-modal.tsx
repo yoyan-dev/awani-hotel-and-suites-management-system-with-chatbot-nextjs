@@ -1,4 +1,5 @@
 import { formatPHP } from "@/lib/format-php";
+import { BanquetPackage } from "@/types/banquet";
 import {
   Modal,
   ModalContent,
@@ -19,7 +20,15 @@ export default function ViewSummary({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  summary: any;
+  summary: {
+    banquet_package: BanquetPackage;
+    package_price: number;
+    number_of_guest: number;
+    total_amount: number;
+    balance: number;
+    status: string;
+    payment_method: string;
+  };
 }) {
   return (
     <>
@@ -40,53 +49,28 @@ export default function ViewSummary({
               </ModalHeader>
               <ModalBody>
                 <div className="space-y-6">
-                  {/* Add-Ons / Special Requests */}
-                  {summary.totalAddOnsPrice > 0 ? (
-                    <>
-                      <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">
-                          Special Requests
-                        </h3>
-
-                        <div className="space-y-2">
-                          {summary?.specialRequests.map(
-                            (
-                              req: {
-                                name: string;
-                                price: string;
-                                quantity: number;
-                              },
-                              index: number
-                            ) =>
-                              req.quantity > 0 && (
-                                <div
-                                  key={index}
-                                  className="w-full px-4 py-2 flex justify-between items-center"
-                                >
-                                  <div className="flex flex-col">
-                                    <span className="font-medium">
-                                      {req.name}
-                                    </span>
-                                    <span className="text-xs opacity-80">
-                                      Price: {formatPHP(Number(req.price))} ×{" "}
-                                      {req.quantity}
-                                    </span>
-                                  </div>
-
-                                  <span className="font-bold">
-                                    {formatPHP(
-                                      Number(req.price) * req.quantity
-                                    )}
-                                  </span>
-                                </div>
-                              )
-                          )}
+                  <>
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <div className="w-full px-4 py-2 flex justify-between items-center">
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {summary.banquet_package.name}
+                            </span>
+                            <span className="text-xs opacity-80">
+                              Price:{" "}
+                              {formatPHP(
+                                Number(summary.banquet_package.pricePerCover),
+                              )}{" "}
+                              / per guest
+                            </span>
+                          </div>
                         </div>
                       </div>
+                    </div>
 
-                      <Divider className="my-2" />
-                    </>
-                  ) : null}
+                    <Divider className="my-2" />
+                  </>
 
                   {/* Summary Section */}
                   <div className="space-y-3">
@@ -95,33 +79,33 @@ export default function ViewSummary({
                         Total Add-ons
                       </span>
                       <span className="font-semibold">
-                        {formatPHP(summary.totalAddOnsPrice)}
+                        {formatPHP(summary.total_amount)}
                       </span>
                     </div>
 
-                    <div className="flex justify-between text-sm">
+                    {/* <div className="flex justify-between text-sm">
                       <span className="text-default-700 dark:text-default-400">
                         Room Price
                       </span>
                       <span className="font-semibold">
                         {formatPHP(summary.roomPrice)}
                       </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
+                    </div> */}
+                    {/* <div className="flex justify-between text-sm">
                       <span className="text-default-700 dark:text-default-400">
                         Nights
                       </span>
                       <span className="font-semibold">
                         {summary.nights} x {formatPHP(summary.roomPrice)}
                       </span>
-                    </div>
+                    </div> */}
 
-                    <div className="flex justify-between text-base">
+                    {/* <div className="flex justify-between text-base">
                       <span className="font-semibold">Total Per Night</span>
                       <span className="font-bold">
                         {formatPHP(summary.totalPerNights)}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   <Divider />
@@ -129,11 +113,7 @@ export default function ViewSummary({
                   {/* Grand Total */}
                   <div className="flex justify-between items-center text-lg font-bold">
                     <span>Grand Total</span>
-                    <span>
-                      {formatPHP(
-                        summary.totalAddOnsPrice + summary.totalPerNights
-                      )}
-                    </span>
+                    <span>{formatPHP(summary.total_amount)}</span>
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
@@ -141,7 +121,7 @@ export default function ViewSummary({
                         Status
                       </span>
                       <span className="font-semibold">
-                        {summary.balance > 0 ? summary.status : "Pending"}
+                        {summary.balance > 0 ? summary.status : "pending"}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -149,7 +129,7 @@ export default function ViewSummary({
                         Payment Method
                       </span>
                       <span className="font-semibold">
-                        {summary.paymentMethod || "Pending"}
+                        {summary.payment_method || "Pending"}
                       </span>
                     </div>
 
@@ -157,9 +137,7 @@ export default function ViewSummary({
                       <span className="text-default-700 dark:text-default-400">
                         Amount Paid
                       </span>
-                      <span className="font-semibold">
-                        {formatPHP(summary.ammountPaid)}
-                      </span>
+                      <span className="font-semibold">{formatPHP(0)}</span>
                     </div>
 
                     <div className="flex justify-between text-base">

@@ -417,6 +417,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      guest_request: {
+        Row: {
+          created_at: string;
+          fullname: string | null;
+          id: string;
+          request_details: string | null;
+          request_type: string | null;
+          room_number: string | null;
+          status: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          fullname?: string | null;
+          id?: string;
+          request_details?: string | null;
+          request_type?: string | null;
+          room_number?: string | null;
+          status?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          fullname?: string | null;
+          id?: string;
+          request_details?: string | null;
+          request_type?: string | null;
+          room_number?: string | null;
+          status?: string | null;
+        };
+        Relationships: [];
+      };
       housekeeping: {
         Row: {
           created_at: string;
