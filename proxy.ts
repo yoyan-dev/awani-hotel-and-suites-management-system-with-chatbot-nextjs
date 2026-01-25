@@ -37,37 +37,37 @@ export async function proxy(req: NextRequest) {
   }
 
   // block /auth for logged-in users
-  if (pathname.startsWith("/auth") && user) {
-    const roles = user.app_metadata?.roles || user.user_metadata?.roles;
-    let redirectTo = "/guest";
+  // if (pathname.startsWith("/auth") && user) {
+  //   const roles = user.app_metadata?.roles || user.user_metadata?.roles;
+  //   let redirectTo = "/guest";
 
-    if (roles?.includes("admin")) redirectTo = "/admin";
-    else if (roles?.includes("housekeeping")) redirectTo = "/housekeeping";
+  //   if (roles?.includes("admin")) redirectTo = "/admin";
+  //   else if (roles?.includes("housekeeping")) redirectTo = "/housekeeping";
 
-    return NextResponse.redirect(new URL(redirectTo, req.url));
-  }
+  //   return NextResponse.redirect(new URL(redirectTo, req.url));
+  // }
 
   // admin guard
-  if (
-    pathname.startsWith("/admin") &&
-    (!user ||
-      !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "admin",
-      ))
-  ) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // if (
+  //   pathname.startsWith("/admin") &&
+  //   (!user ||
+  //     !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
+  //       "admin",
+  //     ))
+  // ) {
+  //   return NextResponse.redirect(new URL("/auth", req.url));
+  // }
 
   // housekeeping guard
-  if (
-    pathname.startsWith("/housekeeping") &&
-    (!user ||
-      !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "housekeeping",
-      ))
-  ) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // if (
+  //   pathname.startsWith("/housekeeping") &&
+  //   (!user ||
+  //     !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
+  //       "housekeeping",
+  //     ))
+  // ) {
+  //   return NextResponse.redirect(new URL("/auth", req.url));
+  // }
 
   return res;
 }
