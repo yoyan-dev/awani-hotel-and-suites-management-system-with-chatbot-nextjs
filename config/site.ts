@@ -78,12 +78,12 @@ export const siteConfig = {
     //   isExpandable: true,
     //   icon: Utensils,
     // },
-    {
-      label: "Guest",
-      href: "/admin/guest",
-      isExpandable: false,
-      icon: Users,
-    },
+    // {
+    //   label: "Guest",
+    //   href: "/admin/guest",
+    //   isExpandable: false,
+    //   icon: Users,
+    // },
     {
       label: "Staff Management",
       href: "/admin/account",
@@ -154,11 +154,11 @@ export const siteConfig = {
       href: "/housekeeping/guests",
       icon: ArrowRightLeft,
     },
-    {
-      label: "Guest Requests",
-      href: "/housekeeping/requests",
-      icon: Inbox,
-    },
+    // {
+    //   label: "Guest Requests",
+    //   href: "/housekeeping/requests",
+    //   icon: Inbox,
+    // },
     {
       label: "Inventory",
       href: "/housekeeping/inventory",
@@ -195,11 +195,11 @@ export const siteConfig = {
       href: "/guest/menus",
       isExpandable: false,
     },
-    {
-      label: "Your Stay",
-      href: "/guest/guest-request",
-      isExpandable: false,
-    },
+    // {
+    //   label: "Your Stay",
+    //   href: "/guest/guest-request",
+    //   isExpandable: false,
+    // },
     {
       label: "About Us",
       href: "/guest/about-us",
