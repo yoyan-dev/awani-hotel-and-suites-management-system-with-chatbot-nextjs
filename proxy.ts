@@ -22,29 +22,18 @@ export async function proxy(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get: (name) => req.cookies.get(name)?.value,
-
-        set: (name, value, options) => {
-          res.cookies.set({
-            name,
-            value,
-            ...options,
-            httpOnly: true,
-            secure: true, // 🔥 REQUIRED IN PROD
-            sameSite: "lax", // ✅ works with same-origin
-            path: "/",
-          });
+        getAll() {
+          return req.cookies.getAll();
         },
-
-        remove: (name, options) => {
-          res.cookies.set({
-            name,
-            value: "",
-            ...options,
-            httpOnly: true,
-            secure: true,
-            sameSite: "lax",
-            path: "/",
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: true, // 🔥 REQUIRED IN PROD
+              sameSite: "lax", // ✅ works with same-origin
+              path: "/",
+            });
           });
         },
       },
