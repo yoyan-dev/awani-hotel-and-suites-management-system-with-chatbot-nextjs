@@ -2,6 +2,18 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+function redirectWithCookies(
+  req: NextRequest,
+  res: NextResponse,
+  path: string,
+) {
+  const redirect = NextResponse.redirect(new URL(path, req.url));
+  res.cookies.getAll().forEach((cookie) => {
+    redirect.cookies.set(cookie);
+  });
+  return redirect;
+}
+
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
 
@@ -10,11 +22,31 @@ export async function proxy(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll: () => req.cookies.getAll(),
-        setAll: (cookies) =>
-          cookies.forEach(({ name, value, options }) =>
-            res.cookies.set({ name, value, ...options }),
-          ),
+        get: (name) => req.cookies.get(name)?.value,
+
+        set: (name, value, options) => {
+          res.cookies.set({
+            name,
+            value,
+            ...options,
+            httpOnly: true,
+            secure: true, // 🔥 REQUIRED IN PROD
+            sameSite: "lax", // ✅ works with same-origin
+            path: "/",
+          });
+        },
+
+        remove: (name, options) => {
+          res.cookies.set({
+            name,
+            value: "",
+            ...options,
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            path: "/",
+          });
+        },
       },
     },
   );
@@ -48,18 +80,6 @@ export async function proxy(req: NextRequest) {
     return redirect("/auth");
 
   return res;
-}
-
-function redirectWithCookies(
-  req: NextRequest,
-  res: NextResponse,
-  path: string,
-) {
-  const redirect = NextResponse.redirect(new URL(path, req.url));
-  res.cookies.getAll().forEach((cookie) => {
-    redirect.cookies.set(cookie);
-  });
-  return redirect;
 }
 
 export const config = {
