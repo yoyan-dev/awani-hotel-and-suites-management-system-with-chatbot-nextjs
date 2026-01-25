@@ -2,12 +2,14 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { FetchRoomsParams, Room, RoomPagination } from "@/types/room";
 import { addToast } from "@heroui/react";
 
+const path = "/api/rooms";
+
 //analytics
 export const fetchAnalytics = createAsyncThunk<any>(
   "room/fetchAnalytics",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/rooms/analytics`);
+      const res = await fetch(`${path}/analytics`);
       const data = await res.json();
 
       return data.data;
@@ -19,7 +21,7 @@ export const fetchAnalytics = createAsyncThunk<any>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const fetchRooms = createAsyncThunk<
@@ -36,7 +38,7 @@ export const fetchRooms = createAsyncThunk<
     if (params?.selectedDate)
       searchParams.append("selectedDate", params.selectedDate);
 
-    const res = await fetch(`/api/rooms?${searchParams.toString()}`);
+    const res = await fetch(`${path}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -57,13 +59,13 @@ export const fetchRoom = createAsyncThunk<Room, string>(
   "room/fetchRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/rooms/${id}`);
+      const res = await fetch(`${path}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch room"
+          data.message?.description ?? "Failed to fetch room",
         );
       }
       return data.data;
@@ -75,7 +77,7 @@ export const fetchRoom = createAsyncThunk<Room, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const fetchAvailableRooms = createAsyncThunk<
@@ -93,7 +95,7 @@ export const fetchAvailableRooms = createAsyncThunk<
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
 
     const res = await fetch(
-      `/api/rooms/available-rooms?${searchParams.toString()}`
+      `${path}/available-rooms?${searchParams.toString()}`,
     );
     const data = await res.json();
 
@@ -112,7 +114,7 @@ export const addRoom = createAsyncThunk<Room, FormData>(
   "room/addRoom",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/rooms", {
+      const res = await fetch(path, {
         method: "POST",
         body: formData,
       });
@@ -120,7 +122,7 @@ export const addRoom = createAsyncThunk<Room, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add room"
+          data.message?.description ?? "Failed to add room",
         );
       }
       return data.data;
@@ -133,7 +135,7 @@ export const addRoom = createAsyncThunk<Room, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -141,7 +143,7 @@ export const updateRoom = createAsyncThunk<Room, Room, { rejectValue: string }>(
   "room/updateRoom",
   async (room, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/rooms/${room.id}`, {
+      const res = await fetch(`${path}/${room.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(room),
@@ -152,7 +154,7 @@ export const updateRoom = createAsyncThunk<Room, Room, { rejectValue: string }>(
 
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to update room"
+          data.message?.description ?? "Failed to update room",
         );
       }
 
@@ -165,7 +167,7 @@ export const updateRoom = createAsyncThunk<Room, Room, { rejectValue: string }>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // DELETE
@@ -173,13 +175,13 @@ export const deleteRoom = createAsyncThunk<string, string>(
   "room/deleteRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/rooms/${id}`, { method: "DELETE" });
+      const res = await fetch(`${path}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete room"
+          data.message?.description ?? "Failed to delete room",
         );
       }
 
@@ -192,7 +194,7 @@ export const deleteRoom = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 //  delete selected rooms or all
@@ -207,7 +209,7 @@ export const deleteRooms = createAsyncThunk<
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch("/api/rooms", {
+    const res = await fetch(path, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

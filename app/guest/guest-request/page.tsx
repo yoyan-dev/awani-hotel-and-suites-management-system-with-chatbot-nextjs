@@ -1,9 +1,18 @@
 "use client";
 
+import { useGuestRequests } from "@/hooks/use-guest-requests";
 import { Input, Textarea, Button, Card } from "@heroui/react";
 import { ClipboardList } from "lucide-react";
 
 export default function GuestRequestPage() {
+  const { isLoading, error, addGuestRequest } = useGuestRequests();
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    addGuestRequest(formData);
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-3xl mx-auto">
@@ -17,13 +26,14 @@ export default function GuestRequestPage() {
         </div>
 
         <Card className="p-6 rounded-md shadow-sm">
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-1">
               <Input
                 variant="bordered"
                 label="Full Name"
                 labelPlacement="outside"
                 id="name"
+                name="fullname"
                 placeholder="Your full name"
                 required
               />
@@ -35,6 +45,7 @@ export default function GuestRequestPage() {
                 label="Room Number"
                 labelPlacement="outside"
                 id="room"
+                name="room_number"
                 placeholder="e.g. 101"
                 required
               />
@@ -46,6 +57,7 @@ export default function GuestRequestPage() {
                 label="Request Type"
                 labelPlacement="outside"
                 id="type"
+                name="request_type"
                 placeholder="Extra Towels, Late Checkout, etc."
                 required
               />
@@ -57,12 +69,13 @@ export default function GuestRequestPage() {
                 label="Request Details"
                 labelPlacement="outside"
                 id="details"
+                name="request_details"
                 placeholder="Write your request here..."
                 required
               />
             </div>
 
-            <Button type="submit" color="primary">
+            <Button type="submit" color="primary" isLoading={isLoading}>
               <ClipboardList size={18} />
               Submit Request
             </Button>

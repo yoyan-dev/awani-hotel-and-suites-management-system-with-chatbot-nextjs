@@ -6,8 +6,11 @@ export interface FunctionRoom {
   max_guest?: number;
   size?: string;
   description?: string;
-  bookings?: [];
+  bookings?: any;
   status?: string;
+  total_guests?: number;
+  remaining_slots?: number;
+  availability?: number;
   remarks?: string;
 }
 
@@ -29,4 +32,7 @@ export interface FetchFunctionRoomParams {
   page?: number;
   query?: string;
   status?: string | undefined;
+  event_date?: any;
+  start?: any;
+  end?: any;
 }

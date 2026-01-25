@@ -13,6 +13,7 @@ import userReducer from "@/features/users/user-slice";
 import guestReducer from "@/features/guest/guest-slice";
 import authReducer from "@/features/auth/auth-slice";
 import staffReducer from "@/features/staff/staff-slice";
+import guestRequestReducer from "@/features/guest-requests/guest-request-slice";
 
 export const store = configureStore({
   reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
     guests: guestReducer,
     auth_user: authReducer,
     staff: staffReducer,
+    guest_requests: guestRequestReducer,
   },
 });
 

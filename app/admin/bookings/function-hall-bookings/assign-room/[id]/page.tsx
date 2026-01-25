@@ -21,60 +21,68 @@ import {
   UserRound,
   CalendarDays,
   ArrowRightCircle,
+  Users,
+  Users2,
 } from "lucide-react";
 import { useRooms } from "@/hooks/use-rooms";
 import { useBookings } from "@/hooks/use-bookings";
 import { Room } from "@/types/room";
 import { useParams } from "next/navigation";
 import { Booking } from "@/types/booking";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionRooms } from "@/hooks/use-function-rooms";
+import { FunctionRoom } from "@/types/function-room";
+import { FunctionHallBooking } from "@/types/function-room-booking";
 
 export default function AssignRoomPage() {
   const { id } = useParams();
   const {
-    booking,
-    isLoading: bookingLoading,
+    function_hall_booking,
+    isLoading: functionHallIsLoading,
     fetchBooking,
     updateBooking,
     error,
-  } = useBookings();
+  } = useFunctionHallBookings();
+
   const {
-    rooms,
-    isLoading: roomLoading,
-    fetchAvailableRooms,
-    updateRoom,
-  } = useRooms();
+    function_rooms,
+    isLoading: roomIsLoading,
+    fetchAvailableFunctionRooms,
+    updateFunctionRoom,
+  } = useFunctionRooms();
 
   React.useEffect(() => {
     if (id) {
       fetchBooking(id as string);
     }
-  }, [id, error]);
+  }, [id]);
 
   React.useEffect(() => {
-    if (booking.room_type_id) {
-      fetchAvailableRooms({
-        roomTypeID: booking.room_type_id,
-        checkIn: booking.check_in,
-        checkOut: booking.check_out,
+    if (function_hall_booking.event_date) {
+      fetchAvailableFunctionRooms({
+        event_date: function_hall_booking.event_date,
+        start: function_hall_booking.event_duration?.start,
+        end: function_hall_booking.event_duration?.end,
       });
     }
-  }, [booking.room_type_id]);
+  }, [function_hall_booking.event_date]);
 
-  async function assignRoom(room: Room) {
+  async function assignRoom(room: FunctionRoom, status: string) {
     await updateBooking({
-      id: booking.id,
+      id: function_hall_booking.id,
       room_id: room.id,
-      status: "confirmed",
-    } as Booking);
+      status: "reserved",
+    } as FunctionHallBooking);
 
-    await updateRoom({
+    await updateFunctionRoom({
       id: room.id,
-      bookings: [...(room.bookings || []), booking],
+      status: status,
+      bookings: [...(room.bookings || []), function_hall_booking],
     });
     fetchBooking(id as string);
   }
 
-  if (roomLoading || bookingLoading) {
+  if (roomIsLoading || functionHallIsLoading) {
     return <div className="p-6">Loading...</div>;
   }
 
@@ -90,31 +98,36 @@ export default function AssignRoomPage() {
       <Divider className="mb-6" />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {rooms.map((room) => (
+        {function_rooms.map((room) => (
           <Card
             key={room.id}
             isPressable
             className="hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300"
           >
             <Image
-              src={room.images?.[0]}
-              alt={room.room_id}
+              src={room.image}
+              alt={room.id}
               className="rounded-t-xl h-40 w-xl object-cover"
             />
             <CardHeader className="flex flex-col items-start gap-1">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-                {room.room_number}
+                Room #{room.room_number}
               </h3>
-              <p className="text-sm text-gray-500">{room.room_type.name}</p>
+              <p className="text-sm text-gray-500">{room.type}</p>
             </CardHeader>
             <CardBody className="text-sm text-gray-600 dark:text-gray-300 flex flex-col gap-2">
-              <p className="flex items-center gap-2">
-                <Building2 className="w-4 h-4" /> {room.area}
-              </p>
+              <div className="flex w-full gap-4">
+                <h3 className="text-md font-semibold text-gray-800 dark:text-white flex gap-2">
+                  <Users /> {room.max_guest}
+                </h3>
+                <h3 className="text-md font-semibold text-gray-800 dark:text-white flex gap-2">
+                  <Users2 /> {room.remaining_slots} (remaining slots)
+                </h3>
+              </div>
               <p className="flex items-center gap-2">
                 <CalendarDays className="w-4 h-4" />{" "}
-                {booking.room_id !== room.id
-                  ? room.availability
+                {function_hall_booking.room_id !== room.id
+                  ? room?.availability
                   : "Already selected"}
               </p>
               <Chip
@@ -126,18 +139,26 @@ export default function AssignRoomPage() {
                 {room.status}
               </Chip>
             </CardBody>
-            {booking.room_id !== room.id ? (
+            {function_hall_booking.room_id !== room.id ? (
               <>
                 <Divider />
-                <CardFooter>
+                <CardFooter className="flex gap-2">
                   <Button
-                    onPress={() => assignRoom(room)}
+                    onPress={() => assignRoom(room, "half occupied")}
                     fullWidth
-                    isLoading={bookingLoading}
+                    isLoading={functionHallIsLoading}
                     color="primary"
-                    startContent={<ArrowRightCircle className="w-4 h-4" />}
                   >
-                    Assign Room
+                    Assign Half Room
+                  </Button>
+
+                  <Button
+                    onPress={() => assignRoom(room, "half occupied")}
+                    fullWidth
+                    isLoading={functionHallIsLoading}
+                    color="default"
+                  >
+                    Assign Full Room
                   </Button>
                 </CardFooter>
               </>

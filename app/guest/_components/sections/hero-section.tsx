@@ -70,7 +70,7 @@ export default function HeroBanner() {
           as={Link}
           href="/guest/reservations/hotel-rooms/reservation/null"
         >
-          {isPeakSeason ? "Book Peak Season Stay ✨" : "Book Apartments"}
+          {isPeakSeason ? "Book Peak Season Stay ✨" : "Book Now"}
         </Button>
       </div>
     </section>

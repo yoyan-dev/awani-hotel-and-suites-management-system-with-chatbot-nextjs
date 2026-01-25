@@ -165,7 +165,7 @@ export default function BookingDetailsStunning() {
                   <div className="text-xl font-bold text-green-600">
                     {formatPHP(
                       calculateBookingPrice(booking) +
-                        Number(booking.total_add_ons || 0)
+                        Number(booking.total_add_ons || 0),
                     )}
                   </div>
                 </div>
@@ -218,20 +218,20 @@ export default function BookingDetailsStunning() {
             <div className="text-xs text-gray-500">Company</div>
             <div className="text-sm">{booking.company || "N/A"}</div>
           </div>
-          <div>
+          {/* <div>
             <div className="text-xs text-gray-500">Purpose of stay</div>
             <div className="text-sm">{booking.purpose || "N/A"}</div>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <div className="text-xs text-gray-500">Place Last Visited</div>
             <div className="text-sm">
               {booking.places_last_visited || "N/A"}
             </div>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <div className="text-xs text-gray-500">Recent Sickness</div>
             <div className="text-sm">{booking.recent_sickness || "N/A"}</div>
-          </div>
+          </div> */}
         </CardBody>
       </Card>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -320,7 +320,7 @@ export default function BookingDetailsStunning() {
               <div className="text-lg font-bold text-green-600">
                 {formatPHP(
                   calculateBookingPrice(booking) +
-                    Number(booking.total_add_ons || 0)
+                    Number(booking.total_add_ons || 0),
                 )}
               </div>
             </div>

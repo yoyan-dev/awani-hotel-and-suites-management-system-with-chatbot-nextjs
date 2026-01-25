@@ -16,7 +16,6 @@ import RoomDetails from "../modals/view-modal";
 import DeleteModal from "../modals/delete-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { updateRoom } from "@/features/room/room-thunk";
 import React from "react";
 import { FunctionRoom } from "@/types/function-room";
 
@@ -27,14 +26,9 @@ interface RenderCellProps {
 
 export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
   const cellValue = room[columnKey as keyof FunctionRoom];
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error } = useSelector((state: RootState) => state.room);
   const [viewOpen, setViewOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
 
-  function handleStatusChange(e: any) {
-    dispatch(updateRoom({ ...room, status: e.target.value }));
-  }
 
   switch (columnKey) {
     case "image":

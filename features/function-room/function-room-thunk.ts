@@ -6,6 +6,8 @@ import {
   FunctionRoomPagination,
 } from "@/types/function-room";
 
+const path = "/api/function-rooms";
+
 export const fetchFunctionRooms = createAsyncThunk<
   { data: FunctionRoom[]; pagination: FunctionRoomPagination },
   FetchFunctionRoomParams | undefined
@@ -16,7 +18,7 @@ export const fetchFunctionRooms = createAsyncThunk<
     if (params?.query) searchParams.append("q", params.query);
     if (params?.status) searchParams.append("status", params.status);
 
-    const res = await fetch(`/api/function-rooms?${searchParams.toString()}`);
+    const res = await fetch(`${path}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -37,13 +39,13 @@ export const fetchFunctionRoom = createAsyncThunk<FunctionRoom, string>(
   "room/fetchFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/function-rooms/${id}`);
+      const res = await fetch(`${path}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch function room"
+          data.message?.description ?? "Failed to fetch function room",
         );
       }
       return data.data;
@@ -55,40 +57,41 @@ export const fetchFunctionRoom = createAsyncThunk<FunctionRoom, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
-// export const fetchAvailableFunctionRooms = createAsyncThunk<
-//   { data: Room[] },
-//   FetchRoomsParams | undefined
-// >("room/fetchAvailableFunctionRooms", async (params, { rejectWithValue }) => {
-//   try {
-//     const searchParams = new URLSearchParams();
-//     if (params?.status) searchParams.append("status", params.status);
-//     if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
-//     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
+export const fetchAvailableFunctionRooms = createAsyncThunk<
+  { data: FunctionRoom[] },
+  FetchFunctionRoomParams | undefined
+>("room/fetchAvailableFunctionRooms", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.event_date) searchParams.append("eventDate", params.event_date);
+    if (params?.start) searchParams.append("start", params.start);
+    if (params?.end) searchParams.append("end", params.end);
 
-//     const res = await fetch(
-//       `/api/function-function-rooms/available-rooms?${searchParams.toString()}`
-//     );
-//     const data = await res.json();
+    const res = await fetch(
+      `${path}/available-rooms?${searchParams.toString()}`,
+    );
+    const data = await res.json();
 
-//     if (!res.ok || !data.success) {
-//       addToast(data.message ?? "Failed to fetch rooms");
-//       return rejectWithValue(data.message ?? "Failed to fetch rooms");
-//     }
+    if (!res.ok || !data.success) {
+      addToast(data.message ?? "Failed to fetch rooms");
+      return rejectWithValue(data.message ?? "Failed to fetch rooms");
+    }
 
-//     return data;
-//   } catch (error: any) {
-//     return rejectWithValue(error.message);
-//   }
-// });
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
 
 export const addFunctionRoom = createAsyncThunk<FunctionRoom, FormData>(
   "room/addFunctionRoom",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/function-rooms", {
+      const res = await fetch(path, {
         method: "POST",
         body: formData,
       });
@@ -96,7 +99,7 @@ export const addFunctionRoom = createAsyncThunk<FunctionRoom, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add function room"
+          data.message?.description ?? "Failed to add function room",
         );
       }
       return data.data;
@@ -109,7 +112,7 @@ export const addFunctionRoom = createAsyncThunk<FunctionRoom, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -119,7 +122,7 @@ export const updateFunctionRoom = createAsyncThunk<
   { rejectValue: string }
 >("room/updateFunctionRoom", async (room, { rejectWithValue }) => {
   try {
-    const res = await fetch(`/api/function-rooms/${room.id}`, {
+    const res = await fetch(`${path}/${room.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(room),
@@ -130,7 +133,7 @@ export const updateFunctionRoom = createAsyncThunk<
 
     if (!res.ok || !data.success) {
       return rejectWithValue(
-        data.message?.description ?? "Failed to update function room"
+        data.message?.description ?? "Failed to update function room",
       );
     }
 
@@ -150,7 +153,7 @@ export const deleteFunctionRoom = createAsyncThunk<string, string>(
   "room/deleteFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/function-rooms/${id}`, {
+      const res = await fetch(`${path}/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -158,7 +161,7 @@ export const deleteFunctionRoom = createAsyncThunk<string, string>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete function room"
+          data.message?.description ?? "Failed to delete function room",
         );
       }
 
@@ -171,7 +174,7 @@ export const deleteFunctionRoom = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 //  delete selected rooms or all
@@ -188,7 +191,7 @@ export const deleteFunctionRooms = createAsyncThunk<
           ? { selectedValues: "all" }
           : { selectedValues: Array.from(selectedValues) };
 
-      const res = await fetch("/api/function-rooms", {
+      const res = await fetch(path, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -207,5 +210,5 @@ export const deleteFunctionRooms = createAsyncThunk<
       });
       return thunkAPI.rejectWithValue(err.message);
     }
-  }
+  },
 );

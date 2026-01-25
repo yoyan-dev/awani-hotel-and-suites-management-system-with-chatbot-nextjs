@@ -8,6 +8,7 @@ import {
   addFunctionRoom,
   deleteFunctionRoom,
   deleteFunctionRooms,
+  fetchAvailableFunctionRooms,
   fetchFunctionRoom,
   fetchFunctionRooms,
   updateFunctionRoom,
@@ -42,9 +43,27 @@ const FunctionRoomSlice = createSlice({
           state.isLoading = false;
           state.function_room = action.payload;
           state.error = undefined;
-        }
+        },
       )
       .addCase(fetchFunctionRoom.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      // get available function rooms
+      .addCase(fetchAvailableFunctionRooms.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        fetchAvailableFunctionRooms.fulfilled,
+        (state, action: PayloadAction<{ data: FunctionRoom[] }>) => {
+          state.isLoading = false;
+          state.function_rooms = action.payload.data;
+          state.error = undefined;
+        },
+      )
+      .addCase(fetchAvailableFunctionRooms.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       })
@@ -61,13 +80,13 @@ const FunctionRoomSlice = createSlice({
           action: PayloadAction<{
             data: FunctionRoom[];
             pagination: FunctionRoomPagination;
-          }>
+          }>,
         ) => {
           state.isLoading = false;
           state.function_rooms = action.payload.data;
           state.pagination = action.payload.pagination;
           state.error = undefined;
-        }
+        },
       )
 
       .addCase(fetchFunctionRooms.rejected, (state, action) => {
@@ -104,7 +123,7 @@ const FunctionRoomSlice = createSlice({
           state.isLoading = false;
           state.error = undefined;
           state.function_rooms.push(action.payload);
-        }
+        },
       )
       .addCase(addFunctionRoom.rejected, (state, action) => {
         state.isLoading = false;
@@ -122,12 +141,12 @@ const FunctionRoomSlice = createSlice({
           state.isLoading = false;
           state.error = undefined;
           const index = state.function_rooms.findIndex(
-            (r) => r.id === action.payload.id
+            (r) => r.id === action.payload.id,
           );
           if (index !== -1) {
             state.function_rooms[index] = action.payload;
           }
-        }
+        },
       )
       .addCase(updateFunctionRoom.rejected, (state, action) => {
         state.isLoading = false;
@@ -143,7 +162,7 @@ const FunctionRoomSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.function_rooms = state.function_rooms.filter(
-          (r) => r.id !== action.payload
+          (r) => r.id !== action.payload,
         );
       })
       .addCase(deleteFunctionRoom.rejected, (state, action) => {
@@ -160,7 +179,7 @@ const FunctionRoomSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.function_rooms = state.function_rooms.filter(
-          (r) => !action.payload.map((room) => room.id).includes(r.id)
+          (r) => !action.payload.map((room) => room.id).includes(r.id),
         );
       })
       .addCase(deleteFunctionRooms.rejected, (state, action) => {

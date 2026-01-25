@@ -9,12 +9,14 @@ import {
   Divider,
   Button,
   Textarea,
+  Link,
 } from "@heroui/react";
 import { useParams } from "next/navigation";
 import React from "react";
 import Loader from "./loader";
 import { Mail, Phone } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
+import { FunctionHallBooking } from "@/types/function-room-booking";
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
@@ -190,7 +192,7 @@ export default function BookingDetailsPage() {
             </p>
             <p className="text-sm">
               {formatPHP(
-                function_hall_booking.banquet_package?.price_per_cover
+                function_hall_booking.banquet_package?.price_per_cover,
               )}{" "}
               / guest
             </p>
@@ -199,27 +201,57 @@ export default function BookingDetailsPage() {
       </Card>
 
       {/* Admin Actions */}
-      <Card className="shadow-sm" radius="sm">
-        <CardHeader>
-          <h3 className="font-medium">Admin Actions</h3>
-        </CardHeader>
-        <CardBody className="space-y-4">
-          {/* <Textarea
+      {function_hall_booking.status !== "rejected" &&
+      function_hall_booking.status !== "cancelled" ? (
+        <Card className="shadow-sm" radius="sm">
+          <CardHeader>
+            <h3 className="font-medium">Admin Actions</h3>
+          </CardHeader>
+          <CardBody className="space-y-4">
+            {/* <Textarea
             label="Admin Notes"
             placeholder="Add internal notes here..."
           /> */}
 
-          <div className="flex gap-3 justify-end">
-            <Button color="danger" variant="flat">
-              Reject
-            </Button>
-            <Button color="warning" variant="flat">
-              Set Pending
-            </Button>
-            <Button color="success">Confirm Booking</Button>
-          </div>
-        </CardBody>
-      </Card>
+            <div className="flex gap-3 justify-end">
+              {function_hall_booking.status === "pending" ? (
+                <Button
+                  color="danger"
+                  variant="flat"
+                  onPress={() =>
+                    updateBooking({
+                      id: function_hall_booking.id,
+                      status: "rejected",
+                    } as FunctionHallBooking)
+                  }
+                >
+                  Reject
+                </Button>
+              ) : (
+                <Button
+                  color="danger"
+                  variant="flat"
+                  onPress={() =>
+                    updateBooking({
+                      id: function_hall_booking.id,
+                      status: "cancelled",
+                    } as FunctionHallBooking)
+                  }
+                >
+                  Cancelled
+                </Button>
+              )}
+              <Button
+                color="success"
+                as={Link}
+                href={`/admin/bookings/function-hall-bookings/assign-room/${function_hall_booking.id}`}
+              >
+                Confirm Booking
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
     </div>
   );
 }

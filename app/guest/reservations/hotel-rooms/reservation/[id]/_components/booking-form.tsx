@@ -242,8 +242,8 @@ export default function BookingForm({
                               prev.map((req) =>
                                 req.name === request.name
                                   ? { ...req, quantity: req.quantity - 1 }
-                                  : req
-                              )
+                                  : req,
+                              ),
                             )
                           }
                         >
@@ -261,8 +261,8 @@ export default function BookingForm({
                               prev.map((req) =>
                                 req.name === request.name
                                   ? { ...req, quantity: req.quantity + 1 }
-                                  : req
-                              )
+                                  : req,
+                              ),
                             )
                           }
                         >
@@ -290,7 +290,7 @@ export default function BookingForm({
               errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
             />
           </div>
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h1>
               <Chip color="primary" className="text-sm">
                 3
@@ -357,7 +357,7 @@ export default function BookingForm({
               <Checkbox value="severe diarhea">Severe Diarhea</Checkbox>
               <Checkbox value="none">None</Checkbox>
             </CheckboxGroup>
-          </div>
+          </div> */}
           <div className="space-y-4">
             <h1 className="px-2 bg-primary text-white md:text-xl">
               Declaration

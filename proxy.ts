@@ -1,23 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { createServerClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
+
+function redirectWithCookies(
+  req: NextRequest,
+  res: NextResponse,
+  path: string,
+) {
+  const redirect = NextResponse.redirect(new URL(path, req.url));
+  res.cookies.getAll().forEach((cookie) => {
+    redirect.cookies.set(cookie);
+  });
+  return redirect;
+}
 
 export async function proxy(req: NextRequest) {
-  const res = NextResponse.next();
+  let res = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return req.cookies.get(name)?.value;
+        getAll() {
+          return req.cookies.getAll();
         },
-        set(name: string, value: string, options: any) {
-          res.cookies.set({ name, value, ...options });
-        },
-        remove(name: string, options: any) {
-          res.cookies.set({ name, value: "", ...options });
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: true, // 🔥 REQUIRED IN PROD
+              sameSite: "lax", // ✅ works with same-origin
+              path: "/",
+            });
+          });
         },
       },
     },
@@ -28,45 +45,28 @@ export async function proxy(req: NextRequest) {
   } = await supabase.auth.getSession();
 
   const user = session?.user;
-  const { pathname } = req.nextUrl;
+  const roles = user?.app_metadata?.roles || user?.user_metadata?.roles || [];
 
-  // redirect root
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/guest", req.url));
-  }
+  const pathname = req.nextUrl.pathname;
 
-  // prevent logged-in users from visiting /auth
-  if (pathname.startsWith("/auth") && user) {
-    const roles = user.app_metadata?.roles || user.user_metadata?.roles;
-    let redirectTo = "/guest";
+  const redirect = (path: string) => redirectWithCookies(req, res, path);
 
-    if (roles?.includes("admin")) redirectTo = "/admin";
-    else if (roles?.includes("housekeeping")) redirectTo = "/housekeeping";
+  // Root
+  if (pathname === "/") return redirect("/guest");
 
-    return NextResponse.redirect(new URL(redirectTo, req.url));
-  }
+  // Block auth if logged in
+  // if (pathname.startsWith("/auth") && user) {
+  //   if (roles.includes("admin")) return redirect("/admin");
+  //   if (roles.includes("housekeeping")) return redirect("/housekeeping");
+  //   return redirect("/guest");
+  // }
 
-  // admin guard
-  if (
-    pathname.startsWith("/admin") &&
-    (!user ||
-      !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "admin",
-      ))
-  ) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // // Guards
+  // if (pathname.startsWith("/admin") && !roles.includes("admin"))
+  //   return redirect("/auth");
 
-  // housekeeping guard
-  if (
-    pathname.startsWith("/housekeeping") &&
-    (!user ||
-      !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-        "housekeeping",
-      ))
-  ) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping"))
+  //   return redirect("/auth");
 
   return res;
 }

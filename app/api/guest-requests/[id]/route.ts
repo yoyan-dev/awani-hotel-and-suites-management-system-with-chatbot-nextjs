@@ -1,69 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
-import { FunctionHallBooking } from "@/types/function-room-booking";
 
-//GET ONE
-export async function GET(
-  _req: NextRequest,
-  context: { params: Promise<{ id: string }> },
-): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
-
-  const { data: booking, error } = await supabase
-    .from("function_hall_bookings")
-    .select(
-      `
-      id,
-      guest_id,
-      event_type,
-      event_date,
-      event_duration,
-      banquet_package_id,
-      number_of_guest,
-      room_id,
-      notes,
-      status,
-      booking_source,
-      created_at,
-      guest: guest_id(*),
-      banquet_package: banquet_package_id(*),
-      room: room_id(*)
-    `,
-    )
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error("Error fetching booking:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "API Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
-  }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: booking as FunctionHallBooking,
-    },
-    { status: 201 },
-  );
-}
-
+const dbTable = "guest_requests";
 // UPDATE
 export async function PUT(
   req: NextRequest,
@@ -73,7 +12,7 @@ export async function PUT(
   const body = await req.json();
 
   const { data, error } = await supabase
-    .from("function_hall_bookings")
+    .from(dbTable)
     .update(body)
     .eq("id", id)
     .select()
@@ -85,7 +24,7 @@ export async function PUT(
       {
         success: false,
         message: {
-          title: "Database Error",
+          title: "Error",
           description: error.message,
           color: "error",
         },
@@ -101,7 +40,7 @@ export async function PUT(
         success: false,
         message: {
           title: "Error",
-          description: "Item not found",
+          description: "Guest request not found",
           color: "error",
         },
       },
@@ -113,7 +52,7 @@ export async function PUT(
     success: true,
     message: {
       title: "Success",
-      description: "Booking updated successfully",
+      description: "Guest request updated successfully",
       color: "success",
     },
     data: data,
@@ -127,10 +66,7 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
-  const { error } = await supabase
-    .from("function_hall_bookings")
-    .delete()
-    .eq("id", id);
+  const { error } = await supabase.from(dbTable).delete().eq("id", id);
 
   if (error) {
     console.error("Delete error:", error);
@@ -152,7 +88,7 @@ export async function DELETE(
       success: true,
       message: {
         title: "Success",
-        description: "Item deleted successfully",
+        description: "Guest request deleted successfully",
         color: "success",
       },
     },

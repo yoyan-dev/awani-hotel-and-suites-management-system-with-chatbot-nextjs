@@ -8,12 +8,13 @@ import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { Room, RoomType } from "@/types/room";
-import { Booking } from "@/types/booking";
+import { Booking, FetchBookingParams } from "@/types/booking";
 import { getNights } from "@/utils/pricing";
 import { bookingStatusHexColorMap } from "@/app/constants/booking";
 import ViewModal from "./modals/view-modal";
 import CalendarHeader from "./calendar-custom/calendar-header";
 import { useBookings } from "@/hooks/use-bookings";
+import { toISODateOnly } from "@/utils/iso-format";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -27,6 +28,8 @@ const localizer = dateFnsLocalizer({
 const DnDCalendar = withDragAndDrop(Calendar);
 
 export function CalendarView({
+  query,
+  setQuery,
   rooms,
   calendarRef,
   bookings,
@@ -35,6 +38,8 @@ export function CalendarView({
   setSelectedRoomType,
   roomType,
 }: {
+  query: FetchBookingParams;
+  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
   rooms: Room[];
   calendarRef: any;
   bookings: Booking[];
@@ -53,7 +58,7 @@ export function CalendarView({
       id: booking.id,
       title: `${booking.user?.full_name || "Unknown Guest"} ● ${getNights(
         booking.check_in,
-        booking.check_out
+        booking.check_out,
       )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
       start: new Date(booking.check_in),
       end: new Date(booking.check_out),
@@ -68,7 +73,7 @@ export function CalendarView({
 
   const handleEventDrop = ({ event, start, end }: any) => {
     setEvents((prev) =>
-      prev.map((ev) => (ev.id === event.id ? { ...ev, start, end } : ev))
+      prev.map((ev) => (ev.id === event.id ? { ...ev, start, end } : ev)),
     );
     console.log(start, end);
   };
@@ -90,11 +95,33 @@ export function CalendarView({
 
   const resources = React.useMemo(() => {
     if (!rooms) return [];
-    return rooms.map((room) => ({
-      id: room.id,
-      title: `${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
-    }));
+    return [
+      ...rooms.map((room) => ({
+        id: room.id,
+        title: `${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
+      })),
+      { id: "no assigned", title: "No assigned" },
+    ];
   }, [rooms]);
+
+  const handleRangeChange = (range: any, view?: string) => {
+    let start: Date;
+    let end: Date;
+
+    if (!Array.isArray(range) && range.start && range.end) {
+      start = range.start;
+      end = range.end;
+    } else if (Array.isArray(range)) {
+      start = range[0];
+      end = range[range.length - 1];
+    } else {
+      return;
+    }
+
+    const startISO = toISODateOnly(start);
+    const endISO = toISODateOnly(end);
+    setQuery({ ...query, date_range: { start: startISO, end: endISO } });
+  };
 
   return (
     <div className="p-4">
@@ -115,6 +142,7 @@ export function CalendarView({
         style={{ height: 600 }}
         resizable
         onEventDrop={handleEventDrop}
+        onRangeChange={handleRangeChange}
         eventPropGetter={eventStyleGetter}
         selectable
         components={{
@@ -124,7 +152,7 @@ export function CalendarView({
               label={props.label}
               onNavigate={props.onNavigate}
               onView={props.onView}
-              views={["week", "day", "agenda", "month"]}
+              views={["week", "agenda", "month"]}
               selectedName={selectedName}
               selectedRoomType={selectedRoomType}
               setSelectedRoomType={setSelectedRoomType}

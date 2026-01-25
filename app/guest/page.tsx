@@ -14,15 +14,22 @@ import { motion } from "framer-motion";
 import Footer from "./_components/footer";
 import ContactSection from "./_components/sections/contact/page";
 import TestimonialsSection from "./_components/sections/testimonials/testimonial-section";
+import BestSellerMenusSection from "./_components/sections/best-seller-menus-section";
 
 export default function page() {
   const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
+
+  React.useEffect(() => {
+    fetchRoomTypes({});
+  }, []);
+
   return (
     <div>
       <HeroBanner />
       <About />
       <Stats />
       <RoomsCarousel rooms={room_types} isLoading={isLoading} />
+      <BestSellerMenusSection />
       <BanquetSection />
       {/* <PeakSeasonDate rooms={room_types} isLoading={isLoading} /> */}
       <HotelPoolSection />

@@ -18,9 +18,12 @@ import { useRooms } from "@/hooks/use-rooms";
 import { useBookings } from "@/hooks/use-bookings";
 import { CalendarView } from "./_components/calendar-view";
 import { formatDate } from "@/utils/format-date";
+import { FetchBookingParams } from "@/types/booking";
 
 export default function Calendar() {
   const calendarRef = React.useRef(null);
+  const [query, setQuery] = React.useState<FetchBookingParams>({});
+
   const {
     room_types,
     isLoading: roomTypeLoading,
@@ -45,13 +48,11 @@ export default function Calendar() {
   React.useEffect(() => {
     if (!selectedRoomType) return;
     const timer = setTimeout(() => {
-      fetchRooms({
-        roomTypeID: selectedRoomType,
-      });
+      fetchRooms({ ...query, roomTypeID: selectedRoomType });
       fetchBookings({ roomTypeID: selectedRoomType });
     }, 300);
     return () => clearTimeout(timer);
-  }, [selectedRoomType]);
+  }, [selectedRoomType, query]);
 
   const selectedName =
     room_types?.find((t) => String(t.id) === selectedRoomType)?.name ??
@@ -63,8 +64,12 @@ export default function Calendar() {
         Booking Calendar
       </h1>
       <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
+        Bookings for{" "}
+        <span className="font-bold text-primary">{selectedName}</span>
         {/* <RoomAvailability available_rooms={available_rooms} /> */}
         <CalendarView
+          query={query}
+          setQuery={setQuery}
           rooms={rooms}
           calendarRef={calendarRef}
           bookings={bookings}
