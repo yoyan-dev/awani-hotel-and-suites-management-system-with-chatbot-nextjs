@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
@@ -11,15 +10,11 @@ export async function proxy(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) {
-          return req.cookies.get(name)?.value;
-        },
-        set(name, value, options) {
-          res.cookies.set({ name, value, ...options });
-        },
-        remove(name, options) {
-          res.cookies.set({ name, value: "", ...options });
-        },
+        getAll: () => req.cookies.getAll(),
+        setAll: (cookies) =>
+          cookies.forEach(({ name, value, options }) =>
+            res.cookies.set({ name, value, ...options }),
+          ),
       },
     },
   );
@@ -29,47 +24,42 @@ export async function proxy(req: NextRequest) {
   } = await supabase.auth.getSession();
 
   const user = session?.user;
-  const { pathname } = req.nextUrl;
+  const roles = user?.app_metadata?.roles || user?.user_metadata?.roles || [];
 
-  // root redirect
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL("/guest", req.url));
+  const pathname = req.nextUrl.pathname;
+
+  const redirect = (path: string) => redirectWithCookies(req, res, path);
+
+  // Root
+  if (pathname === "/") return redirect("/guest");
+
+  // Block auth if logged in
+  if (pathname.startsWith("/auth") && user) {
+    if (roles.includes("admin")) return redirect("/admin");
+    if (roles.includes("housekeeping")) return redirect("/housekeeping");
+    return redirect("/guest");
   }
 
-  // block /auth for logged-in users
-  // if (pathname.startsWith("/auth") && user) {
-  //   const roles = user.app_metadata?.roles || user.user_metadata?.roles;
-  //   let redirectTo = "/guest";
+  // Guards
+  if (pathname.startsWith("/admin") && !roles.includes("admin"))
+    return redirect("/auth");
 
-  //   if (roles?.includes("admin")) redirectTo = "/admin";
-  //   else if (roles?.includes("housekeeping")) redirectTo = "/housekeeping";
-
-  //   return NextResponse.redirect(new URL(redirectTo, req.url));
-  // }
-
-  // admin guard
-  // if (
-  //   pathname.startsWith("/admin") &&
-  //   (!user ||
-  //     !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-  //       "admin",
-  //     ))
-  // ) {
-  //   return NextResponse.redirect(new URL("/auth", req.url));
-  // }
-
-  // housekeeping guard
-  // if (
-  //   pathname.startsWith("/housekeeping") &&
-  //   (!user ||
-  //     !(user.app_metadata?.roles || user.user_metadata?.roles)?.includes(
-  //       "housekeeping",
-  //     ))
-  // ) {
-  //   return NextResponse.redirect(new URL("/auth", req.url));
-  // }
+  if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping"))
+    return redirect("/auth");
 
   return res;
+}
+
+function redirectWithCookies(
+  req: NextRequest,
+  res: NextResponse,
+  path: string,
+) {
+  const redirect = NextResponse.redirect(new URL(path, req.url));
+  res.cookies.getAll().forEach((cookie) => {
+    redirect.cookies.set(cookie);
+  });
+  return redirect;
 }
 
 export const config = {
