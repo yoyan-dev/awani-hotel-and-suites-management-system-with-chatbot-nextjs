@@ -55,18 +55,18 @@ export async function proxy(req: NextRequest) {
   if (pathname === "/") return redirect("/guest");
 
   // Block auth if logged in
-  if (pathname.startsWith("/auth") && user) {
-    if (roles.includes("admin")) return redirect("/admin");
-    if (roles.includes("housekeeping")) return redirect("/housekeeping");
-    return redirect("/guest");
-  }
+  // if (pathname.startsWith("/auth") && user) {
+  //   if (roles.includes("admin")) return redirect("/admin");
+  //   if (roles.includes("housekeeping")) return redirect("/housekeeping");
+  //   return redirect("/guest");
+  // }
 
-  // Guards
-  if (pathname.startsWith("/admin") && !roles.includes("admin"))
-    return redirect("/auth");
+  // // Guards
+  // if (pathname.startsWith("/admin") && !roles.includes("admin"))
+  //   return redirect("/auth");
 
-  if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping"))
-    return redirect("/auth");
+  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping"))
+  //   return redirect("/auth");
 
   return res;
 }
