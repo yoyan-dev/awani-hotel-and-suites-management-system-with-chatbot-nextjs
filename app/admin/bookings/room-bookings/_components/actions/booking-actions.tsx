@@ -137,7 +137,7 @@ export default function BookingActionsDropdown({
             startContent={<FileText className="w-4 h-4 text-gray-700" />}
             onClick={() => setIsViewSummaryOpen(true)}
           >
-            Download Invoice
+            Summary
           </DropdownItem>
           {booking.payment_status !== "paid" ? (
             <DropdownItem
@@ -148,12 +148,12 @@ export default function BookingActionsDropdown({
               Add Payment
             </DropdownItem>
           ) : null}
-          <DropdownItem
+          {/* <DropdownItem
             key="clean"
             startContent={<BrushCleaning className="w-4 h-4 text-purple-600" />}
           >
             Request Cleaning
-          </DropdownItem>
+          </DropdownItem> */}
 
           <DropdownItem isReadOnly key="div3">
             <div className="border-t border-gray-200 my-1"></div>

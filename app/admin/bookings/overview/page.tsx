@@ -24,13 +24,13 @@ export default function Overview() {
   const [query, setQuery] = React.useState<FetchBookingParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -54,7 +54,7 @@ export default function Overview() {
   const stats = useMemo(() => {
     const totalRevenue = bookings.reduce((s, b) => s + Number(b.total), 0);
     const upcoming = bookings.filter(
-      (b) => new Date(b.check_in) >= new Date()
+      (b) => new Date(b.check_in) >= new Date(),
     ).length;
     const occupied = bookings.filter((b) => b.status === "check-in").length;
     return { totalRevenue, upcoming, occupied };
@@ -67,7 +67,7 @@ export default function Overview() {
         <KeyPerformanceIndicator stats={stats} />
         <CenterRow analytics={analytics} roomLoading={roomLoading} />
 
-        <BookingTable
+        {/* <BookingTable
           bookings={bookings}
           pagination={pagination}
           query={query}
@@ -79,7 +79,7 @@ export default function Overview() {
           setSelectedKeys={setSelectedKeys}
           bookingLoading={bookingLoading}
           handleSubmit={handleSubmit}
-        />
+        /> */}
       </div>
     </div>
   );

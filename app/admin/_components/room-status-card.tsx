@@ -1,21 +1,20 @@
 import { statusOptions } from "@/app/constants/rooms";
-import { Card } from "@heroui/react";
 
-export default function RoomStatusCard({ analytics }: { analytics: any }) {
+export default function RoomStats({ analytics }: { analytics: any }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {analytics?.map((item: any) => {
+    <div className="flex gap-4 flex-wrap px-2 pb-4">
+      {analytics.map((item: any) => {
         const options = statusOptions.find((s) => s.uid === item.name);
         return (
-          <Card
-            className="p-5 bg-white/70 backdrop-blur-lg shadow-lg rounded-xl border border-slate-200"
+          <div
+            className="flex-1 p-3 rounded-lg bg-slate-50 dark:bg-gray-900 border border-default-400"
             key={item.name}
           >
             <div className="text-xs text-slate-500 capitalize">
               {options?.name || item.name}
             </div>
             <div className="font-semibold text-lg">{item.count}</div>
-          </Card>
+          </div>
         );
       })}
     </div>

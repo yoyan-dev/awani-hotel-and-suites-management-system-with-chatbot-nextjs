@@ -10,7 +10,7 @@ export default function CenterRow({
 }) {
   return (
     <div className="flex flex-col w-full gap-4 flex-wrap md:flex-row">
-      <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
+      {/* <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="font-medium">Today</div>
           <div className="text-sm text-slate-500">
@@ -22,7 +22,7 @@ export default function CenterRow({
             Mini calendar placeholder
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
         <div className="flex items-center justify-between mb-3">
@@ -31,12 +31,12 @@ export default function CenterRow({
             {new Date().toLocaleDateString()}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex gap-4 flex-wrap px-2 pb-4">
           {analytics.map((item: any) => {
             const options = statusOptions.find((s) => s.uid === item.name);
             return (
               <div
-                className="p-3 rounded-lg bg-slate-50 dark:bg-gray-900"
+                className="flex-1 p-3 rounded-lg bg-slate-50 dark:bg-gray-900 border border-default-400"
                 key={item.name}
               >
                 <div className="text-xs text-slate-500">
