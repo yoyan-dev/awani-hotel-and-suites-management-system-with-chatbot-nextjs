@@ -67,8 +67,8 @@ export default function BookingTable({
         />
       }
       bottomContentPlacement="outside"
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
+      // selectedKeys={selectedKeys}
+      // selectionMode="multiple"
       topContent={
         <TableTopContent
           bookings={bookings}

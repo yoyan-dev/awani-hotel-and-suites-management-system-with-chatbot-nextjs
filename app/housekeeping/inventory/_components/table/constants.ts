@@ -26,7 +26,6 @@ export const statusColorMap: Record<
 };
 
 export const INITIAL_VISIBLE_COLUMNS = [
-  "id",
   "name",
   "description",
   "quantity",
