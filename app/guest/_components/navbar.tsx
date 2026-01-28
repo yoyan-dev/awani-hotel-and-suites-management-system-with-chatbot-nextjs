@@ -23,10 +23,10 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedDesktop, setExpandedDesktop] = React.useState<string | null>(
-    null
+    null,
   );
   const [expandedMobile, setExpandedMobile] = React.useState<string | null>(
-    null
+    null,
   );
   const [scrolled, setScrolled] = React.useState(false);
 
@@ -60,7 +60,7 @@ export default function Navbar() {
           "top-0 z-50 transition-all duration-300",
           scrolled
             ? "bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-md border-b border-white/20"
-            : "bg-transparent"
+            : "bg-transparent",
         )}
       >
         <NavbarContent justify="start">
@@ -81,7 +81,7 @@ export default function Navbar() {
 
         {/* ───────── DESKTOP MENU ───────── */}
         <NavbarContent className="hidden sm:flex " justify="end">
-          <div className="w-full sm:flex gap-6 items-center">
+          <div className="w-full sm:flex gap-6 items-center justify-end">
             {siteConfig.guestNavMenuItems.map((item: any) => {
               const isActive =
                 pathname === item.href ||
@@ -96,7 +96,7 @@ export default function Navbar() {
                       onClick={() =>
                         item.isExpandable
                           ? setExpandedDesktop((p) =>
-                              p === item.label ? null : item.label
+                              p === item.label ? null : item.label,
                             )
                           : null
                       }
@@ -104,7 +104,7 @@ export default function Navbar() {
                         "relative px-2 py-2 text-sm font-medium transition-colors",
                         isActive
                           ? "text-primary-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500",
                       )}
                     >
                       {item.label}
@@ -129,7 +129,7 @@ export default function Navbar() {
                         "relative px-2 py-2 text-sm font-medium transition-colors",
                         isActive
                           ? "text-primary-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500",
                       )}
                     >
                       {item.label}
@@ -172,7 +172,7 @@ export default function Navbar() {
                               "block px-3 py-2 text-sm rounded-md transition",
                               pathname === child.href
                                 ? "bg-primary-50 text-primary-600"
-                                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                             )}
                           >
                             {child.label}
@@ -184,9 +184,8 @@ export default function Navbar() {
                 </div>
               );
             })}
+            <ThemeSwitch />
           </div>
-
-          <ThemeSwitch />
         </NavbarContent>
       </HeroUINavbar>
 
@@ -222,7 +221,7 @@ export default function Navbar() {
                     onClick={() =>
                       item.isExpandable
                         ? setExpandedMobile((p) =>
-                            p === item.label ? null : item.label
+                            p === item.label ? null : item.label,
                           )
                         : setMenuOpen(false)
                     }
@@ -233,7 +232,7 @@ export default function Navbar() {
                       <ChevronDown
                         className={cn(
                           "transition-transform",
-                          isExpanded && "rotate-180"
+                          isExpanded && "rotate-180",
                         )}
                       />
                     )}

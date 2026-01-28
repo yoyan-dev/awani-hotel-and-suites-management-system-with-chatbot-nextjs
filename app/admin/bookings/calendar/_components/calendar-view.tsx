@@ -34,9 +34,13 @@ export function CalendarView({
   calendarRef,
   bookings,
   selectedName,
+  roomLoading,
   selectedRoomType,
   setSelectedRoomType,
-  roomType,
+  roomTypeLoading,
+  roomTypes,
+  selectedRoom,
+  setSelectedRoom,
 }: {
   query: FetchBookingParams;
   setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
@@ -44,9 +48,13 @@ export function CalendarView({
   calendarRef: any;
   bookings: Booking[];
   selectedName: string;
+  roomLoading: boolean;
   selectedRoomType: string;
   setSelectedRoomType: React.Dispatch<React.SetStateAction<string>>;
-  roomType: RoomType[];
+  roomTypeLoading: boolean;
+  roomTypes: RoomType[];
+  selectedRoom: string;
+  setSelectedRoom: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [events, setEvents] = React.useState<any[]>([]);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -95,14 +103,16 @@ export function CalendarView({
 
   const resources = React.useMemo(() => {
     if (!rooms) return [];
-    return [
+    const mappedResources = [
       ...rooms.map((room) => ({
         id: room.id,
-        title: `${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
+        title: `Room #${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
       })),
       { id: "no assigned", title: "No assigned" },
     ];
-  }, [rooms]);
+
+    return mappedResources.filter((resource) => resource.id === selectedRoom);
+  }, [rooms, selectedRoom]);
 
   const handleRangeChange = (range: any, view?: string) => {
     let start: Date;
@@ -141,6 +151,7 @@ export function CalendarView({
         defaultDate={new Date()}
         style={{ height: 600 }}
         resizable
+        onSelectEvent={handleSelectEvent}
         onEventDrop={handleEventDrop}
         onRangeChange={handleRangeChange}
         eventPropGetter={eventStyleGetter}
@@ -153,10 +164,14 @@ export function CalendarView({
               onNavigate={props.onNavigate}
               onView={props.onView}
               views={["week", "agenda", "month"]}
-              selectedName={selectedName}
               selectedRoomType={selectedRoomType}
               setSelectedRoomType={setSelectedRoomType}
-              roomType={roomType}
+              roomTypeLoading={roomTypeLoading}
+              roomTypes={roomTypes}
+              roomLoading={roomLoading}
+              rooms={rooms}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
             />
           ),
         }}

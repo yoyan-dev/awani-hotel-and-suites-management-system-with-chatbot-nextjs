@@ -86,7 +86,7 @@ export const siteConfig = {
     // },
     {
       label: "Staff Management",
-      href: "/admin/account",
+      href: "/admin/accounts",
       isExpandable: false,
       icon: ShieldUser,
     },
@@ -190,11 +190,11 @@ export const siteConfig = {
         { label: "Function Room", href: "/guest/reservations/function-room" },
       ],
     },
-    {
-      label: "Menus",
-      href: "/guest/menus",
-      isExpandable: false,
-    },
+    // {
+    //   label: "Menus",
+    //   href: "/guest/menus",
+    //   isExpandable: false,
+    // },
     // {
     //   label: "Your Stay",
     //   href: "/guest/guest-request",

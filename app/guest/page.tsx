@@ -27,7 +27,7 @@ export default function page() {
     <div>
       <HeroBanner />
       <About />
-      <Stats />
+      {/* <Stats /> */}
       <RoomsCarousel rooms={room_types} isLoading={isLoading} />
       <BestSellerMenusSection />
       <BanquetSection />
