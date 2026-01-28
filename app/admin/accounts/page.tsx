@@ -14,7 +14,7 @@ export default function Accounts() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [rolesStatusFilter, setRolesStatusFilter] = React.useState<any>("all");
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -26,7 +26,7 @@ export default function Accounts() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -37,13 +37,13 @@ export default function Accounts() {
       filteredUsers = filteredUsers.filter((staff) =>
         staff.user_metadata.full_name
           ?.toLowerCase()
-          .includes(filterValue.toLowerCase())
+          .includes(filterValue.toLowerCase()),
       );
     }
 
     if (rolesStatusFilter !== "all" && Array.from(rolesStatusFilter).length) {
       filteredUsers = filteredUsers.filter((item) =>
-        Array.from(rolesStatusFilter).includes(item.app_metadata.roles?.[0])
+        Array.from(rolesStatusFilter).includes(item.app_metadata.roles?.[0]),
       );
     }
 

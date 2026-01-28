@@ -1,102 +1,105 @@
 "use client";
 
-import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { Card, Image } from "@heroui/react";
+import { motion } from "framer-motion";
+import { Utensils, Leaf, Wine, Users } from "lucide-react";
 
-interface BestSellerItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  image: string;
-  paragraphs: string[];
-}
+const features = [
+  {
+    id: 1,
+    title: "Signature Dishes",
+    description:
+      "House specialties crafted by our chefs using carefully selected ingredients for a refined dining experience.",
+    icon: Utensils,
+    image: "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg",
+  },
+  {
+    id: 2,
+    title: "Local & Organic Choices",
+    description:
+      "Fresh local produce and organic selections highlighting authentic regional flavors.",
+    icon: Leaf,
+    image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+  },
+  {
+    id: 3,
+    title: "Premium Beverages",
+    description:
+      "Curated wines, juices, and refreshments perfectly paired with every meal.",
+    icon: Wine,
+    image: "https://images.pexels.com/photos/3019019/pexels-photo-3019019.jpeg",
+  },
+  {
+    id: 4,
+    title: "Group & Family Dining",
+    description:
+      "Comfortable spaces designed for families, groups, and shared dining moments.",
+    icon: Users,
+    image: "https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg",
+  },
+];
 
-export default function BestSellerSection() {
-  const bestSellerSections: BestSellerItem[] = [
-    {
-      id: "1",
-      title: "Signature Grilled Chicken",
-      subtitle: "Best Seller",
-      image: "/best-seller/grilled-chicken.jpg",
-      paragraphs: [
-        "Our Signature Grilled Chicken is marinated in a blend of herbs and spices, grilled to perfection, and served with carefully selected sides that complement its rich and smoky flavor.",
-        "This dish has become a favorite among guests seeking a hearty and satisfying meal during their stay at Awani Hotel and Suites.",
-      ],
-    },
-    {
-      id: "2",
-      title: "Seafood Medley Platter",
-      subtitle: "Guest Favorite",
-      image: "/best-seller/seafood.jpg",
-      paragraphs: [
-        "The Seafood Medley Platter features a selection of the freshest catch, prepared to highlight the natural flavors of each ingredient.",
-        "Ideal for sharing, this menu has earned its place as one of the most ordered dishes by families and groups staying with us.",
-      ],
-    },
-    {
-      id: "3",
-      title: "Classic Pasta Carbonara",
-      subtitle: "Chef’s Recommendation",
-      image: "/best-seller/pasta.jpg",
-      paragraphs: [
-        "Our Classic Pasta Carbonara is made with a creamy sauce, crispy bacon, and perfectly cooked pasta, finished with parmesan cheese.",
-        "Loved for its comforting taste and balanced flavors, this dish continues to delight both first-time and returning guests.",
-      ],
-    },
-  ];
-
+export default function RestaurantFeaturesWindow() {
   return (
-    <section className="py-20 px-4 max-w-7xl mx-auto">
-      <header className="mb-10 text-center">
-        <h1 className="text-2xl font-semibold text-primary">
-          Restaurant Best Sellers
-        </h1>
-        <p className="text-gray-500 mt-2 text-sm">
-          Our top-ordered dishes loved by our guests
+    <section className="min-h-screen flex flex-col justify-center px-4 pt-4">
+      {/* Header */}
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-semibold text-primary">
+          Ridgeview Features
+        </h2>
+        <p className="text-sm text-gray-500 mt-2">
+          Experience refined dining at Awani Hotel & Suites
         </p>
-      </header>
-      <Carousel
-        autoScroll
-        autoScrollInterval={2500}
-        itemsPerView={1}
-        hasButton={false}
-        dotType="image"
-        responsive={{ sm: 1, md: 1, lg: 1, xl: 1 }}
-        className="max-w-7xl mx-auto"
-      >
-        {bestSellerSections.map((menu) => (
-          <CarouselItem key={menu.id}>
-            <Card className="grid gap-8 md:grid-cols-2 items-center p-6 md:p-10 rounded-md shadow-sm transition hover:shadow-md">
-              <div className="w-full">
-                <Image
-                  src={menu.image}
-                  alt={menu.title}
-                  className="w-full h-[300px] md:h-[420px] object-cover rounded-md"
-                />
-              </div>
+      </div>
 
-              <div className="flex flex-col gap-4">
-                <span className="text-xs uppercase tracking-wide text-gray-500">
-                  {menu.subtitle}
-                </span>
+      {/* Windows */}
+      <div className="max-w-7xl mx-auto space-y-10">
+        {features.map((item, index) => {
+          const Icon = item.icon;
+          const isReverse = index % 2 !== 0;
 
-                <h2 className="text-3xl font-semibold text-gray-800 leading-tight">
-                  {menu.title}
-                </h2>
+          return (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, x: isReverse ? 80 : -80 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              viewport={{ once: true }}
+            >
+              <Card
+                className={`grid md:grid-cols-2 gap-8 p-6 md:p-10 rounded-xl shadow-sm items-center ${
+                  isReverse ? "md:flex-row-reverse" : ""
+                }`}
+              >
+                {/* Left Window (Image) */}
+                <div className="w-full h-[260px] md:h-[360px] overflow-hidden rounded-lg">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-                {menu.paragraphs.map((text, index) => (
-                  <p
-                    key={index}
-                    className="text-sm text-gray-600 leading-relaxed"
-                  >
-                    {text}
+                {/* Right Window (Content) */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-md bg-primary/10 text-primary">
+                      <Icon size={22} />
+                    </div>
+                    <h3 className="text-2xl font-semibold text-gray-800">
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {item.description}
                   </p>
-                ))}
-              </div>
-            </Card>
-          </CarouselItem>
-        ))}
-      </Carousel>
+                </div>
+              </Card>
+            </motion.div>
+          );
+        })}
+      </div>
     </section>
   );
 }
