@@ -24,7 +24,7 @@ export interface Booking {
   total_add_ons: string;
   total: string;
   request_messages?: string;
-  payment_status?: string;
+  payment_status?: "pending" | "paid" | "unpaid" | "downpayment";
   payment_method?: string;
   booking_source?: "walk-in" | "online";
   amount_paid?: number;

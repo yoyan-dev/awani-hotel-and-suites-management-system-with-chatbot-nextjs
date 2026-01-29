@@ -36,6 +36,16 @@ export const siteConfig = {
       icon: ChartPie,
     },
     {
+      label: "Banquet Packages",
+      href: "/admin/banquet/packages",
+      isExpandable: false,
+      icon: ChefHatIcon,
+      Children: [
+        { label: "Banquet Menu", href: "/admin/banquet/menus" },
+        { label: "Banquet Packages", href: "/admin/banquet/packages" },
+      ],
+    },
+    {
       label: "Room Management",
       href: "/admin/rooms",
       isExpandable: true,
@@ -45,16 +55,6 @@ export const siteConfig = {
         { label: "Hotel Rooms", href: "/admin/rooms/hotel-rooms" },
         { label: "Hotel Rooms Types", href: "/admin/rooms/room-types" },
         { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
-      ],
-    },
-    {
-      label: "Banquet",
-      href: "/admin/banquet",
-      isExpandable: true,
-      icon: ChefHatIcon,
-      Children: [
-        { label: "Banquet Menu", href: "/admin/banquet/menus" },
-        { label: "Banquet Packages", href: "/admin/banquet/packages" },
       ],
     },
     {
@@ -85,7 +85,7 @@ export const siteConfig = {
     //   icon: Users,
     // },
     {
-      label: "Staff Management",
+      label: "Account Management",
       href: "/admin/accounts",
       isExpandable: false,
       icon: ShieldUser,
@@ -205,10 +205,10 @@ export const siteConfig = {
       href: "/guest/about-us",
       isExpandable: false,
     },
-    {
-      label: "Contact",
-      href: "#contact",
-      isExpandable: false,
-    },
+    // {
+    //   label: "Contact",
+    //   href: "#contact",
+    //   isExpandable: false,
+    // },
   ],
 };

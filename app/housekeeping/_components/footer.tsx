@@ -22,8 +22,8 @@ export default function FooterNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 transition-all duration-200 hover:text-primary-500",
-              isActive && "text-primary-600 dark:text-primary-400 scale-110"
+              "py-4 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 transition-all duration-200 hover:text-primary-500",
+              isActive && "text-primary-600 dark:text-primary-400 scale-110",
             )}
           >
             <item.icon size={22} strokeWidth={2} />

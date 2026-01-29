@@ -46,11 +46,11 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   setSelectedRoom,
 }) => {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full">
       {/* TOP CONTROLS */}
-      <div className="flex justify-between items-center pb-3 border-b border-gray-200">
+      <div className="flex flex-wrap justify-between items-center gap-2 pb-3 border-b border-gray-200">
         {/* NAVIGATION */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {["PREV", "TODAY", "NEXT"].map((action) => (
             <Button
               key={action}
@@ -65,7 +65,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         </div>
 
         {/* VIEW + FILTER */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
           {views.map((view) => (
             <Button
               key={view}
@@ -92,13 +92,13 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
               </Button>
             </PopoverTrigger>
 
-            <PopoverContent className=" p-3 bg-white border border-gray-200 rounded-md shadow-sm">
+            <PopoverContent className="p-3 bg-white border border-gray-200 rounded-md shadow-sm w-[250px] sm:w-[300px]">
               <div className="space-y-4 text-sm">
                 {/* ROOM TYPE FILTER */}
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-gray-500">
+                  <p className="text-xs font-medium text-gray-500 flex items-center justify-between">
                     Room Type{" "}
-                    {roomTypeLoading ? <Spinner className="h-10" /> : ""}
+                    {roomTypeLoading && <Spinner className="h-4 w-4" />}
                   </p>
                   <Listbox
                     selectionMode="single"
@@ -119,8 +119,8 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
                 {/* ROOM FILTER */}
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-gray-500">
-                    Room {roomLoading ? <Spinner className="h-10" /> : ""}
+                  <p className="text-xs font-medium text-gray-500 flex items-center justify-between">
+                    Room {roomLoading && <Spinner className="h-4 w-4" />}
                   </p>
                   <Listbox
                     selectionMode="single"

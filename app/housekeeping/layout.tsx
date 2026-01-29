@@ -36,7 +36,7 @@ export default function HousekeepingLayout({
       <div className="flex">
         <Sidebar />
 
-        <div className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4 transition-all duration-300 ease-in-out">
+        <div className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4 transition-all duration-300 ease-in-out pb-8">
           <Navbar user={user} isLoading={isLoading} />
 
           <main className="w-full space-y-4 pb-sm">{children}</main>

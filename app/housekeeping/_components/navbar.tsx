@@ -56,11 +56,11 @@ export default function Navbar({ user, isLoading }: Props) {
             />
             <div className="leading-tight">
               <p className="font-semibold text-base text-gray-800 dark:text-gray-100">
-                Awani
+                Ma. Awani
               </p>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
+              {/* <span className="text-xs text-gray-500 dark:text-gray-400">
                 Hotel & Suites
-              </span>
+              </span> */}
             </div>
           </NextLink>
         </NavbarBrand>
@@ -106,7 +106,7 @@ export default function Navbar({ user, isLoading }: Props) {
                       ? "text-primary-600 font-semibold"
                       : item.label === "Logout"
                         ? "text-red-500 hover:text-red-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                   )}
                 >
                   {item.label}

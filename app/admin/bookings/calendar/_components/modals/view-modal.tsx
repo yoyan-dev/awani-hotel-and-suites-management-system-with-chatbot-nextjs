@@ -75,6 +75,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
       onOpenChange={(open) => !open && onClose()}
       placement="top-center"
       radius="sm"
+      size="xl"
       scrollBehavior="outside"
     >
       <ModalContent>

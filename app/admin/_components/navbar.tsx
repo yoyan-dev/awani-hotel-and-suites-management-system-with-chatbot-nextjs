@@ -49,11 +49,11 @@ export default function AdminNavbar({ user, isLoading }: Props) {
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Image alt="Awani logo" src="/awani-logo.png" width={50} />
             <div>
-              <p className="font-bold text-inherit">Awani</p>
-              <span className="text-gray-500 text-sm flex gap-2">
+              <p className="font-bold text-inherit">Ma. Awani</p>
+              {/* <span className="text-gray-500 text-sm flex gap-2">
                 Hotel and suites{" "}
                 <span className="hidden md:block">management system</span>
-              </span>
+              </span> */}
             </div>
           </NextLink>
         </NavbarBrand>
@@ -108,7 +108,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                       ? "text-primary-600 font-semibold"
                       : item.label === "Logout"
                         ? "text-red-500 hover:text-red-600"
-                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                   )}
                   endContent={
                     item.isExpandable ? (
@@ -116,7 +116,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                         size={18}
                         className={cn(
                           "transition-transform duration-300",
-                          isExpanded ? "rotate-180" : ""
+                          isExpanded ? "rotate-180" : "",
                         )}
                       />
                     ) : null
@@ -131,7 +131,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                   "overflow-hidden transition-all duration-300 ml-9 border-l border-gray-300 dark:border-gray-700 pl-3",
                   isExpanded
                     ? "max-h-[400px] opacity-100 py-1"
-                    : "max-h-0 opacity-0 py-0"
+                    : "max-h-0 opacity-0 py-0",
                 )}
               >
                 {item.Children?.map((child: any, i: number) => (
@@ -143,7 +143,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                       "block text-sm py-1.5 rounded-md transition-all duration-300",
                       pathname === child.href
                         ? "text-primary-600 font-medium"
-                        : "text-gray-500 hover:text-primary-500"
+                        : "text-gray-500 hover:text-primary-500",
                     )}
                     style={{
                       transitionDelay: `${i * 60}ms`,

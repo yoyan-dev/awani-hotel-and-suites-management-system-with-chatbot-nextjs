@@ -10,7 +10,10 @@ import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { Room, RoomType } from "@/types/room";
 import { Booking, FetchBookingParams } from "@/types/booking";
 import { getNights } from "@/utils/pricing";
-import { bookingStatusHexColorMap } from "@/app/constants/booking";
+import {
+  bookingStatusHexColorMap,
+  paymentStatusColorMap,
+} from "@/app/constants/booking";
 import ViewModal from "./modals/view-modal";
 import CalendarHeader from "./calendar-custom/calendar-header";
 import { useBookings } from "@/hooks/use-bookings";
@@ -34,9 +37,13 @@ export function CalendarView({
   calendarRef,
   bookings,
   selectedName,
+  roomLoading,
   selectedRoomType,
   setSelectedRoomType,
-  roomType,
+  roomTypeLoading,
+  roomTypes,
+  selectedRoom,
+  setSelectedRoom,
 }: {
   query: FetchBookingParams;
   setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
@@ -44,9 +51,13 @@ export function CalendarView({
   calendarRef: any;
   bookings: Booking[];
   selectedName: string;
+  roomLoading: boolean;
   selectedRoomType: string;
   setSelectedRoomType: React.Dispatch<React.SetStateAction<string>>;
-  roomType: RoomType[];
+  roomTypeLoading: boolean;
+  roomTypes: RoomType[];
+  selectedRoom: string;
+  setSelectedRoom: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [events, setEvents] = React.useState<any[]>([]);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -60,6 +71,8 @@ export function CalendarView({
         booking.check_in,
         booking.check_out,
       )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
+      statusColor:
+        paymentStatusColorMap[booking.payment_status || "pending"] || "#CCCCCC",
       start: new Date(booking.check_in),
       end: new Date(booking.check_out),
       resourceId: booking.room_id || "no assigned",
@@ -85,7 +98,8 @@ export function CalendarView({
 
   const eventStyleGetter = (event: any) => ({
     style: {
-      backgroundColor: event.color,
+      background: `linear-gradient(90deg, ${event.color} 0%, ${event.color} 70%, ${event.statusColor} 70%,  ${event.statusColor} 100%)`,
+      border: `1px solid #fff`,
       borderRadius: "4px",
       padding: "2px 4px",
       fontSize: "0.75rem",
@@ -95,14 +109,16 @@ export function CalendarView({
 
   const resources = React.useMemo(() => {
     if (!rooms) return [];
-    return [
+    const mappedResources = [
       ...rooms.map((room) => ({
         id: room.id,
-        title: `${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
+        title: `Room #${String(room?.room_number)} - ${room.status?.toUpperCase()}`,
       })),
       { id: "no assigned", title: "No assigned" },
     ];
-  }, [rooms]);
+
+    return mappedResources.filter((resource) => resource.id === selectedRoom);
+  }, [rooms, selectedRoom]);
 
   const handleRangeChange = (range: any, view?: string) => {
     let start: Date;
@@ -141,6 +157,7 @@ export function CalendarView({
         defaultDate={new Date()}
         style={{ height: 600 }}
         resizable
+        onSelectEvent={handleSelectEvent}
         onEventDrop={handleEventDrop}
         onRangeChange={handleRangeChange}
         eventPropGetter={eventStyleGetter}
@@ -153,10 +170,14 @@ export function CalendarView({
               onNavigate={props.onNavigate}
               onView={props.onView}
               views={["week", "agenda", "month"]}
-              selectedName={selectedName}
               selectedRoomType={selectedRoomType}
               setSelectedRoomType={setSelectedRoomType}
-              roomType={roomType}
+              roomTypeLoading={roomTypeLoading}
+              roomTypes={roomTypes}
+              roomLoading={roomLoading}
+              rooms={rooms}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
             />
           ),
         }}

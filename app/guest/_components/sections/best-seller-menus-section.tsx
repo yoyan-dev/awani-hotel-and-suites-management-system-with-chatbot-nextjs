@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Image } from "@heroui/react";
+import { Image } from "@heroui/react";
 import { motion } from "framer-motion";
 import { Utensils, Leaf, Wine, Users } from "lucide-react";
 
@@ -41,19 +41,19 @@ const features = [
 
 export default function RestaurantFeaturesWindow() {
   return (
-    <section className="min-h-screen flex flex-col justify-center px-4 pt-4">
+    <section className="min-h-screen flex flex-col justify-center px-4 py-16">
       {/* Header */}
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-semibold text-primary">
+      <div className="text-center mb-14">
+        <h2 className="text-3xl font-semibold text-gray-900">
           Ridgeview Features
         </h2>
         <p className="text-sm text-gray-500 mt-2">
-          Experience refined dining at Awani Hotel & Suites
+          Refined dining at Awani Hotel & Suites
         </p>
       </div>
 
-      {/* Windows */}
-      <div className="max-w-7xl mx-auto space-y-10">
+      {/* Feature Windows */}
+      <div className="max-w-6xl mx-auto space-y-16">
         {features.map((item, index) => {
           const Icon = item.icon;
           const isReverse = index % 2 !== 0;
@@ -61,18 +61,18 @@ export default function RestaurantFeaturesWindow() {
           return (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, x: isReverse ? 80 : -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              initial={{ opacity: 0, y: 32 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
               viewport={{ once: true }}
             >
-              <Card
-                className={`grid md:grid-cols-2 gap-8 p-6 md:p-10 rounded-xl shadow-sm items-center ${
-                  isReverse ? "md:flex-row-reverse" : ""
+              <div
+                className={`grid md:grid-cols-2 gap-10 items-center ${
+                  isReverse ? "md:[&>*:first-child]:order-2" : ""
                 }`}
               >
-                {/* Left Window (Image) */}
-                <div className="w-full h-[260px] md:h-[360px] overflow-hidden rounded-lg">
+                {/* Image */}
+                <div className="w-full h-[260px] md:h-[340px] overflow-hidden rounded-lg">
                   <Image
                     src={item.image}
                     alt={item.title}
@@ -80,22 +80,18 @@ export default function RestaurantFeaturesWindow() {
                   />
                 </div>
 
-                {/* Right Window (Content) */}
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-md bg-primary/10 text-primary">
-                      <Icon size={22} />
-                    </div>
-                    <h3 className="text-2xl font-semibold text-gray-800">
-                      {item.title}
-                    </h3>
+                {/* Content */}
+                <div className="flex flex-col gap-4 max-w-md">
+                  <div className="flex items-center gap-3 text-gray-900">
+                    <Icon size={20} className="text-primary" />
+                    <h3 className="text-xl font-medium">{item.title}</h3>
                   </div>
 
                   <p className="text-sm text-gray-600 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
-              </Card>
+              </div>
             </motion.div>
           );
         })}

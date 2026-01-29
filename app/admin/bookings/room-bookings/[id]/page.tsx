@@ -295,7 +295,9 @@ export default function BookingDetailsStunning() {
 
         <Card radius="none">
           <CardHeader>
-            <h3 className="font-semibold">Summary</h3>
+            <h3 className="font-semibold">
+              Summary ({booking.payment_status})
+            </h3>
           </CardHeader>
           <CardBody className="space-y-3">
             <div className="flex justify-between">

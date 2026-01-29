@@ -7,11 +7,11 @@ import {
   NavbarBrand,
   NavbarMenuToggle,
 } from "@heroui/navbar";
-import { Image } from "@heroui/react";
+import { Button, Image } from "@heroui/react";
 import { Link } from "@heroui/link";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@heroui/react";
 
@@ -56,124 +56,90 @@ export default function Navbar() {
         position="sticky"
         isMenuOpen={menuOpen}
         onMenuOpenChange={setMenuOpen}
-        className={cn(
-          "top-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-md border-b border-white/20"
-            : "bg-transparent",
-        )}
+        className="top-0 z-40 bg-white dark:bg-gray-900"
       >
         <NavbarContent justify="start">
-          <div className="sm:hidden">
-            <NavbarMenuToggle />
-          </div>
-
           <NavbarBrand>
             <NextLink href="/" className="flex items-center gap-2">
               <Image src="/awani-logo.png" alt="logo" width={45} />
-              <div>
+              <div className="hidden sm:block">
                 <p className="font-bold">MA. Awani</p>
-                <span className="text-xs text-gray-500">Hotel and Suites</span>
+                {/* <span className="text-xs text-gray-500">Hotel and Suites</span> */}
               </div>
             </NextLink>
           </NavbarBrand>
         </NavbarContent>
 
         {/* ───────── DESKTOP MENU ───────── */}
-        <NavbarContent className="hidden sm:flex " justify="end">
-          <div className="w-full sm:flex gap-6 items-center justify-end">
+        <NavbarContent className="hidden sm:flex flex-1" justify="center">
+          <div className="flex gap-8 items-center">
             {siteConfig.guestNavMenuItems.map((item: any) => {
               const isActive =
                 pathname === item.href ||
                 item?.Children?.some((child: any) => child.href === pathname);
-              const isExpanded = expandedDesktop === item.label;
 
               return (
                 <div key={item.label} className="relative">
-                  {/* MAIN ITEM */}
-                  {item.isExpandable ? (
-                    <button
-                      onClick={() =>
-                        item.isExpandable
-                          ? setExpandedDesktop((p) =>
-                              p === item.label ? null : item.label,
-                            )
-                          : null
-                      }
-                      className={cn(
-                        "relative px-2 py-2 text-sm font-medium transition-colors",
-                        isActive
-                          ? "text-primary-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500",
-                      )}
-                    >
-                      {item.label}
-
-                      {/* 🔥 Animated underline */}
-                      {isActive && (
-                        <motion.span
-                          layoutId="navbar-underline"
-                          className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
-                          transition={{
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                    </button>
-                  ) : (
+                  {!item.isExpandable ? (
                     <NextLink
                       href={item.href}
                       className={cn(
-                        "relative px-2 py-2 text-sm font-medium transition-colors",
-                        isActive
-                          ? "text-primary-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500",
+                        "relative  font-medium text-gray-700 hover:text-black transition",
+                        isActive && "text-black",
                       )}
                     >
                       {item.label}
 
-                      {/* 🔥 Animated underline */}
                       {isActive && (
                         <motion.span
                           layoutId="navbar-underline"
-                          className="absolute left-0 right-0 -bottom-1 h-0.5 bg-primary-600 rounded-full"
-                          transition={{
-                            type: "spring",
-                            stiffness: 380,
-                            damping: 30,
-                          }}
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
                         />
                       )}
                     </NextLink>
+                  ) : (
+                    <button
+                      onClick={() =>
+                        setExpandedDesktop((p) =>
+                          p === item.label ? null : item.label,
+                        )
+                      }
+                      className={cn(
+                        "flex items-center gap-1  font-medium text-gray-700 hover:text-black",
+                        isActive && "text-black",
+                      )}
+                    >
+                      {item.label}
+                      {expandedDesktop === item.label ? (
+                        <ChevronUp size={14} />
+                      ) : (
+                        <ChevronDown size={14} />
+                      )}
+                    </button>
                   )}
 
-                  {/* SUBMENU */}
+                  {/* Dropdown */}
                   <AnimatePresence>
-                    {item.isExpandable && isExpanded && (
+                    {item.isExpandable && expandedDesktop === item.label && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        className="
-                        absolute left-0  min-w-[180px]
-                        rounded-sm bg-white dark:bg-gray-900
-                        shadow-lg border border-gray-200 dark:border-gray-700
-                        p-2
-                      "
+                        exit={{ opacity: 0, y: 6 }}
+                        className="absolute left-0 mt-3 w-44 bg-white shadow-md rounded-sm"
                       >
                         {item.Children?.map((child: any) => (
                           <NextLink
                             key={child.href}
                             href={child.href}
                             className={cn(
-                              "block px-3 py-2 text-sm rounded-md transition",
-                              pathname === child.href
-                                ? "bg-primary-50 text-primary-600"
-                                : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800",
+                              "block px-4 py-2 text-sm hover:bg-gray-100  font-medium text-gray-700 hover:text-black",
+                              isActive && "text-black",
                             )}
+                            onClick={() =>
+                              setExpandedDesktop((p) =>
+                                p === item.label ? null : item.label,
+                              )
+                            }
                           >
                             {child.label}
                           </NextLink>
@@ -184,7 +150,22 @@ export default function Navbar() {
                 </div>
               );
             })}
-            <ThemeSwitch />
+          </div>
+        </NavbarContent>
+
+        {/* ───────── CTA BUTTON ───────── */}
+        <NavbarContent justify="end" className="">
+          <ThemeSwitch />
+          <Button
+            as={Link}
+            href="/guest/contact-us"
+            color="primary"
+            radius="full"
+          >
+            Contact Us
+          </Button>
+          <div className="sm:hidden">
+            <NavbarMenuToggle />
           </div>
         </NavbarContent>
       </HeroUINavbar>
