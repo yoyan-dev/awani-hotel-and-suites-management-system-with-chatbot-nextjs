@@ -3,18 +3,23 @@ import { calculateBookingPrice, getNights } from "./pricing";
 
 export function generateSummary(
   booking: Booking,
-  specialRequests: { name: string; price: string; quantity: number }[]
+  specialRequests: { name: string; price: string; quantity: number }[],
 ) {
+  const amountPaid = booking.amount_paid ?? 0;
+
   const totalAddOnsPrice = specialRequests.reduce(
-    (acc: number, item: { price: string; quantity: number }) =>
-      acc + Number(item.price) * (item.quantity || 0),
-    0
+    (acc, item) => acc + Number(item.price) * (item.quantity || 0),
+    0,
   );
 
   const nights = getNights(booking.check_in, booking.check_out);
   const totalPerNights = calculateBookingPrice(booking);
   const total = totalPerNights + totalAddOnsPrice;
-  const balance = total - (booking.amount_paid || 0);
+  const balance = total - amountPaid;
+
+  const status =
+    amountPaid >= total ? "paid" : amountPaid > 0 ? "deposit" : "unpaid";
+
   return {
     specialRequests,
     roomPrice: booking.room_type.price,
@@ -23,8 +28,8 @@ export function generateSummary(
     totalPerNights,
     total,
     paymentMethod: booking.payment_method,
-    ammountPaid: booking.amount_paid,
+    amountPaid,
     balance,
-    status: balance <= 0 ? "paid" : "deposit",
+    status,
   };
 }

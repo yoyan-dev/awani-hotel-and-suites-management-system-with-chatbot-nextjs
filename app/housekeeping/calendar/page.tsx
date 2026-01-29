@@ -34,6 +34,7 @@ export default function Calendar() {
   const { bookings, isLoading: bookingsLoading, fetchBookings } = useBookings();
 
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>("");
+  const [selectedRoom, setSelectedRoom] = React.useState<string>("");
 
   React.useEffect(() => {
     fetchRoomTypes({});
@@ -43,16 +44,22 @@ export default function Calendar() {
     if (room_types && room_types.length > 0 && !selectedRoomType) {
       setSelectedRoomType(String(room_types[0].id));
     }
-  }, [room_types]);
+    if (rooms && rooms.length > 0 && !selectedRoom) {
+      setSelectedRoom(String(rooms[0].id));
+    }
+  }, [room_types, rooms]);
 
   React.useEffect(() => {
     if (!selectedRoomType) return;
     const timer = setTimeout(() => {
       fetchRooms({ ...query, roomTypeID: selectedRoomType });
-      fetchBookings({ roomTypeID: selectedRoomType });
+      fetchBookings({
+        roomTypeID: selectedRoomType,
+        room_id: selectedRoom !== "no assigned" ? selectedRoom : "",
+      });
     }, 300);
     return () => clearTimeout(timer);
-  }, [selectedRoomType, query]);
+  }, [selectedRoomType, selectedRoom, query]);
 
   const selectedName =
     room_types?.find((t) => String(t.id) === selectedRoomType)?.name ??
@@ -74,9 +81,13 @@ export default function Calendar() {
           calendarRef={calendarRef}
           bookings={bookings}
           selectedName={selectedName}
+          roomTypeLoading={roomTypeLoading}
           selectedRoomType={selectedRoomType}
           setSelectedRoomType={setSelectedRoomType}
-          roomType={room_types}
+          roomTypes={room_types}
+          roomLoading={roomLoading}
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
         />
       </div>
       {/* {!roomLoading && !bookingsLoading && selectedRoomType ? (

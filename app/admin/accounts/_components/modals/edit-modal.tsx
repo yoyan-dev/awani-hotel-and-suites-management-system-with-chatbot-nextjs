@@ -23,12 +23,13 @@ import { User } from "@/types/users";
 
 interface EditModalProps {
   user: User;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const EditModal: React.FC<EditModalProps> = ({ user }) => {
+const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { isLoading } = useSelector((state: RootState) => state.users);
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -49,11 +50,11 @@ const EditModal: React.FC<EditModalProps> = ({ user }) => {
 
   return (
     <>
-      <div onClick={onOpen} className="text-success">
-        Edit
-      </div>
-
-      <Modal isOpen={isOpen} placement="top-center" onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        placement="top-center"
+        onOpenChange={(open) => !open && onClose()}
+      >
         <ModalContent>
           {(onClose) => (
             <>

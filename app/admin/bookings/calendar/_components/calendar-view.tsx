@@ -10,7 +10,10 @@ import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { Room, RoomType } from "@/types/room";
 import { Booking, FetchBookingParams } from "@/types/booking";
 import { getNights } from "@/utils/pricing";
-import { bookingStatusHexColorMap } from "@/app/constants/booking";
+import {
+  bookingStatusHexColorMap,
+  paymentStatusColorMap,
+} from "@/app/constants/booking";
 import ViewModal from "./modals/view-modal";
 import CalendarHeader from "./calendar-custom/calendar-header";
 import { useBookings } from "@/hooks/use-bookings";
@@ -68,6 +71,8 @@ export function CalendarView({
         booking.check_in,
         booking.check_out,
       )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
+      statusColor:
+        paymentStatusColorMap[booking.payment_status || "pending"] || "#CCCCCC",
       start: new Date(booking.check_in),
       end: new Date(booking.check_out),
       resourceId: booking.room_id || "no assigned",
@@ -93,7 +98,8 @@ export function CalendarView({
 
   const eventStyleGetter = (event: any) => ({
     style: {
-      backgroundColor: event.color,
+      background: `linear-gradient(90deg, ${event.color} 0%, ${event.color} 70%, ${event.statusColor} 70%,  ${event.statusColor} 100%)`,
+      border: `1px solid #fff`,
       borderRadius: "4px",
       padding: "2px 4px",
       fontSize: "0.75rem",

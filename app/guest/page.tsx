@@ -36,7 +36,7 @@ export default function page() {
       {/* <RoomsAndSuites rooms={room_types} isLoading={isLoading} /> */}
       <div className="bg-white dark:bg-gray-900 ">
         <TestimonialsSection />
-        <ContactSection />
+        {/* <ContactSection /> */}
       </div>
       <motion.div
         initial={{ opacity: 0, y: 10 }}

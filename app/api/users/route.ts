@@ -4,15 +4,13 @@ import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { uploadUserImage } from "@/lib/upload-user-image";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 let users: User[];
 
 export async function GET(): Promise<NextResponse<ApiResponse>> {
   try {
-    const supabase = await createClient();
-
-    const { data, error } = await supabase.auth.admin.listUsers();
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
 
     if (error) {
       return NextResponse.json(
@@ -24,7 +22,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,7 +36,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         },
         data: data.users,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -51,7 +49,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -63,11 +61,19 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const formObj = Object.fromEntries(formData.entries());
     const image = formData.get("image") as File;
 
-    const { email, password, name, phone, gender, address, birthday, roles } =
-      formObj;
+    const {
+      email,
+      password,
+      full_name,
+      phone,
+      gender,
+      address,
+      birthday,
+      roles,
+    } = formObj;
 
     const userData = {
-      full_name: name,
+      full_name,
       phone,
       gender,
       address,
@@ -97,7 +103,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +117,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data: data.user,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -124,13 +130,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
@@ -151,7 +157,7 @@ export async function DELETE(
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -168,7 +174,7 @@ export async function DELETE(
           },
           error: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -195,7 +201,7 @@ export async function DELETE(
         },
         error: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -56,7 +56,7 @@ export default function AddModal() {
           {(onClose) => (
             <>
               <ModalHeader className="w-full bg-primary text-white">
-                Add New Staff
+                Add New User
               </ModalHeader>
               <ModalBody>
                 <Form className="space-y-4" onSubmit={onSubmit}>
@@ -68,7 +68,12 @@ export default function AddModal() {
                     required
                   />
 
-                  <Select radius="sm" label="Role" name="role">
+                  <Select
+                    radius="sm"
+                    label="System Role"
+                    name="role"
+                    variant="bordered"
+                  >
                     {["admin", "housekeeping"].map((role) => (
                       <SelectItem className="capitalize" key={role}>
                         {role}
@@ -79,31 +84,16 @@ export default function AddModal() {
                   <Input
                     radius="sm"
                     variant="bordered"
-                    label="Position"
-                    name="position"
-                  />
-
-                  <Input
-                    radius="sm"
-                    variant="bordered"
                     type="email"
                     label="Email"
                     name="email"
                   />
 
-                  <Input
-                    radius="sm"
-                    variant="bordered"
-                    type="tel"
-                    label="Phone"
-                    name="phone"
-                  />
-
-                  <Select radius="sm" label="Shift Type" name="shift_type">
+                  {/* <Select radius="sm" label="Shift Type" name="shift_type">
                     {["AM", "MID", "PM", "GY"].map((shift) => (
                       <SelectItem key={shift}>{shift}</SelectItem>
                     ))}
-                  </Select>
+                  </Select> */}
 
                   <Input
                     radius="sm"

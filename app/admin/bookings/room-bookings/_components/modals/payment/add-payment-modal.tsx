@@ -22,19 +22,27 @@ import React from "react";
 export default function AddPaymentModal({
   isOpen,
   onClose,
+  paymentDetail,
+  setPaymentDetail,
   summary,
   id,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  paymentDetail: {
+    method: string;
+    amountPaid: number;
+  };
+  setPaymentDetail: React.Dispatch<
+    React.SetStateAction<{
+      method: string;
+      amountPaid: number;
+    }>
+  >;
   summary: any;
   id: string;
 }) {
   const { isLoading, error, fetchBookings, updateBooking } = useBookings();
-  const [paymentDetail, setPaymentDetail] = React.useState<{
-    method: string;
-    amountPaid: number;
-  }>({ method: "pending", amountPaid: 0 });
 
   async function updatePayment() {
     try {
@@ -99,7 +107,7 @@ export default function AddPaymentModal({
                                   price: string;
                                   quantity: number;
                                 },
-                                index: number
+                                index: number,
                               ) =>
                                 req.quantity > 0 && (
                                   <div
@@ -118,11 +126,11 @@ export default function AddPaymentModal({
 
                                     <span className="font-bold">
                                       {formatPHP(
-                                        Number(req.price) * req.quantity
+                                        Number(req.price) * req.quantity,
                                       )}
                                     </span>
                                   </div>
-                                )
+                                ),
                             )}
                           </div>
                         </div>

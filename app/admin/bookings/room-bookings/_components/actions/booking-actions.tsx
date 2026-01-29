@@ -34,10 +34,21 @@ export default function BookingActionsDropdown({
   const [extendOpen, setExtendOpen] = React.useState(false);
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
+  const [paymentDetail, setPaymentDetail] = React.useState<{
+    method: string;
+    amountPaid: number;
+  }>({ method: "pending", amountPaid: 0 });
 
   const summary = React.useMemo(() => {
-    return generateSummary(booking, booking.special_requests);
-  }, [booking, isViewSummaryOpen]);
+    return generateSummary(
+      {
+        ...booking,
+        payment_method: paymentDetail.method,
+        amount_paid: paymentDetail.amountPaid,
+      },
+      booking.special_requests,
+    );
+  }, [booking, isViewSummaryOpen, paymentDetail]);
   return (
     <>
       <ExtendModal
@@ -53,6 +64,8 @@ export default function BookingActionsDropdown({
       <AddPaymentModal
         isOpen={addPaymentOpen}
         onClose={() => setAddPaymentOpen(false)}
+        paymentDetail={paymentDetail}
+        setPaymentDetail={setPaymentDetail}
         summary={summary}
         id={booking.id}
       />

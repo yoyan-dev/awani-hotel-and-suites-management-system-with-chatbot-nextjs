@@ -1,5 +1,7 @@
+"use client";
+
 import React from "react";
-import { Button, Card, CardBody, Image } from "@heroui/react";
+import { Button, Image } from "@heroui/react";
 
 const SAMPLE_IMAGES = [
   "/banquet/image-1.jpg",
@@ -11,105 +13,106 @@ const SAMPLE_IMAGES = [
 export default function BanquetSection() {
   return (
     <section className="bg-white dark:bg-gray-900">
+      {/* Hero */}
       <div
         className="h-72 md:h-96 flex items-center justify-center bg-cover bg-center relative"
         style={{
           backgroundImage:
-            "linear-gradient(to bottom, rgba(12,12,12,0.45), rgba(12,12,12,0.45)), url('/banquet/image-3.png')",
+            "linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.45)), url('/banquet/image-3.png')",
         }}
-        aria-hidden={false}
       >
-        <div className="text-center px-6">
-          <h2 className="text-3xl md:text-4xl  text-white font-semibold">
-            Banquet Packages & Function Rooms
+        <div className="text-center px-6 max-w-3xl">
+          <h2 className="text-3xl md:text-4xl font-semibold text-white">
+            Banquet & Function Rooms
           </h2>
-          <p className="mt-2 text-gray-200 max-w-2xl mx-auto">
-            Elegant spaces, curated menus, and professional event coordination —
-            everything you need for unforgettable weddings, corporate events,
-            and private celebrations.
+          <p className="mt-3 text-sm md:text-base text-gray-200">
+            Elegant venues with curated menus and professional coordination for
+            weddings, corporate events, and private celebrations.
           </p>
-          <div className="mt-6 flex items-center justify-center gap-3">
+
+          <div className="mt-6 flex justify-center">
             <Button color="primary" as="a" href="#packages">
               View Packages
-            </Button>
-            <Button as="a" href="#contact">
-              Contact Coordinator
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-12 grid gap-10 md:grid-cols-2">
-        <Card className="shadow-lg">
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-6 py-16 grid gap-12 md:grid-cols-2 items-center">
+        {/* Image */}
+        <div className="overflow-hidden rounded-lg">
           <Image
             src="/banquet/image-2.jpg"
-            alt="Banquet function room"
-            className="object-cover w-full h-96 rounded-lg"
+            alt="Grand Function Hall"
+            className="w-full h-[360px] object-cover"
           />
-        </Card>
+        </div>
 
-        <div className="flex flex-col justify-between">
+        {/* Text */}
+        <div className="space-y-6">
           <div>
-            <h3 className="text-2xl font-semibold mb-3">Grand Function Hall</h3>
-            <p className="text-gray-700 mb-4 leading-relaxed">
-              Spacious, flexible, and elegantly appointed — our Grand Function
-              Hall adapts to your event format. From a plated wedding banquet to
-              a corporate gala, we provide premium lighting, AV setup, and a
-              dedicated events team.
+            <h3 className="text-2xl font-medium text-gray-900 dark:text-white">
+              Grand Function Hall
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+              A spacious and adaptable venue designed for both intimate
+              gatherings and grand occasions. Equipped with professional AV,
+              elegant lighting, and a dedicated events team.
             </p>
-
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-700 mb-6">
-              <li>
-                • Seating Capacity: <strong>50–300</strong>
-              </li>
-              <li>• Flexible Layouts: theatre, banquet, classroom</li>
-              <li>• Professional AV & Lighting</li>
-              <li>• Customizable Menus & Catering</li>
-              <li>• Free Wi-Fi & Onsite Parking</li>
-              <li>• Dedicated Event Coordinator</li>
-            </ul>
           </div>
 
-          <div className="mt-4 flex gap-3">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <li>• Seating Capacity: 50–300</li>
+            <li>• Flexible Layout Options</li>
+            <li>• Professional AV & Lighting</li>
+            <li>• Custom Catering Menus</li>
+            <li>• Free Wi-Fi & Parking</li>
+            <li>• Dedicated Event Coordinator</li>
+          </ul>
+
+          <div className="flex gap-3">
             <Button color="primary" as="a" href="#packages">
               See Packages
             </Button>
-            <Button as="a" href="#gallery">
+            <Button variant="flat" as="a" href="#gallery">
               View Gallery
             </Button>
           </div>
         </div>
       </div>
 
+      {/* Gallery */}
       <div id="gallery" className="max-w-6xl mx-auto px-6 pb-16">
-        <h4 className="text-2xl font-semibold text-center mb-6">Gallery</h4>
+        <h4 className="text-xl font-medium text-center mb-8">Event Gallery</h4>
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {SAMPLE_IMAGES.map((src, idx) => (
-            <div key={idx} className="overflow-hidden rounded-lg">
+            <div key={idx} className="overflow-hidden rounded-md">
               <img
                 src={src}
                 alt={`Banquet ${idx + 1}`}
-                className="w-full h-40 object-cover transform hover:scale-105 transition"
+                className="w-full h-40 object-cover"
               />
             </div>
           ))}
         </div>
       </div>
 
-      <div id="contact" className="bg-gray-50 dark:bg-gray-800 py-10">
+      {/* CTA */}
+      <div className="border-t border-gray-100 dark:border-gray-800 py-12">
         <div className="max-w-4xl mx-auto text-center px-6">
-          <h5 className="text-xl font-semibold mb-2">
+          <h5 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
             Ready to plan your event?
           </h5>
-          <p className="text-gray-600 mb-4">
-            Contact our events team for custom quotes, menu tastings, and site
-            tours.
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-5">
+            Speak with our events team for custom quotes, tastings, and site
+            visits.
           </p>
-          <div className="flex items-center justify-center gap-3">
-            <Button color="primary" as="a" href="/contact">
-              Contact Events Team
-            </Button>
-          </div>
+
+          <Button color="primary" as="a" href="/contact">
+            Contact Events Team
+          </Button>
         </div>
       </div>
     </section>

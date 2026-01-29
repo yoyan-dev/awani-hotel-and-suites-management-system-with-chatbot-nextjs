@@ -42,7 +42,7 @@ export default function HousekeepingLayout({
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="dark:bg-gray-800 rounded"
+            className="dark:bg-gray-800 rounded max-h-screen overflow-y-auto"
           >
             {children}
           </motion.div>
