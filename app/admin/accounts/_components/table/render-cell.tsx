@@ -53,35 +53,29 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
     case "email":
       return user.email;
     case "role":
-      return isEditing ? (
-        <div className="flex gap-2 items-center">
-          <Select
-            radius="sm"
-            label="System Role"
-            name="role"
-            variant="bordered"
-            defaultSelectedKeys={[role]}
-          >
-            {["admin", "housekeeping"].map((role) => (
-              <SelectItem className="capitalize" key={role}>
-                {role}
-              </SelectItem>
-            ))}
-          </Select>
-          <Button
-            size="sm"
-            variant="flat"
-            color="success"
-            onPress={handleSaveRole}
-          >
-            Save
-          </Button>
-        </div>
-      ) : (
-        <Chip className="capitalize" color="primary" size="sm" variant="flat">
-          {role}
-        </Chip>
-      );
+      <div className="flex gap-2 items-center">
+        <Select
+          radius="sm"
+          label="System Role"
+          name="role"
+          variant="bordered"
+          defaultSelectedKeys={[role]}
+        >
+          {["admin", "housekeeping"].map((role) => (
+            <SelectItem className="capitalize" key={role}>
+              {role}
+            </SelectItem>
+          ))}
+        </Select>
+        <Button
+          size="sm"
+          variant="flat"
+          color="success"
+          onPress={handleSaveRole}
+        >
+          Save
+        </Button>
+      </div>;
     case "status":
       return (
         <Chip
@@ -96,11 +90,8 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
     case "actions":
       return (
         <>
-          <DeleteModal user={user} />
+          {/* <DeleteModal user={user} />
           <div className="flex justify-end items-center gap-2">
-            <Button variant="flat" isIconOnly color="primary" size="sm">
-              <Eye size={16} />
-            </Button>
             <Button
               variant="flat"
               isIconOnly
@@ -113,7 +104,7 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
             <Button variant="flat" isIconOnly color="danger" size="sm">
               <Trash size={16} />
             </Button>
-          </div>
+          </div> */}
         </>
       );
     default:

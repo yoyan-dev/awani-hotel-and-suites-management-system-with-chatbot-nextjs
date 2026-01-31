@@ -1,8 +1,6 @@
 "use client";
 
-import { User } from "@/types/users";
 import { Button, Link } from "@heroui/react";
-import LoginPromptModal from "../modals/login-prompt-modal";
 import { peakSeason } from "@/lib/peak-season-dates";
 import { useMemo } from "react";
 
@@ -17,7 +15,6 @@ export default function HeroBanner() {
       `}
       style={{ backgroundImage: "url('/bg.jpg')" }}
     >
-      {/* Gradient Overlay */}
       <div
         className={`absolute inset-0 transition-all duration-500 backdrop-blur-[2px]
           ${
@@ -28,7 +25,6 @@ export default function HeroBanner() {
         `}
       />
 
-      {/* Content */}
       <div className="relative z-10 px-6">
         <h1
           className={`text-4xl font-extrabold drop-shadow-xl transition-all 
@@ -68,7 +64,7 @@ export default function HeroBanner() {
               }
             `}
           as={Link}
-          href="/guest/reservations/hotel-rooms/reservation/null"
+          href="/guest/reservations/hotel-rooms"
         >
           {isPeakSeason ? "Book Peak Season Stay ✨" : "Book Now"}
         </Button>
