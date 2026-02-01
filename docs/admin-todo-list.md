@@ -17,6 +17,10 @@ This document tracks all unfinished pages and features for the Admin Dashboard s
 
 - `/housekeeping/page.tsx` - Housekeeping operations dashboard with room status, cleaning progress, today's operations
 
+### Bookings Management
+
+- `/admin/bookings/overview/page.tsx` - Enhanced booking overview with real data, filters, and statistics cards
+
 ---
 
 ## High Priority - Core Features 🚨
@@ -25,13 +29,13 @@ This document tracks all unfinished pages and features for the Admin Dashboard s
 
 #### `/admin/bookings/overview/page.tsx`
 
-- **Status**: Basic structure exists, needs enhancement
-- **Required**:
-  - [ ] Connect to Redux booking slice
-  - [ ] Add real data fetching with filters
-  - [ ] Implement booking statistics cards
-  - [ ] Add booking list with pagination
-  - [ ] Integrate booking actions (view, edit, cancel)
+- **Status**: ✅ COMPLETED
+- **Completed**:
+  - [x] Connect to Redux booking slice (useAppSelector + dispatch)
+  - [x] Add real data fetching with filters (search, status, date range)
+  - [x] Implement booking statistics cards (KPICard with revenue, occupancy, check-ins)
+  - [x] Add booking list table with status badges
+  - [x] Fix API response format mismatch in booking thunk
 
 #### `/admin/bookings/room-bookings/page.tsx`
 

@@ -1,86 +1,217 @@
 "use client";
-import React, { useMemo } from "react";
-import BookingHeader from "./_components/header";
-import KeyPerformanceIndicator from "./_components/key-performance-indicator";
-import BookingTable from "./_components/table/booking-table";
-import { Booking, FetchBookingParams } from "@/types/booking";
-import CenterRow from "./_components/center-row";
-import { useBookings } from "@/hooks/use-bookings";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/booking";
-import { useRooms } from "@/hooks/use-rooms";
-import { formatDate } from "@/utils/format-date";
 
-export default function Overview() {
-  const {
-    pagination,
-    bookings,
-    isLoading: bookingLoading,
-    error: bookingError,
-    fetchBookings,
-    updateBooking,
-  } = useBookings();
-  const { analytics, isLoading: roomLoading, fetchAnalytics } = useRooms();
+import React, { useEffect, useState, useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchBookings } from "@/features/booking/hotel-rooms/booking-thunk";
+import {
+  DashboardLayout,
+  LoadingState,
+} from "@/app/admin/dashboard/dashboard-layout";
+import { BookingFilters } from "./_components/filters";
+import {
+  BookingStats,
+  StatusDistribution,
+  TodayActivity,
+  QuickStats,
+} from "./_components/stats";
+import { RecentBookingsTable } from "./_components/tables";
+import { format } from "date-fns";
 
-  const [query, setQuery] = React.useState<FetchBookingParams>({});
-  const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
-  const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(INITIAL_VISIBLE_COLUMNS),
+interface BookingStats {
+  totalRevenue: number;
+  totalBookings: number;
+  pendingBookings: number;
+  confirmedBookings: number;
+  checkedInToday: number;
+  checkedOutToday: number;
+  upcomingBookings: number;
+  cancelledBookings: number;
+  occupancyRate: number;
+  averageBookingValue: number;
+}
+
+export default function OverviewPage() {
+  const dispatch = useAppDispatch();
+  const { bookings, pagination, isLoading, error } = useAppSelector(
+    (state) => state.booking,
   );
 
-  const headerColumns = React.useMemo(() => {
-    if (visibleColumns === "all") return columns;
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  useEffect(() => {
+    const params: Record<string, string> = {};
+
+    if (searchQuery) params.query = searchQuery;
+    if (statusFilter) params.status = statusFilter;
+    if (dateFilter) {
+      const today = new Date();
+      switch (dateFilter) {
+        case "today":
+          params.check_in = format(today, "yyyy-MM-dd");
+          break;
+        case "week":
+          params.start = format(today, "yyyy-MM-dd");
+          break;
+        case "month":
+          params.start = format(today, "yyyy-MM-dd");
+          break;
+      }
+    }
+
+    dispatch(fetchBookings(params));
+  }, [dispatch, searchQuery, statusFilter, dateFilter]);
+
+  const handleRefresh = () => {
+    const params: Record<string, string> = {};
+    if (statusFilter) params.status = statusFilter;
+    dispatch(fetchBookings(params));
+  };
+
+  const stats: BookingStats = useMemo(() => {
+    const now = new Date();
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
     );
-  }, [visibleColumns]);
+    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
 
-  React.useEffect(() => {
-    fetchBookings(query);
-  }, [query]);
-
-  React.useEffect(() => {
-    fetchAnalytics();
-  }, []);
-
-  async function handleSubmit(payload: Booking) {
-    console.log(payload);
-    updateBooking({
-      id: payload.id,
-      room_id: payload.room_id,
-      status: "confirmed",
-    } as Booking);
-  }
-
-  const stats = useMemo(() => {
-    const totalRevenue = bookings.reduce((s, b) => s + Number(b.total), 0);
-    const upcoming = bookings.filter(
-      (b) => new Date(b.check_in) >= new Date(),
+    const totalRevenue = bookings.reduce(
+      (sum, b) => sum + Number(b.total || 0),
+      0,
+    );
+    const pendingBookings = bookings.filter(
+      (b) => b.status === "pending",
     ).length;
-    const occupied = bookings.filter((b) => b.status === "check-in").length;
-    return { totalRevenue, upcoming, occupied };
+    const confirmedBookings = bookings.filter(
+      (b) => b.status === "confirmed",
+    ).length;
+    const checkedInToday = bookings.filter((b) => {
+      if (b.status !== "check-in" || !b.check_in) return false;
+      const checkIn = new Date(b.check_in);
+      return checkIn >= todayStart && checkIn < todayEnd;
+    }).length;
+    const checkedOutToday = bookings.filter((b) => {
+      if (b.status !== "check-out" || !b.check_out) return false;
+      const checkOut = new Date(b.check_out);
+      return checkOut >= todayStart && checkOut < todayEnd;
+    }).length;
+    const upcomingBookings = bookings.filter((b) => {
+      if (!b.check_in) return false;
+      return new Date(b.check_in) > now;
+    }).length;
+    const cancelledBookings = bookings.filter(
+      (b) => b.status === "cancelled",
+    ).length;
+    const occupiedCount = bookings.filter(
+      (b) => b.status === "check-in",
+    ).length;
+    const occupancyRate =
+      bookings.length > 0 ? (occupiedCount / bookings.length) * 100 : 0;
+    const averageBookingValue =
+      bookings.length > 0 ? totalRevenue / bookings.length : 0;
+
+    return {
+      totalRevenue,
+      totalBookings: bookings.length,
+      pendingBookings,
+      confirmedBookings,
+      checkedInToday,
+      checkedOutToday,
+      upcomingBookings,
+      cancelledBookings,
+      occupancyRate,
+      averageBookingValue,
+    };
   }, [bookings]);
 
-  return (
-    <div className="min-h-screen p-4 bg-gradient-to-b from-slate-50 to-white dark:from-gray-900 dark:to-gray-900">
-      <div className="max-w-7xl mx-auto spcae-y-4">
-        <BookingHeader />
-        <KeyPerformanceIndicator stats={stats} />
-        <CenterRow analytics={analytics} roomLoading={roomLoading} />
+  const statusDistribution = useMemo(() => {
+    const distribution: Record<string, number> = {
+      pending: 0,
+      confirmed: 0,
+      checked_in: 0,
+      checked_out: 0,
+      cancelled: 0,
+    };
+    bookings.forEach((b) => {
+      const status = b.status || "unknown";
+      distribution[status] = (distribution[status] || 0) + 1;
+    });
+    return distribution;
+  }, [bookings]);
 
-        {/* <BookingTable
-          bookings={bookings}
-          pagination={pagination}
-          query={query}
-          setQuery={setQuery}
-          headerColumns={headerColumns}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
-          selectedKeys={selectedKeys}
-          setSelectedKeys={setSelectedKeys}
-          bookingLoading={bookingLoading}
-          handleSubmit={handleSubmit}
-        /> */}
+  if (isLoading && !bookings.length) {
+    return (
+      <DashboardLayout>
+        <LoadingState message="Loading bookings..." />
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="p-4 bg-danger-50 text-danger rounded-lg">
+          Error: {error}
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Bookings Overview
+          </h1>
+          <p className="text-gray-500">Manage and monitor all hotel bookings</p>
+        </div>
+        <BookingFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          dateFilter={dateFilter}
+          setDateFilter={setDateFilter}
+          onRefresh={handleRefresh}
+          isLoading={isLoading}
+        />
       </div>
-    </div>
+
+      <BookingStats
+        totalRevenue={stats.totalRevenue}
+        totalBookings={stats.totalBookings}
+        pendingBookings={stats.pendingBookings}
+        checkedInToday={stats.checkedInToday}
+        occupancyRate={stats.occupancyRate}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <StatusDistribution
+          bookings={bookings}
+          statusDistribution={statusDistribution}
+        />
+        <TodayActivity
+          checkedInToday={stats.checkedInToday}
+          checkedOutToday={stats.checkedOutToday}
+          pendingBookings={stats.pendingBookings}
+          confirmedBookings={stats.confirmedBookings}
+        />
+        <QuickStats
+          totalBookings={stats.totalBookings}
+          upcomingBookings={stats.upcomingBookings}
+          cancelledBookings={stats.cancelledBookings}
+          averageBookingValue={stats.averageBookingValue}
+        />
+      </div>
+
+      <RecentBookingsTable
+        bookings={bookings}
+        totalCount={pagination.total || bookings.length}
+      />
+    </DashboardLayout>
   );
 }

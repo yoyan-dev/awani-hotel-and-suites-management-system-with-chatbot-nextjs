@@ -28,17 +28,22 @@ export const fetchBookings = createAsyncThunk<
     if (params?.status) searchParams.append("status", params.status);
 
     const res = await fetch(`${apiUrl}?${searchParams}`);
-    const data = await res.json();
+    const response = await res.json();
 
-    if (!res.ok || !data.success) {
-      addToast(data.message);
+    if (!res.ok || !response.success) {
+      addToast({
+        title: "Error",
+        description:
+          response.message?.description ?? "Failed to fetch bookings",
+        color: "danger",
+      });
       return rejectWithValue(
-        data.message?.description ?? "Failed to fetch bookings"
+        response.message?.description ?? "Failed to fetch bookings",
       );
     }
-    return data as {
-      data: Booking[];
-      pagination: BookingPagination;
+    return {
+      data: response.data as Booking[],
+      pagination: response.pagination as BookingPagination,
     };
   } catch (error: any) {
     return rejectWithValue(error.message);
@@ -55,7 +60,7 @@ export const fetchBooking = createAsyncThunk<Booking, string>(
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch booking"
+          data.message?.description ?? "Failed to fetch booking",
         );
       }
       return data.data;
@@ -67,7 +72,7 @@ export const fetchBooking = createAsyncThunk<Booking, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const addBooking = createAsyncThunk<Booking, FormData>(
@@ -82,7 +87,7 @@ export const addBooking = createAsyncThunk<Booking, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add booking"
+          data.message?.description ?? "Failed to add booking",
         );
       }
       return data.data;
@@ -95,7 +100,7 @@ export const addBooking = createAsyncThunk<Booking, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -116,7 +121,7 @@ export const updateBooking = createAsyncThunk<
 
     if (!res.ok || !data.success) {
       return rejectWithValue(
-        data.message?.description ?? "Failed to update booking"
+        data.message?.description ?? "Failed to update booking",
       );
     }
 
@@ -142,7 +147,7 @@ export const deleteBooking = createAsyncThunk<string, string>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete booking"
+          data.message?.description ?? "Failed to delete booking",
         );
       }
 
@@ -155,7 +160,7 @@ export const deleteBooking = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 //  delete selected rooms or all
