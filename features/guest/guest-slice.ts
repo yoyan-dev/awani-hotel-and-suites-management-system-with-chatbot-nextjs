@@ -52,7 +52,7 @@ const guestSlice = createSlice({
           state.isLoading = false;
           state.guests = action.payload;
           state.error = undefined;
-        }
+        },
       )
       .addCase(fetchGuests.rejected, (state, action) => {
         state.isLoading = false;
@@ -117,7 +117,7 @@ const guestSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.guests = state.guests.filter(
-          (r) => !action.payload.map((row) => row.id).includes(r.id)
+          (r) => !action.payload.map((row) => row.id).includes(r.id),
         );
       })
       .addCase(deleteSelectedGuest.rejected, (state, action) => {
