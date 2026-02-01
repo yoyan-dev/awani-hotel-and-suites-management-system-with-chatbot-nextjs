@@ -1,6 +1,3 @@
-import React from "react";
-import Notification from "../../_components/notification";
-
 export default function Header() {
   return (
     <div>
