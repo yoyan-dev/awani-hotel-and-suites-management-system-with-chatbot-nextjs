@@ -5,8 +5,6 @@ import React from "react";
 import { Booking, FetchBookingParams } from "@/types/booking";
 import { useBookings } from "@/hooks/use-bookings";
 import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/booking";
-import { HousekeepingTask } from "@/types/housekeeping";
-import { useHousekeeping } from "@/hooks/use-housekeeping";
 import { useRooms } from "@/hooks/use-rooms";
 import { Room } from "@/types/room";
 
