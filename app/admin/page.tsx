@@ -1,24 +1,32 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FilterBar } from "./_components/ui/filter-bar";
-import { KPI } from "./_components/ui/kpi";
-import { Card } from "./_components/ui/card";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { formatPHP } from "@/lib/format-php";
 import {
-  BookingAnalyticsResponse,
-  FunctionHallAnalyticsResponse,
-} from "@/types/analytics";
+  DashboardLayout,
+  DashboardCard,
+  KPICard,
+  StatGrid,
+  ProgressBar,
+  Badge,
+  LoadingState,
+} from "./dashboard/dashboard-layout";
+import { Input } from "@heroui/react";
+import { Users, DollarSign, Bed, Building2 } from "lucide-react";
 
-export default function Page() {
+export default function AdminDashboardPage() {
   const {
     bookingAnalyticsData,
     functionHallAnalyticsData,
+    roomAnalyticsData,
+    functionRoomAnalyticsData,
     isLoading,
     error,
     bookingAnalytics,
     functionHallAnalytics,
+    roomAnalytics,
+    functionRoomAnalytics,
   } = useAnalytics();
 
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
@@ -26,172 +34,307 @@ export default function Page() {
   useEffect(() => {
     bookingAnalytics({ start: dateRange.start, end: dateRange.end });
     functionHallAnalytics({ start: dateRange.start, end: dateRange.end });
+    roomAnalytics({});
+    functionRoomAnalytics({});
   }, [dateRange]);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  if (isLoading && !bookingAnalyticsData?.summary?.total_bookings) {
+    return (
+      <DashboardLayout>
+        <LoadingState message="Loading analytics data..." />
+      </DashboardLayout>
+    );
+  }
 
-  // Booking Status distribution
-  const statusData = bookingAnalyticsData?.statusDistribution
-    ? Object.entries(bookingAnalyticsData.statusDistribution).map(
-        ([name, value]) => ({ name, value }),
-      )
-    : [];
+  if (error) {
+    return (
+      <DashboardLayout>
+        <DashboardCard>
+          <div className="text-danger">Error: {error}</div>
+        </DashboardCard>
+      </DashboardLayout>
+    );
+  }
 
-  // Booking Source distribution
-  const sourceData = bookingAnalyticsData?.bookingSourceDistribution
-    ? [
-        {
-          name: "Walk-in",
-          value: bookingAnalyticsData.bookingSourceDistribution.walk_in || 0,
-        },
-        {
-          name: "Online",
-          value: bookingAnalyticsData.bookingSourceDistribution.online || 0,
-        },
-      ]
-    : [
-        { name: "Walk-in", value: 0 },
-        { name: "Online", value: 0 },
-      ];
+  const statusDistribution =
+    bookingAnalyticsData?.distributions?.by_status || {};
+  const sourceDistribution =
+    bookingAnalyticsData?.distributions?.by_booking_source || {};
+  const eventTypeDistribution =
+    functionHallAnalyticsData?.distributions?.by_event_type || {};
+  const roomStatusDistribution =
+    roomAnalyticsData?.distributions?.by_status || {};
 
-  // Function Hall event type distribution
-  const eventTypeData = functionHallAnalyticsData?.eventTypeDistribution
-    ? Object.entries(functionHallAnalyticsData.eventTypeDistribution).map(
-        ([name, value]) => ({ name, value }),
-      )
-    : [];
+  const totalBookings = bookingAnalyticsData?.summary?.total_bookings || 0;
+  const totalRevenue = bookingAnalyticsData?.summary?.total_revenue || 0;
+  const totalRooms = roomAnalyticsData?.summary?.total_rooms || 0;
+  const occupiedRooms = roomAnalyticsData?.summary?.occupied_rooms || 0;
+  const occupancyRate = roomAnalyticsData?.summary?.occupancy_rate || 0;
+  const functionHallBookings =
+    functionHallAnalyticsData?.summary?.total_bookings || 0;
+  const functionHallRevenue =
+    functionHallAnalyticsData?.summary?.total_revenue || 0;
+  const pendingBookings = bookingAnalyticsData?.summary?.pending_bookings || 0;
+  const checkedInToday = bookingAnalyticsData?.summary?.checked_in_today || 0;
+  const upcomingEvents =
+    functionHallAnalyticsData?.summary?.upcoming_bookings || 0;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Analytics Dashboard</h1>
-
-      {/* Filter */}
-      <FilterBar
-        startDate={dateRange.start}
-        endDate={dateRange.end}
-        onChange={(start, end) =>
-          setDateRange({ start: start || "", end: end || "" })
-        }
-      />
-
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <KPI
-          label="Total Bookings"
-          value={bookingAnalyticsData?.totalBookings || 0}
-        />
-        <KPI
-          label="Total Revenue"
-          value={`${formatPHP(bookingAnalyticsData?.totalRevenue || 0)}`}
-        />
-        <KPI
-          label="Function Hall Bookings"
-          value={functionHallAnalyticsData?.totalBookings || 0}
-        />
-        <KPI
-          label="Function Hall Revenue"
-          value={`${formatPHP(functionHallAnalyticsData?.totalRevenue || 0)}`}
-        />
+    <DashboardLayout>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-500">Overview of your hotel operations</p>
+        </div>
+        <div className="flex gap-2">
+          <Input
+            type="date"
+            label="Start Date"
+            value={dateRange.start}
+            onChange={(e) =>
+              setDateRange({ ...dateRange, start: e.target.value })
+            }
+            size="sm"
+          />
+          <Input
+            type="date"
+            label="End Date"
+            value={dateRange.end}
+            onChange={(e) =>
+              setDateRange({ ...dateRange, end: e.target.value })
+            }
+            size="sm"
+          />
+        </div>
       </div>
 
-      {/* Booking Status */}
-      <Card title="Booking Status Distribution">
-        {statusData.length === 0 ? (
-          <p className="text-gray-500">No bookings yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {statusData.map((item) => {
-              const percentage =
-                bookingAnalyticsData && bookingAnalyticsData.totalBookings
-                  ? Math.round(
-                      (item.value / bookingAnalyticsData.totalBookings) * 100,
-                    )
-                  : 0;
-              return (
-                <div key={item.name}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-gray-700">{item.name}</span>
-                    <span className="text-gray-500">{item.value}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-indigo-500 h-2 rounded-full"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </Card>
+      <StatGrid columns={4}>
+        <KPICard
+          title="Total Bookings"
+          value={totalBookings}
+          subtitle="This period"
+          trend={{
+            value:
+              bookingAnalyticsData?.trends?.weekly_comparison?.percent_change ||
+              0,
+            isPositive: true,
+          }}
+          icon={<Users className="w-5 h-5" />}
+          color="primary"
+        />
+        <KPICard
+          title="Booking Revenue"
+          value={formatPHP(totalRevenue)}
+          subtitle="Total revenue"
+          icon={<DollarSign className="w-5 h-5" />}
+          color="success"
+        />
+        <KPICard
+          title="Room Occupancy"
+          value={`${occupancyRate.toFixed(1)}%`}
+          subtitle={`${occupiedRooms} occupied`}
+          icon={<Bed className="w-5 h-5" />}
+          color="secondary"
+        />
+        <KPICard
+          title="Function Halls"
+          value={functionHallBookings}
+          subtitle="Total events"
+          icon={<Building2 className="w-5 h-5" />}
+          color="warning"
+        />
+      </StatGrid>
 
-      {/* Booking Source */}
-      <Card title="Booking Source Distribution">
-        {sourceData.length === 0 ? (
-          <p className="text-gray-500">No bookings yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {sourceData.map((item) => {
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <DashboardCard
+          title="Booking Status Overview"
+          subtitle="Distribution by current status"
+        >
+          <div className="space-y-4">
+            {Object.entries(statusDistribution).map(([status, count]) => {
               const percentage =
-                bookingAnalyticsData && bookingAnalyticsData.totalBookings
-                  ? Math.round(
-                      (item.value / bookingAnalyticsData.totalBookings) * 100,
-                    )
-                  : 0;
+                totalBookings > 0 ? (Number(count) / totalBookings) * 100 : 0;
+              const colorMap: Record<string, string> = {
+                pending: "bg-warning-500",
+                confirmed: "bg-primary-500",
+                checked_in: "bg-success-500",
+                checked_out: "bg-secondary-500",
+                cancelled: "bg-danger-500",
+              };
               return (
-                <div key={item.name}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-gray-700">{item.name}</span>
-                    <span className="text-gray-500">{item.value}</span>
+                <div key={status}>
+                  <div className="flex justify-between items-center mb-1">
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        color={
+                          status === "pending"
+                            ? "warning"
+                            : status === "confirmed"
+                              ? "primary"
+                              : status === "checked_in"
+                                ? "success"
+                                : status === "cancelled"
+                                  ? "danger"
+                                  : "default"
+                        }
+                      >
+                        {status.replace("_", " ")}
+                      </Badge>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      {count} ({percentage.toFixed(1)}%)
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-green-500 h-2 rounded-full"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    value={Number(count)}
+                    max={totalBookings || 1}
+                    color={colorMap[status] || "bg-primary-500"}
+                    size="sm"
+                  />
                 </div>
               );
             })}
+            {Object.keys(statusDistribution).length === 0 && (
+              <p className="text-gray-500 text-center py-4">
+                No booking data available
+              </p>
+            )}
           </div>
-        )}
-      </Card>
+        </DashboardCard>
 
-      {/* Function Hall Event Types */}
-      <Card title="Function Hall Event Type Distribution">
-        {eventTypeData.length === 0 ? (
-          <p className="text-gray-500">No function hall events yet.</p>
-        ) : (
-          <div className="space-y-2">
-            {eventTypeData.map((item) => {
+        <DashboardCard title="Room Status" subtitle="Current room availability">
+          <div className="space-y-4">
+            {Object.entries(roomStatusDistribution).map(([status, count]) => {
               const percentage =
-                functionHallAnalyticsData &&
-                functionHallAnalyticsData.totalBookings
-                  ? Math.round(
-                      (item.value / functionHallAnalyticsData.totalBookings) *
-                        100,
-                    )
-                  : 0;
+                totalRooms > 0 ? (Number(count) / totalRooms) * 100 : 0;
+              const colorMap: Record<string, string> = {
+                available: "bg-success-500",
+                occupied: "bg-primary-500",
+                maintenance: "bg-danger-500",
+                cleaning: "bg-warning-500",
+              };
               return (
-                <div key={item.name}>
-                  <div className="flex justify-between mb-1">
-                    <span className="text-gray-700">{item.name}</span>
-                    <span className="text-gray-500">{item.value}</span>
+                <div key={status}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 capitalize">
+                      {status}
+                    </span>
+                    <span className="text-sm text-gray-500">
+                      {count} rooms ({percentage.toFixed(1)}%)
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-yellow-500 h-2 rounded-full"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    value={Number(count)}
+                    max={totalRooms || 1}
+                    color={colorMap[status] || "bg-primary-500"}
+                    size="sm"
+                  />
                 </div>
               );
             })}
+            {Object.keys(roomStatusDistribution).length === 0 && (
+              <p className="text-gray-500 text-center py-4">
+                No room data available
+              </p>
+            )}
           </div>
-        )}
-      </Card>
-    </div>
+        </DashboardCard>
+
+        <DashboardCard
+          title="Booking Sources"
+          subtitle="Distribution by booking channel"
+        >
+          <div className="space-y-4">
+            {Object.entries(sourceDistribution).map(([source, count]) => {
+              const percentage =
+                totalBookings > 0 ? (Number(count) / totalBookings) * 100 : 0;
+              return (
+                <div key={source}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 capitalize">
+                      {source}
+                    </span>
+                    <span className="text-sm text-gray-500">{count}</span>
+                  </div>
+                  <ProgressBar
+                    value={percentage}
+                    color="bg-primary-500"
+                    size="sm"
+                  />
+                </div>
+              );
+            })}
+            {Object.keys(sourceDistribution).length === 0 && (
+              <p className="text-gray-500 text-center py-4">
+                No source data available
+              </p>
+            )}
+          </div>
+        </DashboardCard>
+
+        <DashboardCard
+          title="Function Hall Events"
+          subtitle="Distribution by event type"
+        >
+          <div className="space-y-4">
+            {Object.entries(eventTypeDistribution).map(([type, count]) => {
+              const percentage =
+                functionHallBookings > 0
+                  ? (Number(count) / functionHallBookings) * 100
+                  : 0;
+              return (
+                <div key={type}>
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-gray-700 capitalize">
+                      {type}
+                    </span>
+                    <span className="text-sm text-gray-500">{count}</span>
+                  </div>
+                  <ProgressBar
+                    value={percentage}
+                    color="bg-secondary-500"
+                    size="sm"
+                  />
+                </div>
+              );
+            })}
+            {Object.keys(eventTypeDistribution).length === 0 && (
+              <p className="text-gray-500 text-center py-4">
+                No event type data available
+              </p>
+            )}
+          </div>
+        </DashboardCard>
+      </div>
+
+      <DashboardCard title="Quick Stats" subtitle="At a glance metrics">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-2xl font-bold text-primary-600">
+              {pendingBookings}
+            </p>
+            <p className="text-sm text-gray-500">Pending Bookings</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-2xl font-bold text-success-600">
+              {checkedInToday}
+            </p>
+            <p className="text-sm text-gray-500">Checked In Today</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-2xl font-bold text-warning-600">
+              {upcomingEvents}
+            </p>
+            <p className="text-sm text-gray-500">Upcoming Events</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-2xl font-bold text-secondary-600">
+              {formatPHP(functionHallRevenue)}
+            </p>
+            <p className="text-sm text-gray-500">Function Hall Revenue</p>
+          </div>
+        </div>
+      </DashboardCard>
+    </DashboardLayout>
   );
 }

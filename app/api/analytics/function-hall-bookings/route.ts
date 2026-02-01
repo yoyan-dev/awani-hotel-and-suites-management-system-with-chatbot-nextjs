@@ -1,62 +1,196 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase-client";
-import { startOfDay, endOfDay } from "date-fns";
-import { ApiResponse } from "@/types/response";
+import { createClient } from "@/lib/supabase/server";
+import {
+  FunctionHallAnalyticsResponse,
+  FunctionHallAnalyticsParams,
+  ApiResponse,
+} from "@/types/analytics";
+import { Tables } from "@/types/supabase";
+import {
+  startOfDay,
+  endOfDay,
+  subDays,
+  format,
+  parseISO,
+  isValid,
+} from "date-fns";
+
+type FunctionHallBooking = Tables<"function_hall_bookings">;
+
+const generateResponse = <T>(
+  success: boolean,
+  data: T,
+  error: { message: string } | undefined,
+  meta: {
+    generated_at: string;
+    filters_applied: Record<string, unknown>;
+    execution_time_ms: number;
+  },
+): NextResponse<ApiResponse<T>> => {
+  return NextResponse.json(
+    {
+      success,
+      data,
+      error: error ? { code: "ERROR", message: error.message } : undefined,
+      meta,
+    },
+    { status: success ? 200 : 500 },
+  );
+};
+
+const calculateDateRange = (
+  params: FunctionHallAnalyticsParams,
+): { start: Date; end: Date } => {
+  const today = new Date();
+
+  if (params.start && params.end) {
+    const start = parseISO(params.start);
+    const end = parseISO(params.end);
+    if (isValid(start) && isValid(end)) {
+      return { start, end };
+    }
+  }
+
+  if (params.date) {
+    const date = parseISO(params.date);
+    if (isValid(date)) {
+      return { start: startOfDay(date), end: endOfDay(date) };
+    }
+  }
+
+  return { start: startOfDay(today), end: endOfDay(today) };
+};
 
 export async function GET(
   req: NextRequest,
-): Promise<NextResponse<ApiResponse>> {
+): Promise<NextResponse<ApiResponse<FunctionHallAnalyticsResponse>>> {
+  const startTime = Date.now();
+  const filters_applied: Record<string, unknown> = {};
+
   try {
-    const searchParams = req.nextUrl.searchParams;
+    const { searchParams } = new URL(req.url);
+    const supabase = await createClient();
 
-    const date = searchParams.get("date");
-    const start = searchParams.get("start");
-    const end = searchParams.get("end");
-    const status = searchParams.get("status");
-    const eventType = searchParams.get("event_type");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const sort_by = searchParams.get("sort_by") || "created_at";
+    const sort_order = (searchParams.get("sort_order") || "desc") as
+      | "asc"
+      | "desc";
 
-    // let query = supabase.from("function_hall_bookings").select("*");
+    const params: FunctionHallAnalyticsParams = {
+      page,
+      limit,
+      sort_by,
+      sort_order,
+      date: searchParams.get("date") || undefined,
+      start: searchParams.get("start") || undefined,
+      end: searchParams.get("end") || undefined,
+      status: searchParams.get("status") || undefined,
+      event_type: searchParams.get("event_type") || undefined,
+      search: searchParams.get("search") || undefined,
+    };
 
-    // // 🔹 DATE PRIORITY
-    // if (start && end) {
-    //   query = query
-    //     .gte("event_date", startOfDay(new Date(start)).toISOString())
-    //     .lte("event_date", endOfDay(new Date(end)).toISOString());
-    // } else if (date) {
-    //   query = query
-    //     .gte("event_date", startOfDay(new Date(date)).toISOString())
-    //     .lte("event_date", endOfDay(new Date(date)).toISOString());
-    // } else {
-    //   const today = new Date();
-    //   query = query
-    //     .gte("event_date", startOfDay(today).toISOString())
-    //     .lte("event_date", endOfDay(today).toISOString());
-    // }
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
 
-    // // 🔹 OPTIONAL FILTERS
-    // if (status) {
-    //   query = query.eq("status", status);
-    // }
+    filters_applied.pagination = { page, limit };
+    if (params.status) filters_applied.status = params.status;
+    if (params.event_type) filters_applied.event_type = params.event_type;
+    if (params.search) filters_applied.search = params.search;
 
-    // if (eventType) {
-    //   query = query.eq("event_type", eventType);
-    // }
-
-    // const { data: bookings, error } = await query;
-    const { data: bookings, error } = await supabase
+    let baseQuery = supabase
       .from("function_hall_bookings")
-      .select("*");
-    if (error) throw error;
+      .select("*", { count: "exact" });
 
-    // 🔹 ANALYTICS
-    const totalBookings = bookings.length;
+    const dateRange = calculateDateRange(params);
+    filters_applied.date_range = {
+      start: format(dateRange.start, "yyyy-MM-dd"),
+      end: format(dateRange.end, "yyyy-MM-dd"),
+    };
 
-    const totalRevenue = bookings.reduce(
-      (acc, b) => acc + Number(b.amount_paid || 0),
+    baseQuery = baseQuery
+      .gte("event_date", dateRange.start.toISOString())
+      .lte("event_date", dateRange.end.toISOString());
+
+    if (params.status) {
+      baseQuery = baseQuery.eq("status", params.status);
+    }
+
+    if (params.event_type) {
+      baseQuery = baseQuery.eq("event_type", params.event_type);
+    }
+
+    if (params.search) {
+      baseQuery = baseQuery.or(
+        `booking_number.ilike.%${params.search}%,guest_id.ilike.%${params.search}%`,
+      );
+    }
+
+    const {
+      data: bookings,
+      error,
+      count,
+    } = await baseQuery
+      .order(sort_by, { ascending: sort_order === "asc" })
+      .range(from, to);
+
+    if (error) {
+      console.error("Supabase error:", error);
+      const emptyResponse: FunctionHallAnalyticsResponse = {
+        summary: {
+          total_bookings: 0,
+          total_revenue: 0,
+          average_booking_value: 0,
+          upcoming_bookings: 0,
+          completed_bookings: 0,
+          pending_bookings: 0,
+          cancelled_bookings: 0,
+          total_guests_expected: 0,
+        },
+        trends: {
+          daily: [],
+          monthly: [],
+          weekly_comparison: {
+            current_week: 0,
+            previous_week: 0,
+            percent_change: 0,
+          },
+        },
+        distributions: {
+          by_event_type: {},
+          by_status: {},
+          by_room: {},
+          by_month: {},
+          by_day_of_week: {},
+        },
+        top_performers: {
+          most_popular_rooms: [],
+          most_popular_event_types: [],
+          peak_months: [],
+        },
+      };
+      return generateResponse(
+        false,
+        emptyResponse,
+        { message: error.message },
+        {
+          generated_at: new Date().toISOString(),
+          filters_applied,
+          execution_time_ms: Date.now() - startTime,
+        },
+      );
+    }
+
+    const transformedBookings: FunctionHallBooking[] = (bookings ||
+      []) as FunctionHallBooking[];
+    const totalBookings = bookings?.length || 0;
+    const totalRevenue = transformedBookings.reduce(
+      (acc, b) => acc + (b.amount_paid || 0),
       0,
     );
 
-    const eventTypes = bookings.reduce(
+    const eventTypeDistribution = transformedBookings.reduce(
       (acc, b) => {
         const type = b.event_type || "unknown";
         acc[type] = (acc[type] || 0) + 1;
@@ -65,35 +199,183 @@ export async function GET(
       {} as Record<string, number>,
     );
 
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Function hall analytics fetched successfully",
-          color: "success",
-        },
-        data: {
-          totalBookings,
-          totalRevenue,
-          eventTypes,
-        },
+    const statusDistribution = transformedBookings.reduce(
+      (acc, b) => {
+        const status = b.status || "unknown";
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
       },
-      { status: 200 },
+      {} as Record<string, number>,
     );
-  } catch (err: any) {
-    console.error("Function hall analytics error:", err);
 
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message ?? "Failed to fetch function hall analytics",
-          color: "danger",
+    const roomDistribution = transformedBookings.reduce(
+      (acc, b) => {
+        const roomId = b.room_id || "unknown";
+        acc[roomId] = (acc[roomId] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    const now = new Date();
+    const todayStart = startOfDay(now);
+    const weekStart = subDays(todayStart, 7);
+    const todayEnd = endOfDay(now);
+
+    const upcomingBookings = transformedBookings.filter(
+      (b) =>
+        b.event_date &&
+        b.event_date >= todayStart.toISOString() &&
+        b.event_date <= todayEnd.toISOString() &&
+        b.status !== "cancelled",
+    ).length;
+
+    const completedBookings = transformedBookings.filter(
+      (b) => b.status === "completed",
+    ).length;
+
+    const pendingBookings = transformedBookings.filter(
+      (b) => b.status === "pending",
+    ).length;
+
+    const cancelledBookings = transformedBookings.filter(
+      (b) => b.status === "cancelled",
+    ).length;
+
+    const totalGuests = transformedBookings.reduce(
+      (acc, b) => acc + (b.number_of_guest || 0),
+      0,
+    );
+
+    const dailyTrends = transformedBookings.reduce(
+      (acc, b) => {
+        if (!b.created_at) return acc;
+        const date = format(parseISO(b.created_at), "yyyy-MM-dd");
+        if (!acc[date]) {
+          acc[date] = { count: 0, total: 0 };
+        }
+        acc[date].count += 1;
+        acc[date].total += b.amount_paid || 0;
+        return acc;
+      },
+      {} as Record<string, { count: number; total: number }>,
+    );
+
+    const dailyAnalytics = Object.entries(dailyTrends)
+      .map(([date, data]) => ({
+        date,
+        count: data.count,
+        total: data.total,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-30);
+
+    const weeklyComparison = {
+      current_week: transformedBookings.filter(
+        (b) => b.created_at && b.created_at >= weekStart.toISOString(),
+      ).length,
+      previous_week: transformedBookings.filter(
+        (b) =>
+          b.created_at &&
+          b.created_at < weekStart.toISOString() &&
+          b.created_at >= subDays(weekStart, 7).toISOString(),
+      ).length,
+      percent_change: 0,
+    };
+    weeklyComparison.percent_change =
+      weeklyComparison.previous_week > 0
+        ? ((weeklyComparison.current_week - weeklyComparison.previous_week) /
+            weeklyComparison.previous_week) *
+          100
+        : 0;
+
+    const response: FunctionHallAnalyticsResponse = {
+      summary: {
+        total_bookings: count || 0,
+        total_revenue: totalRevenue,
+        average_booking_value:
+          totalBookings > 0 ? totalRevenue / totalBookings : 0,
+        upcoming_bookings: upcomingBookings,
+        completed_bookings: completedBookings,
+        pending_bookings: pendingBookings,
+        cancelled_bookings: cancelledBookings,
+        total_guests_expected: totalGuests,
+      },
+      trends: {
+        daily: dailyAnalytics,
+        monthly: [],
+        weekly_comparison: weeklyComparison,
+      },
+      distributions: {
+        by_event_type: eventTypeDistribution,
+        by_status: statusDistribution,
+        by_room: roomDistribution,
+        by_month: {},
+        by_day_of_week: {},
+      },
+      top_performers: {
+        most_popular_rooms: [],
+        most_popular_event_types: Object.entries(eventTypeDistribution)
+          .map(([type, count]) => ({ type, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5),
+        peak_months: [],
+      },
+    };
+
+    return generateResponse(true, response, undefined, {
+      generated_at: new Date().toISOString(),
+      filters_applied,
+      execution_time_ms: Date.now() - startTime,
+    });
+  } catch (err) {
+    console.error("Function hall analytics error:", err);
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Failed to fetch function hall analytics";
+    const emptyResponse: FunctionHallAnalyticsResponse = {
+      summary: {
+        total_bookings: 0,
+        total_revenue: 0,
+        average_booking_value: 0,
+        upcoming_bookings: 0,
+        completed_bookings: 0,
+        pending_bookings: 0,
+        cancelled_bookings: 0,
+        total_guests_expected: 0,
+      },
+      trends: {
+        daily: [],
+        monthly: [],
+        weekly_comparison: {
+          current_week: 0,
+          previous_week: 0,
+          percent_change: 0,
         },
       },
-      { status: 500 },
+      distributions: {
+        by_event_type: {},
+        by_status: {},
+        by_room: {},
+        by_month: {},
+        by_day_of_week: {},
+      },
+      top_performers: {
+        most_popular_rooms: [],
+        most_popular_event_types: [],
+        peak_months: [],
+      },
+    };
+    return generateResponse(
+      false,
+      emptyResponse,
+      { message },
+      {
+        generated_at: new Date().toISOString(),
+        filters_applied,
+        execution_time_ms: Date.now() - startTime,
+      },
     );
   }
 }
