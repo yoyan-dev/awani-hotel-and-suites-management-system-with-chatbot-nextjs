@@ -68,7 +68,11 @@ export default function RoomStats({ analytics }: Props) {
                 className="p-4 rounded-md shadow-sm flex flex-col gap-2"
               >
                 <div className="flex items-center justify-between">
-                  <Badge color={config.color}>{stat.name}</Badge>
+                  <Badge color={config.color}>
+                    <span className="capitalize">
+                      {stat.name.replace(/[-_]/g, " ") || "N/A"}
+                    </span>
+                  </Badge>
                   <Icon size={18} className="text-gray-500" />
                 </div>
 

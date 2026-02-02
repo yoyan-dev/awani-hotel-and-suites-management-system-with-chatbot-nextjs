@@ -24,12 +24,6 @@ export function RoomStatusRow({ room }: Props) {
         <Chip size="sm" variant="flat">
           {room.status?.toUpperCase()}
         </Chip>
-
-        {room.status === "dirty" && (
-          <Button size="sm" color="primary">
-            Mark Ready
-          </Button>
-        )}
       </div>
     </div>
   );
