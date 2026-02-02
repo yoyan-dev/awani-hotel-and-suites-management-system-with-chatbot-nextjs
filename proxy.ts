@@ -54,19 +54,35 @@ export async function proxy(req: NextRequest) {
   // Root
   if (pathname === "/") return redirect("/guest");
 
+  // Public paths that don't require authentication
+  const publicPaths = ["/auth/login", "/auth/register", "/auth/callback"];
+  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+
+  // If user is not authenticated and trying to access protected route
+  if (
+    !user &&
+    !isPublicPath &&
+    (pathname.startsWith("/admin") || pathname.startsWith("/housekeeping"))
+  ) {
+    return redirect("/auth/login");
+  }
+
   // Block auth if logged in
-  // if (pathname.startsWith("/auth") && user) {
-  //   if (roles.includes("admin")) return redirect("/admin");
-  //   if (roles.includes("housekeeping")) return redirect("/housekeeping");
-  //   return redirect("/guest");
-  // }
+  if (pathname.startsWith("/auth") && user) {
+    if (roles.includes("admin")) return redirect("/admin");
+    if (roles.includes("housekeeping")) return redirect("/housekeeping");
+    return redirect("/guest");
+  }
 
-  // // Guards
-  // if (pathname.startsWith("/admin") && !roles.includes("admin"))
-  //   return redirect("/auth");
+  // Guards for admin routes
+  if (pathname.startsWith("/admin") && !roles.includes("admin")) {
+    return redirect("/auth/login");
+  }
 
-  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping"))
-  //   return redirect("/auth");
+  // Guards for housekeeping routes
+  if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
+    return redirect("/auth/login");
+  }
 
   return res;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { DashboardCard } from "@/app/admin/dashboard/dashboard-layout";
+import { DashboardCard } from "@/components/dashboard/dashboard-layout";
 import { formatPHP } from "@/lib/format-php";
 
 interface QuickStatsProps {

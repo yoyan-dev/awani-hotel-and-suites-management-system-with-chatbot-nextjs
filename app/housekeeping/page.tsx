@@ -11,7 +11,7 @@ import {
   Badge,
   LoadingState,
   EmptyState,
-} from "@/app/admin/dashboard/dashboard-layout";
+} from "@/components/dashboard/dashboard-layout";
 import { Input, Select, SelectItem, Button } from "@heroui/react";
 import {
   Bed,

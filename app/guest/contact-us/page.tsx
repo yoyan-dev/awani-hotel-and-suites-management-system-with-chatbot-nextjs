@@ -44,40 +44,23 @@ export default function ContactUsPage() {
               <div className="flex items-center gap-3">
                 <MapPin className="text-primary" size={20} />
                 <span className="text-gray-700 dark:text-gray-300 text-sm">
-                  119 Industrial Dr #1031, Massachusetts USA
+                  Corner-East Euzkara Avenue , San Carlos City, Philippines,
+                  6127
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="text-primary" size={20} />
                 <span className="text-gray-700 dark:text-gray-300 text-sm">
-                  orders@pilgrimcolonial.com
+                  awanihotel2019@yahoo.com
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="text-primary" size={20} />
                 <span className="text-gray-700 dark:text-gray-300 text-sm">
-                  +1 413 233 4597
+                  +63 917 302 4794
                 </span>
               </div>
             </Card>
-
-            {/* Map */}
-            {/* <div className="w-full h-64 rounded-md overflow-hidden border border-gray-200 dark:border-gray-700">
-              <MapContainer
-                center={[42.3601, -71.0589]} // Massachusetts coords
-                zoom={13}
-                scrollWheelZoom={false}
-                className="w-full h-full"
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Marker position={[42.3601, -71.0589]}>
-                  <Popup>Pilgrim Colonial</Popup>
-                </Marker>
-              </MapContainer>
-            </div> */}
           </motion.div>
 
           {/* Contact Form */}

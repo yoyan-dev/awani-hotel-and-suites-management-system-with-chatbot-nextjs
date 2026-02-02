@@ -5,7 +5,7 @@ import {
   DashboardCard,
   Badge,
   EmptyState,
-} from "@/app/admin/dashboard/dashboard-layout";
+} from "@/components/dashboard/dashboard-layout";
 import { Booking } from "@/types/booking";
 import { format } from "date-fns";
 import { formatPHP } from "@/lib/format-php";
