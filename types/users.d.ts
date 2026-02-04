@@ -6,10 +6,17 @@ export type UserMetadata = {
   address?: string;
   birthday?: string;
   image?: string;
+  shift_type?: "AM" | "MID" | "PM" | "GY";
 };
 
 export type AppMetadata = {
-  roles?: ["admin", "editor"] | ["housekeeping", "editor"] | ["guest"];
+  roles?:
+    | ["admin", "editor"]
+    | ["housekeeping", "editor"]
+    | ["guest"]
+    | ["admin"]
+    | ["housekeeping"]
+    | ["front_office"];
   department?: string;
   permissions?: string[];
   provider?: string;
