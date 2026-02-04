@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { KPICard, StatGrid } from "@/app/admin/dashboard/dashboard-layout";
+import { KPICard, StatGrid } from "@/components/dashboard/dashboard-layout";
 import { DollarSign, Calendar, Users, TrendingUp } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 

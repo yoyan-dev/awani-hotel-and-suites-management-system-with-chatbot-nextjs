@@ -6,7 +6,7 @@ export const columns: ColumnType[] = [
   { name: "EMAIL", uid: "email" },
   { name: "ROLE", uid: "role", sortable: true },
   { name: "SHIFT TYPE", uid: "shift_type", sortable: true },
-  { name: "Phone", uid: "phone", sortable: true },
+  { name: "PHONE", uid: "phone", sortable: true },
   // { name: "TEAM", uid: "team" },
   // { name: "STATUS", uid: "status", sortable: true },
   { name: "ACTIONS", uid: "actions" },
@@ -24,4 +24,11 @@ export const statusColorMap: Record<string, "success" | "danger" | "warning"> =
     vacation: "warning",
   };
 
-export const INITIAL_VISIBLE_COLUMNS = ["name", "email", "role", "actions"];
+export const INITIAL_VISIBLE_COLUMNS = [
+  "name",
+  "email",
+  "role",
+  "phone",
+  "shift_type",
+  "actions",
+];

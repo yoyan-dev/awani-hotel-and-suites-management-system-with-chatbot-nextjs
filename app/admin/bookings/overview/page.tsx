@@ -6,7 +6,7 @@ import { fetchBookings } from "@/features/booking/hotel-rooms/booking-thunk";
 import {
   DashboardLayout,
   LoadingState,
-} from "@/app/admin/dashboard/dashboard-layout";
+} from "@/components/dashboard/dashboard-layout";
 import { BookingFilters } from "./_components/filters";
 import {
   BookingStats,

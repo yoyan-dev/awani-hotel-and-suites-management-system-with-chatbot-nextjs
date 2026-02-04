@@ -5,7 +5,7 @@ import {
   DashboardCard,
   ProgressBar,
   Badge,
-} from "@/app/admin/dashboard/dashboard-layout";
+} from "@/components/dashboard/dashboard-layout";
 import { Booking } from "@/types/booking";
 
 interface StatusDistributionProps {

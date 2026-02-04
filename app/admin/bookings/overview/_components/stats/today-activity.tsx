@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { DashboardCard, Badge } from "@/app/admin/dashboard/dashboard-layout";
+import { DashboardCard, Badge } from "@/components/dashboard/dashboard-layout";
 
 interface TodayActivityProps {
   checkedInToday: number;

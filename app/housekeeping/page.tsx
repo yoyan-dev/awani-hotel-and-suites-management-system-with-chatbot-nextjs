@@ -11,7 +11,7 @@ import {
   Badge,
   LoadingState,
   EmptyState,
-} from "@/app/admin/dashboard/dashboard-layout";
+} from "@/components/dashboard/dashboard-layout";
 import { Input, Select, SelectItem, Button } from "@heroui/react";
 import {
   Bed,
@@ -21,6 +21,7 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
+import { statusColorMap, statusOptions } from "../constants/rooms";
 
 type RoomStatus =
   | "available"
@@ -90,23 +91,6 @@ export default function HousekeepingDashboardPage() {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "available":
-        return "success";
-      case "occupied":
-        return "primary";
-      case "maintenance":
-        return "danger";
-      case "cleaning":
-        return "warning";
-      case "dirty":
-        return "danger";
-      default:
-        return "default";
-    }
-  };
-
   const getCleaningStatusColor = (status: string) => {
     switch (status) {
       case "clean":
@@ -139,12 +123,9 @@ export default function HousekeepingDashboardPage() {
             className="w-40"
             onChange={(e) => setStatusFilter(e.target.value)}
             value={statusFilter}
+            items={statusOptions}
           >
-            <SelectItem key="available">Available</SelectItem>
-            <SelectItem key="occupied">Occupied</SelectItem>
-            <SelectItem key="cleaning">Cleaning</SelectItem>
-            <SelectItem key="dirty">Dirty</SelectItem>
-            <SelectItem key="maintenance">Maintenance</SelectItem>
+            {(item) => <SelectItem key={item.uid}>{item.name}</SelectItem>}
           </Select>
           <Select
             label="Cleaning"
@@ -210,12 +191,10 @@ export default function HousekeepingDashboardPage() {
                       {booking.guest_name}
                     </p>
                   </div>
-                  <Badge
-                    color={
-                      booking.status === "confirmed" ? "success" : "warning"
-                    }
-                  >
-                    {booking.status}
+                  <Badge color={statusColorMap[booking.status || "default"]}>
+                    <span className="capitalize">
+                      {booking.status.replace(/[-_]/g, " ")}
+                    </span>
                   </Badge>
                 </div>
               ))}
@@ -280,16 +259,8 @@ export default function HousekeepingDashboardPage() {
             {roomList.data.map((room) => (
               <div
                 key={room.id}
-                className={`p-4 rounded-lg border-2 ${
-                  room.status === "available" &&
-                  room.cleaning_status === "clean"
-                    ? "border-success bg-success-50"
-                    : room.status === "dirty" || room.status === "cleaning"
-                      ? "border-warning bg-warning-50"
-                      : room.status === "maintenance"
-                        ? "border-danger bg-danger-50"
-                        : "border-default bg-gray-50"
-                }`}
+                className={`p-4 rounded-lg border-2 ${`border-${statusColorMap[room.status]} bg-${statusColorMap[room.status]}-50
+                `}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-bold text-lg">
@@ -298,10 +269,12 @@ export default function HousekeepingDashboardPage() {
                 </div>
                 <div className="space-y-1">
                   <Badge
-                    color={getStatusColor(room.status || "available")}
+                    color={statusColorMap[room.status || "default"]}
                     size="sm"
                   >
-                    {room.status || "N/A"}
+                    <span className="capitalize">
+                      {room.status.replace(/[-_]/g, " ") || "N/A"}
+                    </span>
                   </Badge>
                   <Badge
                     color={getCleaningStatusColor(

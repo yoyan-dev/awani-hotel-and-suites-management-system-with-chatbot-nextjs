@@ -40,6 +40,7 @@ export const statusColorMap: Record<
   occupied: "warning",
   maintenance: "default",
   out_of_service: "danger",
+  booked: "default",
 };
 
 export const ROOM_STATUS_CONFIG = {

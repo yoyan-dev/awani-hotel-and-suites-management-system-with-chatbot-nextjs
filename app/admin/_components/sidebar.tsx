@@ -17,7 +17,7 @@ export const ListboxWrapper = ({ children, collapsed }: any) => (
   <div
     className={cn(
       "relative h-screen flex flex-col border-r border-default-200 dark:border-default-100 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl transition-all duration-300 ease-in-out",
-      collapsed ? "w-[4.2rem]" : "w-[16rem]"
+      collapsed ? "w-[4.2rem]" : "w-[16rem]",
     )}
   >
     {children}
@@ -77,7 +77,7 @@ export default function AdminSidebar() {
                         ? "text-primary-600 font-semibold"
                         : item.label === "Logout"
                           ? "text-red-500 hover:text-red-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}
                     startContent={
                       <item.icon
@@ -86,7 +86,7 @@ export default function AdminSidebar() {
                           "transition-all duration-300",
                           isActive
                             ? "text-primary-500"
-                            : "text-gray-400 group-hover:text-primary-500"
+                            : "text-gray-400 group-hover:text-primary-500",
                         )}
                       />
                     }
@@ -96,7 +96,7 @@ export default function AdminSidebar() {
                           size={18}
                           className={cn(
                             "transition-transform duration-300",
-                            isExpanded ? "rotate-180" : ""
+                            isExpanded ? "rotate-180" : "",
                           )}
                         />
                       ) : null
@@ -111,7 +111,7 @@ export default function AdminSidebar() {
                     "overflow-hidden transition-all duration-300 ml-9 border-l border-gray-300 dark:border-gray-700 pl-3",
                     isExpanded && !collapsed
                       ? "max-h-[400px] opacity-100 py-1"
-                      : "max-h-0 opacity-0 py-0"
+                      : "max-h-0 opacity-0 py-0",
                   )}
                 >
                   {item.Children?.map((child: any, i: number) => (
@@ -123,7 +123,7 @@ export default function AdminSidebar() {
                         "block text-sm py-1.5 rounded-md transition-all duration-300",
                         pathname === child.href
                           ? "text-primary-600 font-medium"
-                          : "text-gray-500 hover:text-primary-500"
+                          : "text-gray-500 hover:text-primary-500",
                       )}
                       style={{
                         transitionDelay: `${i * 60}ms`,

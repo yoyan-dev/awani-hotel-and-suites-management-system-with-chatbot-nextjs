@@ -24,7 +24,7 @@ export default function page() {
   }, []);
 
   return (
-    <div>
+    <div className="min-h-screen pb-16">
       <HeroBanner />
       <About />
       {/* <Stats /> */}
