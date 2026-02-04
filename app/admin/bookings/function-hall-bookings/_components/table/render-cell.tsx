@@ -3,6 +3,24 @@ import { Chip } from "@heroui/react";
 import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import BookingActionsDropdown from "../actions/booking-actions";
+import { formatTime } from "@/utils/formta-time";
+
+type OccupancyType = "available" | "half occupied" | "full occupied";
+
+const getOccupancyColor = (
+  occupancy?: OccupancyType,
+): "success" | "warning" | "danger" | "default" => {
+  switch (occupancy) {
+    case "available":
+      return "success";
+    case "half occupied":
+      return "warning";
+    case "full occupied":
+      return "danger";
+    default:
+      return "default";
+  }
+};
 
 interface RenderCellProps {
   booking: FunctionHallBooking;
@@ -38,7 +56,11 @@ export const RenderCell = ({
         ? new Date(booking.event_date).toLocaleDateString()
         : "N/A";
     case "event_duration":
-      return (booking.event_duration?.start, "-", booking.event_duration?.end);
+      return (
+        formatTime(booking.event_duration?.start),
+        "-",
+        formatTime(booking.event_duration?.end)
+      );
 
     case "status":
       return (
@@ -49,6 +71,17 @@ export const RenderCell = ({
           }`}
         >
           {booking.status || "N/A"}
+        </Chip>
+      );
+
+    case "occupancy_type":
+      return (
+        <Chip
+          size="sm"
+          color={getOccupancyColor(booking.occupancy_type)}
+          variant="flat"
+        >
+          {booking.occupancy_type || "N/A"}
         </Chip>
       );
 

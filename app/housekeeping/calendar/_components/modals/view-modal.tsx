@@ -71,7 +71,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                         <p className="text-xs text-gray-400">Full Name</p>
                         <p>{booking.user.full_name}</p>
                       </div>
-                      <div>
+                      {/* <div>
                         <p className="text-xs text-gray-400">Email</p>
                         <p>{booking.user.email || "—"}</p>
                       </div>
@@ -82,7 +82,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       <div>
                         <p className="text-xs text-gray-400">Nationality</p>
                         <p>{booking.user.nationality || "—"}</p>
-                      </div>
+                      </div> */}
                     </div>
                   </section>
                 )}
@@ -141,7 +141,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       </span>
                     </h3>
 
-                    {booking.room_type.image && (
+                    {/* {booking.room_type.image && (
                       <Image
                         src={booking.room_type.image}
                         alt="Room image"
@@ -161,14 +161,14 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       <p className="font-medium text-primary">
                         {formatPHP(Number(booking.room_type.price))}
                       </p>
-                    </div>
+                    </div> */}
                   </section>
                 )}
 
                 <Divider />
 
                 {/* Payment */}
-                <section className="space-y-2">
+                {/* <section className="space-y-2">
                   <h3 className="font-medium text-gray-900">Payment</h3>
                   <div className="grid grid-cols-2 gap-3 text-gray-600">
                     <div>
@@ -192,7 +192,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       <p>{formatPHP(Number(booking.amount_paid || 0))}</p>
                     </div>
                   </div>
-                </section>
+                </section> */}
               </ModalBody>
 
               {/* FOOTER */}

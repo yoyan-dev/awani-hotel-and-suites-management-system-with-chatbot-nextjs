@@ -22,7 +22,7 @@ export default function Page() {
   }
 
   return (
-    <div className="m-0 md:m-4 p-4 bg-white dark:bg-gray-800 space-y-4">
+    <div className="m-0 md:m-4 p-4 bg-white dark:bg-gray-800 space-y-4 pb-16">
       <Header
         query={query}
         setQuery={setQuery}

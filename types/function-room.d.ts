@@ -10,8 +10,16 @@ export interface FunctionRoom {
   status?: string;
   total_guests?: number;
   remaining_slots?: number;
-  availability?: number;
+  availability?: string;
+  availability_status?: "available" | "half occupied" | "full occupied";
   remarks?: string;
+}
+
+export interface AvailableFunctionRoom extends FunctionRoom {
+  total_guests: number;
+  remaining_slots: number;
+  availability: string;
+  availability_status: "available" | "half occupied" | "full occupied";
 }
 
 export interface FunctionRoomPagination {

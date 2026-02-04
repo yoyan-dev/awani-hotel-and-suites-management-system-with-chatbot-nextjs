@@ -18,8 +18,17 @@ import {
   CardHeader,
   CardBody,
   DateRangePicker,
+  TimeInput,
 } from "@heroui/react";
-import { ArrowLeft, ArrowRight, Info, Link, Minus, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Info,
+  Link,
+  Minus,
+  Plus,
+  TimerIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import ViewModal from "./modals/view-modal";
 import { Guest } from "@/types/guest";
@@ -112,33 +121,31 @@ export default function BookingForm({
                     variant="underlined"
                     fullWidth
                   />
-                  <Input
+                  <TimeInput
                     isRequired
-                    type="time"
-                    label="Start"
+                    variant="underlined"
+                    startContent={<TimerIcon />}
+                    label="Start time"
+                    value={eventDuration.start}
                     onChange={(e) =>
                       setEventDuration({
                         ...eventDuration,
-                        start: e.target.value,
+                        start: e,
                       })
                     }
-                    labelPlacement="outside"
-                    variant="underlined"
-                    fullWidth
                   />
-                  <Input
+                  <TimeInput
                     isRequired
-                    type="time"
-                    label="End"
+                    variant="underlined"
+                    startContent={<TimerIcon />}
+                    label="End time"
+                    value={eventDuration.end}
                     onChange={(e) =>
                       setEventDuration({
                         ...eventDuration,
-                        end: e.target.value,
+                        end: e,
                       })
                     }
-                    labelPlacement="outside"
-                    variant="underlined"
-                    fullWidth
                   />
                 </div>
               </div>
@@ -194,7 +201,7 @@ export default function BookingForm({
                                   >
                                     {category}
                                   </Chip>
-                                )
+                                ),
                               )}
                             </div>
                           </div>

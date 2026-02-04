@@ -17,7 +17,7 @@ export default function page() {
     fetchBanquetPackages({} as BanquetPackageFetchParams);
   }, []);
   return (
-    <div className="bg-white dark:bg-gray-900 space-y-4">
+    <div className="bg-white dark:bg-gray-900 space-y-4 pb-16">
       <Header />
       {!packageIsLoading ? (
         <BanquetPackages packages={items} />

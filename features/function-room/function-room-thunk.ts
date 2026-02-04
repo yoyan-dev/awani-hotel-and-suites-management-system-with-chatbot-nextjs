@@ -76,12 +76,12 @@ export const fetchAvailableFunctionRooms = createAsyncThunk<
     );
     const data = await res.json();
 
+    addToast(data.message ?? "Failed to fetch rooms");
     if (!res.ok || !data.success) {
-      addToast(data.message ?? "Failed to fetch rooms");
       return rejectWithValue(data.message ?? "Failed to fetch rooms");
     }
 
-    return data;
+    return { data: data.data };
   } catch (error: any) {
     return rejectWithValue(error.message);
   }

@@ -6,6 +6,7 @@ import {
   updateBooking,
   deleteBooking,
   deleteSelectedBooking,
+  completeBooking,
 } from "./booking-thunk";
 import {
   FunctionHallBooking,
@@ -42,7 +43,7 @@ const FunctionHallBookingSlice = createSlice({
           state.isLoading = false;
           state.function_hall_booking = action.payload;
           state.error = undefined;
-        }
+        },
       )
       .addCase(fetchBooking.rejected, (state, action) => {
         state.isLoading = false;
@@ -61,13 +62,13 @@ const FunctionHallBookingSlice = createSlice({
           action: PayloadAction<{
             data: FunctionHallBooking[];
             pagination: FunctionHallBookingPagination;
-          }>
+          }>,
         ) => {
           state.isLoading = false;
           state.function_hall_bookings = action.payload.data;
           state.pagination = action.payload.pagination;
           state.error = undefined;
-        }
+        },
       )
       .addCase(fetchBookings.rejected, (state, action) => {
         state.isLoading = false;
@@ -85,7 +86,7 @@ const FunctionHallBookingSlice = createSlice({
           state.isLoading = false;
           state.error = undefined;
           state.function_hall_bookings.push(action.payload);
-        }
+        },
       )
       .addCase(addBooking.rejected, (state, action) => {
         state.isLoading = false;
@@ -103,12 +104,12 @@ const FunctionHallBookingSlice = createSlice({
           state.isLoading = false;
           state.error = undefined;
           const index = state.function_hall_bookings.findIndex(
-            (r) => r.id === action.payload.id
+            (r) => r.id === action.payload.id,
           );
           if (index !== -1) {
             state.function_hall_bookings[index] = action.payload;
           }
-        }
+        },
       )
       .addCase(updateBooking.rejected, (state, action) => {
         state.isLoading = false;
@@ -124,7 +125,7 @@ const FunctionHallBookingSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.function_hall_bookings = state.function_hall_bookings.filter(
-          (r) => r.id !== action.payload
+          (r) => r.id !== action.payload,
         );
       })
       .addCase(deleteBooking.rejected, (state, action) => {
@@ -141,10 +142,36 @@ const FunctionHallBookingSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.function_hall_bookings = state.function_hall_bookings.filter(
-          (r) => !action.payload.map((room) => room.id).includes(r.id)
+          (r) => !action.payload.map((room) => room.id).includes(r.id),
         );
       })
       .addCase(deleteSelectedBooking.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      // complete booking
+      .addCase(completeBooking.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        completeBooking.fulfilled,
+        (state, action: PayloadAction<FunctionHallBooking>) => {
+          state.isLoading = false;
+          state.error = undefined;
+          const index = state.function_hall_bookings.findIndex(
+            (r) => r.id === action.payload.id,
+          );
+          if (index !== -1) {
+            state.function_hall_bookings[index] = action.payload;
+          }
+          if (state.function_hall_booking.id === action.payload.id) {
+            state.function_hall_booking = action.payload;
+          }
+        },
+      )
+      .addCase(completeBooking.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       });
