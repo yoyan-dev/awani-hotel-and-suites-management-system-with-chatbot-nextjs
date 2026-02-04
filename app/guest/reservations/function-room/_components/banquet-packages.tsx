@@ -45,7 +45,7 @@ export default function BanquetPackages({
               <div className="flex flex-wrap gap-1">
                 {pkg.categories.map((cat) => (
                   <Chip key={cat} size="sm" className="capitalize">
-                    {cat}
+                    {cat.replace(/[-_]/g, " ")}
                   </Chip>
                 ))}
               </div>

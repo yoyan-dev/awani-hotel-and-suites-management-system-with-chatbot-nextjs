@@ -33,7 +33,7 @@ export const fetchBookings = createAsyncThunk<
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch function hall bookings"
+          data.message?.description ?? "Failed to fetch function hall bookings",
         );
       }
       return data as {
@@ -43,7 +43,7 @@ export const fetchBookings = createAsyncThunk<
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const fetchBooking = createAsyncThunk<FunctionHallBooking, string>(
@@ -56,7 +56,7 @@ export const fetchBooking = createAsyncThunk<FunctionHallBooking, string>(
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch function hall booking"
+          data.message?.description ?? "Failed to fetch function hall booking",
         );
       }
       return data.data;
@@ -68,7 +68,7 @@ export const fetchBooking = createAsyncThunk<FunctionHallBooking, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const addBooking = createAsyncThunk<FunctionHallBooking, FormData>(
@@ -83,7 +83,7 @@ export const addBooking = createAsyncThunk<FunctionHallBooking, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add function hall booking"
+          data.message?.description ?? "Failed to add function hall booking",
         );
       }
       return data.data;
@@ -96,7 +96,7 @@ export const addBooking = createAsyncThunk<FunctionHallBooking, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -119,7 +119,7 @@ export const updateBooking = createAsyncThunk<
 
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to update function hall booking"
+          data.message?.description ?? "Failed to update function hall booking",
         );
       }
 
@@ -132,7 +132,7 @@ export const updateBooking = createAsyncThunk<
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // DELETE
@@ -146,7 +146,7 @@ export const deleteBooking = createAsyncThunk<string, string>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete function hall booking"
+          data.message?.description ?? "Failed to delete function hall booking",
         );
       }
 
@@ -159,7 +159,7 @@ export const deleteBooking = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 //  delete selected rooms or all
@@ -195,5 +195,42 @@ export const deleteSelectedBooking = createAsyncThunk<
       });
       return thunkAPI.rejectWithValue(err.message);
     }
-  }
+  },
+);
+
+// COMPLETE BOOKING WITH ROOM ASSIGNMENT
+export const completeBooking = createAsyncThunk<
+  FunctionHallBooking,
+  { bookingId: string; roomId: string; occupancyType: string }
+>(
+  "function-hall-booking/completeBooking",
+  async ({ bookingId, roomId, occupancyType }, { rejectWithValue }) => {
+    try {
+      const res = await fetch("/api/bookings/function-hall/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          booking_id: bookingId,
+          room_id: roomId,
+          occupancy_type: occupancyType,
+        }),
+      });
+      const data = await res.json();
+
+      addToast(data.message);
+      if (!res.ok || !data.success) {
+        return rejectWithValue(
+          data.message?.description ?? "Failed to complete booking",
+        );
+      }
+      return data.data;
+    } catch (err: any) {
+      addToast({
+        title: "Error",
+        description: err.message,
+        color: "danger",
+      });
+      return rejectWithValue(err.message);
+    }
+  },
 );

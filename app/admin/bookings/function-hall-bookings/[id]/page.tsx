@@ -17,6 +17,24 @@ import Loader from "./loader";
 import { Mail, Phone } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { formatTime } from "@/utils/formta-time";
+
+type OccupancyType = "available" | "half occupied" | "full occupied";
+
+const getOccupancyColor = (
+  occupancy?: OccupancyType,
+): "success" | "warning" | "danger" | "default" => {
+  switch (occupancy) {
+    case "available":
+      return "success";
+    case "half occupied":
+      return "warning";
+    case "full occupied":
+      return "danger";
+    default:
+      return "default";
+  }
+};
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
@@ -117,8 +135,8 @@ export default function BookingDetailsPage() {
             <div>
               <p className="text-sm text-gray-500">Time</p>
               <p>
-                {function_hall_booking.event_duration?.start} –{" "}
-                {function_hall_booking.event_duration?.end}
+                {formatTime(function_hall_booking.event_duration?.start)} –{" "}
+                {formatTime(function_hall_booking.event_duration?.end)}
               </p>
             </div>
 
@@ -179,10 +197,26 @@ export default function BookingDetailsPage() {
         <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p className="text-sm text-gray-500">Room</p>
-            <p className="font-medium">{function_hall_booking.room?.name}</p>
+            <p className="font-medium">
+              {function_hall_booking.room?.name || "Not assigned"}
+            </p>
             <p className="text-sm text-gray-500">
               Capacity: {function_hall_booking.room?.capacity}
             </p>
+            {function_hall_booking.room_id && (
+              <Chip
+                size="sm"
+                color={getOccupancyColor(function_hall_booking.occupancy_type)}
+                variant="flat"
+                className="mt-2"
+              >
+                {function_hall_booking.occupancy_type === "half occupied"
+                  ? "Half Occupied"
+                  : function_hall_booking.occupancy_type === "full occupied"
+                    ? "Fully Occupied"
+                    : function_hall_booking.occupancy_type || "Available"}
+              </Chip>
+            )}
           </div>
 
           <div>
@@ -246,7 +280,7 @@ export default function BookingDetailsPage() {
                 as={Link}
                 href={`/admin/bookings/function-hall-bookings/assign-room/${function_hall_booking.id}`}
               >
-                Confirm Booking
+                {function_hall_booking.room_id ? "Change Room" : "Assign Room"}
               </Button>
             </div>
           </CardBody>

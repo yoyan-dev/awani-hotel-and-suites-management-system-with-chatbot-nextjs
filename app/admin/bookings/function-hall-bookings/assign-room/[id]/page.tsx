@@ -6,33 +6,33 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Input,
-  Select,
-  SelectItem,
   Button,
   Divider,
   Image,
   Chip,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
 } from "@heroui/react";
 import {
-  Search,
   BedDouble,
-  Building2,
-  UserRound,
   CalendarDays,
-  ArrowRightCircle,
   Users,
   Users2,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
-import { useRooms } from "@/hooks/use-rooms";
-import { useBookings } from "@/hooks/use-bookings";
-import { Room } from "@/types/room";
-import { useParams } from "next/navigation";
-import { Booking } from "@/types/booking";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
 import { useFunctionRooms } from "@/hooks/use-function-rooms";
 import { FunctionRoom } from "@/types/function-room";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { addToast } from "@heroui/react";
+import { useParams } from "next/navigation";
+
+type OccupancyType = "available" | "half occupied" | "full occupied";
 
 export default function AssignRoomPage() {
   const { id } = useParams();
@@ -40,16 +40,20 @@ export default function AssignRoomPage() {
     function_hall_booking,
     isLoading: functionHallIsLoading,
     fetchBooking,
-    updateBooking,
-    error,
+    completeBooking,
+    isLoading: completionLoading,
   } = useFunctionHallBookings();
 
   const {
     function_rooms,
     isLoading: roomIsLoading,
     fetchAvailableFunctionRooms,
-    updateFunctionRoom,
   } = useFunctionRooms();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedRoom, setSelectedRoom] = useState<FunctionRoom | null>(null);
+  const [selectedOccupancy, setSelectedOccupancy] =
+    useState<OccupancyType>("half occupied");
 
   React.useEffect(() => {
     if (id) {
@@ -67,20 +71,48 @@ export default function AssignRoomPage() {
     }
   }, [function_hall_booking.event_date]);
 
-  async function assignRoom(room: FunctionRoom, status: string) {
-    await updateBooking({
-      id: function_hall_booking.id,
-      room_id: room.id,
-      status: "reserved",
-    } as FunctionHallBooking);
+  const handleAssignRoom = (room: FunctionRoom, occupancy: OccupancyType) => {
+    setSelectedRoom(room);
+    setSelectedOccupancy(occupancy);
+    onOpen();
+  };
 
-    await updateFunctionRoom({
-      id: room.id,
-      status: status,
-      bookings: [...(room.bookings || []), function_hall_booking],
-    });
-    fetchBooking(id as string);
-  }
+  const confirmAssignment = async () => {
+    if (!selectedRoom || !function_hall_booking.id) return;
+
+    try {
+      await completeBooking(
+        function_hall_booking.id,
+        selectedRoom.id as string,
+        selectedOccupancy,
+      );
+      onClose();
+      addToast({
+        title: "Success",
+        description: "Room assigned successfully",
+        color: "success",
+      });
+    } catch (error: any) {
+      addToast({
+        title: "Error",
+        description: error.message || "Failed to assign room",
+        color: "danger",
+      });
+    }
+  };
+
+  const getOccupancyColor = (occupancy: OccupancyType) => {
+    switch (occupancy) {
+      case "available":
+        return "success";
+      case "half occupied":
+        return "warning";
+      case "full occupied":
+        return "danger";
+      default:
+        return "default";
+    }
+  };
 
   if (roomIsLoading || functionHallIsLoading) {
     return <div className="p-6">Loading...</div>;
@@ -96,6 +128,39 @@ export default function AssignRoomPage() {
       </div>
 
       <Divider className="mb-6" />
+
+      <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <h2 className="font-medium text-gray-700 dark:text-gray-200 mb-2">
+          Booking Details
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span className="text-gray-500">Event:</span>
+            <p className="font-medium">{function_hall_booking.event_type}</p>
+          </div>
+          <div>
+            <span className="text-gray-500">Date:</span>
+            <p className="font-medium">{function_hall_booking.event_date}</p>
+          </div>
+          <div>
+            <span className="text-gray-500">Guests:</span>
+            <p className="font-medium">
+              {function_hall_booking.number_of_guest}
+            </p>
+          </div>
+          <div>
+            <span className="text-gray-500">Status:</span>
+            <Chip
+              size="sm"
+              color={getOccupancyColor(
+                function_hall_booking.status as OccupancyType,
+              )}
+            >
+              {function_hall_booking.status}
+            </Chip>
+          </div>
+        </div>
+      </div>
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {function_rooms.map((room) => (
@@ -121,18 +186,18 @@ export default function AssignRoomPage() {
                   <Users /> {room.max_guest}
                 </h3>
                 <h3 className="text-md font-semibold text-gray-800 dark:text-white flex gap-2">
-                  <Users2 /> {room.remaining_slots} (remaining slots)
+                  <Users2 /> {room.remaining_slots} (remaining)
                 </h3>
               </div>
               <p className="flex items-center gap-2">
-                <CalendarDays className="w-4 h-4" />{" "}
+                <CalendarDays className="w-4 h-4" />
                 {function_hall_booking.room_id !== room.id
-                  ? room?.availability
+                  ? room.availability
                   : "Already selected"}
               </p>
               <Chip
                 size="sm"
-                color="success"
+                color={getOccupancyColor(room.status as OccupancyType)}
                 variant="flat"
                 className="w-fit mt-2"
               >
@@ -142,23 +207,25 @@ export default function AssignRoomPage() {
             {function_hall_booking.room_id !== room.id ? (
               <>
                 <Divider />
-                <CardFooter className="flex gap-2">
+                <CardFooter className="flex flex-col gap-2">
                   <Button
-                    onPress={() => assignRoom(room, "half occupied")}
+                    onPress={() => handleAssignRoom(room, "half occupied")}
                     fullWidth
-                    isLoading={functionHallIsLoading}
+                    isLoading={completionLoading}
                     color="primary"
+                    variant="flat"
+                    startContent={<CheckCircle className="w-4 h-4" />}
                   >
-                    Assign Half Room
+                    Half Room
                   </Button>
-
                   <Button
-                    onPress={() => assignRoom(room, "half occupied")}
+                    onPress={() => handleAssignRoom(room, "full occupied")}
                     fullWidth
-                    isLoading={functionHallIsLoading}
+                    isLoading={completionLoading}
                     color="default"
+                    startContent={<CheckCircle className="w-4 h-4" />}
                   >
-                    Assign Full Room
+                    Full Room
                   </Button>
                 </CardFooter>
               </>
@@ -166,6 +233,47 @@ export default function AssignRoomPage() {
           </Card>
         ))}
       </div>
+
+      <Modal isOpen={isOpen} onClose={onClose} size="sm">
+        <ModalContent>
+          <ModalHeader>Confirm Room Assignment</ModalHeader>
+          <ModalBody>
+            <div className="flex flex-col gap-3">
+              <p>
+                Assign <strong>{selectedRoom?.room_number}</strong> for this
+                booking?
+              </p>
+              <Chip
+                color={getOccupancyColor(selectedOccupancy)}
+                variant="flat"
+                className="w-fit"
+              >
+                {selectedOccupancy === "half occupied"
+                  ? "Half Occupied"
+                  : "Fully Occupied"}
+              </Chip>
+              {selectedOccupancy === "full occupied" && (
+                <div className="flex items-center gap-2 text-warning text-sm">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Room will be marked as fully occupied</span>
+                </div>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={onClose}>
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              onPress={confirmAssignment}
+              isLoading={completionLoading}
+            >
+              Confirm
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

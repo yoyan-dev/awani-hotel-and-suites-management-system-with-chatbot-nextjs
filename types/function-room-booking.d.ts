@@ -10,6 +10,7 @@ export interface FunctionHallBooking {
   room_id?: string;
   notes?: string;
   status?: string;
+  occupancy_type?: "available" | "half occupied" | "full occupied";
   guest?: any;
   banquet_package?: any;
   payment_status?: string;
