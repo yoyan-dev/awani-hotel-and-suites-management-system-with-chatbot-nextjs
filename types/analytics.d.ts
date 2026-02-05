@@ -341,20 +341,60 @@ export interface FunctionRoomAnalyticsParams extends FilterParams {}
 export interface DashboardSummaryParams extends DateRangeParams {}
 
 export interface BookingOverviewResponse {
-  summary: {
-    total_revenue: number;
-    total_bookings: number;
-    pending_bookings: number;
-    confirmed_bookings: number;
-    checked_in_today: number;
-    checked_out_today: number;
-    cancelled_bookings: number;
-    upcoming_bookings: number;
-    occupancy_rate: number;
-    average_booking_value: number;
+  bookings: {
+    summary: {
+      total_revenue: number;
+      total_bookings: number;
+      pending_bookings: number;
+      confirmed_bookings: number;
+      checked_in_today: number;
+      checked_out_today: number;
+      cancelled_bookings: number;
+      upcoming_bookings: number;
+      occupancy_rate: number;
+      average_booking_value: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: Booking[];
   };
-  status_distribution: Record<string, number>;
-  recent_bookings: Booking[];
+  function_hall_bookings: {
+    summary: {
+      total_bookings: number;
+      total_revenue: number;
+      upcoming_bookings: number;
+      pending_bookings: number;
+      completed_bookings: number;
+      cancelled_bookings: number;
+      total_guests_expected: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: FunctionHallBooking[];
+  };
+  rooms: {
+    summary: {
+      total_rooms: number;
+      available_rooms: number;
+      occupied_rooms: number;
+      maintenance_rooms: number;
+      occupancy_rate: number;
+      average_room_rate: number;
+      total_room_revenue: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: Booking[];
+  };
+  function_rooms: {
+    summary: {
+      total_rooms: number;
+      available_rooms: number;
+      booked_rooms: number;
+      maintenance_rooms: number;
+      utilization_rate: number;
+      total_revenue: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: FunctionHallBooking[];
+  };
 }
 
 export interface BookingOverviewParams extends FilterParams {}
