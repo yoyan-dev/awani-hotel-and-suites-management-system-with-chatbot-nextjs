@@ -24,7 +24,7 @@ export default function HousekeepingRoomsPage() {
   const handleUpdateStatus = (
     roomId?: string,
     status?: string,
-    remarks?: string
+    remarks?: string,
   ) => {
     console.log("Update room:", roomId, status);
   };
@@ -78,7 +78,7 @@ export default function HousekeepingRoomsPage() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 content-center">
             {isLoading
-              ? [1, 2, 3].map((i) => <Loader />)
+              ? [1, 2, 3].map((i) => <Loader key={i} />)
               : rooms.map((room) => (
                   <RoomStatusCard
                     key={room.id}

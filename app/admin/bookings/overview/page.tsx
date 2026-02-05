@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchBookings } from "@/features/booking/hotel-rooms/booking-thunk";
+import React, { useEffect, useState } from "react";
 import {
   DashboardLayout,
   LoadingState,
@@ -13,28 +11,26 @@ import {
   StatusDistribution,
   TodayActivity,
   QuickStats,
+  FunctionHallStats,
+  RoomStats,
+  FunctionRoomStats,
 } from "./_components/stats";
 import { RecentBookingsTable } from "./_components/tables";
-import { format } from "date-fns";
+import {
+  format,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 
-interface BookingStats {
-  totalRevenue: number;
-  totalBookings: number;
-  pendingBookings: number;
-  confirmedBookings: number;
-  checkedInToday: number;
-  checkedOutToday: number;
-  upcomingBookings: number;
-  cancelledBookings: number;
-  occupancyRate: number;
-  averageBookingValue: number;
-}
+import { useAnalytics } from "@/hooks/use-analytics";
 
 export default function OverviewPage() {
-  const dispatch = useAppDispatch();
-  const { bookings, pagination, isLoading, error } = useAppSelector(
-    (state) => state.booking,
-  );
+  const { bookingOverview, isLoading, error, fetchBookingOverview } =
+    useAnalytics();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -43,104 +39,157 @@ export default function OverviewPage() {
   useEffect(() => {
     const params: Record<string, string> = {};
 
-    if (searchQuery) params.query = searchQuery;
+    if (searchQuery) params.search = searchQuery;
     if (statusFilter) params.status = statusFilter;
     if (dateFilter) {
       const today = new Date();
+
       switch (dateFilter) {
-        case "today":
-          params.check_in = format(today, "yyyy-MM-dd");
+        case "today": {
+          params.start = format(startOfDay(today), "yyyy-MM-dd");
+          params.end = format(endOfDay(today), "yyyy-MM-dd");
           break;
-        case "week":
-          params.start = format(today, "yyyy-MM-dd");
+        }
+
+        case "week": {
+          params.start = format(
+            startOfWeek(today, { weekStartsOn: 1 }),
+            "yyyy-MM-dd",
+          );
+          params.end = format(
+            endOfWeek(today, { weekStartsOn: 1 }),
+            "yyyy-MM-dd",
+          );
           break;
-        case "month":
-          params.start = format(today, "yyyy-MM-dd");
+        }
+
+        case "month": {
+          params.start = format(startOfMonth(today), "yyyy-MM-dd");
+          params.end = format(endOfMonth(today), "yyyy-MM-dd");
           break;
+        }
       }
     }
 
-    dispatch(fetchBookings(params));
-  }, [dispatch, searchQuery, statusFilter, dateFilter]);
+    fetchBookingOverview(params);
+  }, [searchQuery, statusFilter, dateFilter]);
 
   const handleRefresh = () => {
     const params: Record<string, string> = {};
     if (statusFilter) params.status = statusFilter;
-    dispatch(fetchBookings(params));
+    fetchBookingOverview({ ...params, limit: 100 });
   };
 
-  const stats: BookingStats = useMemo(() => {
-    const now = new Date();
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+  const bookingsData = bookingOverview?.bookings || {
+    summary: {
+      total_revenue: 0,
+      total_bookings: 0,
+      pending_bookings: 0,
+      confirmed_bookings: 0,
+      checked_in_today: 0,
+      checked_out_today: 0,
+      cancelled_bookings: 0,
+      upcoming_bookings: 0,
+      occupancy_rate: 0,
+      average_booking_value: 0,
+    },
+    status_distribution: {},
+    recent_bookings: [],
+  };
 
-    const totalRevenue = bookings.reduce(
-      (sum, b) => sum + Number(b.total || 0),
-      0,
-    );
-    const pendingBookings = bookings.filter(
-      (b) => b.status === "pending",
-    ).length;
-    const confirmedBookings = bookings.filter(
-      (b) => b.status === "confirmed",
-    ).length;
-    const checkedInToday = bookings.filter((b) => {
-      if (b.status !== "check-in" || !b.check_in) return false;
-      const checkIn = new Date(b.check_in);
-      return checkIn >= todayStart && checkIn < todayEnd;
-    }).length;
-    const checkedOutToday = bookings.filter((b) => {
-      if (b.status !== "check-out" || !b.check_out) return false;
-      const checkOut = new Date(b.check_out);
-      return checkOut >= todayStart && checkOut < todayEnd;
-    }).length;
-    const upcomingBookings = bookings.filter((b) => {
-      if (!b.check_in) return false;
-      return new Date(b.check_in) > now;
-    }).length;
-    const cancelledBookings = bookings.filter(
-      (b) => b.status === "cancelled",
-    ).length;
-    const occupiedCount = bookings.filter(
-      (b) => b.status === "check-in",
-    ).length;
-    const occupancyRate =
-      bookings.length > 0 ? (occupiedCount / bookings.length) * 100 : 0;
-    const averageBookingValue =
-      bookings.length > 0 ? totalRevenue / bookings.length : 0;
+  const functionHallBookings = bookingOverview?.function_hall_bookings || {
+    summary: {
+      total_bookings: 0,
+      total_revenue: 0,
+      upcoming_bookings: 0,
+      pending_bookings: 0,
+      completed_bookings: 0,
+      cancelled_bookings: 0,
+      total_guests_expected: 0,
+    },
+    status_distribution: {},
+    recent_bookings: [],
+  };
 
-    return {
-      totalRevenue,
-      totalBookings: bookings.length,
-      pendingBookings,
-      confirmedBookings,
-      checkedInToday,
-      checkedOutToday,
-      upcomingBookings,
-      cancelledBookings,
-      occupancyRate,
-      averageBookingValue,
-    };
-  }, [bookings]);
+  const rooms = bookingOverview?.rooms || {
+    summary: {
+      total_rooms: 0,
+      available_rooms: 0,
+      occupied_rooms: 0,
+      maintenance_rooms: 0,
+      occupancy_rate: 0,
+      average_room_rate: 0,
+    },
+    status_distribution: {},
+    recent_bookings: [],
+  };
 
-  const statusDistribution = useMemo(() => {
-    const distribution: Record<string, number> = {
-      pending: 0,
-      confirmed: 0,
-      checked_in: 0,
-      checked_out: 0,
-      cancelled: 0,
-    };
-    bookings.forEach((b) => {
-      const status = b.status || "unknown";
-      distribution[status] = (distribution[status] || 0) + 1;
-    });
-    return distribution;
-  }, [bookings]);
+  const functionRooms = bookingOverview?.function_rooms || {
+    summary: {
+      total_rooms: 0,
+      available_rooms: 0,
+      booked_rooms: 0,
+      maintenance_rooms: 0,
+      utilization_rate: 0,
+      total_revenue: 0,
+    },
+    status_distribution: {},
+    recent_bookings: [],
+  };
+
+  const stats = {
+    totalRevenue: Number(bookingsData.summary.total_revenue) || 0,
+    totalBookings: Number(bookingsData.summary.total_bookings) || 0,
+    pendingBookings: Number(bookingsData.summary.pending_bookings) || 0,
+    confirmedBookings: Number(bookingsData.summary.confirmed_bookings) || 0,
+    checkedInToday: Number(bookingsData.summary.checked_in_today) || 0,
+    checkedOutToday: Number(bookingsData.summary.checked_out_today) || 0,
+    cancelledBookings: Number(bookingsData.summary.cancelled_bookings) || 0,
+    upcomingBookings: Number(bookingsData.summary.upcoming_bookings) || 0,
+    occupancyRate: Number(bookingsData.summary.occupancy_rate) || 0,
+    averageBookingValue:
+      Number(bookingsData.summary.average_booking_value) || 0,
+  };
+
+  const fhStats = {
+    totalBookings: Number(functionHallBookings.summary.total_bookings) || 0,
+    totalRevenue: Number(functionHallBookings.summary.total_revenue) || 0,
+    upcomingBookings:
+      Number(functionHallBookings.summary.upcoming_bookings) || 0,
+    pendingBookings: Number(functionHallBookings.summary.pending_bookings) || 0,
+    completedBookings:
+      Number(functionHallBookings.summary.completed_bookings) || 0,
+    totalGuests:
+      Number(functionHallBookings.summary.total_guests_expected) || 0,
+  };
+
+  const roomStats = {
+    totalRooms: Number(rooms.summary.total_rooms) || 0,
+    availableRooms: Number(rooms.summary.available_rooms) || 0,
+    occupiedRooms: Number(rooms.summary.occupied_rooms) || 0,
+    maintenanceRooms: Number(rooms.summary.maintenance_rooms) || 0,
+    occupancyRate: Number(rooms.summary.occupancy_rate) || 0,
+  };
+
+  const frStats = {
+    totalRooms: Number(functionRooms.summary.total_rooms) || 0,
+    availableRooms: Number(functionRooms.summary.available_rooms) || 0,
+    bookedRooms: Number(functionRooms.summary.booked_rooms) || 0,
+    maintenanceRooms: Number(functionRooms.summary.maintenance_rooms) || 0,
+    utilizationRate: Number(functionRooms.summary.utilization_rate) || 0,
+  };
+
+  const statusDistribution = bookingsData.status_distribution || {
+    pending: 0,
+    confirmed: 0,
+    checked_in: 0,
+    checked_out: 0,
+    cancelled: 0,
+  };
+
+  const bookings = bookingsData.recent_bookings || [];
+  const totalCount =
+    Number(bookingsData.summary.total_bookings) || bookings.length;
 
   if (isLoading && !bookings.length) {
     return (
@@ -208,10 +257,32 @@ export default function OverviewPage() {
         />
       </div>
 
-      <RecentBookingsTable
-        bookings={bookings}
-        totalCount={pagination.total || bookings.length}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <FunctionHallStats
+          totalBookings={fhStats.totalBookings}
+          totalRevenue={fhStats.totalRevenue}
+          upcomingBookings={fhStats.upcomingBookings}
+          pendingBookings={fhStats.pendingBookings}
+          completedBookings={fhStats.completedBookings}
+          totalGuests={fhStats.totalGuests}
+        />
+        <RoomStats
+          totalRooms={roomStats.totalRooms}
+          availableRooms={roomStats.availableRooms}
+          occupiedRooms={roomStats.occupiedRooms}
+          maintenanceRooms={roomStats.maintenanceRooms}
+          occupancyRate={roomStats.occupancyRate}
+        />
+        <FunctionRoomStats
+          totalRooms={frStats.totalRooms}
+          availableRooms={frStats.availableRooms}
+          bookedRooms={frStats.bookedRooms}
+          maintenanceRooms={frStats.maintenanceRooms}
+          utilizationRate={frStats.utilizationRate}
+        />
+      </div>
+
+      <RecentBookingsTable bookings={bookings} totalCount={totalCount} />
     </DashboardLayout>
   );
 }

@@ -9,79 +9,76 @@ let bookings: Booking[];
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
-  const query = searchParams.get("query") || "";
-  const roomTypeID = searchParams.get("roomTypeID") || "";
-  const guest_id = searchParams.get("guest_id") || "";
-  const check_in = searchParams.get("check_in");
-  const check_out = searchParams.get("check_out");
+  const roomTypeID = searchParams.get("roomTypeID");
+  const guest_id = searchParams.get("guest_id");
+  const status = searchParams.get("status");
+
   const start = searchParams.get("start");
   const end = searchParams.get("end");
-  const status = searchParams.get("status") || "";
-  const page = Number(searchParams.get("page") || "1");
-  const limit = 10;
 
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
+  const page = Number(searchParams.get("page") || 1);
+  const limitParam = searchParams.get("limit") || "10";
+  const limit = limitParam === "all" ? null : Number(limitParam);
 
-  let q = supabase.from("bookings").select(
-    `
-    id,
-    booking_number,
-    room_id,
-    guest_id,
-    room_type_id,
-    check_in,
-    check_out,
-    total_add_ons,
-    total,
-    company,
-    special_requests,
-    places_last_visited,
-    purpose,
-    number_of_guests,
-    recent_sickness,
-    payment_status,
-    payment_method,
-    booking_source,
-    amount_paid,
-    status,
-    created_at,
-    room_type:room_type_id(*),
-    room:room_id (
+  const from = limit ? (page - 1) * limit : 0;
+  const to = limit ? from + limit - 1 : undefined;
+
+  let q = supabase
+    .from("bookings")
+    .select(
+      `
       id,
+      booking_number,
       room_id,
-      room_number,
+      guest_id,
       room_type_id,
-      room_type:room_type_id(*),
-      area,
-      description,
+      check_in,
+      check_out,
+      total_add_ons,
+      total,
+      company,
+      special_requests,
+      places_last_visited,
+      purpose,
+      number_of_guests,
+      recent_sickness,
+      payment_status,
+      payment_method,
+      booking_source,
+      amount_paid,
       status,
-      images,
-      remarks
-    ),
-    user:guest_id (*)
-  `,
-    { count: "exact" }
-  );
+      created_at,
+      room_type:room_type_id(*),
+      room:room_id (
+        id,
+        room_id,
+        room_number,
+        room_type_id,
+        room_type:room_type_id(*),
+        area,
+        description,
+        status,
+        images,
+        remarks
+      ),
+      user:guest_id (*)
+    `,
+      { count: "exact" },
+    )
+    .order("created_at", { ascending: false });
 
   if (roomTypeID) q = q.eq("room_type_id", roomTypeID);
   if (guest_id) q = q.eq("guest_id", guest_id);
-  if (check_in) q = q.eq("check_in", check_in);
-  if (check_out) q = q.eq("check_out", check_out);
-  if (start && end) q = q.gte("check_in", start).lte("check_in", end);
   if (status) q = q.eq("status", status);
 
-  if (query) {
-    //   q = q.or(`
-    //   r.ilike.%${query}%,
-    // `);
+  // date range filter
+  if (start && end) {
+    q = q.gte("check_in", start).lte("check_in", end);
   }
 
-  const {
-    data: bookingData,
-    error,
-    count,
-  } = await q.order("created_at", { ascending: false }).range(from, to);
+  if (limit && to !== undefined) q = q.range(from, to);
+
+  const { data, error, count } = await q;
 
   if (error) {
     console.error("Error fetching bookings:", error.message);
@@ -94,29 +91,28 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
-  console.log("Bookings data:", bookingData);
-  bookings = bookingData || [];
   return NextResponse.json(
     {
       success: true,
       message: {
-        title: "success",
+        title: "Success",
         description: "",
         color: "success",
       },
-      data: bookings,
+      data: data ?? [],
       pagination: {
         page,
-        limit,
+        limit: limit ?? 10,
         total: count ?? 0,
-        total_pages: Math.ceil((count ?? 0) / limit),
+        total_pages:
+          limitParam === "all" ? 1 : Math.ceil((count ?? 0) / (limit ?? 1)),
       },
     },
-    { status: 201 }
+    { status: 200 },
   );
 }
 
@@ -139,7 +135,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const newData = {
@@ -179,7 +175,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -200,7 +196,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "danger",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -212,7 +208,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -226,7 +222,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data: data[0],
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -239,13 +235,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
@@ -266,7 +262,7 @@ export async function DELETE(
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -283,7 +279,7 @@ export async function DELETE(
           },
           error: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -310,7 +306,7 @@ export async function DELETE(
         },
         error: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

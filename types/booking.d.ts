@@ -51,6 +51,7 @@ export interface FetchBookingParams {
   roomTypeID?: string;
   room_id?: string;
   status?: string | undefined;
+  limit?: any;
 }
 export interface BookingState {
   bookings: Booking[];

@@ -91,24 +91,9 @@ export default function HousekeepingDashboardPage() {
     );
   }
 
-  const getCleaningStatusColor = (status: string) => {
-    switch (status) {
-      case "clean":
-        return "success";
-      case "dirty":
-        return "danger";
-      case "in_progress":
-        return "warning";
-      case "inspected":
-        return "primary";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <DashboardLayout>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
             Housekeeping Dashboard
@@ -187,7 +172,7 @@ export default function HousekeepingDashboardPage() {
                 >
                   <div>
                     <p className="font-medium">Room {booking.room_number}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 capitalize">
                       {booking.guest_name}
                     </p>
                   </div>
@@ -276,7 +261,7 @@ export default function HousekeepingDashboardPage() {
                       {room.status.replace(/[-_]/g, " ") || "N/A"}
                     </span>
                   </Badge>
-                  <Badge
+                  {/* <Badge
                     color={getCleaningStatusColor(
                       room.cleaning_status || "clean",
                     )}
@@ -284,7 +269,7 @@ export default function HousekeepingDashboardPage() {
                     variant="flat"
                   >
                     {room.cleaning_status || "clean"}
-                  </Badge>
+                  </Badge> */}
                 </div>
                 {room.current_guest && (
                   <p className="text-xs text-gray-500 mt-2 truncate">

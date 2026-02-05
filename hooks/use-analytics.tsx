@@ -10,6 +10,7 @@ import {
   fetchPaginatedFunctionHallBookings,
   fetchPaginatedRooms,
   fetchPaginatedFunctionRooms,
+  fetchBookingOverview,
 } from "@/features/analytics/analytics-thunk";
 import {
   BookingAnalyticsParams,
@@ -18,6 +19,7 @@ import {
   FunctionRoomAnalyticsParams,
   DashboardSummaryParams,
   FilterParams,
+  BookingOverviewParams,
 } from "@/types/analytics";
 
 export function useAnalytics() {
@@ -32,6 +34,7 @@ export function useAnalytics() {
     paginatedFunctionHallBookings,
     paginatedRooms,
     paginatedFunctionRooms,
+    bookingOverview,
     isLoading,
     error,
   } = useAppSelector((state) => state.analytics);
@@ -46,6 +49,7 @@ export function useAnalytics() {
     paginatedFunctionHallBookings,
     paginatedRooms,
     paginatedFunctionRooms,
+    bookingOverview,
     isLoading,
     error,
     clearError: () => dispatch(clearError()),
@@ -67,5 +71,7 @@ export function useAnalytics() {
       dispatch(fetchPaginatedRooms(payload || {})),
     fetchFunctionRooms: (payload: FilterParams | null) =>
       dispatch(fetchPaginatedFunctionRooms(payload || {})),
+    fetchBookingOverview: (payload: BookingOverviewParams | null) =>
+      dispatch(fetchBookingOverview(payload || {})),
   };
 }
