@@ -1,10 +1,15 @@
 import React from "react";
 import { Pagination } from "@heroui/react";
-import { BookingPagination, FetchBookingParams } from "@/types/booking";
+import {
+  FunctionHallBookingPagination,
+  FetchFunctionHallBookingParams,
+} from "@/types/function-room-booking";
 
 interface Props {
-  query: FetchBookingParams;
-  setQuery: React.Dispatch<React.SetStateAction<FetchBookingParams>>;
+  query: FetchFunctionHallBookingParams;
+  setQuery: React.Dispatch<
+    React.SetStateAction<FetchFunctionHallBookingParams>
+  >;
   pages: number;
   selectedKeys: any;
   itemsLength: number;

@@ -57,9 +57,10 @@ export const RenderCell = ({
         : "N/A";
     case "event_duration":
       return (
-        formatTime(booking.event_duration?.start),
-        "-",
-        formatTime(booking.event_duration?.end)
+        <span className="flex gap-2 min-w-48">
+          {formatTime(booking.event_duration?.start)} -{" "}
+          {formatTime(booking.event_duration?.end)}
+        </span>
       );
 
     case "status":

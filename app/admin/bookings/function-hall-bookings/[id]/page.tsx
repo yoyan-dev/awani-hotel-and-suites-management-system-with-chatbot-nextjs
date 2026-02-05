@@ -1,6 +1,6 @@
 "use client";
 
-import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import {
   Card,
   CardBody,

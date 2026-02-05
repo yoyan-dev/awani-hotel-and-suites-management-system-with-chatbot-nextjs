@@ -25,7 +25,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { useFunctionRooms } from "@/hooks/use-function-rooms";
 import { FunctionRoom } from "@/types/function-room";
 import { FunctionHallBooking } from "@/types/function-room-booking";

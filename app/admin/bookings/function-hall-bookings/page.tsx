@@ -6,7 +6,7 @@ import {
   columns,
   INITIAL_VISIBLE_COLUMNS,
 } from "@/app/constants/function-hall-booking";
-import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { FetchFunctionHallBookingParams } from "@/types/function-room-booking";
 
 export default function BookingList() {
