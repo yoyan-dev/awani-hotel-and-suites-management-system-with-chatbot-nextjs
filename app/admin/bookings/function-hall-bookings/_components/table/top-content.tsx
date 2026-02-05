@@ -18,7 +18,7 @@ import {
   FunctionHallBooking,
   FunctionHallBookingPagination,
 } from "@/types/function-room-booking";
-import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 
 interface Props {
   bookings: FunctionHallBooking[];
@@ -43,7 +43,7 @@ export const TableTopContent: React.FC<Props> = ({
   const formatDate = (date: CalendarDate | null) =>
     date
       ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
-          date.day
+          date.day,
         ).padStart(2, "0")}`
       : null;
 

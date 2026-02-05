@@ -15,7 +15,7 @@ import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
 import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { BanquetPackageFetchParams } from "@/types/banquet-package";
-import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookins";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 
 export default function Page() {
   const { id } = useParams();
