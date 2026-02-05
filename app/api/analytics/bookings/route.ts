@@ -142,7 +142,19 @@ export async function GET(
 
     if (error) {
       console.error("Supabase error:", error);
-      const emptyResponse: BookingAnalyticsResponse = {
+      const emptyResponse: BookingAnalyticsResponse & {
+        paginated_bookings: {
+          data: Booking[];
+          pagination: {
+            page: number;
+            limit: number;
+            total: number;
+            total_pages: number;
+            has_next: boolean;
+            has_prev: boolean;
+          };
+        };
+      } = {
         summary: {
           total_bookings: 0,
           total_revenue: 0,
@@ -173,6 +185,17 @@ export async function GET(
           most_booked_room_types: [],
           peak_booking_days: [],
           revenue_by_source: [],
+        },
+        paginated_bookings: {
+          data: [],
+          pagination: {
+            page: 1,
+            limit: 10,
+            total: 0,
+            total_pages: 0,
+            has_next: false,
+            has_prev: false,
+          },
         },
       };
       return generateResponse(

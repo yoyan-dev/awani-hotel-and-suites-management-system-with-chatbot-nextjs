@@ -329,6 +329,7 @@ export interface AnalyticsState {
       has_prev: boolean;
     };
   };
+  bookingOverview: BookingOverviewResponse | null;
   isLoading: boolean;
   error?: string;
 }
@@ -338,3 +339,22 @@ export interface FunctionHallAnalyticsParams extends FilterParams {}
 export interface RoomAnalyticsParams extends FilterParams {}
 export interface FunctionRoomAnalyticsParams extends FilterParams {}
 export interface DashboardSummaryParams extends DateRangeParams {}
+
+export interface BookingOverviewResponse {
+  summary: {
+    total_revenue: number;
+    total_bookings: number;
+    pending_bookings: number;
+    confirmed_bookings: number;
+    checked_in_today: number;
+    checked_out_today: number;
+    cancelled_bookings: number;
+    upcoming_bookings: number;
+    occupancy_rate: number;
+    average_booking_value: number;
+  };
+  status_distribution: Record<string, number>;
+  recent_bookings: Booking[];
+}
+
+export interface BookingOverviewParams extends FilterParams {}

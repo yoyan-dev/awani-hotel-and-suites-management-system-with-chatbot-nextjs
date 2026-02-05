@@ -9,6 +9,7 @@ import {
   fetchPaginatedFunctionHallBookings,
   fetchPaginatedRooms,
   fetchPaginatedFunctionRooms,
+  fetchBookingOverview,
 } from "./analytics-thunk";
 import {
   AnalyticsState,
@@ -17,6 +18,7 @@ import {
   RoomAnalyticsResponse,
   FunctionRoomAnalyticsResponse,
   DashboardSummaryResponse,
+  BookingOverviewResponse,
 } from "@/types/analytics";
 
 const initialState: AnalyticsState = {
@@ -173,6 +175,7 @@ const initialState: AnalyticsState = {
       has_prev: false,
     },
   },
+  bookingOverview: null,
   isLoading: false,
   error: undefined,
 };
@@ -318,6 +321,22 @@ const analyticsSlice = createSlice({
         state.paginatedFunctionRooms = action.payload;
       })
       .addCase(fetchPaginatedFunctionRooms.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(fetchBookingOverview.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        fetchBookingOverview.fulfilled,
+        (state, action: PayloadAction<BookingOverviewResponse>) => {
+          state.isLoading = false;
+          state.bookingOverview = action.payload;
+        },
+      )
+      .addCase(fetchBookingOverview.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

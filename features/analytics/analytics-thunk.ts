@@ -13,6 +13,8 @@ import {
   DashboardSummaryResponse,
   FilterParams,
   Tables,
+  BookingOverviewParams,
+  BookingOverviewResponse,
 } from "@/types/analytics";
 
 const apiUrl = "/api/analytics";
@@ -460,3 +462,59 @@ export const fetchPaginatedFunctionRooms = createAsyncThunk<
     }
   },
 );
+
+export const fetchBookingOverview = createAsyncThunk<
+  BookingOverviewResponse,
+  BookingOverviewParams | undefined,
+  { rejectValue: string }
+>("analytics/fetchBookingOverview", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
+
+    if (params?.status) {
+      searchParams.append("status", params.status);
+    }
+    if (params?.search) {
+      searchParams.append("search", params.search);
+    }
+    if (params?.date) {
+      searchParams.append("date", params.date);
+    }
+    if (params?.start && params?.end) {
+      searchParams.append("start", params.start);
+      searchParams.append("end", params.end);
+    }
+    if (params?.page) {
+      searchParams.append("page", params.page.toString());
+    }
+    if (params?.limit) {
+      searchParams.append("limit", params.limit.toString());
+    }
+    if (params?.sort_by) {
+      searchParams.append("sort_by", params.sort_by);
+    }
+    if (params?.sort_order) {
+      searchParams.append("sort_order", params.sort_order);
+    }
+
+    const res = await fetch(`${apiUrl}/overview?${searchParams.toString()}`);
+    const response = await res.json();
+
+    if (!res.ok) {
+      addToast({
+        title: "Error",
+        description:
+          response.error?.message ?? "Failed to fetch booking overview",
+        color: "danger",
+      });
+      return rejectWithValue(
+        response.error?.message ?? "Failed to fetch booking overview",
+      );
+    }
+
+    return response.data as BookingOverviewResponse;
+  } catch (err) {
+    console.error("Error fetching booking overview:", err);
+    return rejectWithValue("Failed to fetch booking overview");
+  }
+});
