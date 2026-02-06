@@ -10,8 +10,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const query = searchParams.get("q") || "";
   const roomTypeID = searchParams.get("roomTypeID") || "";
   const status = searchParams.get("status") || "";
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
   const page = Number(searchParams.get("page") || "1");
   const limit = 10;
   const from = (page - 1) * limit;
@@ -31,7 +29,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     remarks,
     bookings
   `,
-    { count: "exact" }
+    { count: "exact" },
   );
 
   if (query) {
@@ -72,7 +70,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -94,7 +92,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -115,7 +113,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
         const imageUrl = await uploadRoomImage(file, Number(roomNumber));
         return imageUrl;
-      })
+      }),
     );
 
     const newRoom = {
@@ -141,7 +139,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "danger",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -153,7 +151,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -167,7 +165,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data: data[0],
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -180,14 +178,14 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 //DELETE MANY
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
@@ -208,7 +206,7 @@ export async function DELETE(
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -225,7 +223,7 @@ export async function DELETE(
           },
           error: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -252,7 +250,7 @@ export async function DELETE(
         },
         error: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

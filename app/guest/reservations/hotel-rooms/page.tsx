@@ -10,7 +10,7 @@ export default function Page() {
   const today = new Date().toISOString().split("T")[0];
   const { availabel_room_types, isLoading, error, fetchAvailableRoomTypes } =
     useRoomTypes();
-  const [desiredGuest, setDesiredGuest] = React.useState<string>();
+  const [desiredGuest, setDesiredGuest] = React.useState<number>(1);
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
 
   React.useEffect(() => {
@@ -18,7 +18,7 @@ export default function Page() {
   }, []);
 
   function checkAvailability() {
-    fetchAvailableRoomTypes(query);
+    fetchAvailableRoomTypes({ ...query, maxGuest: desiredGuest });
   }
 
   return (

@@ -13,8 +13,8 @@ export default function Header({
 }: {
   query: FetchRoomTypesParams;
   setQuery: React.Dispatch<React.SetStateAction<FetchRoomTypesParams>>;
-  desiredGuest: string | undefined;
-  setDesiredGuest: React.Dispatch<React.SetStateAction<string | undefined>>;
+  desiredGuest: number;
+  setDesiredGuest: React.Dispatch<React.SetStateAction<number>>;
   checkAvailability: () => void;
 }) {
   return (
@@ -50,8 +50,8 @@ export default function Header({
             width={20}
             startContent={<User />}
             radius="none"
-            value={desiredGuest}
-            onChange={(e) => setDesiredGuest(e.target.value)}
+            value={desiredGuest.toString()}
+            onChange={(e) => setDesiredGuest(Number(e.target.value))}
           />
           <Button
             radius="none"

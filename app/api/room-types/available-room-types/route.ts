@@ -1,22 +1,49 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase-client";
 import { ApiResponse } from "@/types/response";
+import { filterAvailableRoomTypes } from "@/lib/room-availability/room-type-availability";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
-  const checkIn = searchParams.get("checkIn") || "";
-  const checkOut = searchParams.get("checkOut") || "";
-  const maxGuest = searchParams.get("maxGuest") || 50;
+  const checkIn = searchParams.get("checkIn");
+  const checkOut = searchParams.get("checkOut");
+  const maxGuest = Number(searchParams.get("maxGuest") || 1);
 
-  const { data, error } = await supabase.rpc("get_available_room_types", {
-    check_in: checkIn || null,
-    check_out: checkOut || null,
-    guests: maxGuest || null,
-  });
+  if (!checkIn || !checkOut) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Invalid request",
+          description: "checkIn and checkOut are required",
+          color: "danger",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  const { data: roomTypes, error } = await supabase
+    .from("room_types")
+    .select(
+      `
+        *,
+        rooms (
+          id,
+          room_number,
+          bookings (
+            id,
+            check_in,
+            check_out,
+            status
+          )
+        )
+      `,
+    )
+    .gte("max_guest", maxGuest);
 
   if (error) {
-    console.error("Error fetching rooms:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -26,20 +53,26 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
+
+  const availableRoomTypes = filterAvailableRoomTypes(
+    roomTypes || [],
+    checkIn,
+    checkOut,
+  );
 
   return NextResponse.json(
     {
       success: true,
       message: {
-        title: "success",
-        description: "",
+        title: "Success",
+        description: "Available room types fetched",
         color: "success",
       },
-      data: data || [],
+      data: availableRoomTypes,
     },
-    { status: 200 }
+    { status: 200 },
   );
 }
