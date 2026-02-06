@@ -10,11 +10,9 @@ export interface BanquetMenu {
 export interface BanquetPackage {
   id: string;
   name: string;
-  menuCategory: string;
-  pricePerCover: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  categories: string[];
+  price_per_cover: number;
+  is_active: boolean;
 }
 
 export interface BanquetMenuPagination {

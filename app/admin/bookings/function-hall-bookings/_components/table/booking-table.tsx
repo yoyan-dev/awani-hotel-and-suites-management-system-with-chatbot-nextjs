@@ -67,8 +67,6 @@ export default function FunctionHallBookingTable({
         />
       }
       bottomContentPlacement="outside"
-      selectedKeys={selectedKeys}
-      selectionMode="multiple"
       topContent={
         <TableTopContent
           bookings={bookings}

@@ -12,6 +12,7 @@ export interface FunctionRoom {
   remaining_slots?: number;
   availability?: string;
   availability_status?: "available" | "half occupied" | "full occupied";
+  function_hall_bookings?: any;
   remarks?: string;
 }
 

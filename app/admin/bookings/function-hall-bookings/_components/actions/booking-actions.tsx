@@ -42,12 +42,11 @@ export default function BookingActionsDropdown({
     return {
       banquet_package: booking.banquet_package as BanquetPackage,
       number_of_guest: booking.number_of_guest,
-      total_amount:
-        booking.banquet_package.pricePerCover * (booking.number_of_guest || 0),
-      balance:
-        booking.banquet_package.pricePerCover * (booking.number_of_guest || 0),
+      total_amount: booking.total_amount,
+      balance: booking.balance,
       status: booking.payment_status,
       payment_method: booking.payment_method,
+      amount_paid: booking.amount_paid,
     } as {
       banquet_package: BanquetPackage;
       package_price: number;
@@ -56,6 +55,7 @@ export default function BookingActionsDropdown({
       balance: number;
       status: string;
       payment_method: string;
+      amount_paid: any;
     };
   }, [booking, isViewSummaryOpen]);
   return (
@@ -70,12 +70,12 @@ export default function BookingActionsDropdown({
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
       />
-      {/* <AddPaymentModal
+      <AddPaymentModal
         isOpen={addPaymentOpen}
         onClose={() => setAddPaymentOpen(false)}
         summary={summary}
         id={booking.id}
-      /> */}
+      />
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly variant="light" size="sm">
@@ -134,7 +134,7 @@ export default function BookingActionsDropdown({
           >
             Summary
           </DropdownItem>
-          {/* {booking.payment_status !== "paid" ? (
+          {booking.payment_status !== "paid" ? (
             <DropdownItem
               key="payment"
               startContent={<Wallet className="w-4 h-4 text-gray-700" />}
@@ -142,7 +142,7 @@ export default function BookingActionsDropdown({
             >
               Add Payment
             </DropdownItem>
-          ) : null} */}
+          ) : null}
 
           <DropdownItem isReadOnly key="div3">
             <div className="border-t border-gray-200 my-1"></div>

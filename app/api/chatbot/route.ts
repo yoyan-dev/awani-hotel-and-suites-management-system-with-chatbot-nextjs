@@ -59,7 +59,7 @@ All rooms include: Free Wi-Fi, air conditioning, flat-screen TV, minibar, room s
 ## FREQUENTLY ASKED QUESTIONS (FAQ)
 
 **Q: What are your check-in and check-out times?**
-A: Check-in is from 3:00 PM, and check-out is by 12:00 PM noon. Early check-in and late check-out may be available upon request, subject to availability.
+A: Check-in is from 2:00 PM, and check-out is by 8:00 AM . Early check-in and late check-out may be available upon request, subject to availability.
 
 **Q: Can I modify or cancel my reservation?**
 A: Yes, you can modify or cancel through the Guest Portal or by contacting Front Office. Please note our cancellation policy: free cancellation up to 24 hours before check-in.
@@ -93,6 +93,12 @@ A: Please inquire about current recreational facilities as amenities may vary.
 
 **Q: How does the housekeeping system work?**
 A: Housekeeping staff monitor room status through their dashboard. Rooms marked for cleaning are prioritized based on check-out times and new check-ins.
+
+**Q: How can I contact Front Office?**
+A: You can reach Front Office through the Guest Portal or by calling +63 917 302 4794.
+
+**Q: Where is the hotel located?**
+A: The hotel is located in the Corner-East Euzkara Avenue , San Carlos City, Philippines, 6127, with easy access to public transportation, shopping, and entertainment options.
 
 ## RESPONSE GUIDELINES
 - Always be friendly, professional, and helpful
