@@ -20,20 +20,28 @@ export function QuickStats({
   return (
     <DashboardCard title="Quick Stats" subtitle="Overview metrics">
       <div className="space-y-3">
-        <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span className="text-sm text-gray-600">Total Bookings</span>
+        <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            Total Bookings
+          </span>
           <span className="font-semibold">{totalBookings}</span>
         </div>
-        <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span className="text-sm text-gray-600">Upcoming</span>
+        <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            Upcoming
+          </span>
           <span className="font-semibold">{upcomingBookings}</span>
         </div>
-        <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span className="text-sm text-gray-600">Cancelled</span>
+        <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            Cancelled
+          </span>
           <span className="font-semibold text-danger">{cancelledBookings}</span>
         </div>
-        <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
-          <span className="text-sm text-gray-600">Avg. Booking Value</span>
+        <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
+          <span className="text-sm text-gray-600 dark:text-gray-300">
+            Avg. Booking Value
+          </span>
           <span className="font-semibold">
             {formatPHP(averageBookingValue)}
           </span>

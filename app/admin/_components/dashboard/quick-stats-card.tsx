@@ -22,7 +22,7 @@ export default function QuickStatsCard({ booking, functionHall }: any) {
 
 function Stat({ value, label }: any) {
   return (
-    <div className="text-center p-4 bg-gray-50 rounded-lg">
+    <div className="text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
       <p className="text-2xl font-bold">{value || 0}</p>
       <p className="text-sm text-gray-500">{label}</p>
     </div>

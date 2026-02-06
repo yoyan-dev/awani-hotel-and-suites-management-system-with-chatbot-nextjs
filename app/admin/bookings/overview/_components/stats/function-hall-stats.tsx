@@ -20,7 +20,7 @@ export function FunctionHallStats({
   totalGuests,
 }: FunctionHallStatsProps) {
   return (
-    <Card className="w-full">
+    <Card className="w-full dark:bg-gray-800">
       <CardHeader className="pb-0">
         <p className="text-lg font-bold">Function Hall Bookings</p>
       </CardHeader>
