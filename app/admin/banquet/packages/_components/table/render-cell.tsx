@@ -70,20 +70,17 @@ export const RenderCell: React.FC<RenderCellProps> = ({
           </div>
         </div>
       );
-    // case "status":
-    //   return (
-    //     <Chip
-    //       className="capitalize border-none gap-1 text-default-600"
-    //       color={
-    //         statusColorMap[inventory.status as keyof typeof statusColorMap] ||
-    //         "default"
-    //       }
-    //       size="sm"
-    //       variant="dot"
-    //     >
-    //       {inventory.status}
-    //     </Chip>
-    //   );
+    case "status":
+      return (
+        <Chip
+          className="capitalize border-none gap-1 text-default-600"
+          color={item.is_active ? "success" : "warning"}
+          size="sm"
+          variant="dot"
+        >
+          {item.is_active ? "Active" : "Inactive"}
+        </Chip>
+      );
     case "actions":
       return (
         <div className="relative flex justify-end items-center gap-2">

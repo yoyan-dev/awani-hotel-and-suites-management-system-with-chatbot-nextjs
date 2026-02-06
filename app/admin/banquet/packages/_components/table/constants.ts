@@ -5,7 +5,7 @@ export const columns: ColumnType[] = [
   { name: "NAME", uid: "name" },
   { name: "MENUS", uid: "menus" },
   { name: "PRICE", uid: "price" },
-  { name: "STATUS", uid: "status" },
+  { name: "STATUS", uid: "is_active" },
   { name: "ACTIONS", uid: "actions" },
 ];
 

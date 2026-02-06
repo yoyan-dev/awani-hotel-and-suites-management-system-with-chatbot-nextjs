@@ -34,7 +34,7 @@ export function DashboardCard({
   footer,
 }: DashboardCardProps) {
   return (
-    <Card className={`bg-white shadow-sm ${className}`}>
+    <Card className={`bg-white dark:bg-gray-800 shadow-sm ${className}`}>
       {(title || subtitle || headerAction) && (
         <>
           <CardHeader className="flex flex-col items-start pb-0 pt-4 px-4">
@@ -89,7 +89,7 @@ export function KPICard({
   color = "default",
 }: KPICardProps) {
   return (
-    <Card className="bg-white shadow-sm">
+    <Card className="bg-white dark:bg-gray-800 shadow-sm">
       <CardBody className="p-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">

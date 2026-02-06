@@ -198,7 +198,7 @@ export default function HousekeepingDashboardPage() {
               {todayOperations.check_outs.rooms.map((booking) => (
                 <div
                   key={booking.id}
-                  className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                  className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded"
                 >
                   <div>
                     <p className="font-medium">Room {booking.room_number}</p>
@@ -261,15 +261,6 @@ export default function HousekeepingDashboardPage() {
                       {room.status.replace(/[-_]/g, " ") || "N/A"}
                     </span>
                   </Badge>
-                  {/* <Badge
-                    color={getCleaningStatusColor(
-                      room.cleaning_status || "clean",
-                    )}
-                    size="sm"
-                    variant="flat"
-                  >
-                    {room.cleaning_status || "clean"}
-                  </Badge> */}
                 </div>
                 {room.current_guest && (
                   <p className="text-xs text-gray-500 mt-2 truncate">
@@ -292,7 +283,7 @@ export default function HousekeepingDashboardPage() {
               ([status, count]) => (
                 <div
                   key={status}
-                  className="text-center p-4 bg-gray-50 rounded-lg"
+                  className="text-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
                 >
                   <p
                     className="text-2xl font-bold"

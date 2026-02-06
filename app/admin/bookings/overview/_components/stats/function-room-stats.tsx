@@ -18,7 +18,7 @@ export function FunctionRoomStats({
   utilizationRate,
 }: FunctionRoomStatsProps) {
   return (
-    <Card className="w-full">
+    <Card className="w-full dark:bg-gray-800">
       <CardHeader className="pb-0">
         <p className="text-lg font-bold">Function Rooms</p>
       </CardHeader>

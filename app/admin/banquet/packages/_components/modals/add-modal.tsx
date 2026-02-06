@@ -114,7 +114,7 @@ export default function AddModal() {
                   <div className="flex gap-4 flex-wrap">
                     {menuCategory.map((menu: any) => {
                       const isSelected = selectedMenus.some(
-                        (m) => m === menu.uid
+                        (m) => m === menu.uid,
                       );
 
                       return (
@@ -125,8 +125,8 @@ export default function AddModal() {
                             hover:bg-default-100 hover:shadow-sm 
                             ${
                               isSelected
-                                ? "bg-gray-200 shadow-sm"
-                                : "bg-gray-100"
+                                ? "bg-gray-200 dark:bg-gray-700 shadow-sm"
+                                : "bg-gray-100 dark-bg-gray-800"
                             }`}
                         >
                           <div className="flex items-center gap-3">
@@ -155,7 +155,7 @@ export default function AddModal() {
                             key={menu}
                             onClose={() =>
                               setSelectedMenus((prev) =>
-                                prev.filter((s) => s !== menu)
+                                prev.filter((s) => s !== menu),
                               )
                             }
                             color="primary"
