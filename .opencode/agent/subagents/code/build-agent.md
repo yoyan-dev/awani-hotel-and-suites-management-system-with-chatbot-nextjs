@@ -3,15 +3,7 @@ name: BuildAgent
 description: Type check and build validation agent
 mode: subagent
 temperature: 0.1
-tools:
-  bash: true
-  read: true
-  grep: true
-  glob: true
-  task: true
-  edit: false
-  write: false
-permissions:
+permission:
   bash:
     "tsc": "allow"
     "mypy": "allow"

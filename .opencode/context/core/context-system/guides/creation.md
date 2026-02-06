@@ -55,15 +55,76 @@
     Link to related concepts/, examples/, guides/, errors/
   </stage>
   
-  <stage id="6" name="Update README">
-    Add entry to category README.md navigation table
+  <stage id="6" name="Preview &amp; Approve" enforce="@critical_rules.approval_gate">
+    MUST show full preview before writing ANY files:
+
+    ```
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    Preview: File Creation Plan
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    CREATE file:
+      {category}/{function}/{filename}.md ({line_count} lines)
+
+    Content preview:
+    ┌─────────────────────────────────────────────────────────┐
+    │ # {Type}: {Name}                                        │
+    │                                                         │
+    │ **Purpose**: {1 sentence}                               │
+    │ **Last Updated**: {date}                                │
+    │                                                         │
+    │ ## Core Concept                                         │
+    │ {1-3 sentences}                                         │
+    │                                                         │
+    │ ## Key Points                                           │
+    │ {3-5 bullets}                                           │
+    │ ...                                                     │
+    └─────────────────────────────────────────────────────────┘
+
+    UPDATE navigation:
+      {category}/navigation.md
+        + | [{filename}.md]({function}/{filename}.md) | {desc} | {priority} |
+
+    Validation:
+      ✓ {line_count} lines (limit: {max_lines} for {type})
+      ✓ MVI format applied
+      ✓ Correct folder: {function}/
+      ✓ Cross-references: {count} links added
+
+    Approve? [y/n/edit]: _
+    ```
+
+    If file already exists at target path:
+    ```
+    ⚠️  File already exists: {category}/{function}/{filename}.md
+
+    Options:
+      1. Cancel (keep existing)
+      2. Show diff (compare existing vs new)
+      3. Overwrite (replace existing)
+      4. Rename new file to {filename}-v2.md
+
+    Choose [1/2/3/4]: _
+    ```
   </stage>
   
-  <stage id="7" name="Verify">
+  <stage id="7" name="Write &amp; Report">
+    Only after approval:
+    1. Write file to disk
+    2. Update navigation.md
+    3. Show confirmation:
+
+    ```
+    ✅ Created: {category}/{function}/{filename}.md ({line_count} lines)
+    ✅ Updated: {category}/navigation.md
+    ```
+  </stage>
+  
+  <stage id="8" name="Verify">
     - [ ] <200 lines?
     - [ ] MVI format?
     - [ ] Correct folder?
-    - [ ] README updated?
+    - [ ] navigation.md updated?
     - [ ] Cross-refs added?
   </stage>
 </workflow>

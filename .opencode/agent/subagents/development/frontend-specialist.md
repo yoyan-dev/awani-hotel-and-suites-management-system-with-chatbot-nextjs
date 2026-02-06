@@ -3,22 +3,12 @@ name: OpenFrontendSpecialist
 description: Frontend UI design specialist - subagent for design systems, themes, animations
 mode: subagent
 temperature: 0.2
-tools:
-  read: true
-  write: true
-  edit: true
-  bash: false
-  task: true
-  glob: true
-  grep: true
-permissions:
+permission:
   task:
+    "*": "deny"
     contextscout: "allow"
     externalscout: "allow"
-    "*": "deny"
   write:
-    "design_iterations/**/*.html": "allow"
-    "design_iterations/**/*.css": "allow"
     "**/*.env*": "deny"
     "**/*.key": "deny"
     "**/*.secret": "deny"

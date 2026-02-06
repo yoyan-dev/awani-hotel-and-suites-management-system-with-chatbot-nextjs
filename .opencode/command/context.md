@@ -127,6 +127,17 @@ When invoked without arguments: `/context`
 
 ---
 
+### Migration
+
+**`/context migrate`**
+- Copy project-intelligence from global (`~/.config/opencode/context/`) to local (`.opencode/context/`)
+- For users who installed globally but want project-specific, git-committed context
+- Shows diff if local files already exist, asks before overwriting
+- Optionally cleans up global project-intelligence after migration
+- **Reads**: `standards/mvi.md`
+
+---
+
 ### Utility Operations
 
 **`/context map [category]`**
@@ -174,6 +185,10 @@ When invoked without arguments: `/context`
   <operation name="create">
     Read: guides/creation.md, standards/structure.md, standards/templates.md
   </operation>
+  
+  <operation name="migrate">
+    Read: standards/mvi.md
+  </operation>
 </lazy_load_map>
 
 **All files located in**: `.opencode/context/core/context-system/`
@@ -184,7 +199,7 @@ When invoked without arguments: `/context`
 
 <subagent_routing>
   <!-- Delegate operations to specialized subagents -->
-  <route operations="harvest|extract|organize|update|error|create" to="ContextOrganizer">
+  <route operations="harvest|extract|organize|update|error|create|migrate" to="ContextOrganizer">
     Pass: operation name, arguments, lazy load map
     Subagent loads: Required context files from .opencode/context/core/context-system/
     Subagent executes: Multi-stage workflow per operation
@@ -259,6 +274,13 @@ When invoked without arguments: `/context`
 ```bash
 /context update for Next.js 15
 /context update for React 19 breaking changes
+```
+
+### Migrate Global to Local
+```bash
+/context migrate
+# Copies project-intelligence from ~/.config/opencode/context/ to .opencode/context/
+# Shows what will be copied, asks for approval before proceeding
 ```
 
 ---

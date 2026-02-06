@@ -19,7 +19,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -34,7 +34,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
       },
       data: guest || [],
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -57,23 +57,23 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const frontImageFile = (formData.get("front") as File) || null;
     const backImageFIle = (formData.get("back") as File) || null;
 
-    if (!frontImageFile || !backImageFIle) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Please provide a valid ID.",
-            color: "danger",
-          },
-        },
-        { status: 400 }
-      );
-    }
+    // if (!frontImageFile || !backImageFIle) {
+    //   return NextResponse.json(
+    //     {
+    //       success: false,
+    //       message: {
+    //         title: "Error",
+    //         description: "Please provide a valid ID.",
+    //         color: "danger",
+    //       },
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
     const validIdImage = await uploadValidIDImage(
       frontImageFile,
-      backImageFIle
+      backImageFIle,
     );
 
     const newData = {
@@ -104,7 +104,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "danger",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -116,7 +116,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -124,13 +124,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       {
         success: true,
         message: {
-          title: "Success!",
-          description: "Account created successfully.",
+          title: "",
+          description: "",
           color: "success",
         },
         data: data[0] || {},
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -143,14 +143,14 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 //DELETE SELECTED
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
@@ -171,7 +171,7 @@ export async function DELETE(
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -188,7 +188,7 @@ export async function DELETE(
           },
           error: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -215,7 +215,7 @@ export async function DELETE(
         },
         error: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

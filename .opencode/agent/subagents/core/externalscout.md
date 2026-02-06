@@ -3,56 +3,22 @@ name: ExternalScout
 description: Fetches live, version-specific documentation for external libraries and frameworks using Context7 and other sources. Filters, sorts, and returns relevant documentation.
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  bash: true
-  skill: true
-  grep: true
-  webfetch: true
-  write: true
-  edit: true
-  glob: true
-  task: false
-  todoread: false
-  todowrite: false
-permissions:
+permission:
   read:
+    "**/*": "deny"
     ".opencode/skill/context7/**": "allow"
     ".tmp/external-context/**": "allow"
-    "**/*": "deny"
   bash:
+    "*": "deny"
     "curl -s https://context7.com/*": "allow"
     "jq *": "allow"
-    "curl *": "deny"
-    "wget *": "deny"
-    "rm *": "deny"
-    "sudo *": "deny"
-    "mv *": "deny"
-    "cp *": "deny"
-    "> *": "deny"
-    ">> *": "deny"
   skill:
-    "context7": "allow"
     "*": "deny"
-  webfetch:
-    "*": "allow"
-  write:
-    ".tmp/external-context/**": "allow"
-    "**/*": "deny"
-  edit:
-    ".tmp/external-context/**": "allow"
-    "**/*": "deny"
+    "*context7*": "allow"
   task:
     "*": "deny"
-  glob:
-    ".opencode/skill/context7/**": "allow"
-    ".tmp/external-context/**": "allow"
-    "**/*": "deny"
-  todoread:
-    "*": "deny"
-  todowrite:
-    "*": "deny"
 ---
+
 
 # ExternalScout
 
