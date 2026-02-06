@@ -28,6 +28,7 @@ export default function ViewSummary({
     balance: number;
     status: string;
     payment_method: string;
+    amount_paid: number;
   };
 }) {
   return (
@@ -49,10 +50,11 @@ export default function ViewSummary({
               </ModalHeader>
               <ModalBody>
                 <div className="space-y-6">
-                  <>
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <div className="w-full px-4 py-2 flex justify-between items-center">
+                  {/* Summary Section */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-end text-sm">
+                      <span className="">
+                        <div className="w-full py-2 flex justify-between items-center">
                           <div className="flex flex-col">
                             <span className="font-medium">
                               {summary.banquet_package.name}
@@ -60,23 +62,17 @@ export default function ViewSummary({
                             <span className="text-xs opacity-80">
                               Price:{" "}
                               {formatPHP(
-                                Number(summary.banquet_package.pricePerCover),
+                                Number(summary.banquet_package.price_per_cover),
                               )}{" "}
                               / per guest
                             </span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-
-                    <Divider className="my-2" />
-                  </>
-
-                  {/* Summary Section */}
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-default-700 dark:text-default-400">
-                        Total Add-ons
+                        {formatPHP(
+                          Number(summary.banquet_package.price_per_cover),
+                        )}
+                        {" x "}
+                        {summary.number_of_guest}{" "}
                       </span>
                       <span className="font-semibold">
                         {formatPHP(summary.total_amount)}
@@ -120,9 +116,7 @@ export default function ViewSummary({
                       <span className="text-default-700 dark:text-default-400">
                         Status
                       </span>
-                      <span className="font-semibold">
-                        {summary.balance > 0 ? summary.status : "pending"}
-                      </span>
+                      <span className="font-semibold">{summary.status}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-default-700 dark:text-default-400">
@@ -137,7 +131,9 @@ export default function ViewSummary({
                       <span className="text-default-700 dark:text-default-400">
                         Amount Paid
                       </span>
-                      <span className="font-semibold">{formatPHP(0)}</span>
+                      <span className="font-semibold">
+                        {formatPHP(summary.amount_paid)}
+                      </span>
                     </div>
 
                     <div className="flex justify-between text-base">

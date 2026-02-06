@@ -1,6 +1,6 @@
-import { useBookings } from "@/hooks/use-bookings";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { formatPHP } from "@/lib/format-php";
-import { Booking } from "@/types/booking";
+import { FunctionHallBooking } from "@/types/analytics";
 import {
   Modal,
   ModalContent,
@@ -30,37 +30,27 @@ export default function AddPaymentModal({
   summary: any;
   id: string;
 }) {
-  const { isLoading, error, fetchBookings, updateBooking } = useBookings();
+  const { isLoading, error, fetchBookings, updateBooking } =
+    useFunctionHallBookings();
   const [paymentDetail, setPaymentDetail] = React.useState<{
     method: string;
     amountPaid: number;
   }>({ method: "pending", amountPaid: 0 });
 
   async function updatePayment() {
-    try {
-      await updateBooking({
-        id: id,
-        payment_method: paymentDetail.method,
-        amount_paid: paymentDetail.amountPaid,
-        payment_status: summary.status,
-      } as Booking);
-    } catch (e) {
-      addToast({
-        title: "Error!",
-        description: "Unknown Error, Please Try Again",
-        color: "warning",
-      });
-    } finally {
-      if (!error) {
-        addToast({
-          title: "Error!",
-          description: "Unknown Error, Please Try Again",
-          color: "warning",
-        });
-        fetchBookings({});
-        onClose();
-      }
-    }
+    await updateBooking({
+      id: id,
+      payment_method: paymentDetail.method,
+      amount_paid: summary.amount_paid + paymentDetail.amountPaid,
+      payment_status:
+        paymentDetail.amountPaid + summary.amount_paid >= summary.total_amount
+          ? "paid"
+          : "partial",
+      balance:
+        summary.total_amount -
+        (paymentDetail.amountPaid || summary.amount_paid),
+    } as FunctionHallBooking);
+    fetchBookings({});
   }
 
   return (
@@ -83,86 +73,34 @@ export default function AddPaymentModal({
               <ModalBody>
                 <Form onSubmit={updatePayment}>
                   <div className="w-full space-y-4">
-                    {/* Add-Ons / Special Requests */}
-                    {summary.totalAddOnsPrice > 0 ? (
-                      <>
-                        <div className="space-y-3">
-                          <h3 className="text-lg font-semibold">
-                            Special Requests
-                          </h3>
-
-                          <div className="space-y-2">
-                            {summary?.specialRequests.map(
-                              (
-                                req: {
-                                  name: string;
-                                  price: string;
-                                  quantity: number;
-                                },
-                                index: number
-                              ) =>
-                                req.quantity > 0 && (
-                                  <div
-                                    key={index}
-                                    className="w-full px-4 py-2 flex justify-between items-center"
-                                  >
-                                    <div className="flex flex-col">
-                                      <span className="font-medium">
-                                        {req.name}
-                                      </span>
-                                      <span className="text-xs opacity-80">
-                                        Price: {formatPHP(Number(req.price))} ×{" "}
-                                        {req.quantity}
-                                      </span>
-                                    </div>
-
-                                    <span className="font-bold">
-                                      {formatPHP(
-                                        Number(req.price) * req.quantity
-                                      )}
-                                    </span>
-                                  </div>
-                                )
-                            )}
-                          </div>
-                        </div>
-
-                        <Divider className="my-2" />
-                      </>
-                    ) : null}
-
                     {/* Summary Section */}
                     <div className="space-y-3">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-default-700 dark:text-default-400">
-                          Total Add-ons
+                      <div className="flex justify-between items-end text-sm">
+                        <span className="">
+                          <div className="w-full py-2 flex justify-between items-center">
+                            <div className="flex flex-col">
+                              <span className="font-medium">
+                                {summary.banquet_package.name}
+                              </span>
+                              <span className="text-xs opacity-80">
+                                Price:{" "}
+                                {formatPHP(
+                                  Number(
+                                    summary.banquet_package.price_per_cover,
+                                  ),
+                                )}{" "}
+                                / per guest
+                              </span>
+                            </div>
+                          </div>
+                          {formatPHP(
+                            Number(summary.banquet_package.price_per_cover),
+                          )}
+                          {" x "}
+                          {summary.number_of_guest}{" "}
                         </span>
                         <span className="font-semibold">
-                          {formatPHP(summary.totalAddOnsPrice)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-sm">
-                        <span className="text-default-700 dark:text-default-400">
-                          Room Price
-                        </span>
-                        <span className="font-semibold">
-                          {formatPHP(summary.roomPrice)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-default-700 dark:text-default-400">
-                          Nights
-                        </span>
-                        <span className="font-semibold">
-                          {summary.nights} x {formatPHP(summary.roomPrice)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between text-base">
-                        <span className="font-semibold">Total Per Night</span>
-                        <span className="font-bold">
-                          {formatPHP(summary.totalPerNights)}
+                          {formatPHP(summary.total_amount)}
                         </span>
                       </div>
                     </div>
@@ -170,7 +108,7 @@ export default function AddPaymentModal({
                     <Divider />
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span>Grand Total</span>
-                      <span>{formatPHP(summary.total)}</span>
+                      <span>{formatPHP(summary.total_amount)}</span>
                     </div>
                     <Divider />
                     <div className="space-y-3">
@@ -221,7 +159,7 @@ export default function AddPaymentModal({
                             name="amount_paid"
                             placeholder="00.00"
                             isInvalid={
-                              paymentDetail.amountPaid > summary.total ||
+                              paymentDetail.amountPaid > summary.total_amount ||
                               paymentDetail.amountPaid < 0
                             }
                             errorMessage="Amount must not exceed to the total amount"
@@ -241,7 +179,7 @@ export default function AddPaymentModal({
                             onPress={() =>
                               setPaymentDetail({
                                 ...paymentDetail,
-                                amountPaid: summary.total,
+                                amountPaid: summary.total_amount,
                               })
                             }
                           >

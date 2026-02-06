@@ -22,23 +22,12 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     .from("function_hall_bookings")
     .select(
       `
-      id,
-      guest_id,
-      event_type,
-      event_date,
-      event_duration,
-      banquet_package_id,
-      number_of_guest,
-      room_id,
-      notes,
-      status,
-      booking_source,
-      created_at,
+      *,
       guest: guest_id(*),
       banquet_package: banquet_package_id(*),
       room: room_id(*)
     `,
-      { count: "exact" }
+      { count: "exact" },
     )
     .order("created_at", { ascending: false })
     .range(from, to);
@@ -64,7 +53,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -84,7 +73,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
-    { status: 200 }
+    { status: 200 },
   );
 }
 
@@ -111,7 +100,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     console.log(formObj);
@@ -161,7 +150,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "warning",
             },
           },
-          { status: 409 }
+          { status: 409 },
         );
       }
     }
@@ -186,7 +175,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     return NextResponse.json(
@@ -198,7 +187,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -226,7 +215,7 @@ export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -242,7 +231,7 @@ export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "success",
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: any) {
     return NextResponse.json(
@@ -254,7 +243,7 @@ export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -20,7 +20,8 @@ const QUICK_QUESTIONS = [
   "What are the check-in times?",
   "Do you have function halls?",
   "What amenities are included?",
-  "How does the booking system work?",
+  "How can I contact Front Office?",
+  "Where is the hotel located?",
 ];
 
 export default function Chatbot() {

@@ -18,6 +18,7 @@ export interface FunctionHallBooking {
   booking_source?: "walk-in" | "online";
   amount_paid?: number;
   total_amount?: number;
+  balance?: number;
   room?: any;
 }
 

@@ -85,7 +85,6 @@ const FunctionHallBookingSlice = createSlice({
         (state, action: PayloadAction<FunctionHallBooking>) => {
           state.isLoading = false;
           state.error = undefined;
-          state.function_hall_bookings.push(action.payload);
         },
       )
       .addCase(addBooking.rejected, (state, action) => {
@@ -103,12 +102,6 @@ const FunctionHallBookingSlice = createSlice({
         (state, action: PayloadAction<FunctionHallBooking>) => {
           state.isLoading = false;
           state.error = undefined;
-          const index = state.function_hall_bookings.findIndex(
-            (r) => r.id === action.payload.id,
-          );
-          if (index !== -1) {
-            state.function_hall_bookings[index] = action.payload;
-          }
         },
       )
       .addCase(updateBooking.rejected, (state, action) => {
@@ -124,9 +117,6 @@ const FunctionHallBookingSlice = createSlice({
       .addCase(deleteBooking.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = undefined;
-        state.function_hall_bookings = state.function_hall_bookings.filter(
-          (r) => r.id !== action.payload,
-        );
       })
       .addCase(deleteBooking.rejected, (state, action) => {
         state.isLoading = false;
@@ -141,9 +131,6 @@ const FunctionHallBookingSlice = createSlice({
       .addCase(deleteSelectedBooking.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = undefined;
-        state.function_hall_bookings = state.function_hall_bookings.filter(
-          (r) => !action.payload.map((room) => room.id).includes(r.id),
-        );
       })
       .addCase(deleteSelectedBooking.rejected, (state, action) => {
         state.isLoading = false;
