@@ -160,27 +160,76 @@ Found 3 summary documents:
 1. For each approved item:
    - Extract core content
    - Apply MVI minimization (see compact.md)
-   - Add to target file (create if needed)
+   - Generate preview of final content
+2. Show extraction preview (APPROVAL REQUIRED):
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Extraction Preview
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[A] → core/concepts/context-organization.md (CREATE, 45 lines)
+┌─────────────────────────────────────────────────────────┐
+│ # Concept: Context Organization                         │
+│                                                         │
+│ **Purpose**: Function-based knowledge organization      │
+│                                                         │
+│ ## Core Concept                                         │
+│ Organize context by function: concepts/, examples/...   │
+│ ...                                                     │
+└─────────────────────────────────────────────────────────┘
+
+[E] → development/errors/auth-errors.md (ADD to existing, 98 → 112 lines)
+┌─────────────────────────────────────────────────────────┐
+│ + ## Error: JWT Token Expiration Not Handled             │
+│ +                                                       │
+│ + **Symptom**: 401 after 1 hour                         │
+│ + **Cause**: No refresh token flow                      │
+│ + ...                                                   │
+└─────────────────────────────────────────────────────────┘
+
+... ({remaining_count} more items)
+
+Show all? [y/n] | Approve extraction? [y/n/edit]: _
+```
+
+3. On approval:
+   - Write files to disk
    - Add cross-references
-   - Update related files
-2. Update navigation.md navigation maps
-3. Validate file sizes (<200 lines)
+   - Update navigation.md maps
 
 **Output**: List of created/updated files
 
 ---
 
-### Stage 5: Cleanup
+### Stage 5: Cleanup (APPROVAL REQUIRED)
 **Action**: Archive or delete source summary files
 
-**Default Strategy**: Archive (safe)
-- Move to `.tmp/archive/harvested/{date}/`
-- Preserves originals in case of mistakes
-- Can be safely deleted later
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cleanup: Source Files
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Alternative**: Delete (if user specified)
-- Permanently remove files
-- Only delete items user approved for harvest
+Successfully harvested from:
+  CONTEXT-SYSTEM-OVERVIEW.md (4.2 KB)
+  SESSION-auth-work.md (1.8 KB)
+
+Skipped (no valuable content):
+  .tmp/IMPLEMENTATION-NOTES.md (800 bytes)
+
+How should we handle these source files?
+
+  1. Archive (safe) — move to .tmp/archive/harvested/{date}/
+     → Can restore later if needed
+
+  2. Delete — permanently remove harvested files
+     → Frees disk space, no undo
+
+  3. Keep — leave source files in place
+     → No cleanup, files remain where they are
+
+Choose [1/2/3] (default: 1): _
+```
 
 <rule id="cleanup_safety" enforcement="strict">
   ONLY cleanup files that had content successfully harvested.

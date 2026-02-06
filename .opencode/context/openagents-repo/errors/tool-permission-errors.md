@@ -31,7 +31,7 @@ Agent has tool **disabled** or **denied** in frontmatter:
 tools:
   bash: false    # ← Tool disabled
 
-permissions:
+permission:
   bash:
     "*": "deny"  # ← Explicitly denied
 ```
@@ -196,7 +196,7 @@ tools:
 
 ## Verification Checklist
 
-After fixing tool permissions:
+After fixing tool permission:
 
 - [ ] Agent frontmatter has correct `tools:` configuration?
 - [ ] Prompt emphasizes allowed tools in critical rules section?

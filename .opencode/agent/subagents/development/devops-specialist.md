@@ -3,19 +3,12 @@ name: OpenDevopsSpecialist
 description: DevOps specialist subagent - CI/CD, infrastructure as code, deployment automation
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  write: true
-  edit: true
-  bash: true
-  task: true
-  grep: true
-  glob: true
-permissions:
+permission:
   task:
-    contextscout: "allow"
     "*": "deny"
+    contextscout: "allow"
   bash:
+    "*": "deny"
     "docker build *": "allow"
     "docker compose up *": "allow"
     "docker compose down *": "allow"
@@ -31,7 +24,6 @@ permissions:
     "terraform validate *": "allow"
     "npm run build *": "allow"
     "npm run test *": "allow"
-    "*": "deny"
   edit:
     "**/*.env*": "deny"
     "**/*.key": "deny"

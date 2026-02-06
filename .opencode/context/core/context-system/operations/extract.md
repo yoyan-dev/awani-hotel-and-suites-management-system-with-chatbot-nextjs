@@ -73,23 +73,49 @@ Select items (A B I or 'all') + category (1/2/3):
 ---
 
 ### Stage 4: Preview (APPROVAL REQUIRED)
-**Action**: Show what will be created
+**Action**: Show what will be created, check for conflicts
 
 **Format**:
 ```
-Would create in development/:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Extraction Plan: development/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+CREATE (new files):
   concepts/use-state.md (45 lines)
   concepts/use-effect.md (52 lines)
-  errors/react-hooks-errors.md (124 lines)
+  concepts/use-context.md (38 lines)
+  ... (6 more)
+  guides/custom-hooks.md (87 lines)
+  guides/debugging-hooks.md (65 lines)
+
+ADD TO (existing files):
+  errors/react-hooks-errors.md (98 → 124 lines)
+    + 4 new error entries
+
+⚠️  CONFLICT (file already exists):
+  concepts/use-memo.md already exists (42 lines)
+    Options:
+      [A] Skip — keep existing file
+      [B] Overwrite — replace with extracted version
+      [C] Merge — add new content to existing file (42 → 58 lines)
+    Choose [A/B/C]: _
+
+NAVIGATION UPDATE:
+  development/navigation.md
+    + 9 new entries in Concepts table
+    + 2 new entries in Guides table
+    + 1 updated entry in Errors table
 
 Total: 12 files, ~650 lines
 
-Preview file? (type filename or 'skip')
-Approve? (yes/no/preview):
+Preview content? (type filename, 'all' for batch, or 'skip')
+Approve? [y/n/edit]: _
 ```
 
-**If user types filename**: Show first 30 lines of that file
+**If user types 'all'**: Show first 10 lines of each file in sequence
+**If user types filename**: Show full content of that file
+**If user types 'skip'**: Proceed to approval
 
 **Validation**: MUST get approval before proceeding
 
@@ -108,11 +134,11 @@ Approve? (yes/no/preview):
 
 ---
 
-### Stage 6: Update Navigation
-**Action**: Update README.md and add cross-references
+### Stage 6: Update Navigation (preview included in Stage 4)
+**Action**: Update navigation.md and add cross-references
 
 **Process**:
-1. Update category README.md with new files
+1. Update category navigation.md with new files (as previewed in Stage 4)
 2. Add priority levels (critical/high/medium/low)
 3. Add cross-references between related files
 4. Update "Last Updated" dates

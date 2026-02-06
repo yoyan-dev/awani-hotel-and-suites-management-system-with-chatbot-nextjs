@@ -28,6 +28,7 @@ core/context-system/
 | **Operations & procedures** | `./operations/` |
 | **Implementation guides** | `./guides/` |
 | **Standards & templates** | `./standards/navigation.md` |
+| **Migrate global → local** | `./operations/migrate.md` |
 
 ---
 

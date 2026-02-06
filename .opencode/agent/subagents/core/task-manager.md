@@ -3,29 +3,25 @@ name: TaskManager
 description: JSON-driven task breakdown specialist transforming complex features into atomic, verifiable subtasks with dependency tracking and CLI integration
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  edit: true
-  write: true
-  grep: true
-  glob: true
-  bash: true
-  task: true
-  patch: true
-permissions:
+permission:
   bash:
+    "*": "deny"
     "npx ts-node*task-cli*": "allow"
     "mkdir -p .tmp/tasks*": "allow"
     "mv .tmp/tasks*": "allow"
-    "*": "deny"
   edit:
     "**/*.env*": "deny"
     "**/*.key": "deny"
     "**/*.secret": "deny"
     "node_modules/**": "deny"
     ".git/**": "deny"
-skills:
-  - task-management
+  task:
+    contextscout: "allow"
+    externalscout: "allow"
+    "*": "deny"
+  skill:
+    "*": "deny"
+    "task-management": "allow"
 ---
 
 <context>

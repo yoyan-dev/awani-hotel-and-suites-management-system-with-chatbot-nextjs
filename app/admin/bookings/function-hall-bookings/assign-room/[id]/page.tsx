@@ -59,10 +59,10 @@ export default function Page() {
   const summary = React.useMemo(() => {
     return {
       total_amount:
-        function_hall_booking.banquet_package.price_per_cover *
-        (function_hall_booking.number_of_guest || 0),
+        (function_hall_booking?.banquet_package?.price_per_cover || 0) *
+        (function_hall_booking?.number_of_guest || 0),
       balance:
-        function_hall_booking.banquet_package.price_per_cover *
+        (function_hall_booking?.banquet_package?.price_per_cover || 0) *
         (function_hall_booking.number_of_guest || 0),
     } as {
       total_amount: number;

@@ -11,14 +11,15 @@ export const fetchRoomTypes = createAsyncThunk<
   try {
     const searchParams = new URLSearchParams();
     if (params?.query) searchParams.append("q", params.query);
-    if (params?.maxGuest) searchParams.append("maxGuest", params.maxGuest);
+    if (params?.maxGuest)
+      searchParams.append("maxGuest", params.maxGuest.toString());
     const res = await fetch(`${apiUrl}?${searchParams}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
       addToast(data.message);
       return rejectWithValue(
-        data.message?.description ?? "Failed to fetch room types"
+        data.message?.description ?? "Failed to fetch room types",
       );
     }
     return data.data;
@@ -37,7 +38,7 @@ export const fetchRoomType = createAsyncThunk<RoomType, string>(
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch room type"
+          data.message?.description ?? "Failed to fetch room type",
         );
       }
       return data.data;
@@ -49,7 +50,7 @@ export const fetchRoomType = createAsyncThunk<RoomType, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const fetchAvailableRoomTypes = createAsyncThunk<
@@ -60,14 +61,15 @@ export const fetchAvailableRoomTypes = createAsyncThunk<
     const searchParams = new URLSearchParams();
     if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
-    if (params?.maxGuest) searchParams.append("maxGuest", params.maxGuest);
+    if (params?.maxGuest)
+      searchParams.append("maxGuest", params.maxGuest.toString());
     const res = await fetch(`${apiUrl}/available-room-types?${searchParams}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
       addToast(data.message);
       return rejectWithValue(
-        data.message?.description ?? "Failed to fetch room types"
+        data.message?.description ?? "Failed to fetch room types",
       );
     }
     return data.data;
@@ -88,7 +90,7 @@ export const addRoomType = createAsyncThunk<RoomType, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add item in room type"
+          data.message?.description ?? "Failed to add item in room type",
         );
       }
       return data.data;
@@ -101,7 +103,7 @@ export const addRoomType = createAsyncThunk<RoomType, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -122,7 +124,7 @@ export const updateRoomType = createAsyncThunk<
 
     if (!res.ok || !data.success) {
       return rejectWithValue(
-        data.message?.description ?? "Failed to update room types"
+        data.message?.description ?? "Failed to update room types",
       );
     }
 
@@ -148,7 +150,7 @@ export const deleteRoomType = createAsyncThunk<string, string>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete item"
+          data.message?.description ?? "Failed to delete item",
         );
       }
 
@@ -161,5 +163,5 @@ export const deleteRoomType = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );

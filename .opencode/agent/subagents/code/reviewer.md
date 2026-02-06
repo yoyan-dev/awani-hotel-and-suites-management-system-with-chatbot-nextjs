@@ -3,15 +3,7 @@ name: CodeReviewer
 description: Code review, security, and quality assurance agent
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  bash: false
-  edit: false
-  write: false
-  task: true
-permissions:
+permission:
   bash:
     "*": "deny"
   edit:
@@ -20,7 +12,6 @@ permissions:
     "**/*": "deny"
   task:
     contextscout: "allow"
-    "*": "deny"
 ---
 
 # CodeReviewer

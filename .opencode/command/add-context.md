@@ -85,10 +85,11 @@ Help users add project patterns using Project Intelligence standard. **Easiest w
 ## Usage
 
 ```bash
-/add-context                 # Interactive wizard (recommended)
+/add-context                 # Interactive wizard (recommended, saves to project)
 /add-context --update        # Update existing context
 /add-context --tech-stack    # Add/update tech stack only
 /add-context --patterns      # Add/update code patterns only
+/add-context --global        # Save to global config (~/.config/opencode/) instead of project
 ```
 
 ---
@@ -98,11 +99,13 @@ Help users add project patterns using Project Intelligence standard. **Easiest w
 **Run**: `/add-context`
 
 **What happens**:
-1. Checks for external context files in `.tmp/` (if found, offers to extract)
-2. Checks for existing project intelligence
-3. Asks 6 questions (~5 min) OR reviews existing patterns
-4. Generates/updates technical-domain.md
-5. Agents now use YOUR patterns
+1. Saves to `.opencode/context/project-intelligence/` in your project (always local)
+2. Checks for external context files in `.tmp/` (if found, offers to extract)
+3. Checks for existing project intelligence
+4. Asks 6 questions (~5 min) OR reviews existing patterns
+5. Shows full preview of files to be created before writing
+6. Generates/updates technical-domain.md + navigation.md
+7. Agents now use YOUR patterns
 
 **6 Questions** (~5 min):
 1. Tech stack?
@@ -123,6 +126,23 @@ Help users add project patterns using Project Intelligence standard. **Easiest w
 ---
 
 ## Workflow
+
+### Stage 0.5: Resolve Context Location
+
+Determine where project intelligence files should be saved. This runs BEFORE anything else.
+
+**Default behavior**: Always use local `.opencode/context/project-intelligence/`.
+**Override**: `--global` flag saves to `~/.config/opencode/context/project-intelligence/` instead.
+
+**Resolution:**
+1. If `--global` flag → `$CONTEXT_DIR = ~/.config/opencode/context/project-intelligence/`
+2. Otherwise → `$CONTEXT_DIR = .opencode/context/project-intelligence/` (always local)
+
+**If `.opencode/context/` doesn't exist yet**, create it silently — no prompt needed. The directory structure is part of the output shown in Stage 4.
+
+**Variable**: `$CONTEXT_DIR` is set here and used in all subsequent stages.
+
+---
 
 ### Stage 0: Check for External Context Files
 
@@ -180,7 +200,7 @@ Ready to harvest? [y/n]: _
 
 ### Stage 1: Detect Existing Context
 
-Check: `~/.opencode/context/project-intelligence/`
+Check: `$CONTEXT_DIR` (set in Stage 0.5 — either `.opencode/context/project-intelligence/` or `~/.config/opencode/context/project-intelligence/`)
 
 **If exists**:
 ```
@@ -206,10 +226,31 @@ Current patterns:
 Options:
   1. Review and update patterns (show each one)
   2. Add new patterns (keep all existing)
-  3. Replace all patterns (start fresh, backup old)
+  3. Replace all patterns (start fresh)
   4. Cancel
 
 Choose [1/2/3/4]: _
+```
+
+**If user chooses 3 (Replace all):**
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Replace All: Preview
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Will BACKUP existing files to:
+  .tmp/backup/project-intelligence-{timestamp}/
+    ← technical-domain.md (Version: 1.2)
+    ← business-domain.md (Version: 1.0)
+    ← navigation.md
+
+Will DELETE and RECREATE:
+  $CONTEXT_DIR/technical-domain.md (new Version: 1.0)
+  $CONTEXT_DIR/navigation.md (new Version: 1.0)
+
+Existing files backed up → you can restore from .tmp/backup/ if needed.
+
+Proceed? [y/n]: _
 ```
 
 **If not exists**:
@@ -217,6 +258,8 @@ Choose [1/2/3/4]: _
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 No project intelligence found. Let's create it!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Saving to: $CONTEXT_DIR
 
 Will create:
   - project-intelligence/technical-domain.md (tech stack & patterns)
@@ -485,7 +528,7 @@ Preview: technical-domain.md
 Size: {line_count} lines (limit: 200 per @mvi_compliance)
 Status: ✅ MVI compliant
 
-Save to: ~/.opencode/context/project-intelligence/technical-domain.md
+Save to: $CONTEXT_DIR/technical-domain.md
 
 Looks good? [y/n/edit]: _
 ```
@@ -511,12 +554,35 @@ Running validation...
 ✅ Version set: 1.0 (@version_tracking)
 ✅ MVI compliant (<30s scannable)
 ✅ No duplication
+```
 
-Creating files per @project_intelligence...
-  ✓ technical-domain.md
-  ✓ navigation.md (updated per @navigation_update)
+**navigation.md preview** (also created/updated):
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Preview: navigation.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Done!
+# Project Intelligence
+
+| File | Description | Priority |
+|------|-------------|----------|
+| [technical-domain.md](technical-domain.md) | Tech stack & patterns | critical |
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Full creation plan**:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Files to write:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  CREATE  $CONTEXT_DIR/technical-domain.md ({line_count} lines)
+  CREATE  $CONTEXT_DIR/navigation.md ({nav_line_count} lines)
+
+Total: 2 files
+
+Proceed? [y/n]: _
 ```
 
 ---
@@ -529,9 +595,10 @@ Done!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Files created:
-  ~/.opencode/context/project-intelligence/technical-domain.md
-  ~/.opencode/context/project-intelligence/navigation.md
+  $CONTEXT_DIR/technical-domain.md
+  $CONTEXT_DIR/navigation.md
 
+Location: $CONTEXT_DIR
 Agents now use YOUR patterns automatically!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -543,7 +610,7 @@ What's next?
    > "Create API endpoint"
    (Uses YOUR pattern!)
 
-2. Review: cat ~/.opencode/context/project-intelligence/technical-domain.md
+2. Review: cat $CONTEXT_DIR/technical-domain.md
 
 3. Add business context: /add-context --business
 
@@ -559,6 +626,18 @@ When you:
   Migrate tech → /add-context --update
 
 Agents stay synced!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💡 Tip: Global patterns
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Want the same patterns across ALL your projects?
+  /add-context --global
+  → Saves to ~/.config/opencode/context/project-intelligence/
+  → Acts as fallback for projects without local context
+
+Already have global patterns? Bring them into this project:
+  /context migrate
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 Learn More
@@ -593,7 +672,7 @@ Agents stay synced!
 ### Pattern Detection (Stage 1)
 
 **Process**:
-1. Check: `ls ~/.opencode/context/project-intelligence/`
+1. Check: `ls $CONTEXT_DIR/` (path determined in Stage 0.5)
 2. Read: `cat technical-domain.md` (if exists)
 3. Parse existing patterns:
    - Frontmatter: version, updated date
@@ -822,16 +901,22 @@ Check code & retry.
 A: Check file exists, <200 lines. Run `/context validate`
 
 **Q: See what's in context?**
-A: `cat ~/.opencode/context/project-intelligence/technical-domain.md`
+A: `cat .opencode/context/project-intelligence/technical-domain.md` (local) or `cat ~/.config/opencode/context/project-intelligence/technical-domain.md` (global)
 
 **Q: Multiple context files?**
-A: Yes! Create in `~/.opencode/context/project-intelligence/`. Agents load all.
+A: Yes! Create in your project-intelligence directory. Agents load all.
 
 **Q: Remove pattern?**
-A: Edit directly: `nano ~/.opencode/context/project-intelligence/technical-domain.md`
+A: Edit directly: `nano .opencode/context/project-intelligence/technical-domain.md`
 
 **Q: Share w/ team?**
-A: Yes! Commit `~/.opencode/context/project-intelligence/` to repo.
+A: Yes! Use local install (`.opencode/context/project-intelligence/`) and commit to repo. Team members get your patterns automatically.
+
+**Q: Local vs global?**
+A: Local (`.opencode/`) = project-specific, committed to git, team-shared. Global (`~/.config/opencode/`) = personal defaults across all projects. Local overrides global.
+
+**Q: Installed globally but want project patterns?**
+A: Run `/add-context` (defaults to local). Creates `.opencode/context/project-intelligence/` in your project even if OAC was installed globally.
 
 **Q: Have external context files in .tmp/?**
 A: Run `/context harvest` to extract and organize them into permanent context

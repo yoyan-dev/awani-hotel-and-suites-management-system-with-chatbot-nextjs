@@ -3,15 +3,7 @@ name: TestEngineer
 description: Test authoring and TDD agent
 mode: subagent
 temperature: 0.1
-tools:
-  read: true
-  grep: true
-  glob: true
-  edit: true
-  write: true
-  bash: true
-  task: true
-permissions:
+permission:
   bash:
     "npx vitest *": "allow"
     "npx jest *": "allow"
@@ -32,7 +24,7 @@ permissions:
     "**/*.secret": "deny"
   task:
     contextscout: "allow"
-    "*": "deny"
+    externalscout: "allow"
 ---
 
 # TestEngineer

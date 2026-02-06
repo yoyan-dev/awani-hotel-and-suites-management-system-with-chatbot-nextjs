@@ -3,15 +3,7 @@ name: DocWriter
 description: Documentation authoring agent
 mode: subagent
 temperature: 0.2
-tools:
-  read: true
-  grep: true
-  glob: true
-  edit: true
-  write: true
-  bash: false
-  task: true
-permissions:
+permission:
   bash:
     "*": "deny"
   edit:

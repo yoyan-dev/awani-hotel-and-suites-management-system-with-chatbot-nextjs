@@ -71,93 +71,69 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
             autoScroll
             autoScrollInterval={2500}
             itemsPerView={1}
-            dotType="image"
             responsive={{ sm: 1, md: 2, lg: 3, xl: 3 }}
             className="max-w-7xl mx-auto"
           >
             {rooms.map((room) => (
               <CarouselItem key={room.id}>
                 <Card
-                  isFooterBlurred
-                  className={`w-full h-[320px] rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-all relative
-                  ${
-                    isPeakSeason
-                      ? "border-2 border-red-500/60 shadow-red-300/50 hover:scale-[1.03] dark:border-red-800 dark:shadow-red-900"
-                      : "bg-gray-900/40 dark:bg-gray-800"
-                  }`}
+                  className="group w-full h-80 overflow-hidden rounded-lg
+        bg-white dark:bg-neutral-900
+        border border-neutral-200 dark:border-neutral-800
+        transition-all duration-300
+        hover:shadow-lg dark:hover:shadow-neutral-950/40"
                 >
-                  {isPeakSeason && (
-                    <div className="absolute inset-0 bg-red-200/20 dark:bg-red-900/20 animate-pulse pointer-events-none" />
-                  )}
-
-                  {/* Card Header */}
-                  <CardHeader
-                    className={`absolute z-10 top-3 left-3 flex-col items-start px-4 py-2 rounded-xl backdrop-blur-md
-                    ${
-                      isPeakSeason
-                        ? "bg-red-600/70 text-white shadow-lg dark:bg-red-900/70"
-                        : "bg-black/40 text-white"
-                    }`}
-                  >
-                    <span className="uppercase text-xs font-semibold">
-                      {isPeakSeason
-                        ? "Peak Season Special"
-                        : "Comfort & Luxury"}
-                    </span>
-
-                    <h4 className="font-semibold text-lg leading-tight">
-                      {room.name}
-                    </h4>
-
-                    <div className="flex gap-2">
-                      <span
-                        className={`mt-1 px-2 py-1 text-xs font-medium rounded 
-                        ${
-                          isPeakSeason
-                            ? "line-through bg-none text-gray-300 dark:text-gray-400"
-                            : "bg-primary text-white"
-                        }`}
-                      >
-                        {formatPHP(Number(room.price))}/night
-                      </span>
-
-                      <span
-                        className={`mt-1 px-2 py-1 text-xs font-medium rounded 
-                        ${isPeakSeason ? "bg-yellow-300 text-red-900 dark:bg-yellow-400 dark:text-red-950" : "hidden"}`}
-                      >
-                        {formatPHP(Number(room.peak_season_price))}/night
-                      </span>
-                    </div>
-                  </CardHeader>
-
                   {/* Image */}
-                  <Image
-                    removeWrapper
-                    alt={room.name}
-                    className="z-0 w-full h-full object-cover"
-                    src={room.image || "/bg.jpg"}
-                  />
+                  <div className="relative h-[200px] overflow-hidden">
+                    <Image
+                      removeWrapper
+                      alt={room.name}
+                      src={room.image || "/bg.jpg"}
+                      className="w-full h-full object-cover
+            transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
 
-                  {/* Footer */}
-                  <CardFooter
-                    className={`absolute bottom-0 w-full backdrop-blur-md border-t px-4 py-3
-                    ${
-                      isPeakSeason
-                        ? "bg-red-900/40 border-red-200/30 dark:bg-red-950/40 dark:border-red-900"
-                        : "bg-black/30 border-white/10"
-                    }`}
-                  >
-                    <p
-                      className={`text-sm line-clamp-1
-                      ${
-                        isPeakSeason
-                          ? "text-yellow-200 dark:text-yellow-300"
-                          : "text-white/80"
-                      }`}
-                    >
-                      {room.description}
-                    </p>
-                  </CardFooter>
+                    {isPeakSeason && (
+                      <span
+                        className="absolute top-3 left-3 text-[11px] font-medium px-2 py-1 rounded-md
+              bg-red-600 text-white"
+                      >
+                        Peak Season
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="h-[120px] px-4 py-3 flex flex-col justify-between">
+                    <div>
+                      <h4 className="text-sm font-semibold text-neutral-900 dark:text-white">
+                        {room.name}
+                      </h4>
+
+                      <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
+                        {room.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-sm">
+                      {!isPeakSeason && (
+                        <span className="font-medium text-primary">
+                          {formatPHP(Number(room.price))}/night
+                        </span>
+                      )}
+
+                      {isPeakSeason && (
+                        <>
+                          <span className="text-xs line-through text-neutral-400 dark:text-neutral-500">
+                            {formatPHP(Number(room.price))}
+                          </span>
+                          <span className="font-semibold text-red-600 dark:text-red-500">
+                            {formatPHP(Number(room.peak_season_price))}/night
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </Card>
               </CarouselItem>
             ))}

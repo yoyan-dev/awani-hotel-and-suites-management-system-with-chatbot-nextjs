@@ -34,7 +34,7 @@ export interface RoomTypeState {
 
 export interface FetchRoomTypesParams {
   query?: string;
-  maxGuest?: string;
+  maxGuest?: number;
   checkIn?: any;
   checkOut?: any;
 }
