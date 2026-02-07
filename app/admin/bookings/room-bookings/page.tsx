@@ -17,7 +17,6 @@ export default function BookingList() {
     fetchBookings,
     updateBooking,
   } = useBookings();
-  const { updateRoom } = useRooms();
 
   const [query, setQuery] = React.useState<FetchBookingParams>({});
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
@@ -42,11 +41,6 @@ export default function BookingList() {
       room_id: room.room_id,
       status: "confirmed",
     } as Booking);
-
-    await updateRoom({
-      id: room.id,
-      bookings: [...(room.bookings || []), booking],
-    });
   }
   return (
     <div className="p-2 md:p-4 bg-white dark:bg-gray-900 rounded space-y-2">

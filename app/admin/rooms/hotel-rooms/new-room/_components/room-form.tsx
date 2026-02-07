@@ -115,12 +115,6 @@ export default function RoomForm({
             variant="bordered"
           />
         </div>
-
-        <div className="flex-1 flex flex-col gap-4">
-          <h1>Room photo</h1>
-          <hr className="border border-gray-400" />
-          <ImagesUpload images={images} setImages={setImages} />
-        </div>
       </div>
 
       <div className="gap-1 w-full bg-primary flex justify-center items-center text-white text-sm font-thin py-2">

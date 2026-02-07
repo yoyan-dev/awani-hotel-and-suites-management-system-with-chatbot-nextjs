@@ -10,7 +10,7 @@ export default function CheckInButton({ booking }: { booking: Booking }) {
 
   async function markCheckIn() {
     updateBooking({ id: booking.id, status: "check-in" } as Booking);
-    updateRoom({ id: booking.room_id, status: "dirty" });
+    updateRoom({ id: booking.room_id, status: "occupied" });
   }
   return (
     <div onClick={markCheckIn} className="flex gap-2 items-center">

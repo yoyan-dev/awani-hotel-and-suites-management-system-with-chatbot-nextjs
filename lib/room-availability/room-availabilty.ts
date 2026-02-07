@@ -1,11 +1,16 @@
-import { hasBookingConflict } from "./booking-overlap";
+import { Booking } from "@/types/booking";
+import { Room } from "@/types/room";
 
 export function isRoomAvailable(
-  room: any,
+  room: Room,
   checkIn: string,
   checkOut: string,
 ): boolean {
-  if (!room.bookings || room.bookings.length === 0) return true;
+  if (!room.bookings || room.bookings.length === 0) {
+    return true;
+  }
 
-  return !hasBookingConflict(room.bookings, checkIn, checkOut);
+  return !room.bookings.some((booking: Booking) => {
+    return booking.check_in < checkOut && booking.check_out > checkIn;
+  });
 }

@@ -28,7 +28,7 @@ export default function HousekeepingLayout({
         transition={{ duration: 0.4, ease: "easeOut" }}
         className="flex gap-4 h-screen text-surface-600 bg-gray-50 dark:bg-gray-800"
       >
-        <main className="w-full min-h-screen space-y-4">
+        <main className="w-full min-h-screen space-y-4 pb-16">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}

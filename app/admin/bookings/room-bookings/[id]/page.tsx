@@ -39,7 +39,6 @@ export default function BookingDetailsStunning() {
   const { id } = useParams();
   const { booking, isLoading, error, fetchBooking, updateBooking } =
     useBookings();
-  const { updateRoom } = useRooms();
   const [viewOpen, setViewOpen] = React.useState(false);
   const [assignModalOpen, setAssignModalOpen] = React.useState(false);
 
@@ -56,10 +55,6 @@ export default function BookingDetailsStunning() {
       status: "confirmed",
     } as Booking);
 
-    await updateRoom({
-      id: room.id,
-      bookings: [...(room.bookings || []), booking],
-    });
     fetchBooking(id as string);
   }
 

@@ -41,7 +41,6 @@ export default function AssignRoomPage() {
     available_rooms,
     isLoading: roomLoading,
     fetchAvailableRooms,
-    updateRoom,
   } = useRooms();
 
   React.useEffect(() => {
@@ -68,10 +67,6 @@ export default function AssignRoomPage() {
       status: "confirmed",
     } as Booking);
 
-    await updateRoom({
-      id: room.id,
-      status: "booked",
-    });
     fetchBooking(id as string);
   }
 
@@ -97,11 +92,6 @@ export default function AssignRoomPage() {
             isPressable
             className="hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300"
           >
-            <Image
-              src={room.images?.[0]}
-              alt={room.room_id}
-              className="rounded-t-xl h-40 w-xl object-cover"
-            />
             <CardHeader className="flex flex-col items-start gap-1">
               <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                 {room.room_number}

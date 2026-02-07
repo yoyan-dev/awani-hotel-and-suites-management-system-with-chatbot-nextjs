@@ -12,7 +12,7 @@ export default function CheckOutButton({ booking }: { booking: Booking }) {
   async function markCheckOut() {
     setIsloading(true);
     await updateBooking({ id: booking.id, status: "check-out" } as Booking);
-    await updateRoom({ id: booking.room_id, status: "dirty" });
+    await updateRoom({ id: booking.room_id, status: "vacant_dirty" });
 
     setIsloading(false);
   }

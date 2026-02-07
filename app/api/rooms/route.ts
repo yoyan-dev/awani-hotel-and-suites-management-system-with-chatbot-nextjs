@@ -25,7 +25,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     area,
     description,
     status,
-    images,
     remarks,
     bookings
   `,

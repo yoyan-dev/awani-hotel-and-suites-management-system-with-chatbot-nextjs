@@ -7,6 +7,7 @@ import RoomForm from "./_components/room-form";
 import Header from "./_components/header";
 import { useRooms } from "@/hooks/use-rooms";
 import { useRoomTypes } from "@/hooks/use-room-types";
+import { LoadingState } from "@/components/dashboard/dashboard-layout";
 
 export default function Page() {
   const { id } = useParams();
@@ -26,9 +27,6 @@ export default function Page() {
   } = useRoomTypes();
 
   const [formData, setFormData] = React.useState<Room>({});
-  const [images, setImages] = React.useState<any[]>([]);
-  const [beds, setBeds] = React.useState<string[]>([]);
-  const [facilities, setFacilities] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     if (id) fetchRoom(id as string);
@@ -38,10 +36,6 @@ export default function Page() {
   React.useEffect(() => {
     if (room) {
       setFormData(room);
-      setImages([
-        ...(room.images?.map((url) => ({ file: null, preview: url })) ?? []),
-        ...images,
-      ]);
     }
   }, [room]);
 
@@ -49,45 +43,26 @@ export default function Page() {
     e.preventDefault();
     setLoading();
 
-    const uploadedUrls = await Promise.all(
-      images.map(async (img) => {
-        if (img.file) {
-          const imageUrl = await uploadRoomImage(
-            img.file,
-            Number(formData.room_number)
-          );
-          return imageUrl;
-        }
-        return img.preview;
-      })
-    );
-
-    const updatedRoom: Room = {
-      ...formData,
-      images: [...uploadedUrls],
-    };
-
-    await updateRoom(updatedRoom);
+    await updateRoom(formData);
     router.push("/admin/rooms/hotel-rooms");
   }
 
   return (
     <div className="space-y-4">
       <Header />
-      <RoomForm
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={handleSubmit}
-        beds={beds}
-        setBeds={setBeds}
-        facilities={facilities}
-        setFacilities={setFacilities}
-        images={images}
-        setImages={setImages}
-        roomTypes={room_types}
-        typesLoading={typesLoading}
-        roomLoading={roomLoading}
-      />
+      {roomLoading && <LoadingState message="Loading room..." />}
+      {error && <div className="text-danger">{error}</div>}
+      {!roomLoading && !error && (
+        <RoomForm
+          room={room}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmit}
+          roomTypes={room_types}
+          typesLoading={typesLoading}
+          roomLoading={roomLoading}
+        />
+      )}
     </div>
   );
 }

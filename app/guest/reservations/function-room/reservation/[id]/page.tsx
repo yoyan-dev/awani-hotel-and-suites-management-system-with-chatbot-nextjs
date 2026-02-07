@@ -77,7 +77,7 @@ export default function Page() {
   }
 
   return (
-    <div className="pb-16">
+    <div className="min-h-screen pb-16">
       <Card className="border-none shadow-none">
         <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
           Hotel Reservation

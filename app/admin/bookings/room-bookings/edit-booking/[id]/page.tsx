@@ -29,7 +29,6 @@ export default function EditBookingPage() {
     available_rooms,
     isLoading: roomLoading,
     fetchAvailableRooms,
-    updateRoom,
   } = useRooms();
   const [formData, setFormData] = React.useState<Booking>({} as Booking);
   const [specialRequests, setSpecialRequests] = React.useState<
@@ -75,7 +74,7 @@ export default function EditBookingPage() {
               price: item.price,
               quantity: 0,
               max_quantity: item.max_quantity,
-            }))
+            })),
       );
     }
   }, [formData?.room_type_id, booking]);
@@ -93,11 +92,6 @@ export default function EditBookingPage() {
         number_of_guests: formData.number_of_guests,
         status: formData.room_id ? "confirmed" : "pending",
       } as Booking);
-
-      if (formData.room_id !== booking.room_id) {
-        updateRoom({ id: booking.room_id, status: "vacant" });
-        updateRoom({ id: formData.room_id, status: "booked" });
-      }
     } catch (err) {
       console.error("Failed to update booking", err);
     }

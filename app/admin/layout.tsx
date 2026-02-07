@@ -32,7 +32,7 @@ export default function AdminLayout({
     fetchCurrentUser();
   }, []);
   return (
-    <div className="flex  h-screen  bg-slate-50 dark:bg-gray-800">
+    <div className="flex fixed h-screen  bg-slate-50 dark:bg-gray-800 w-full">
       <Sidebar />
       <main className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4">
         <AdminNavbar user={user} isLoading={isLoading} />
