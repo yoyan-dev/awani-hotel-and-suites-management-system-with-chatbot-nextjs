@@ -1,31 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "./lib/supabase/server";
 
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
 
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return req.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            res.cookies.set(name, value, {
-              ...options,
-              httpOnly: true,
-              sameSite: "lax",
-              path: "/",
-            });
-          });
-        },
-      },
-    },
-  );
+  const supabase = await createClient();
 
   // Refresh session if expired
   const {
