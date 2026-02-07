@@ -2,17 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
 
-  // Determine environment
-  const isProduction = process.env.NODE_ENV === "production";
-  const isVercel =
-    process.env.VERCEL === "1" || process.env.VERCEL_ENV !== undefined;
-
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -23,7 +18,6 @@ export async function middleware(req: NextRequest) {
             res.cookies.set(name, value, {
               ...options,
               httpOnly: true,
-              secure: isProduction || isVercel ? true : false,
               sameSite: "lax",
               path: "/",
             });
@@ -74,42 +68,42 @@ export async function middleware(req: NextRequest) {
   }
 
   // If user is not authenticated and trying to access protected routes
-  // if (!user && !isPublicPath) {
-  //   if (pathname.startsWith("/admin") || pathname.startsWith("/housekeeping")) {
-  //     return redirect("/auth");
-  //   }
-  // }
+  if (!user && !isPublicPath) {
+    if (pathname.startsWith("/admin") || pathname.startsWith("/housekeeping")) {
+      return redirect("/auth");
+    }
+  }
 
   // Block auth pages if already logged in
-  // if (pathname.startsWith("/auth") && user) {
-  //   if (roles.includes("admin")) return redirect("/admin");
-  //   if (roles.includes("housekeeping")) return redirect("/housekeeping");
-  //   return redirect("/guest");
-  // }
+  if (pathname.startsWith("/auth") && user) {
+    if (roles.includes("admin")) return redirect("/admin");
+    if (roles.includes("housekeeping")) return redirect("/housekeeping");
+    return redirect("/guest");
+  }
 
   // Guards for admin routes - must have admin role
-  // if (pathname.startsWith("/admin")) {
-  //   if (!user) {
-  //     return redirect("/auth");
-  //   }
-  //   if (!roles.includes("admin")) {
-  //     return redirect("/auth");
-  //   }
-  // }
+  if (pathname.startsWith("/admin")) {
+    if (!user) {
+      return redirect("/auth");
+    }
+    if (!roles.includes("admin")) {
+      return redirect("/auth");
+    }
+    // }
 
-  // Guards for housekeeping routes - must have housekeeping role
-  // if (pathname.startsWith("/housekeeping")) {
-  //   if (!user) {
-  //     return redirect("/auth");
-  //   }
-  //   if (!roles.includes("housekeeping")) {
-  //     return redirect("/auth");
-  //   }
-  // }
+    // Guards for housekeeping routes - must have housekeeping role
+    if (pathname.startsWith("/housekeeping")) {
+      if (!user) {
+        return redirect("/auth");
+      }
+      if (!roles.includes("housekeeping")) {
+        return redirect("/auth");
+      }
+    }
 
-  return res;
+    return res;
+  }
 }
-
 export const config = {
   matcher: [
     "/",
