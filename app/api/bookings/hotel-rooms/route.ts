@@ -49,18 +49,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
       status,
       created_at,
       room_type:room_type_id(*),
-      room:room_id (
-        id,
-        room_id,
-        room_number,
-        room_type_id,
-        room_type:room_type_id(*),
-        area,
-        description,
-        status,
-        images,
-        remarks
-      ),
+      room:room_id (*),
       user:guest_id (*)
     `,
       { count: "exact" },

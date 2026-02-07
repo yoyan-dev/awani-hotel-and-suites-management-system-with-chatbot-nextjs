@@ -94,12 +94,6 @@ export default function Auth() {
           >
             Login
           </Button>
-          {/* <div className="flex gap-2">
-            Don't have an account yet?
-            <Link color="primary" href="/auth/signup" size="sm">
-              Sign up
-            </Link>
-          </div> */}
         </Form>
       </div>
     </div>
