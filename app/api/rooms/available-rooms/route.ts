@@ -31,9 +31,8 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     area,
     description,
     status,
-    images,
     remarks
-  `
+  `,
   );
   let queryBookings = supabase.from("bookings").select(`
     id,
@@ -68,7 +67,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   if (roomError || bookingError) {
     console.error(
       "Error fetching rooms:",
-      roomError?.message || bookingError?.message
+      roomError?.message || bookingError?.message,
     );
     return NextResponse.json(
       {
@@ -79,7 +78,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -114,6 +113,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
       },
       data: availableRooms(),
     },
-    { status: 200 }
+    { status: 200 },
   );
 }
