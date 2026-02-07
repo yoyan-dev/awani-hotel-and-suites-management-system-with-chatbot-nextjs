@@ -40,21 +40,6 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
               </ModalHeader>
               <ModalBody>
                 <div className="flex flex-col gap-6 w-full">
-                  {room.images && room.images.length > 0 && (
-                    <Carousel className="w-full rounded-2xl overflow-hidden">
-                      {room.images.map((img, idx) => (
-                        <CarouselItem key={idx}>
-                          <Image
-                            src={img}
-                            alt={`Room image ${idx + 1}`}
-                            width="100%"
-                            className="object-cover w-full h-[300px] md:h-[400px]"
-                          />
-                        </CarouselItem>
-                      ))}
-                    </Carousel>
-                  )}
-
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
                       <h1 className="text-2xl font-bold">

@@ -8,7 +8,6 @@ import {
   DropdownTrigger,
   DropdownItem,
 } from "@heroui/react";
-import { statusColorMap } from "./constants";
 import {
   Edit,
   EllipsisVertical,
@@ -23,7 +22,7 @@ import UpdateModal from "../modals/edit-modal";
 import DeleteModal from "../modals/delete-modal";
 import { formatPHP } from "@/lib/format-php";
 import { BanquetPackage } from "@/types/banquet-package";
-import { menuCategory } from "@/app/constants/banquet-package";
+import { menuCategory, statusColorMap } from "@/app/constants/banquet-package";
 
 interface RenderCellProps {
   items: BanquetPackage[];

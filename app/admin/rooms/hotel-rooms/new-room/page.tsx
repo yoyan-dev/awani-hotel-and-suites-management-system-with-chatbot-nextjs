@@ -24,9 +24,9 @@ export default function Page() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    images.forEach((img) => {
-      formData.append("images", img.file);
-    });
+    // images.forEach((img) => {
+    //   formData.append("images", img.file);
+    // });
     addRoom(formData);
   }
 

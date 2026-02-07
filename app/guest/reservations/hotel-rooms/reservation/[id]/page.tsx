@@ -55,7 +55,7 @@ export default function Page() {
           price: item.price,
           max_quantity: item.max_quantity,
           quantity: 0,
-        }))
+        })),
       );
     } else {
       setSpecialRequests([]);
@@ -78,19 +78,19 @@ export default function Page() {
         payment_method: "",
         amount_paid: 0,
       } as Booking,
-      specialRequests
+      specialRequests,
     );
   }, [specialRequests, room, query]);
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>,
-    payload: any
+    payload: any,
   ) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
     const filtereSpecialRequest = specialRequests.filter(
-      (req) => req.quantity > 0
+      (req) => req.quantity > 0,
     );
 
     const check_in_date = formData.get("check_in") || "";
@@ -109,7 +109,7 @@ export default function Page() {
     formData.append("total_add_ons", payload?.totalAddOnsPrice);
     formData.append(
       "special_requests",
-      JSON.stringify(filtereSpecialRequest || [])
+      JSON.stringify(filtereSpecialRequest || []),
     );
     console.log(formData);
     await addBooking(formData);
@@ -125,7 +125,7 @@ export default function Page() {
   }
 
   return (
-    <div>
+    <div className="pb-16 min-h-screen">
       <Card className="border-none shadow-none">
         <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
           Hotel Reservation

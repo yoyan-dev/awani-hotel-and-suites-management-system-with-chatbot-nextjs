@@ -28,7 +28,6 @@ export default function AddBookingPage() {
     available_rooms,
     isLoading: roomLoading,
     fetchAvailableRooms,
-    updateRoom,
   } = useRooms();
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
   const [selectedGuest, setSelectedGuest] = React.useState<string>();
@@ -132,11 +131,6 @@ export default function AddBookingPage() {
       console.log(formData);
       formData.append("special_requests", JSON.stringify(specialRequests));
       await addBooking(formData);
-      const roomId = formData.get("room_id");
-      await updateRoom({
-        id: roomId?.toString(),
-        status: "booked",
-      });
     } catch (e: any) {
       addToast({
         title: "Error!",

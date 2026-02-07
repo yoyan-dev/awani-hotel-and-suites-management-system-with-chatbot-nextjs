@@ -1,12 +1,8 @@
 "use client";
-import { useStaff } from "@/hooks/use-staff";
 import Header from "./_components/header";
 import UserTable from "./_components/table/user-table";
 import React from "react";
-import {
-  columns,
-  INITIAL_VISIBLE_COLUMNS,
-} from "./_components/table/constants";
+import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/staff";
 import { useUsers } from "@/hooks/use-users";
 
 export default function Accounts() {

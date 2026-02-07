@@ -9,7 +9,7 @@ import {
   Spinner,
   Selection,
 } from "@heroui/react";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "./constants";
+import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/staff";
 import RenderCell from "./render-cell";
 import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";

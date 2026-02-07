@@ -8,7 +8,7 @@ import {
   DropdownItem,
 } from "@heroui/react";
 import { Search, ChevronDown } from "lucide-react";
-import { columns, rolesOptions } from "./constants";
+import { columns, rolesOptions } from "@/app/constants/staff";
 import { capitalize } from "@/app/utils/capitalize";
 import AddModal from "../modals/add-modal";
 

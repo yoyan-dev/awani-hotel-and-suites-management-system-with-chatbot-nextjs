@@ -37,14 +37,6 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
   }
 
   switch (columnKey) {
-    case "images":
-      return (
-        <Image
-          alt="HeroUI hero Image"
-          src={room.images?.[0] || "/bg.jpg"}
-          width={100}
-        />
-      );
     case "room_type":
       return <Chip>{room.room_type?.name}</Chip>;
     case "status":

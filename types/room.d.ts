@@ -3,13 +3,13 @@ import { Booking } from "./booking";
 
 export type RoomStatus =
   | "vacant"
+  | "vacant_dirty"
   | "cleaning"
   | "reserved"
   | "occupied"
   | "dirty"
   | "maintenance"
   | "out_of_service"
-  | "booked"
   | undefined;
 
 export interface RoomType {
@@ -22,6 +22,7 @@ export interface RoomType {
   max_guest?: number;
   price?: number;
   peak_season_price?: number;
+  rooms?: Room[];
 }
 
 export interface RoomTypeState {
@@ -48,7 +49,6 @@ export interface Room {
   area?: string;
   description?: string;
   status?: RoomStatus;
-  images?: string[];
   remarks?: string;
   bookings?: Booking[];
   availability?: string;

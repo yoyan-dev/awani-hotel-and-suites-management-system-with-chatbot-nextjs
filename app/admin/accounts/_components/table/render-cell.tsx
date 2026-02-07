@@ -8,7 +8,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
-import { statusColorMap } from "./constants";
+import { statusColorMap } from "@/app/constants/staff";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import DeleteModal from "../modals/delete-modal";
 import EditModal from "../modals/edit-modal";

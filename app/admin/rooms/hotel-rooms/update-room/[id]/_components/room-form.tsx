@@ -14,30 +14,20 @@ import ImagesUpload from "./image-upload";
 import { Copyright, Save } from "lucide-react";
 
 interface RoomFormProps {
+  room: Room;
   formData: Room;
   setFormData: React.Dispatch<React.SetStateAction<Room>>;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  beds: string[];
-  setBeds: React.Dispatch<React.SetStateAction<string[]>>;
-  facilities: string[];
-  setFacilities: React.Dispatch<React.SetStateAction<string[]>>;
-  images: any[];
-  setImages: React.Dispatch<React.SetStateAction<any[]>>;
   roomTypes: RoomType[];
   typesLoading: boolean;
   roomLoading: boolean;
 }
 
 export default function RoomForm({
+  room,
   formData,
   setFormData,
   onSubmit,
-  beds,
-  setBeds,
-  facilities,
-  setFacilities,
-  images,
-  setImages,
   roomTypes,
   typesLoading,
   roomLoading,
@@ -104,7 +94,7 @@ export default function RoomForm({
             className="flex-1 w-full min-w-40"
             name="room_type"
             label="Room type"
-            defaultSelectedKeys={[formData.room_type_id || ""]}
+            defaultSelectedKeys={[room?.room_type_id || ""]}
             onChange={(e) =>
               setFormData({ ...formData, room_type_id: e.target.value })
             }
@@ -152,11 +142,11 @@ export default function RoomForm({
           />
         </div>
 
-        <div className="flex-1 flex flex-col gap-4 ">
+        {/* <div className="flex-1 flex flex-col gap-4 ">
           <h1>Room photo</h1>
           <hr className="border border-gray-400" />
           <ImagesUpload images={images} setImages={setImages} />
-        </div>
+        </div> */}
       </div>
 
       <div className="gap-1 w-full bg-primary flex justify-center items-center text-white text-sm font-thin py-2">

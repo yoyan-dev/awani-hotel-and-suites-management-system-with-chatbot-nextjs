@@ -32,7 +32,7 @@ export default function HousekeepingLayout({
     fetchCurrentUser();
   }, []);
   return (
-    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+    <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 fixed">
       <div className="flex">
         <Sidebar />
 

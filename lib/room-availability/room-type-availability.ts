@@ -1,13 +1,22 @@
 import { isRoomAvailable } from "./room-availabilty";
+import { RoomType, Room } from "@/types/room";
 
 export function filterAvailableRoomTypes(
-  roomTypes: any[],
+  roomTypes: RoomType[],
   checkIn: string,
   checkOut: string,
-) {
-  return roomTypes.filter((roomType) =>
-    roomType.rooms?.some((room: any) =>
-      isRoomAvailable(room, checkIn, checkOut),
-    ),
-  );
+): RoomType[] {
+  return roomTypes
+    .map((roomType) => {
+      const availableRooms =
+        roomType.rooms?.filter((room: Room) =>
+          isRoomAvailable(room, checkIn, checkOut),
+        ) || [];
+
+      return {
+        ...roomType,
+        rooms: availableRooms,
+      };
+    })
+    .filter((roomType) => roomType.rooms.length > 0);
 }

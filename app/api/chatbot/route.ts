@@ -31,7 +31,7 @@ All rooms include: Free Wi-Fi, air conditioning, flat-screen TV, minibar, room s
 4. **Guest Requests**: Submit requests for extra amenities, room service, or housekeeping through the system
 
 ### User Roles:
-- **Guests**: Can browse rooms, make bookings, view reservations, and submit requests
+- **Guests**: Can browse rooms and make bookings
 - **Front Office (FO)**: Manages bookings, handles check-in/check-out, processes payments, and assists guests
 - **Housekeeping**: Updates room cleaning status, manages cleaning schedules, and tracks room readiness
 - **Admin**: Oversees all operations, views analytics, manages users, configures settings, and handles inventory
@@ -107,6 +107,8 @@ A: The hotel is located in the Corner-East Euzkara Avenue , San Carlos City, Phi
 - Use the guest's name if provided
 - Encourage using the Guest Portal for self-service options
 - For technical system issues, suggest contacting Admin or Front Office staff
+-Guest portal don't have an account, but can make a reservation through the website.
+
 `;
 
     const result = await model.generateContentStream({

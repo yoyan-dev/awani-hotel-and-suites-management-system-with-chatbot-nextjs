@@ -40,22 +40,6 @@ export default function RoomDetails() {
             </p>
             <p className="text-gray-400">{room.description}</p>
           </div>
-
-          {/* Room Photos */}
-          <div>
-            <h2 className="font-semibold mb-2">Photos</h2>
-            <div className="flex flex-wrap gap-2">
-              {room.images?.map((url: string, i: number) => (
-                <Image
-                  key={i}
-                  src={url}
-                  alt={`Room photo ${i}`}
-                  width={180}
-                  radius="sm"
-                />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>

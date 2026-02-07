@@ -9,6 +9,7 @@ import {
   Input,
 } from "@heroui/react";
 import React, { useState } from "react";
+import { saveAs } from "file-saver";
 
 interface PolicyModalProps {
   onConfirm: (signature: string) => void;
@@ -22,6 +23,18 @@ export default function PolicyModal({ onConfirm }: PolicyModalProps) {
   const handleConfirm = () => {
     onConfirm(signature);
     setIsOpen(false);
+  };
+
+  const downloadPolicy = async () => {
+    try {
+      const response = await fetch("/policy/cancellation-policy.pdf");
+      const blob = await response.blob();
+
+      saveAs(blob, "Booking-Cancellation-Policy.pdf");
+    } catch (err) {
+      console.error(err);
+      alert("Download failed");
+    }
   };
 
   return (
@@ -43,12 +56,7 @@ export default function PolicyModal({ onConfirm }: PolicyModalProps) {
               Please read our declaration carefully and download our Booking
               Cancellation Policy.
             </p>
-            <Button
-              as="a"
-              href="policy/cancellation-policy.pdf"
-              color="secondary"
-              download
-            >
+            <Button onPress={downloadPolicy} color="secondary">
               Download Booking Cancellation Policy
             </Button>
             <Checkbox isSelected={agreed} onValueChange={setAgreed}>
