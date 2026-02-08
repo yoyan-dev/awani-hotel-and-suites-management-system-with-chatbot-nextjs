@@ -146,15 +146,15 @@ export default function Page() {
             setSpecialRequests={setSpecialRequests}
             bookingIsLoading={bookingIsLoading}
           />
-          {room ? (
+          {room && guestId ? (
             <SelectedRoom room={room} isLoading={isLoading} />
-          ) : (
+          ) : guestId ? (
             <AvailableRooms
               rooms={availabel_room_types}
               isLoading={isLoading}
               setSelectedRoom={setSelectedRoom}
             />
-          )}
+          ) : null}
         </CardBody>
       </Card>
     </div>
