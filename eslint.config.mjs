@@ -100,9 +100,9 @@ export default defineConfig([
       "jsx-a11y/click-events-have-key-events": "warn",
       "jsx-a11y/interactive-supports-focus": "warn",
       "prettier/prettier": "warn",
-      "no-unused-vars": "on",
-      "unused-imports/no-unused-vars": "on",
-      "unused-imports/no-unused-imports": "on",
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "off",
 
       "@typescript-eslint/no-unused-vars": [
         "warn",

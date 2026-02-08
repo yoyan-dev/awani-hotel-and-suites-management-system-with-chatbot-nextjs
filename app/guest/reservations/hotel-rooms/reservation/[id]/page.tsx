@@ -6,7 +6,7 @@ import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
@@ -146,15 +146,15 @@ export default function Page() {
             setSpecialRequests={setSpecialRequests}
             bookingIsLoading={bookingIsLoading}
           />
-          {room ? (
+          {room && guestId ? (
             <SelectedRoom room={room} isLoading={isLoading} />
-          ) : (
+          ) : guestId ? (
             <AvailableRooms
               rooms={availabel_room_types}
               isLoading={isLoading}
               setSelectedRoom={setSelectedRoom}
             />
-          )}
+          ) : null}
         </CardBody>
       </Card>
     </div>

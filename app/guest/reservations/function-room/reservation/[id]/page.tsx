@@ -6,7 +6,7 @@ import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";

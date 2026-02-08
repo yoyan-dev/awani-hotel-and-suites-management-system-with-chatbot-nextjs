@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/supabase-client";
+import { supabase } from "@/lib/supabase-client";
 
 export async function GenerateBookingNumber(payload: string) {
   let bookingNumber = 1;

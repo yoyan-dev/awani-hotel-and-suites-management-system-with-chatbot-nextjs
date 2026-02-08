@@ -1,3 +1,5 @@
+"use client";
+
 import { handleFileChange } from "@/app/utils/image-file-handler";
 import { useGuests } from "@/hooks/use-guests";
 import { Input, Textarea } from "@heroui/input";
@@ -21,7 +23,9 @@ import {
   User,
   Home,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+import FrontIDUpload from "../../../../_componets/valid-id/front-id-upload";
+import BackIDUpload from "../../../../_componets/valid-id/back-id-upload";
 
 export default function GuestForm({
   guestId,
@@ -30,9 +34,9 @@ export default function GuestForm({
   guestId: string | null;
   setGuestId: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
-  const { guest, isLoading, fetchGuest, addGuest, updateGuest } = useGuests();
-  const [previewFront, setPreviewFront] = React.useState<string | null>(null);
-  const [previewBack, setPreviewBack] = React.useState<string | null>(null);
+  const { isLoading, addGuest } = useGuests();
+  const [isBackId, setIsBackId] = useState<boolean>(false);
+  const [isFrontId, setIsFrontId] = useState<boolean | null>(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,8 +55,9 @@ export default function GuestForm({
       <CardHeader className="text-xl font-semibold">
         📝 Guest Information
       </CardHeader>
-      <CardBody className=" dark:bg-gray-900">
+      <CardBody className="dark:bg-gray-900">
         <Form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Personal Info */}
           <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
             Personal Information
           </h3>
@@ -72,7 +77,6 @@ export default function GuestForm({
               variant="bordered"
               className="flex-1"
             />
-
             <Input
               fullWidth
               isRequired
@@ -89,6 +93,7 @@ export default function GuestForm({
               className="flex-1"
             />
           </div>
+
           <Textarea
             isRequired
             color="primary"
@@ -102,6 +107,7 @@ export default function GuestForm({
             placeholder="Enter your current home address"
             variant="bordered"
           />
+
           <div className="flex flex-col gap-4 md:flex-row justify-between w-full">
             <Input
               fullWidth
@@ -140,6 +146,7 @@ export default function GuestForm({
             </Select>
           </div>
 
+          {/* Upload ID */}
           <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
             Upload your valid ID
           </h3>
@@ -149,71 +156,11 @@ export default function GuestForm({
             consent.
           </p>
 
-          {/*Front */}
-          <div className="w-full">
-            <span>Front</span>
-            <label
-              htmlFor="image-upload-front"
-              className="p-2 w-full min-h-40 sm:h-32 rounded-md border-2 border-dashed border-gray-300 flex justify-center items-center bg-gray-50 cursor-pointer hover:border-primary transition"
-            >
-              {previewFront ? (
-                <Image
-                  src={previewFront}
-                  radius="none"
-                  className="h-40 sm:h-32 object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center">
-                  <CloudDownloadIcon size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-500">
-                    Click or drag to upload photo
-                  </span>
-                </div>
-              )}
-            </label>
+          {/* Front ID upload */}
+          <FrontIDUpload setIsFrontId={setIsFrontId} />
 
-            <input
-              id="image-upload-front"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              name="front"
-              onChange={(e) => setPreviewFront(handleFileChange(e))}
-            />
-          </div>
-
-          {/*Back */}
-          <div className="w-full">
-            <span>Back</span>
-            <label
-              htmlFor="image-upload-back"
-              className="p-2 w-full min-h-40 sm:h-32 rounded-md border-2 border-dashed border-gray-300 flex justify-center items-center bg-gray-50 cursor-pointer hover:border-primary transition"
-            >
-              {previewBack ? (
-                <Image
-                  src={previewBack}
-                  radius="none"
-                  className="h-40 sm:h-32 object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center">
-                  <CloudDownloadIcon size={28} className="text-gray-400" />
-                  <span className="text-xs text-gray-500">
-                    Click or drag to upload photo
-                  </span>
-                </div>
-              )}
-            </label>
-
-            <input
-              id="image-upload-back"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              name="back"
-              onChange={(e) => setPreviewBack(handleFileChange(e))}
-            />
-          </div>
+          {/* Back ID upload */}
+          <BackIDUpload setIsBackId={setIsBackId} />
 
           <Input
             isRequired
@@ -229,8 +176,10 @@ export default function GuestForm({
             placeholder="Enter your email"
             variant="bordered"
           />
+
           {guestId}
           <Button
+            isDisabled={!isBackId || !isFrontId}
             type="submit"
             color="primary"
             radius="sm"

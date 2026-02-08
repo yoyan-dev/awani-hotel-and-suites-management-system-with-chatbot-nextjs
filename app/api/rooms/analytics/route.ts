@@ -16,7 +16,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -28,7 +28,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
       }
       return acc;
     },
-    {} as Record<string, number>
+    {} as Record<string, number>,
   );
 
   const status = Object.entries(statusCounts).map(([name, count]) => ({
@@ -46,6 +46,6 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
       },
       data: status || [],
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

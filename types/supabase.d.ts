@@ -257,6 +257,7 @@ export type Database = {
       function_hall_bookings: {
         Row: {
           amount_paid: number | null;
+          balance: number | null;
           banquet_package_id: string | null;
           booking_number: string | null;
           booking_source: string | null;
@@ -268,6 +269,7 @@ export type Database = {
           id: string;
           notes: string | null;
           number_of_guest: number | null;
+          occupancy_type: string | null;
           payment_method: string | null;
           payment_status: string | null;
           room_id: string | null;
@@ -276,6 +278,7 @@ export type Database = {
         };
         Insert: {
           amount_paid?: number | null;
+          balance?: number | null;
           banquet_package_id?: string | null;
           booking_number?: string | null;
           booking_source?: string | null;
@@ -287,6 +290,7 @@ export type Database = {
           id?: string;
           notes?: string | null;
           number_of_guest?: number | null;
+          occupancy_type?: string | null;
           payment_method?: string | null;
           payment_status?: string | null;
           room_id?: string | null;
@@ -295,6 +299,7 @@ export type Database = {
         };
         Update: {
           amount_paid?: number | null;
+          balance?: number | null;
           banquet_package_id?: string | null;
           booking_number?: string | null;
           booking_source?: string | null;
@@ -306,6 +311,7 @@ export type Database = {
           id?: string;
           notes?: string | null;
           number_of_guest?: number | null;
+          occupancy_type?: string | null;
           payment_method?: string | null;
           payment_status?: string | null;
           room_id?: string | null;
@@ -338,9 +344,9 @@ export type Database = {
       };
       "function-rooms": {
         Row: {
-          bookings: Json[] | null;
           created_at: string;
           description: string | null;
+          function_hall_bookings: Json[] | null;
           id: string;
           image: string | null;
           max_guest: number | null;
@@ -351,9 +357,9 @@ export type Database = {
           type: string | null;
         };
         Insert: {
-          bookings?: Json[] | null;
           created_at?: string;
           description?: string | null;
+          function_hall_bookings?: Json[] | null;
           id?: string;
           image?: string | null;
           max_guest?: number | null;
@@ -364,9 +370,9 @@ export type Database = {
           type?: string | null;
         };
         Update: {
-          bookings?: Json[] | null;
           created_at?: string;
           description?: string | null;
+          function_hall_bookings?: Json[] | null;
           id?: string;
           image?: string | null;
           max_guest?: number | null;
@@ -417,7 +423,7 @@ export type Database = {
         };
         Relationships: [];
       };
-      guest_request: {
+      guest_requests: {
         Row: {
           created_at: string;
           fullname: string | null;
@@ -552,13 +558,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      "room-reports": {
+        Row: {
+          created_at: string;
+          damage_type: string | null;
+          estimated_cost: number | null;
+          guest_name: string | null;
+          id: string;
+          item_category: string | null;
+          item_name: string | null;
+          notes: string | null;
+          quantity: number | null;
+          report_date: string | null;
+          report_type: string | null;
+          reported_by: string | null;
+          resolved_date: string | null;
+          room_number: string | null;
+          status: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          damage_type?: string | null;
+          estimated_cost?: number | null;
+          guest_name?: string | null;
+          id?: string;
+          item_category?: string | null;
+          item_name?: string | null;
+          notes?: string | null;
+          quantity?: number | null;
+          report_date?: string | null;
+          report_type?: string | null;
+          reported_by?: string | null;
+          resolved_date?: string | null;
+          room_number?: string | null;
+          status?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          damage_type?: string | null;
+          estimated_cost?: number | null;
+          guest_name?: string | null;
+          id?: string;
+          item_category?: string | null;
+          item_name?: string | null;
+          notes?: string | null;
+          quantity?: number | null;
+          report_date?: string | null;
+          report_type?: string | null;
+          reported_by?: string | null;
+          resolved_date?: string | null;
+          room_number?: string | null;
+          status?: string | null;
+        };
+        Relationships: [];
+      };
       rooms: {
         Row: {
           area: string | null;
           bookings: Json[] | null;
           description: string | null;
           id: string;
-          images: string[] | null;
           remarks: string | null;
           room_id: string;
           room_number: number;
@@ -570,7 +629,6 @@ export type Database = {
           bookings?: Json[] | null;
           description?: string | null;
           id?: string;
-          images?: string[] | null;
           remarks?: string | null;
           room_id: string;
           room_number: number;
@@ -582,7 +640,6 @@ export type Database = {
           bookings?: Json[] | null;
           description?: string | null;
           id?: string;
-          images?: string[] | null;
           remarks?: string | null;
           room_id?: string;
           room_number?: number;

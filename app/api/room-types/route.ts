@@ -4,8 +4,6 @@ import { ApiResponse } from "@/types/response";
 import { RoomType } from "@/types/room";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 
-let roomTypes: RoomType[];
-
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
@@ -22,7 +20,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   if (max_guest) {
     q = q.eq("max_guest", Number(max_guest));
   }
-  const { data: item, error } = await q;
+  const { data: roomTypes, error } = await q;
 
   if (error) {
     console.error("Error fetching room types:", error.message);
@@ -35,12 +33,11 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
-  console.log("Room types data:", item);
-  roomTypes = item || [];
+  console.log("Room types data:", roomTypes);
   return NextResponse.json(
     {
       success: true,
@@ -49,9 +46,9 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: roomTypes,
+      data: roomTypes || [],
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -89,7 +86,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "danger",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -101,7 +98,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -115,7 +112,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data: data[0],
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -128,7 +125,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

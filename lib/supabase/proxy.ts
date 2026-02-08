@@ -1,36 +1,28 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-
-  const supabase = createServerClient(
+export function createEdgeSupabaseClient(req: NextRequest) {
+  return createServerClient(
     process.env.SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!, // use SERVICE_ROLE for server auth
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll();
+        // Read cookies from the incoming request
+        getAll: () => {
+          return req.cookies.getAll().map(({ name, value }) => ({
+            name,
+            value,
+            options: undefined,
+          }));
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+
+        // Write cookies to the response
+        setAll: (cookiesToSet) => {
+          // Do nothing here in middleware;
+          // cookies are automatically handled via NextResponse
+          // Or implement if using custom response logic
         },
       },
     },
   );
-
-  // refreshing the auth token
-  await supabase.auth.getUser();
-
-  return supabaseResponse;
 }
