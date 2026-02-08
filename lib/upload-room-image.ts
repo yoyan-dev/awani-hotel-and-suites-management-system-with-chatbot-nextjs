@@ -1,3 +1,4 @@
+"use client";
 import { supabase } from "@/lib/supabase-client";
 
 function randomString(length = 12) {

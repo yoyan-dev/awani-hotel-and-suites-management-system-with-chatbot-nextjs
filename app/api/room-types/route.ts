@@ -4,8 +4,6 @@ import { ApiResponse } from "@/types/response";
 import { RoomType } from "@/types/room";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 
-let roomTypes: RoomType[];
-
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 

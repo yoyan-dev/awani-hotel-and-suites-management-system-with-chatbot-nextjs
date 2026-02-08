@@ -10,7 +10,7 @@ export default function RoomTypes() {
   const [filterValue, setFilterValue] = React.useState("");
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(INITIAL_VISIBLE_COLUMNS)
+    new Set(INITIAL_VISIBLE_COLUMNS),
   );
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -21,7 +21,7 @@ export default function RoomTypes() {
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -30,7 +30,7 @@ export default function RoomTypes() {
 
     if (hasSearchFilter) {
       filteredRoomTypes = filteredRoomTypes.filter((item) =>
-        item.name?.toLowerCase().includes(filterValue.toLowerCase())
+        item.name?.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
 
@@ -49,7 +49,7 @@ export default function RoomTypes() {
 
   React.useEffect(() => {
     fetchRoomTypes({});
-  }, [error]);
+  }, []);
   return (
     <>
       <div className="p-2 bg-white dark:bg-gray-900 rounded space-y-2">

@@ -20,7 +20,7 @@ export default function ViewAddOns({ addOns }: AddOnsProps) {
           View Add ons
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[240px]">
+      <PopoverContent className="w-60">
         {(titleProps) => (
           <div className="px-1 py-2 w-full">
             <p className="text-small font-bold text-foreground" {...titleProps}>
