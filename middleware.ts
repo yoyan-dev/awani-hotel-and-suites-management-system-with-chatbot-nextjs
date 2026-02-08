@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createEdgeSupabaseClient } from "./lib/supabase/proxy";
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
 
   const supabase = createEdgeSupabaseClient(req);
@@ -49,12 +49,12 @@ export async function proxy(req: NextRequest) {
   return res;
 }
 
-// export const config = {
-//   matcher: [
-//     "/",
-//     "/auth/:path*",
-//     "/admin/:path*",
-//     "/housekeeping/:path*",
-//     "/guest/:path*",
-//   ],
-// };
+export const config = {
+  matcher: [
+    "/",
+    "/auth/:path*",
+    "/admin/:path*",
+    "/housekeeping/:path*",
+    "/guest/:path*",
+  ],
+};
