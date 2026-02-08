@@ -7,7 +7,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 //Get [id]
 export async function GET(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
@@ -28,7 +28,7 @@ export async function GET(
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -42,14 +42,14 @@ export async function GET(
       },
       data: user,
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
 // UPDATE
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
   const body = await req.json();
@@ -73,7 +73,7 @@ export async function PUT(
         },
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -87,7 +87,7 @@ export async function PUT(
           color: "error",
         },
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -105,7 +105,7 @@ export async function PUT(
 // DELETE
 export async function DELETE(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const { id } = await context.params;
@@ -124,7 +124,7 @@ export async function DELETE(
             color: "error",
           },
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -138,7 +138,7 @@ export async function DELETE(
         },
         data: data,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -151,7 +151,7 @@ export async function DELETE(
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

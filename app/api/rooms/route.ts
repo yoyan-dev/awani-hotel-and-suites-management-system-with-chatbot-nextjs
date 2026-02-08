@@ -104,21 +104,20 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
     // const beds = JSON.parse(formObj.beds as string);
     // const facilities = JSON.parse(formObj.facilities as string);
-    const images = formData.getAll("images") as File[];
+    // const images = formData.getAll("images") as File[];
 
-    const imageUrls = await Promise.all(
-      images.map(async (file) => {
-        if (!file || file.size === 0) throw new Error("File missing or empty");
+    // const imageUrls = await Promise.all(
+    //   images.map(async (file) => {
+    //     if (!file || file.size === 0) throw new Error("File missing or empty");
 
-        const imageUrl = await uploadRoomImage(file, Number(roomNumber));
-        return imageUrl;
-      }),
-    );
+    //     const imageUrl = await uploadRoomImage(file, Number(roomNumber));
+    //     return imageUrl;
+    //   }),
+    // );
 
     const newRoom = {
       ...formObj,
       room_id: `RM-${roomNumber}`,
-      images: imageUrls,
     };
 
     const { data, error } = await supabase

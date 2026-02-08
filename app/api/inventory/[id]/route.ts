@@ -5,7 +5,7 @@ import { ApiResponse } from "@/types/response";
 // UPDATE
 export async function PUT(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
   const body = await req.json();
@@ -29,7 +29,7 @@ export async function PUT(
         },
         error: error.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -43,7 +43,7 @@ export async function PUT(
           color: "error",
         },
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -61,7 +61,7 @@ export async function PUT(
 // DELETE
 export async function DELETE(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
@@ -78,7 +78,7 @@ export async function DELETE(
           color: "error",
         },
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -91,6 +91,6 @@ export async function DELETE(
         color: "success",
       },
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

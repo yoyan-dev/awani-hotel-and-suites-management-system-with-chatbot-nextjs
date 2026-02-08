@@ -37,7 +37,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -58,7 +58,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         total_pages: Math.ceil((count ?? 0) / limit),
       },
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
 
@@ -87,7 +87,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
               color: "danger",
             },
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
       return NextResponse.json(
@@ -99,7 +99,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             color: "danger",
           },
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -113,7 +113,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         data: data[0],
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -126,13 +126,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
-  request: Request
+  request: Request,
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
@@ -153,7 +153,7 @@ export async function DELETE(
             color: "warning",
           },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -170,7 +170,7 @@ export async function DELETE(
           },
           error: error.message,
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -197,7 +197,7 @@ export async function DELETE(
         },
         error: err.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

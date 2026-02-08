@@ -20,6 +20,7 @@ import {
   ChefHatIcon,
   Calendar,
   Utensils,
+  BookOpen,
 } from "lucide-react";
 import { Children } from "react";
 
@@ -148,6 +149,11 @@ export const siteConfig = {
       label: "Room Status",
       href: "/housekeeping/rooms",
       icon: Bed,
+    },
+    {
+      label: "Room Reports",
+      href: "/housekeeping/reportings",
+      icon: BookOpen,
     },
     {
       label: "Guest Movement",

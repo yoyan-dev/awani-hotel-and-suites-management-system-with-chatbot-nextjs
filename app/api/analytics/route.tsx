@@ -19,7 +19,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
           color: "danger",
         },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -34,6 +34,6 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
       },
       data: data || [],
     },
-    { status: 201 }
+    { status: 201 },
   );
 }
