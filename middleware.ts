@@ -23,27 +23,27 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/guest", req.url));
 
   // Not authenticated
-  if (!user && !isPublicPath)
-    return NextResponse.redirect(new URL("/auth", req.url));
+  // if (!user && !isPublicPath)
+  //   return NextResponse.redirect(new URL("/auth", req.url));
 
-  // Block auth pages if logged in
-  if (pathname.startsWith("/auth") && user) {
-    if (roles.includes("admin"))
-      return NextResponse.redirect(new URL("/admin", req.url));
-    if (roles.includes("housekeeping"))
-      return NextResponse.redirect(new URL("/housekeeping", req.url));
-    return NextResponse.redirect(new URL("/guest", req.url));
-  }
+  // // Block auth pages if logged in
+  // if (pathname.startsWith("/auth") && user) {
+  //   if (roles.includes("admin"))
+  //     return NextResponse.redirect(new URL("/admin", req.url));
+  //   if (roles.includes("housekeeping"))
+  //     return NextResponse.redirect(new URL("/housekeeping", req.url));
+  //   return NextResponse.redirect(new URL("/guest", req.url));
+  // }
 
-  // Admin guard
-  if (pathname.startsWith("/admin") && !roles.includes("admin")) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // // Admin guard
+  // if (pathname.startsWith("/admin") && !roles.includes("admin")) {
+  //   return NextResponse.redirect(new URL("/auth", req.url));
+  // }
 
-  // Housekeeping guard
-  if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
-    return NextResponse.redirect(new URL("/auth", req.url));
-  }
+  // // Housekeeping guard
+  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
+  //   return NextResponse.redirect(new URL("/auth", req.url));
+  // }
 
   return res;
 }
