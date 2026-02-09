@@ -177,12 +177,12 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-gray-600">
                     <div>
-                      <p className="text-xs text-gray-400">Check-in</p>
+                      <p className="text-xs text-gray-400">checked_in</p>
                       {editBookingDetails ? (
                         <Input
                           type="date"
                           value={formData.checked_in}
-                          isDisabled={booking.status === "check-in"}
+                          isDisabled={booking.status === "checked_in"}
                           onChange={(e) =>
                             setFormData({
                               ...booking,
@@ -231,7 +231,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                         <Input
                           type="number"
                           value={formData.number_of_guests?.toString()}
-                          isDisabled={booking.status === "check-in"}
+                          isDisabled={booking.status === "checked_in"}
                           onChange={(e) =>
                             setFormData({
                               ...booking,

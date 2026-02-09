@@ -124,7 +124,7 @@ export default function BookingDetailsSection({
           radius="none"
           isRequired
           type="date"
-          label="Check-in Date"
+          label="checked_in Date"
           name="checked_in"
           value={checkInDate || formData.checked_in}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

@@ -22,7 +22,7 @@ import {
 import { canBookingAction } from "@/utils/booking/can-booking-action";
 
 import CheckOutButton from "./mark-check-out";
-import CheckInButton from "./mark-check-in";
+import CheckInButton from "./mark-checked_in";
 import MarkCancelled from "./mark-cancelled";
 import ExtendModal from "../modals/extend-modal";
 import ViewSummary from "../modals/payment/view-summary-modal";
