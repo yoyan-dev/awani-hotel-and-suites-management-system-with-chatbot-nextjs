@@ -19,8 +19,8 @@ type BookingStatus =
 
 interface RoomGuest {
   guest_name: string;
-  check_in: string;
-  check_out: string;
+  checked_in: string;
+  checked_out: string;
   status: BookingStatus;
 }
 
@@ -58,11 +58,11 @@ interface TodayCheckOut {
 
 interface TodayOperations {
   date: string;
-  check_ins: {
+  checked_ins: {
     total: number;
     rooms: TodayCheckIn[];
   };
-  check_outs: {
+  checked_outs: {
     total: number;
     rooms: TodayCheckOut[];
   };
@@ -92,7 +92,7 @@ interface HousekeepingSummary {
   by_status: SummaryByStatus;
   by_cleaning_status: SummaryByCleaning;
   pending_cleaning: number;
-  ready_for_check_in: number;
+  ready_for_checked_in: number;
   requires_attention: number;
 }
 

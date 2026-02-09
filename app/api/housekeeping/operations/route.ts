@@ -52,10 +52,10 @@ export async function GET(
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
       .select(
-        "id, room_id, guest_id, check_in, check_out, status, guest:guest(full_name)",
+        "id, room_id, guest_id, checked_in, checked_out, status, guest:guest(full_name)",
       )
-      .gte("check_in", dayStart.toISOString())
-      .lte("check_in", dayEnd.toISOString());
+      .gte("checked_in", dayStart.toISOString())
+      .lte("checked_in", dayEnd.toISOString());
 
     if (bookingsError) {
       console.error("Supabase error:", bookingsError);
@@ -65,10 +65,10 @@ export async function GET(
     const { data: checkoutBookings, error: checkoutError } = await supabase
       .from("bookings")
       .select(
-        "id, room_id, guest_id, check_in, check_out, status, guest:guest(full_name)",
+        "id, room_id, guest_id, checked_in, checked_out, status, guest:guest(full_name)",
       )
-      .gte("check_out", dayStart.toISOString())
-      .lte("check_out", dayEnd.toISOString());
+      .gte("checked_out", dayStart.toISOString())
+      .lte("checked_out", dayEnd.toISOString());
 
     if (checkoutError) {
       console.error("Supabase error:", checkoutError);
@@ -77,9 +77,9 @@ export async function GET(
 
     const { data: stayoverBookings, error: stayoverError } = await supabase
       .from("bookings")
-      .select("id, room_id, guest_id, check_in, check_out, status")
-      .lte("check_in", dayStart.toISOString())
-      .gte("check_out", dayEnd.toISOString());
+      .select("id, room_id, guest_id, checked_in, checked_out, status")
+      .lte("checked_in", dayStart.toISOString())
+      .gte("checked_out", dayEnd.toISOString());
 
     if (stayoverError) {
       console.error("Supabase error:", stayoverError);
@@ -109,7 +109,7 @@ export async function GET(
       guest_name:
         (booking.guest as unknown as { full_name?: string })?.full_name ||
         "Guest",
-      expected_time: booking.check_in as string,
+      expected_time: booking.checked_in as string,
       status: booking.status as
         | "pending"
         | "confirmed"
@@ -138,11 +138,11 @@ export async function GET(
 
     const response: TodayOperations = {
       date: format(dayStart, "yyyy-MM-dd"),
-      check_ins: {
+      checked_ins: {
         total: checkIns.length,
         rooms: checkIns,
       },
-      check_outs: {
+      checked_outs: {
         total: checkOuts.length,
         rooms: checkOuts,
       },
@@ -163,8 +163,8 @@ export async function GET(
       err instanceof Error ? err.message : "Failed to fetch today's operations";
     const emptyResponse: TodayOperations = {
       date: format(startOfDay(new Date()), "yyyy-MM-dd"),
-      check_ins: { total: 0, rooms: [] },
-      check_outs: { total: 0, rooms: [] },
+      checked_ins: { total: 0, rooms: [] },
+      checked_outs: { total: 0, rooms: [] },
       stayovers: { total: 0, rooms: [] },
     };
     return generateResponse(

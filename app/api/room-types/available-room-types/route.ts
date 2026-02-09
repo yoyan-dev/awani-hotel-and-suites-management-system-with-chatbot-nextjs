@@ -58,8 +58,8 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { data: bookings, error: bookingsError } = await supabase
     .from("bookings")
     .select("*")
-    .lt("check_in", checkOut)
-    .gt("check_out", checkIn);
+    .lt("checked_in", checkOut)
+    .gt("checked_out", checkIn);
 
   if (bookingsError) {
     return NextResponse.json(

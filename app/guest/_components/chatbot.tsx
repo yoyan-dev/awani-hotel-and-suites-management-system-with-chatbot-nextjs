@@ -17,7 +17,7 @@ import { MessageCircle, Send, X, HelpCircle } from "lucide-react";
 const QUICK_QUESTIONS = [
   "What are your room types?",
   "How do I make a reservation?",
-  "What are the check-in times?",
+  "What are the checked_in times?",
   "Do you have function halls?",
   "What amenities are included?",
   "How can I contact Front Office?",

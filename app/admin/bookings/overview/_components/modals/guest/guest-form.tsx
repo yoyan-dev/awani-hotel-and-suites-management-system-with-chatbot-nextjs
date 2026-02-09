@@ -1,5 +1,7 @@
+import PhoneInput from "@/components/input/phone-input";
 import { addGuest } from "@/features/guest/guest-thunk";
 import { AppDispatch, RootState } from "@/store/store";
+import { isValidPhoneNumber } from "@/utils/mobile-number-validator";
 import { Input, Textarea } from "@heroui/input";
 import { Button, Card, CardBody, CardHeader } from "@heroui/react";
 import React from "react";
@@ -12,6 +14,7 @@ export default function GuestForm({
 }) {
   const dispatch = useDispatch<AppDispatch>();
   const { guest, isLoading } = useSelector((state: RootState) => state.guests);
+  const [phone, setPhone] = React.useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -45,19 +48,15 @@ export default function GuestForm({
               name="full_name"
               placeholder="Enter guest full name"
             />
-            <Input
-              isRequired
-              fullWidth
-              variant="bordered"
-              name="contact_number"
-              labelPlacement="outside"
-              radius="sm"
-              label="Contact Number"
+            <PhoneInput
+              value={phone}
+              onChange={setPhone}
               placeholder="Enter guest contact number"
             />
           </div>
 
           <Textarea
+            isRequired
             fullWidth
             variant="bordered"
             radius="sm"
@@ -69,6 +68,7 @@ export default function GuestForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
+              isRequired
               fullWidth
               variant="bordered"
               radius="sm"
@@ -78,6 +78,7 @@ export default function GuestForm({
               name="nationality"
             />
             <Input
+              isRequired
               fullWidth
               variant="bordered"
               radius="sm"

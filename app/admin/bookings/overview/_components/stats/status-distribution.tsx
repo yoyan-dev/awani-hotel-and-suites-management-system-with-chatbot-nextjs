@@ -27,9 +27,9 @@ export function StatusDistribution({
         return "warning";
       case "confirmed":
         return "primary";
-      case "check-in":
+      case "check_in":
         return "success";
-      case "check-out":
+      case "check_out":
         return "secondary";
       case "cancelled":
         return "danger";
@@ -41,8 +41,8 @@ export function StatusDistribution({
   const colorMap: Record<string, string> = {
     pending: "bg-warning-500",
     confirmed: "bg-primary-500",
-    "check-in": "bg-success-500",
-    "check-out": "bg-secondary-500",
+    check_in: "bg-success-500",
+    check_out: "bg-secondary-500",
     cancelled: "bg-danger-500",
   };
 

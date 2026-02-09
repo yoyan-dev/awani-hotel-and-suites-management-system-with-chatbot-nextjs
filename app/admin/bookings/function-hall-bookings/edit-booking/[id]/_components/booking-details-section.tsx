@@ -42,10 +42,10 @@ export default function BookingDetailsSection({
   roomLoading,
 }: Props) {
   const [checkInDate, setCheckInDate] = React.useState<string>(
-    formData.check_in
+    formData.checked_in,
   );
   const [checkOutDate, setCheckOutDate] = React.useState<string>(
-    formData.check_out
+    formData.checked_out,
   );
 
   const today = React.useMemo(() => formatDateISO(new Date()), []);
@@ -63,8 +63,8 @@ export default function BookingDetailsSection({
   React.useEffect(() => {
     setFormData({
       ...formData,
-      check_in: checkInDate,
-      check_out: checkOutDate,
+      checked_in: checkInDate,
+      checked_out: checkOutDate,
     });
     if (!checkInDate) {
       setCheckOutDate("");
@@ -125,8 +125,8 @@ export default function BookingDetailsSection({
           isRequired
           type="date"
           label="Check-in Date"
-          name="check_in"
-          value={checkInDate || formData.check_in}
+          name="checked_in"
+          value={checkInDate || formData.checked_in}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setCheckInDate(e.target.value)
           }
@@ -139,9 +139,9 @@ export default function BookingDetailsSection({
           radius="none"
           isRequired
           type="date"
-          label="Check-out Date"
-          name="check_out"
-          value={checkOutDate || formData.check_out}
+          label="checked_out Date"
+          name="checked_out"
+          value={checkOutDate || formData.checked_out}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setCheckOutDate(e.target.value)
           }
@@ -150,7 +150,7 @@ export default function BookingDetailsSection({
         />
       </div>
 
-      {formData.room_type_id && (checkInDate || formData.check_in) ? (
+      {formData.room_type_id && (checkInDate || formData.checked_in) ? (
         <div className="pt-4">
           <Select
             fullWidth
@@ -237,8 +237,8 @@ export default function BookingDetailsSection({
                                   ...req,
                                   quantity: req.quantity - 1,
                                 }
-                              : req
-                          )
+                              : req,
+                          ),
                         )
                       }
                     >
@@ -259,8 +259,8 @@ export default function BookingDetailsSection({
                                   ...req,
                                   quantity: req.quantity + 1,
                                 }
-                              : req
-                          )
+                              : req,
+                          ),
                         )
                       }
                     >

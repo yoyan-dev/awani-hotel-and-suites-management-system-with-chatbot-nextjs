@@ -1,11 +1,10 @@
 export type BookingStatus =
   | "pending"
-  | "proceding"
   | "reserved"
   | "confirmed"
   | "cancelled"
-  | "check-in"
-  | "check-out";
+  | "checked_in"
+  | "checked_out";
 
 export interface Booking {
   id: string;
@@ -13,8 +12,8 @@ export interface Booking {
   guest_id: string;
   room_id: string;
   room_type_id: string;
-  check_in: string;
-  check_out: string;
+  checked_in: string;
+  checked_out: string;
   company?: string;
   special_requests: any;
   places_last_visited?: string;
@@ -45,8 +44,8 @@ export interface FetchBookingParams {
   page?: number;
   query?: string;
   guest_id?: string;
-  check_in?: any;
-  check_out?: any;
+  checked_in?: any;
+  checked_out?: any;
   date_range?: { start: any; end: any };
   roomTypeID?: string;
   room_id?: string;

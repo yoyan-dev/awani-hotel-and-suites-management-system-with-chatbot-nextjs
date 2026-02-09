@@ -26,6 +26,8 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import FrontIDUpload from "../../../../_componets/valid-id/front-id-upload";
 import BackIDUpload from "../../../../_componets/valid-id/back-id-upload";
+import { isValidPhoneNumber } from "@/utils/mobile-number-validator";
+import PhoneInput from "@/components/input/phone-input";
 
 export default function GuestForm({
   guestId,
@@ -37,6 +39,7 @@ export default function GuestForm({
   const { isLoading, addGuest } = useGuests();
   const [isBackId, setIsBackId] = useState<boolean>(false);
   const [isFrontId, setIsFrontId] = useState<boolean | null>(false);
+  const [phone, setPhone] = React.useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -77,20 +80,10 @@ export default function GuestForm({
               variant="bordered"
               className="flex-1"
             />
-            <Input
-              fullWidth
-              isRequired
-              color="primary"
-              startContent={
-                <Contact className="text-default-600 dark:text-default-300 shrink-0" />
-              }
-              name="contact_number"
-              id="contact_number"
-              label="Contact Number"
-              labelPlacement="outside"
-              placeholder="e.g. +63 912 345 6789"
-              variant="bordered"
-              className="flex-1"
+            <PhoneInput
+              value={phone}
+              onChange={setPhone}
+              placeholder="Enter guest contact number"
             />
           </div>
 

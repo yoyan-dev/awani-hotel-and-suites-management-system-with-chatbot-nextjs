@@ -94,8 +94,8 @@ export default function AddBookingPage() {
       return null;
     return generateSummary(
       {
-        check_in: checkInDate,
-        check_out: checkOutDate,
+        checked_in: checkInDate,
+        checked_out: checkOutDate,
         room_type: roomType,
         payment_method: paymentDetail.method,
         amount_paid: paymentDetail.amountPaid,

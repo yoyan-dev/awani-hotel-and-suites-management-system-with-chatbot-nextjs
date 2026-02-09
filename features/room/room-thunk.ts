@@ -93,6 +93,7 @@ export const fetchAvailableRooms = createAsyncThunk<
     if (params?.status) searchParams.append("status", params.status);
     if (params?.checkIn) searchParams.append("checkIn", params.checkIn);
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
+    if (params?.roomId) searchParams.append("roomId", params.roomId);
 
     const res = await fetch(
       `${path}/available-rooms?${searchParams.toString()}`,

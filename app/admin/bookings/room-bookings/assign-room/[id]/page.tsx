@@ -53,8 +53,8 @@ export default function AssignRoomPage() {
     if (booking.room_type_id) {
       fetchAvailableRooms({
         roomTypeID: booking.room_type_id,
-        checkIn: booking.check_in,
-        checkOut: booking.check_out,
+        checkIn: booking.checked_in,
+        checkOut: booking.checked_out,
         isStatusSelected: true,
       });
     }

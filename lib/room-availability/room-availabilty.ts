@@ -11,6 +11,6 @@ export function isRoomAvailable(
   }
 
   return !room.bookings.some((booking: Booking) => {
-    return booking.check_in < checkOut && booking.check_out > checkIn;
+    return booking.checked_in < checkOut && booking.checked_out > checkIn;
   });
 }

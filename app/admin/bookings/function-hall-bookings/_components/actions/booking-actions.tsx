@@ -16,8 +16,8 @@ import {
   EllipsisVertical,
   Wallet,
 } from "lucide-react";
-import CheckOutButton from "./mark-check-out";
-import CheckInButton from "./mark-check-in";
+import CheckOutButton from "./mark-check_out";
+import CheckInButton from "./mark-check_in";
 import MarkCancelled from "./mark-cancelled";
 import React from "react";
 import ExtendModal from "../modals/extend-modal";
@@ -116,13 +116,13 @@ export default function BookingActionsDropdown({
             Assign Room
           </DropdownItem>
 
-          {/* {!["check-in", "pending"].includes(booking.status || "default") ? (
+          {/* {!["check_in", "pending"].includes(booking.status || "default") ? (
             <DropdownItem key="checkin">
               <CheckInButton booking={booking} />
             </DropdownItem>
           ) : null} */}
 
-          {/* {booking.status === "check-in" ? (
+          {/* {booking.status === "check_in" ? (
             <DropdownItem key="checkout">
               <CheckOutButton booking={booking} />
             </DropdownItem>

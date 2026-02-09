@@ -139,8 +139,8 @@ export async function GET(
       room_type_id: r.room_type_id,
       current_booking: null as {
         guest_name: string;
-        check_in: string;
-        check_out: string;
+        checked_in: string;
+        checked_out: string;
       } | null,
     }));
 

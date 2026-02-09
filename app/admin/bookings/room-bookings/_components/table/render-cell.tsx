@@ -16,7 +16,7 @@ interface RenderCellProps {
 
 export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
   const cellValue = booking[columnKey as keyof Booking];
-  const nights = getNights(booking.check_in, booking.check_out);
+  const nights = getNights(booking.checked_in, booking.checked_out);
 
   switch (columnKey) {
     case "room":
@@ -28,7 +28,7 @@ export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
             {booking.user?.full_name || "undefined"}
           </p>
           <p className="text-bold text-tiny capitalize text-default-600 dark:text-default-300 flex ">
-            {booking.check_in} to {booking.check_out}
+            {booking.checked_in} to {booking.checked_out}
           </p>
         </div>
       );
@@ -52,7 +52,7 @@ export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
           size="sm"
           className={`px-2 rounded-full  font-medium ${bookingStatusColorMap[booking.status]}`}
         >
-          {booking.status}
+          {booking.status.replace("_", " ")}
         </Chip>
       );
     case "actions":

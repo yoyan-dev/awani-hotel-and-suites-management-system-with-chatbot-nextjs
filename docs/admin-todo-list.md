@@ -33,7 +33,7 @@ This document tracks all unfinished pages and features for the Admin Dashboard s
 - **Completed**:
   - [x] Connect to Redux booking slice (useAppSelector + dispatch)
   - [x] Add real data fetching with filters (search, status, date range)
-  - [x] Implement booking statistics cards (KPICard with revenue, occupancy, check-ins)
+  - [x] Implement booking statistics cards (KPICard with revenue, occupancy, checked_ins)
   - [x] Add booking list table with status badges
   - [x] Fix API response format mismatch in booking thunk
 
@@ -246,7 +246,7 @@ This document tracks all unfinished pages and features for the Admin Dashboard s
 
 - **Required**:
   - [ ] Create daily summary view
-  - [ ] Add check-in/check-out counts
+  - [ ] Add checked_in/checked_out counts
   - [ ] Implement revenue breakdown
   - [ ] Connect to daily analytics API
 

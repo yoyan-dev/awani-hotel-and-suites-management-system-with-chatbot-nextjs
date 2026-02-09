@@ -12,6 +12,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const status = searchParams.get("status") || "";
   const checkIn = searchParams.get("checkIn") || "";
   const checkOut = searchParams.get("checkOut") || "";
+  const roomId = searchParams.get("roomId") || "";
 
   const allowedStatuses = [
     "vacant",
@@ -40,8 +41,8 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     room_id,
     guest_id,
     room_type_id,
-    check_in,
-    check_out
+    checked_in,
+    checked_out
   `);
 
   if (isStatusSelected) queryRooms = queryRooms.in("status", allowedStatuses);
@@ -55,10 +56,14 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     queryRooms = queryRooms.eq("status", status);
   }
 
+  if (roomId) {
+    queryRooms = queryRooms.eq("room_id", roomId);
+  }
+
   if (checkIn && checkOut) {
     queryBookings = queryBookings
-      .lte("check_in", checkOut)
-      .gte("check_out", checkIn);
+      .lte("checked_in", checkOut)
+      .gte("checked_out", checkIn);
   }
 
   const { data: rooms, error: roomError } = await queryRooms;
@@ -88,7 +93,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         const roomBookings = bookings.filter((b: any) => b.room_id === room.id);
 
         const hasOverlap = roomBookings.some((b: any) => {
-          return b.check_in <= checkOut && b.check_out >= checkIn;
+          return b.checked_in <= checkOut && b.checked_out >= checkIn;
         });
 
         return {

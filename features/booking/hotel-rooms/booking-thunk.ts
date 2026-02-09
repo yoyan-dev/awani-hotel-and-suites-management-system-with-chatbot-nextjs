@@ -17,8 +17,10 @@ export const fetchBookings = createAsyncThunk<
     if (params?.page) searchParams.append("page", String(params.page));
     if (params?.query) searchParams.append("query", params.query);
     if (params?.guest_id) searchParams.append("guest_id", params.guest_id);
-    if (params?.check_in) searchParams.append("check_in", params.check_in);
-    if (params?.check_out) searchParams.append("check_out", params.check_out);
+    if (params?.checked_in)
+      searchParams.append("checked_in", params.checked_in);
+    if (params?.checked_out)
+      searchParams.append("checked_out", params.checked_out);
     if (params?.limit) searchParams.append("limit", params.limit);
     if (params?.date_range) {
       searchParams.append("start", params.date_range.start);

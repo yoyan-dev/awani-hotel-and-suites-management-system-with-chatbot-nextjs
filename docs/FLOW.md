@@ -15,7 +15,6 @@ A concise, GitHub‑ready reference for end‑to‑end operations across roles: 
 - [System Status Lifecycle](#-system-status-lifecycle)
 - [End-to-End Flow Summary](#-end-to-end-flow-summary)
 - [Extended: With Inventory](#-extended-with-inventory)
-
   - [Guest Flow (with Inventory Interactions)](#-guest-flow-with-inventory-interactions)
   - [Front Office (FO) Flow — Inventory Touchpoints](#-front-office-fo-flow--inventory-touchpoints)
   - [Housekeeping Flow — Inventory Touchpoints](#-housekeeping-flow--inventory-touchpoints)
@@ -25,7 +24,6 @@ A concise, GitHub‑ready reference for end‑to‑end operations across roles: 
   - [End-to-End Example (with Inventory)](#-end-to-end-example-with-inventory)
 
 - [Diagrams (Mermaid)](#-diagrams-mermaid)
-
   - [Swimlane (Flowchart with Lanes)](#swimlane-flowchart-with-lanes)
   - [Room Status — State Diagram](#room-status--state-diagram)
   - [Inventory Status — State Diagram](#inventory-status--state-diagram)
@@ -277,9 +275,9 @@ flowchart LR
   %% Lanes as subgraphs
   subgraph G[Guest]
     G1[Search & Book]
-    G2[Check-in]
+    G2[checked_in]
     G3[Stay: Requests & Minibar]
-    G4[Check-out]
+    G4[checked_out]
   end
 
   subgraph F[Front Office (FO)]
@@ -287,7 +285,7 @@ flowchart LR
     F2[Set Room = Reserved/Occupied]
     F3[Log Requests → Route]
     F4[Generate Bill]
-    F5[Process Check-out → Set Cleaning]
+    F5[Process checked_out → Set Cleaning]
   end
 
   subgraph H[Housekeeping]
@@ -338,8 +336,8 @@ flowchart LR
 stateDiagram-v2
   [*] --> Available
   Available --> Reserved: Booking Confirmed
-  Reserved --> Occupied: Check-in
-  Occupied --> Cleaning: Check-out
+  Reserved --> Occupied: checked_in
+  Occupied --> Cleaning: checked_out
   Cleaning --> Available: Housekeeping Done
   Available --> Maintenance: Issue Found
   Cleaning --> Maintenance: Issue Found

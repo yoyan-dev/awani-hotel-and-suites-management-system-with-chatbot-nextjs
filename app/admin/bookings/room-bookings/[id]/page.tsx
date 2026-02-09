@@ -23,6 +23,10 @@ import { Booking } from "@/types/booking";
 import { Room } from "@/types/room";
 import { useRooms } from "@/hooks/use-rooms";
 import Link from "next/link";
+import {
+  bookingStatusColorMap,
+  bookingStatusHexColorMap,
+} from "@/app/constants/booking";
 
 function formatDate(d?: string) {
   if (!d) return "—";
@@ -85,16 +89,6 @@ export default function BookingDetailsStunning() {
 
           <div className="md:w-1/2 p-5 flex flex-col gap-3">
             <div className="flex items-start gap-4">
-              <User
-                avatarProps={{
-                  src:
-                    booking.user?.image ||
-                    "https://i.pravatar.cc/150?u=a04258114e29026702d",
-                }}
-                className="transition-transform"
-                description="Awani Guest"
-                name={booking.user?.full_name}
-              />
               <div className="flex-1">
                 <h1 className="text-xl md:text-2xl font-semibold leading-tight">
                   {booking.user?.full_name || "Guest Name"}
@@ -104,17 +98,10 @@ export default function BookingDetailsStunning() {
                 </p>
                 <div className="mt-2 flex gap-2 items-center">
                   <Chip
-                    variant="flat"
-                    color={
-                      booking.status === "confirmed"
-                        ? "success"
-                        : booking.status === "cancelled"
-                          ? "danger"
-                          : "warning"
-                    }
-                    className="uppercase text-xs"
+                    size="sm"
+                    className={`px-2 rounded-full  font-medium ${bookingStatusColorMap[booking.status]}`}
                   >
-                    {booking.status || "pending"}
+                    {booking.status.replace("_", " ")}
                   </Chip>
                   <span className="flex items-center gap-1 text-xs text-gray-500">
                     <Info className="w-3 h-3" /> Booking summary
@@ -169,9 +156,7 @@ export default function BookingDetailsStunning() {
 
             <Divider />
 
-            <div className="flex gap-2">
-              <Button color="primary">Edit</Button>
-              <Button color="danger">Cancel</Button>
+            <div className="flex justify-end gap-2">
               <div className="ml-auto hidden sm:flex items-center text-sm text-gray-500 gap-2">
                 <Tag className="w-4 h-4" />
                 {booking.room ? (
@@ -179,7 +164,7 @@ export default function BookingDetailsStunning() {
                     <span>#{booking.room?.room_number}</span>
                     <Link
                       className="px-2 py-1 bg-primary text-white rounded-sm"
-                      href={`booking/assign-room/${booking.id}`}
+                      href={`/admin/bookings/room-bookings/${booking.id}`}
                     >
                       Transfer room
                     </Link>
@@ -187,7 +172,7 @@ export default function BookingDetailsStunning() {
                 ) : (
                   <div className="flex gap-2 items-center">
                     <span>No room assigned</span>
-                    {(booking.status === "check-in" ||
+                    {(booking.status === "checked_in" ||
                       booking.status === "confirmed") && (
                       <Link
                         className="px-2 py-1 bg-primary text-white rounded-sm"
@@ -213,20 +198,6 @@ export default function BookingDetailsStunning() {
             <div className="text-xs text-gray-500">Company</div>
             <div className="text-sm">{booking.company || "N/A"}</div>
           </div>
-          {/* <div>
-            <div className="text-xs text-gray-500">Purpose of stay</div>
-            <div className="text-sm">{booking.purpose || "N/A"}</div>
-          </div> */}
-          {/* <div>
-            <div className="text-xs text-gray-500">Place Last Visited</div>
-            <div className="text-sm">
-              {booking.places_last_visited || "N/A"}
-            </div>
-          </div> */}
-          {/* <div>
-            <div className="text-xs text-gray-500">Recent Sickness</div>
-            <div className="text-sm">{booking.recent_sickness || "N/A"}</div>
-          </div> */}
         </CardBody>
       </Card>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,9 +209,9 @@ export default function BookingDetailsStunning() {
             <div className="flex items-start gap-3">
               <CalendarDays className="w-5 h-5 text-default-500" />
               <div>
-                <div className="text-xs text-gray-500">Check-in</div>
+                <div className="text-xs text-gray-500">checked_in</div>
                 <div className="font-medium">
-                  {formatDate(booking.check_in)}
+                  {formatDate(booking.checked_in)}
                 </div>
               </div>
             </div>
@@ -248,9 +219,9 @@ export default function BookingDetailsStunning() {
             <div className="flex items-start gap-3">
               <CalendarDays className="w-5 h-5 text-default-500" />
               <div>
-                <div className="text-xs text-gray-500">Check-out</div>
+                <div className="text-xs text-gray-500">checked_out</div>
                 <div className="font-medium">
-                  {formatDate(booking.check_out)}
+                  {formatDate(booking.checked_out)}
                 </div>
               </div>
             </div>
@@ -303,7 +274,8 @@ export default function BookingDetailsStunning() {
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">
-                Total in {getNights(booking.check_in, booking.check_out)} nights
+                Total in {getNights(booking.checked_in, booking.checked_out)}{" "}
+                nights
               </span>
               <strong>{formatPHP(calculateBookingPrice(booking))}</strong>
             </div>

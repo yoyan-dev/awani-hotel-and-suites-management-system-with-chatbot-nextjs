@@ -51,21 +51,21 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
     if (
       booking.special_requests.length === 0 ||
       !booking.room_type ||
-      !formData.check_in ||
-      !formData.check_out
+      !formData.checked_in ||
+      !formData.checked_out
     )
       return null;
     return generateSummary(
       {
-        check_in: formData.check_in,
-        check_out: formData.check_out,
+        checked_in: formData.checked_in,
+        checked_out: formData.checked_out,
         room_type: booking.room_type,
         payment_method: booking.payment_method,
         amount_paid: booking.amount_paid,
       } as Booking,
       booking.special_requests,
     );
-  }, [formData.check_in, formData.check_out]);
+  }, [formData.checked_in, formData.checked_out]);
 
   if (!booking?.id) return null;
 
@@ -152,8 +152,8 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                           onPress={async () => {
                             await updateBooking({
                               id: booking.id,
-                              check_in: formData.check_in,
-                              check_out: formData.check_out,
+                              checked_in: formData.checked_in,
+                              checked_out: formData.checked_out,
                               number_of_guests: formData.number_of_guests,
                               total: String(summary?.total || booking.total),
                               total_add_ons: String(
@@ -181,41 +181,44 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       {editBookingDetails ? (
                         <Input
                           type="date"
-                          value={formData.check_in}
+                          value={formData.checked_in}
                           isDisabled={booking.status === "check-in"}
                           onChange={(e) =>
                             setFormData({
                               ...booking,
-                              check_in: e.target.value,
+                              checked_in: e.target.value,
                             })
                           }
                         />
                       ) : (
                         <p>
-                          {booking.check_in
-                            ? format(new Date(booking.check_in), "MMM dd, yyyy")
+                          {booking.checked_in
+                            ? format(
+                                new Date(booking.checked_in),
+                                "MMM dd, yyyy",
+                              )
                             : "—"}
                         </p>
                       )}
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400">Check-out</p>
+                      <p className="text-xs text-gray-400">checked_out</p>
                       {editBookingDetails ? (
                         <Input
                           type="date"
-                          value={formData.check_out}
+                          value={formData.checked_out}
                           onChange={(e) =>
                             setFormData({
                               ...booking,
-                              check_out: e.target.value,
+                              checked_out: e.target.value,
                             })
                           }
                         />
                       ) : (
                         <p>
-                          {booking.check_out
+                          {booking.checked_out
                             ? format(
-                                new Date(booking.check_out),
+                                new Date(booking.checked_out),
                                 "MMM dd, yyyy",
                               )
                             : "—"}

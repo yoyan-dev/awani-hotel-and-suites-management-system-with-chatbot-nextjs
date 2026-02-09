@@ -72,8 +72,8 @@ export default function Page() {
       return null;
     return generateSummary(
       {
-        check_in: query.checkIn,
-        check_out: query.checkOut,
+        checked_in: query.checkIn,
+        checked_out: query.checkOut,
         room_type: room,
         payment_method: "",
         amount_paid: 0,
@@ -93,8 +93,11 @@ export default function Page() {
       (req) => req.quantity > 0,
     );
 
-    const check_in_date = formData.get("check_in") || "";
-    await fetchBookings({ guest_id: guestId || "", check_in: check_in_date });
+    const checked_in_date = formData.get("checked_in") || "";
+    await fetchBookings({
+      guest_id: guestId || "",
+      checked_in: checked_in_date,
+    });
     if (!bookingIsLoading && bookings.length > 0) {
       addToast({
         title: "Error!",
