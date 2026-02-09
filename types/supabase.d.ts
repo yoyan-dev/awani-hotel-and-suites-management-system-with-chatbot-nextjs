@@ -17,8 +17,8 @@ export type Database = {
     Tables: {
       archives: {
         Row: {
-          check_in: string | null;
-          check_out: string | null;
+          checked_in: string | null;
+          checked_out: string | null;
           company: string | null;
           created_at: string | null;
           guest_id: string | null;
@@ -34,8 +34,8 @@ export type Database = {
           total_add_ons: string | null;
         };
         Insert: {
-          check_in?: string | null;
-          check_out?: string | null;
+          checked_in?: string | null;
+          checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
           guest_id?: string | null;
@@ -51,8 +51,8 @@ export type Database = {
           total_add_ons?: string | null;
         };
         Update: {
-          check_in?: string | null;
-          check_out?: string | null;
+          checked_in?: string | null;
+          checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
           guest_id?: string | null;
@@ -165,8 +165,8 @@ export type Database = {
           amount_paid: number | null;
           booking_number: string | null;
           booking_source: string | null;
-          check_in: string | null;
-          check_out: string | null;
+          checked_in: string | null;
+          checked_out: string | null;
           company: string | null;
           created_at: string | null;
           guest_id: string | null;
@@ -188,8 +188,8 @@ export type Database = {
           amount_paid?: number | null;
           booking_number?: string | null;
           booking_source?: string | null;
-          check_in?: string | null;
-          check_out?: string | null;
+          checked_in?: string | null;
+          checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
           guest_id?: string | null;
@@ -211,8 +211,8 @@ export type Database = {
           amount_paid?: number | null;
           booking_number?: string | null;
           booking_source?: string | null;
-          check_in?: string | null;
-          check_out?: string | null;
+          checked_in?: string | null;
+          checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
           guest_id?: string | null;
@@ -734,7 +734,7 @@ export type Database = {
     };
     Functions: {
       get_available_room_types: {
-        Args: { check_in: string; check_out: string; guests: number };
+        Args: { checked_in: string; checked_out: string; guests: number };
         Returns: {
           add_ons: Json[];
           description: string;
@@ -749,8 +749,8 @@ export type Database = {
       };
       get_room_availability: {
         Args: {
-          check_in: string;
-          check_out: string;
+          checked_in: string;
+          checked_out: string;
           room_status: string;
           room_type_id: string;
           selected_date: string;

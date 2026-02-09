@@ -44,13 +44,13 @@ export default function ExpandedBookingTable({
 }: ExpandedTableProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(VISIBLE_COLUMNS)
+    new Set(VISIBLE_COLUMNS),
   );
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
   return (
@@ -67,7 +67,7 @@ export default function ExpandedBookingTable({
                   <h1 className="text-2xl font-bold">Hotel Bookings</h1>
                   <p className="text-sm text-gray-600">
                     View and manage room reservations, guest details, and
-                    check-in/check-out statuses for the hotel.
+                    check_in/check_out statuses for the hotel.
                   </p>
                 </div>
               </ModalHeader>

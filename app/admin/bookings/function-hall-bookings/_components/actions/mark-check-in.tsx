@@ -9,7 +9,7 @@ export default function CheckInButton({ booking }: { booking: Booking }) {
   const { updateRoom } = useRooms();
 
   async function markCheckIn() {
-    updateBooking({ id: booking.id, status: "check-in" } as Booking);
+    updateBooking({ id: booking.id, status: "checked_in" } as Booking);
     updateRoom({ id: booking.room_id, status: "occupied" });
   }
   return (

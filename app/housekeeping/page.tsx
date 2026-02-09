@@ -160,12 +160,12 @@ export default function HousekeepingDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <DashboardCard
-          title="Today's Check-ins"
-          subtitle={`${todayOperations?.check_ins?.total || 0} arrivals`}
+          title="Today's checked_ins"
+          subtitle={`${todayOperations?.checked_ins?.total || 0} arrivals`}
         >
-          {todayOperations?.check_ins?.rooms?.length ? (
+          {todayOperations?.checked_ins?.rooms?.length ? (
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {todayOperations.check_ins.rooms.map((booking) => (
+              {todayOperations.checked_ins.rooms.map((booking) => (
                 <div
                   key={booking.id}
                   className="flex items-center justify-between p-2 bg-gray-50 rounded"
@@ -185,17 +185,19 @@ export default function HousekeepingDashboardPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-4">No check-ins today</p>
+            <p className="text-gray-500 text-center py-4">
+              No checked_ins today
+            </p>
           )}
         </DashboardCard>
 
         <DashboardCard
-          title="Today's Check-outs"
-          subtitle={`${todayOperations?.check_outs?.total || 0} departures`}
+          title="Today's checked_outs"
+          subtitle={`${todayOperations?.checked_outs?.total || 0} departures`}
         >
-          {todayOperations?.check_outs?.rooms?.length ? (
+          {todayOperations?.checked_outs?.rooms?.length ? (
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {todayOperations.check_outs.rooms.map((booking) => (
+              {todayOperations.checked_outs.rooms.map((booking) => (
                 <div
                   key={booking.id}
                   className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900 rounded"
@@ -212,7 +214,7 @@ export default function HousekeepingDashboardPage() {
             </div>
           ) : (
             <p className="text-gray-500 text-center py-4">
-              No check-outs today
+              No checked_outs today
             </p>
           )}
         </DashboardCard>

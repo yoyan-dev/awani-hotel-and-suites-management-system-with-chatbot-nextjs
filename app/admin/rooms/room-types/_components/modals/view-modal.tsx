@@ -25,6 +25,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ room, isOpen, onClose }) => {
         onOpenChange={(open) => !open && onClose()}
         placement="top-center"
         radius="sm"
+        scrollBehavior="outside"
       >
         <ModalContent>
           {() => (
@@ -35,8 +36,14 @@ const ViewModal: React.FC<ViewModalProps> = ({ room, isOpen, onClose }) => {
               <ModalBody>
                 <div className="pb-4 space-y-8">
                   <div className="flex flex-col items-start gap-2">
-                    <div className="flex gap-2 overflow-x-auto">
-                      <Image src={room.image} alt="room image" width="100%" />
+                    <div className="flex justify-center w-full">
+                      <Image
+                        src={room.image}
+                        alt="room image"
+                        width="100%"
+                        height={300}
+                        radius="sm"
+                      />
                     </div>
                     <p className="text-xl font-semibold text-primary">
                       {formatPHP(Number(room.price))}

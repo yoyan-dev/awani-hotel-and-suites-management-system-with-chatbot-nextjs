@@ -22,7 +22,6 @@ export async function GET(
     area,
     description,
     status,
-    images,
     remarks
   `,
     )

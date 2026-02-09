@@ -22,17 +22,17 @@ const ExtendModal: React.FC<ExtendModalProps> = ({
   onClose,
 }) => {
   const [extendedDate, setExtendedDate] = React.useState<string>(
-    booking.check_out
+    booking.checked_out,
   );
 
   React.useEffect(() => {
-    setExtendedDate(booking.check_out);
-  }, [booking.check_out]);
+    setExtendedDate(booking.checked_out);
+  }, [booking.checked_out]);
 
   const isInvalid = React.useMemo(() => {
     if (!extendedDate) return false;
-    return booking.check_out > extendedDate;
-  }, [booking.check_out, extendedDate]);
+    return booking.checked_out > extendedDate;
+  }, [booking.checked_out, extendedDate]);
 
   return (
     <>
@@ -58,8 +58,8 @@ const ExtendModal: React.FC<ExtendModalProps> = ({
                   radius="none"
                   isRequired
                   type="date"
-                  label="Check-out Date"
-                  name="check_out"
+                  label="checked_out Date"
+                  name="checked_out"
                 />
               </ModalBody>
               <ModalFooter>

@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION get_room_availability(
-check_in date,
-check_out date,
+checked_in date,
+checked_out date,
 selected_date date,
 room_type_id text,
 room_status text
@@ -22,16 +22,16 @@ WHEN r.status NOT IN ('vacant', 'dirty', 'occupied', 'available') THEN 'not avai
 WHEN selected_date IS NOT NULL AND EXISTS (
 SELECT 1 FROM bookings b
 WHERE b.room_id = r.id
-AND b.status IN ('check-in', 'confirmed')
-AND b.check_in <= selected_date
-AND b.check_out > selected_date
+AND b.status IN ('checked_in', 'confirmed')
+AND b.checked_in <= selected_date
+AND b.checked_out > selected_date
 ) THEN 'booked'
-WHEN selected_date IS NULL AND check_in IS NOT NULL AND check_out IS NOT NULL AND EXISTS (
+WHEN selected_date IS NULL AND checked_in IS NOT NULL AND checked_out IS NOT NULL AND EXISTS (
 SELECT 1 FROM bookings b
 WHERE b.room_id = r.id
-AND b.status IN ('check-in', 'confirmed')
-AND b.check_in < check_out
-AND b.check_out > check_in
+AND b.status IN ('checked_in', 'confirmed')
+AND b.checked_in < checked_out
+AND b.checked_out > checked_in
 ) THEN 'booked'
 ELSE 'available'
 END AS availability

@@ -141,8 +141,8 @@ export async function GET(
     let bookingsQuery = supabase
       .from("bookings")
       .select("*", { count: "exact" })
-      .gte("check_in", dateRange.start.toISOString())
-      .lte("check_out", dateRange.end.toISOString());
+      .gte("checked_in", dateRange.start.toISOString())
+      .lte("checked_out", dateRange.end.toISOString());
 
     const {
       data: bookings,
@@ -169,14 +169,14 @@ export async function GET(
     );
 
     const checkedInToday = transformedBookings.filter((b) => {
-      if (b.status !== "checked_in" || !b.check_in) return false;
-      const checkIn = parseISO(b.check_in);
+      if (b.status !== "checked_in" || !b.checked_in) return false;
+      const checkIn = parseISO(b.checked_in);
       return checkIn >= todayStart && checkIn <= todayEnd;
     }).length;
 
     const checkedOutToday = transformedBookings.filter((b) => {
-      if (b.status !== "checked_out" || !b.check_out) return false;
-      const checkOut = parseISO(b.check_out);
+      if (b.status !== "checked_out" || !b.checked_out) return false;
+      const checkOut = parseISO(b.checked_out);
       return checkOut >= todayStart && checkOut <= todayEnd;
     }).length;
 
@@ -193,8 +193,8 @@ export async function GET(
     ).length;
 
     const upcomingBookings = transformedBookings.filter((b) => {
-      if (!b.check_in) return false;
-      return parseISO(b.check_in) > now;
+      if (!b.checked_in) return false;
+      return parseISO(b.checked_in) > now;
     }).length;
 
     const occupiedCount = transformedBookings.filter(

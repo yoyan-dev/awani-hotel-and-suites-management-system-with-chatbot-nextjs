@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Modal,
   ModalContent,
@@ -7,8 +9,10 @@ import {
   Button,
   Input,
 } from "@heroui/react";
-import { Booking } from "@/types/booking";
 import React from "react";
+import { Booking } from "@/types/booking";
+import { useRooms } from "@/hooks/use-rooms";
+import { useBookings } from "@/hooks/use-bookings";
 
 interface ExtendModalProps {
   booking: Booking;
@@ -22,59 +26,104 @@ const ExtendModal: React.FC<ExtendModalProps> = ({
   onClose,
 }) => {
   const [extendedDate, setExtendedDate] = React.useState<string>(
-    booking.check_out
+    booking.checked_out,
   );
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
+
+  const {
+    available_rooms,
+    isLoading: roomIsLoading,
+    fetchAvailableRooms,
+  } = useRooms();
+  const { isLoading: bookingIsLoading, updateBooking } = useBookings();
 
   React.useEffect(() => {
-    setExtendedDate(booking.check_out);
-  }, [booking.check_out]);
+    if (isOpen) {
+      setExtendedDate(booking.checked_out);
+      setErrorMessage("");
+    }
+  }, [booking.checked_out, isOpen]);
 
   const isInvalid = React.useMemo(() => {
-    if (!extendedDate) return false;
-    return booking.check_out > extendedDate;
-  }, [booking.check_out, extendedDate]);
+    setErrorMessage("");
+    if (extendedDate === booking.checked_out) return false;
+    if (!extendedDate) {
+      setErrorMessage("Please select a valid date");
+      return true;
+    }
+
+    const currentCheckout = new Date(booking.checked_out);
+    const newCheckout = new Date(extendedDate);
+
+    if (newCheckout <= currentCheckout) {
+      setErrorMessage(
+        "Extended date must be greater than the current check-out date",
+      );
+      return true;
+    }
+
+    if (available_rooms.length === 0 && !roomIsLoading) {
+      setErrorMessage("Selected room is not available on this date");
+      return true;
+    }
+
+    return false;
+  }, [extendedDate, booking.checked_out, available_rooms, roomIsLoading]);
+
+  React.useEffect(() => {
+    if (!booking.id || extendedDate === booking.checked_out) return;
+
+    fetchAvailableRooms({
+      checkIn: booking.checked_out,
+      checkOut: extendedDate,
+      roomId: booking.room.room_id,
+    });
+  }, [extendedDate, booking.id]);
 
   return (
-    <>
-      <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <ModalContent>
-          {() => (
-            <>
-              <ModalHeader>Extend Stay</ModalHeader>
-              <ModalBody>
-                {isInvalid && (
-                  <span className="text-warning">
-                    Date must be ahead on the check out date
-                  </span>
-                )}
-                <Input
-                  isInvalid={isInvalid}
-                  fullWidth
-                  value={extendedDate}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setExtendedDate(e.target.value)
-                  }
-                  variant="bordered"
-                  radius="none"
-                  isRequired
-                  type="date"
-                  label="Check-out Date"
-                  name="check_out"
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button variant="light" onPress={onClose}>
-                  cancel
-                </Button>
-                <Button variant="light" color="primary" isDisabled={isInvalid}>
-                  submit
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+    <Modal isOpen={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <ModalContent>
+        {() => (
+          <>
+            <ModalHeader>Extend Stay – {booking.booking_number}</ModalHeader>
+
+            <ModalBody>
+              <Input
+                type="date"
+                label="New Check-out Date"
+                value={extendedDate}
+                onChange={(e) => setExtendedDate(e.target.value)}
+                isInvalid={isInvalid}
+                errorMessage={errorMessage}
+                isDisabled={roomIsLoading}
+                isRequired
+                variant="bordered"
+              />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button variant="light" onPress={onClose}>
+                Cancel
+              </Button>
+
+              <Button
+                color="primary"
+                isDisabled={isInvalid || roomIsLoading}
+                isLoading={roomIsLoading || bookingIsLoading}
+                onPress={() =>
+                  updateBooking({
+                    id: booking.id,
+                    checked_out: extendedDate,
+                  } as Booking)
+                }
+              >
+                Submit
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 

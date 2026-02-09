@@ -199,8 +199,8 @@ export interface RoomAnalyticsResponse {
     room_type_id: string | null;
     current_booking?: {
       guest_name: string;
-      check_in: string;
-      check_out: string;
+      checked_in: string;
+      checked_out: string;
     } | null;
     days_since_last_status_change?: number;
   }[];
@@ -274,7 +274,7 @@ export interface DashboardSummaryResponse {
   quick_stats: {
     total_guests_checked_in: number;
     total_guests_checked_out_today: number;
-    upcoming_check_outs: number;
+    upcoming_checked_outs: number;
     upcoming_events: number;
   };
 }

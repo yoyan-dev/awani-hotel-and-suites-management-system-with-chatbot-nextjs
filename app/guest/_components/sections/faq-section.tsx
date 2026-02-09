@@ -22,12 +22,12 @@ export default function FAQSection() {
         >
           <AccordionItem
             key="1"
-            aria-label="Check-in & Check-out"
-            title="What are the check-in and check-out times?"
+            aria-label="check_in & check_out"
+            title="What are the check_in and check_out times?"
           >
             <p className="text-gray-600 leading-relaxed">
-              Check-in time starts at <strong>2:00 PM</strong> and check-out is
-              until <strong>12:00 PM</strong>. Early check-in and late check-out
+              check_in time starts at <strong>2:00 PM</strong> and check_out is
+              until <strong>12:00 PM</strong>. Early check_in and late check_out
               may be arranged depending on availability.
             </p>
           </AccordionItem>

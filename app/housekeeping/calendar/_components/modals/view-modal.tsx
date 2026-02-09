@@ -98,20 +98,23 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-gray-600">
                     <div>
-                      <p className="text-xs text-gray-400">Check-in</p>
+                      <p className="text-xs text-gray-400">checked_in</p>
 
                       <p>
-                        {booking.check_in
-                          ? format(new Date(booking.check_in), "MMM dd, yyyy")
+                        {booking.checked_in
+                          ? format(new Date(booking.checked_in), "MMM dd, yyyy")
                           : "—"}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400">Check-out</p>
+                      <p className="text-xs text-gray-400">checked_out</p>
 
                       <p>
-                        {booking.check_out
-                          ? format(new Date(booking.check_out), "MMM dd, yyyy")
+                        {booking.checked_out
+                          ? format(
+                              new Date(booking.checked_out),
+                              "MMM dd, yyyy",
+                            )
                           : "—"}
                       </p>
                     </div>

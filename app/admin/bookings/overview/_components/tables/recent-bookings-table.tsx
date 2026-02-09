@@ -29,9 +29,9 @@ export function RecentBookingsTable({
         return "warning";
       case "confirmed":
         return "primary";
-      case "check-in":
+      case "checked_in":
         return "success";
-      case "check-out":
+      case "checked_out":
         return "secondary";
       case "cancelled":
         return "danger";
@@ -75,10 +75,10 @@ export function RecentBookingsTable({
                   Room
                 </th>
                 <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">
-                  Check-in
+                  checked_in
                 </th>
                 <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">
-                  Check-out
+                  checked_out
                 </th>
                 <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider py-3 px-4">
                   Total
@@ -103,13 +103,13 @@ export function RecentBookingsTable({
                       ?.room_number || booking.room_id}
                   </td>
                   <td className="py-3 px-4 text-sm">
-                    {booking.check_in
-                      ? format(new Date(booking.check_in), "MMM dd, yyyy")
+                    {booking.checked_in
+                      ? format(new Date(booking.checked_in), "MMM dd, yyyy")
                       : "-"}
                   </td>
                   <td className="py-3 px-4 text-sm">
-                    {booking.check_out
-                      ? format(new Date(booking.check_out), "MMM dd, yyyy")
+                    {booking.checked_out
+                      ? format(new Date(booking.checked_out), "MMM dd, yyyy")
                       : "-"}
                   </td>
                   <td className="py-3 px-4 text-sm font-medium">

@@ -70,8 +70,8 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const ineligibleStatuses = [
       "cancelled",
       "completed",
-      "check_in",
-      "check_out",
+      "checked_in",
+      "checked_out",
     ];
     if (ineligibleStatuses.includes(booking.status)) {
       return NextResponse.json(

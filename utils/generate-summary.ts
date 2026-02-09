@@ -12,7 +12,7 @@ export function generateSummary(
     0,
   );
 
-  const nights = getNights(booking.check_in, booking.check_out);
+  const nights = getNights(booking.checked_in, booking.checked_out);
   const totalPerNights = calculateBookingPrice(booking);
   const total = totalPerNights + totalAddOnsPrice;
   const balance = total - amountPaid;

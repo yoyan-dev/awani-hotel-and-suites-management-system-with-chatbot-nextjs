@@ -119,8 +119,8 @@ export default function BookingDetailsSection({
           radius="none"
           isRequired
           type="date"
-          label="Check-in Date"
-          name="check_in"
+          label="checked_in Date"
+          name="checked_in"
           value={checkInDate}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setCheckInDate(e.target.value)
@@ -134,8 +134,8 @@ export default function BookingDetailsSection({
           radius="none"
           isRequired
           type="date"
-          label="Check-out Date"
-          name="check_out"
+          label="checked_out Date"
+          name="checked_out"
           value={checkOutDate}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setCheckOutDate(e.target.value)
@@ -225,8 +225,8 @@ export default function BookingDetailsSection({
                                 ...req,
                                 quantity: req.quantity - 1,
                               }
-                            : req
-                        )
+                            : req,
+                        ),
                       )
                     }
                   >
@@ -247,8 +247,8 @@ export default function BookingDetailsSection({
                                 ...req,
                                 quantity: req.quantity + 1,
                               }
-                            : req
-                        )
+                            : req,
+                        ),
                       )
                     }
                   >

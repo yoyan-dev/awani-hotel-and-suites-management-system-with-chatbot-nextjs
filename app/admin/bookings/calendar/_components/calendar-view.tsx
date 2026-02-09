@@ -68,13 +68,13 @@ export function CalendarView({
     const mapped = bookings.map((booking) => ({
       id: booking.id,
       title: `${booking.user?.full_name || "Unknown Guest"} ● ${getNights(
-        booking.check_in,
-        booking.check_out,
+        booking.checked_in,
+        booking.checked_out,
       )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
       statusColor:
         paymentStatusColorMap[booking.payment_status || "pending"] || "#CCCCCC",
-      start: new Date(booking.check_in),
-      end: new Date(booking.check_out),
+      start: new Date(booking.checked_in),
+      end: new Date(booking.checked_out),
       resourceId: booking.room_id || "no assigned",
       allDay: false,
       color:

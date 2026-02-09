@@ -96,8 +96,8 @@ export interface RoomHousekeepingDetail extends Room {
   last_cleaned_at?: string;
   current_guest?: {
     guest_name: string;
-    check_in: string;
-    check_out: string;
+    checked_in: string;
+    checked_out: string;
     status: BookingStatus;
   } | null;
   notes?: string;
@@ -105,7 +105,7 @@ export interface RoomHousekeepingDetail extends Room {
 
 export interface TodayOperations {
   date: string;
-  check_ins: {
+  checked_ins: {
     total: number;
     rooms: {
       id: string;
@@ -115,7 +115,7 @@ export interface TodayOperations {
       status: BookingStatus;
     }[];
   };
-  check_outs: {
+  checked_outs: {
     total: number;
     rooms: {
       id: string;
@@ -135,7 +135,7 @@ export interface HousekeepingSummary {
   by_status: Record<RoomStatus, number>;
   by_cleaning_status: Record<CleaningStatus, number>;
   pending_cleaning: number;
-  ready_for_check_in: number;
+  ready_for_checked_in: number;
   requires_attention: number;
 }
 

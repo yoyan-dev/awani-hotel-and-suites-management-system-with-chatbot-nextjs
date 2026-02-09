@@ -13,7 +13,7 @@ interface RenderCellProps {
 
 export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
   const cellValue = booking[columnKey as keyof Booking];
-  const nights = getNights(booking.check_in, booking.check_out);
+  const nights = getNights(booking.checked_in, booking.checked_out);
 
   switch (columnKey) {
     case "room":
@@ -26,7 +26,7 @@ export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
       return nights;
     case "total_price":
       return formatPHP(
-        calculateBookingPrice(booking) + Number(booking.total_add_ons || 0)
+        calculateBookingPrice(booking) + Number(booking.total_add_ons || 0),
       );
     case "status":
       return (

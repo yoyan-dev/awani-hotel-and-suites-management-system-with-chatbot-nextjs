@@ -147,8 +147,8 @@ export default function BookingForm({
                 variant="underlined"
                 isRequired
                 type="date"
-                label="Check-in Date"
-                name="check_in"
+                label="checked_in Date"
+                name="checked_in"
                 value={query.checkIn}
                 onChange={(e) =>
                   setQuery({ ...query, checkIn: e.target.value })
@@ -160,8 +160,8 @@ export default function BookingForm({
                 variant="underlined"
                 isRequired
                 type="date"
-                label="Check-out Date"
-                name="check_out"
+                label="checked_out Date"
+                name="checked_out"
                 value={query.checkOut}
                 onChange={(e) =>
                   setQuery({ ...query, checkOut: e.target.value })

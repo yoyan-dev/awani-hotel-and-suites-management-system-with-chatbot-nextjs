@@ -34,8 +34,8 @@ const getRoomStatusFromBooking = (
 ): string => {
   const today = new Date();
   const activeBooking = bookings.find((b) => {
-    const checkIn = b.check_in as string;
-    const checkOut = b.check_out as string;
+    const checkIn = b.checked_in as string;
+    const checkOut = b.checked_out as string;
     if (!checkIn || !checkOut) return false;
     const inDate = parseISO(checkIn);
     const outDate = parseISO(checkOut);
@@ -102,7 +102,7 @@ const calculateSummary = (
       number
     >,
     pending_cleaning: pendingCleaning,
-    ready_for_check_in: readyForCheckIn,
+    ready_for_checked_in: readyForCheckIn,
     requires_attention: requiresAttention,
   };
 };
@@ -175,7 +175,7 @@ export async function GET(req: NextRequest): Promise<
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
       .select(
-        "id, room_id, guest_id, check_in, check_out, status, guest:guest(full_name)",
+        "id, room_id, guest_id, checked_in, checked_out, status, guest:guest(full_name)",
       )
       .in("room_id", roomIds);
 
@@ -198,8 +198,8 @@ export async function GET(req: NextRequest): Promise<
     const roomDetails: RoomHousekeepingDetail[] = (rooms || []).map((room) => {
       const roomBookingsList = roomBookings.get(room.id) || [];
       const activeBooking = roomBookingsList.find((b) => {
-        const checkIn = b.check_in as string;
-        const checkOut = b.check_out as string;
+        const checkIn = b.checked_in as string;
+        const checkOut = b.checked_out as string;
         if (!checkIn || !checkOut) return false;
         const inDate = parseISO(checkIn);
         const outDate = parseISO(checkOut);
@@ -211,8 +211,8 @@ export async function GET(req: NextRequest): Promise<
         const guestData = activeBooking.guest as Record<string, unknown>;
         currentGuest = {
           guest_name: (guestData?.full_name as string) || "Guest",
-          check_in: activeBooking.check_in as string,
-          check_out: activeBooking.check_out as string,
+          checked_in: activeBooking.checked_in as string,
+          checked_out: activeBooking.checked_out as string,
           status: activeBooking.status as
             | "pending"
             | "confirmed"
@@ -270,7 +270,7 @@ export async function GET(req: NextRequest): Promise<
       },
       by_cleaning_status: { clean: 0, dirty: 0, in_progress: 0, inspected: 0 },
       pending_cleaning: 0,
-      ready_for_check_in: 0,
+      ready_for_checked_in: 0,
       requires_attention: 0,
     };
     return generateResponse(

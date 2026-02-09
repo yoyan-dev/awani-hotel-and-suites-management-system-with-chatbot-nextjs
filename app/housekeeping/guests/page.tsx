@@ -16,17 +16,17 @@ export default function Housekeeping() {
     useBookings();
 
   const [query, setQuery] = React.useState<FetchBookingParams>({
-    check_in: today,
+    checked_in: today,
   });
   const [selectedKeys, setSelectedKeys] = React.useState("arrival");
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
-    new Set(INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS)
+    new Set(INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS),
   );
 
   const headerColumns = React.useMemo(() => {
     if (visibleColumns === "all") return columns;
     return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid)
+      Array.from(visibleColumns).includes(column.uid),
     );
   }, [visibleColumns]);
 
@@ -47,7 +47,9 @@ export default function Housekeeping() {
       >
         <Tab
           key="arrival"
-          onClick={() => setQuery({ ...query, check_in: today, check_out: "" })}
+          onClick={() =>
+            setQuery({ ...query, checked_in: today, checked_out: "" })
+          }
           title={
             <span className="text-gray-800 dark:text-gray-100 font-medium">
               Arrival
@@ -57,7 +59,9 @@ export default function Housekeeping() {
 
         <Tab
           key="departure"
-          onClick={() => setQuery({ ...query, check_out: today, check_in: "" })}
+          onClick={() =>
+            setQuery({ ...query, checked_out: today, checked_in: "" })
+          }
           title={
             <span className="text-gray-800 dark:text-gray-100 font-medium">
               Departure

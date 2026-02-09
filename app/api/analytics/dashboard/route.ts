@@ -47,7 +47,7 @@ export async function GET(
 
     const { data: bookings, error: bookingsError } = await supabase
       .from("bookings")
-      .select("id, check_in, check_out, status, amount_paid, created_at");
+      .select("id, checked_in, checked_out, status, amount_paid, created_at");
 
     if (bookingsError) {
       console.error("Supabase error:", bookingsError);
@@ -114,9 +114,9 @@ export async function GET(
     const checkedInToday = (bookings || []).filter(
       (b) =>
         b.status === "checked_in" &&
-        b.check_in &&
-        new Date(b.check_in) >= todayStart &&
-        new Date(b.check_in) <= todayEnd,
+        b.checked_in &&
+        new Date(b.checked_in) >= todayStart &&
+        new Date(b.checked_in) <= todayEnd,
     ).length;
 
     const todayFHBookings = (functionHallBookings || []).filter((b) => {
@@ -212,7 +212,7 @@ export async function GET(
       quick_stats: {
         total_guests_checked_in: checkedInToday,
         total_guests_checked_out_today: 0,
-        upcoming_check_outs: 0,
+        upcoming_checked_outs: 0,
         upcoming_events: upcomingEvents,
       },
     };
@@ -260,7 +260,7 @@ export async function GET(
       quick_stats: {
         total_guests_checked_in: 0,
         total_guests_checked_out_today: 0,
-        upcoming_check_outs: 0,
+        upcoming_checked_outs: 0,
         upcoming_events: 0,
       },
     };

@@ -3,9 +3,8 @@ import type { NextRequest } from "next/server";
 import { createEdgeSupabaseClient } from "./lib/supabase/proxy";
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-
-  const supabase = createEdgeSupabaseClient(req);
+  const { supabase, res } = createEdgeSupabaseClient(req);
+  await supabase.auth.getSession();
 
   const {
     data: { session },

@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import { Booking } from "@/types/booking";
 import {
   Dropdown,
@@ -12,19 +15,19 @@ import {
   Bed,
   RotateCcw,
   FileText,
-  BrushCleaning,
-  MessageSquare,
   EllipsisVertical,
   Wallet,
 } from "lucide-react";
+
+import { canBookingAction } from "@/utils/booking/can-booking-action";
+
 import CheckOutButton from "./mark-check-out";
 import CheckInButton from "./mark-check-in";
 import MarkCancelled from "./mark-cancelled";
-import React from "react";
 import ExtendModal from "../modals/extend-modal";
-import { generateSummary } from "@/utils/generate-summary";
 import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
+import { generateSummary } from "@/utils/generate-summary";
 
 export default function BookingActionsDropdown({
   booking,
@@ -34,10 +37,11 @@ export default function BookingActionsDropdown({
   const [extendOpen, setExtendOpen] = React.useState(false);
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
-  const [paymentDetail, setPaymentDetail] = React.useState<{
-    method: string;
-    amountPaid: number;
-  }>({ method: "pending", amountPaid: 0 });
+
+  const [paymentDetail, setPaymentDetail] = React.useState({
+    method: "pending",
+    amountPaid: 0,
+  });
 
   const summary = React.useMemo(() => {
     return generateSummary(
@@ -48,19 +52,22 @@ export default function BookingActionsDropdown({
       },
       booking.special_requests,
     );
-  }, [booking, isViewSummaryOpen, paymentDetail]);
-  return (
+  }, [booking, paymentDetail]);
+
+  return booking.status !== "checked_out" ? (
     <>
       <ExtendModal
         booking={booking}
         isOpen={extendOpen}
         onClose={() => setExtendOpen(false)}
       />
+
       <ViewSummary
         isOpen={isViewSummaryOpen}
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
       />
+
       <AddPaymentModal
         isOpen={addPaymentOpen}
         onClose={() => setAddPaymentOpen(false)}
@@ -69,6 +76,7 @@ export default function BookingActionsDropdown({
         summary={summary}
         id={booking.id}
       />
+
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly variant="light" size="sm">
@@ -77,15 +85,17 @@ export default function BookingActionsDropdown({
         </DropdownTrigger>
 
         <DropdownMenu aria-label="Booking Actions" variant="faded">
-          <DropdownItem
-            key="view"
-            startContent={<Eye className="w-4 h-4" />}
-            href={`/admin/bookings/room-bookings/${booking.id}`}
-            color="primary"
-          >
-            View Details
-          </DropdownItem>
-          {booking.status === "pending" ? (
+          {canBookingAction(booking.status, "view") ? (
+            <DropdownItem
+              key="view"
+              startContent={<Eye className="w-4 h-4" />}
+              href={`/admin/bookings/room-bookings/${booking.id}`}
+            >
+              View Details
+            </DropdownItem>
+          ) : null}
+
+          {canBookingAction(booking.status, "edit") ? (
             <DropdownItem
               key="edit"
               startContent={<Pencil className="w-4 h-4" />}
@@ -95,83 +105,76 @@ export default function BookingActionsDropdown({
             </DropdownItem>
           ) : null}
 
-          <DropdownItem
-            key="message"
-            startContent={<MessageSquare className="w-4 h-4 text-gray-600" />}
-          >
-            View Messages
-          </DropdownItem>
+          {canBookingAction(booking.status, "assign") ? (
+            !booking.room_id ? (
+              <DropdownItem
+                key="assign"
+                href={`/admin/bookings/room-bookings/assign-room/${booking.id}`}
+                startContent={<Bed className="w-4 h-4" />}
+              >
+                Assign Room
+              </DropdownItem>
+            ) : (
+              <DropdownItem
+                key="transfer"
+                startContent={<Bed className="w-4 h-4" />}
+              >
+                Transfer Room
+              </DropdownItem>
+            )
+          ) : null}
 
-          <DropdownItem isReadOnly key="div">
-            <div className="border-t border-gray-200 my-1"></div>
-          </DropdownItem>
-
-          {!booking.room_id ? (
-            <DropdownItem
-              key="assign"
-              href={`/admin/bookings/room-bookings/assign-room/${booking.id}`}
-              startContent={<Bed className="w-4 h-4" />}
-            >
-              Assign Room
-            </DropdownItem>
-          ) : (
-            <DropdownItem
-              key="assign"
-              startContent={<Bed className="w-4 h-4" />}
-            >
-              Transfer Room
-            </DropdownItem>
-          )}
-          {!["check-in", "pending"].includes(booking.status) ? (
+          {canBookingAction(booking.status, "checked_in") ? (
             <DropdownItem key="checkin">
               <CheckInButton booking={booking} />
             </DropdownItem>
           ) : null}
 
-          {booking.status === "check-in" ? (
+          {canBookingAction(booking.status, "checked_out") ? (
             <DropdownItem key="checkout">
               <CheckOutButton booking={booking} />
             </DropdownItem>
           ) : null}
-          <DropdownItem
-            key="extend"
-            startContent={<RotateCcw className="w-4 h-4 text-orange-500" />}
-            onClick={() => setExtendOpen(true)}
-          >
-            Extend Stay
-          </DropdownItem>
 
-          <DropdownItem isReadOnly key="div2">
-            <div className="border-t border-gray-200 my-1"></div>
-          </DropdownItem>
+          {canBookingAction(booking.status, "extend") ? (
+            <DropdownItem
+              key="extend"
+              startContent={<RotateCcw className="w-4 h-4 text-orange-500" />}
+              onClick={() => setExtendOpen(true)}
+            >
+              Extend Stay
+            </DropdownItem>
+          ) : null}
 
-          <DropdownItem
-            key="invoice"
-            startContent={<FileText className="w-4 h-4 text-gray-700" />}
-            onClick={() => setIsViewSummaryOpen(true)}
-          >
-            Summary
-          </DropdownItem>
-          {booking.payment_status !== "paid" ? (
+          {/* <DropdownItem key="div2" isReadOnly>
+            <div className="border-t my-1" />
+          </DropdownItem> */}
+
+          {canBookingAction(booking.status, "summary") ? (
+            <DropdownItem
+              key="summary"
+              startContent={<FileText className="w-4 h-4" />}
+              onClick={() => setIsViewSummaryOpen(true)}
+            >
+              Summary
+            </DropdownItem>
+          ) : null}
+
+          {canBookingAction(booking.status, "add_payment") ? (
             <DropdownItem
               key="payment"
-              startContent={<Wallet className="w-4 h-4 text-gray-700" />}
+              startContent={<Wallet className="w-4 h-4" />}
               onClick={() => setAddPaymentOpen(true)}
             >
               Add Payment
             </DropdownItem>
           ) : null}
-          {/* <DropdownItem
-            key="clean"
-            startContent={<BrushCleaning className="w-4 h-4 text-purple-600" />}
-          >
-            Request Cleaning
+
+          {/* <DropdownItem key="div3" isReadOnly>
+            <div className="border-t my-1" />
           </DropdownItem> */}
 
-          <DropdownItem isReadOnly key="div3">
-            <div className="border-t border-gray-200 my-1"></div>
-          </DropdownItem>
-          {booking.status === "confirmed" || booking.status === "pending" ? (
+          {canBookingAction(booking.status, "cancel") ? (
             <DropdownItem key="cancel" color="danger">
               <MarkCancelled booking={booking} />
             </DropdownItem>
@@ -179,5 +182,5 @@ export default function BookingActionsDropdown({
         </DropdownMenu>
       </Dropdown>
     </>
-  );
+  ) : null;
 }

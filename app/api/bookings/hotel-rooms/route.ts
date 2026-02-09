@@ -32,8 +32,8 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
       room_id,
       guest_id,
       room_type_id,
-      check_in,
-      check_out,
+      checked_in,
+      checked_out,
       total_add_ons,
       total,
       company,
@@ -62,7 +62,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
   // date range filter
   if (start && end) {
-    q = q.gte("check_in", start).lte("check_in", end);
+    q = q.gte("checked_in", start).lte("checked_in", end);
   }
 
   if (limit && to !== undefined) q = q.range(from, to);
@@ -134,21 +134,21 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     } as Booking;
 
     const guestId = formObj.guest_id;
-    const newCheckIn = new Date(newData.check_in);
-    const newCheckOut = new Date(newData.check_out);
+    const newCheckIn = new Date(newData.checked_in);
+    const newCheckOut = new Date(newData.checked_out);
 
     // Check existing bookings for this guest
     const { data: existingBookings, error: checkError } = await supabase
       .from("bookings")
-      .select("id, check_in, check_out, status")
+      .select("id, checked_in, checked_out, status")
       .eq("guest_id", guestId)
-      .not("status", "in", "(cancelled, completed, check-out)");
+      .not("status", "in", "(cancelled, completed, checked_out)");
 
     if (checkError) throw checkError;
 
     const hasOverlap = existingBookings?.some((booking) => {
-      const existingIn = new Date(booking.check_in);
-      const existingOut = new Date(booking.check_out);
+      const existingIn = new Date(booking.checked_in);
+      const existingOut = new Date(booking.checked_out);
 
       return newCheckIn <= existingOut && newCheckOut >= existingIn;
     });

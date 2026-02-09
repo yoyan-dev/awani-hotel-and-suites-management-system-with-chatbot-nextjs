@@ -3,7 +3,7 @@ import { Booking } from "./booking";
 
 export type RoomStatus =
   | "vacant"
-  | "vacant_dirty"
+  | "vacant-dirty"
   | "cleaning"
   | "reserved"
   | "occupied"
@@ -63,6 +63,7 @@ export interface RoomPagination {
 export interface FetchRoomsParams {
   minPrice?: number;
   maxPrice?: number;
+  roomId?: string;
   page?: number;
   query?: string;
   isStatusSelected?: boolean;

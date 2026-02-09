@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION public.get_available_room_types(
-check_in date,
-check_out date,
+checked_in date,
+checked_out date,
 guests int
 )
 RETURNS TABLE (
@@ -36,9 +36,9 @@ AND NOT EXISTS (
 SELECT 1
 FROM bookings b
 WHERE b.room_id = r.id
-AND b.status IN ('check-in','confirmed')
-AND b.check_in < check_out
-AND b.check_out > check_in
+AND b.status IN ('checked_in','confirmed')
+AND b.checked_in < checked_out
+AND b.checked_out > checked_in
 )
 );
 

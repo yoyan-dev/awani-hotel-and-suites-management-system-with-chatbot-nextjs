@@ -116,13 +116,13 @@ export default function BookingActionsDropdown({
             Assign Room
           </DropdownItem>
 
-          {/* {!["check-in", "pending"].includes(booking.status || "default") ? (
+          {/* {!["check_in", "pending"].includes(booking.status || "default") ? (
             <DropdownItem key="checkin">
               <CheckInButton booking={booking} />
             </DropdownItem>
           ) : null} */}
 
-          {/* {booking.status === "check-in" ? (
+          {/* {booking.status === "check_in" ? (
             <DropdownItem key="checkout">
               <CheckOutButton booking={booking} />
             </DropdownItem>

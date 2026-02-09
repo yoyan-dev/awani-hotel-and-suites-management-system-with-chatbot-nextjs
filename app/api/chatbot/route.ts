@@ -27,12 +27,12 @@ All rooms include: Free Wi-Fi, air conditioning, flat-screen TV, minibar, room s
 ### For Guests:
 1. **Browse & Book**: View available rooms, check real-time availability calendar, and make reservations online
 2. **Guest Portal**: Access your bookings, make special requests, and view hotel information
-3. **Check-in/Check-out**: Front Office handles all arrival and departure procedures
+3. **checked_in/checked_out**: Front Office handles all arrival and departure procedures
 4. **Guest Requests**: Submit requests for extra amenities, room service, or housekeeping through the system
 
 ### User Roles:
 - **Guests**: Can browse rooms and make bookings
-- **Front Office (FO)**: Manages bookings, handles check-in/check-out, processes payments, and assists guests
+- **Front Office (FO)**: Manages bookings, handles checked_in/checked_out, processes payments, and assists guests
 - **Housekeeping**: Updates room cleaning status, manages cleaning schedules, and tracks room readiness
 - **Admin**: Oversees all operations, views analytics, manages users, configures settings, and handles inventory
 
@@ -41,7 +41,7 @@ All rooms include: Free Wi-Fi, air conditioning, flat-screen TV, minibar, room s
 2. Selects room type and submits booking request
 3. Booking status: Available → Reserved → Occupied → Cleaning → Available
 4. Payment tracking: pending, paid, unpaid, downpayment
-5. Check-out triggers room cleaning workflow
+5. checked_out triggers room cleaning workflow
 
 ### Room Status Flow:
 - **Available**: Ready for booking
@@ -58,11 +58,11 @@ All rooms include: Free Wi-Fi, air conditioning, flat-screen TV, minibar, room s
 
 ## FREQUENTLY ASKED QUESTIONS (FAQ)
 
-**Q: What are your check-in and check-out times?**
-A: Check-in is from 2:00 PM, and check-out is by 8:00 AM . Early check-in and late check-out may be available upon request, subject to availability.
+**Q: What are your checked_in and checked_out times?**
+A: checked_in is from 2:00 PM, and checked_out is by 8:00 AM . Early checked_in and late checked_out may be available upon request, subject to availability.
 
 **Q: Can I modify or cancel my reservation?**
-A: Yes, you can modify or cancel through the Guest Portal or by contacting Front Office. Please note our cancellation policy: free cancellation up to 24 hours before check-in.
+A: Yes, you can modify or cancel through the Guest Portal or by contacting Front Office. Please note our cancellation policy: free cancellation up to 24 hours before checked_in.
 
 **Q: Is breakfast included?**
 A: Breakfast inclusion depends on your room package. Please check your booking confirmation or contact Front Office for details.
@@ -77,7 +77,7 @@ A: Yes, we offer complimentary parking for hotel guests.
 A: Our pet policy varies by room type. Please contact Front Office to inquire about pet-friendly accommodations.
 
 **Q: What payment methods do you accept?**
-A: We accept cash, credit cards (Visa, Mastercard), and digital payments. Payment can be made online during booking or at check-in.
+A: We accept cash, credit cards (Visa, Mastercard), and digital payments. Payment can be made online during booking or at checked_in.
 
 **Q: How do I make a guest request?**
 A: Log into the Guest Portal and use the "Guest Request" feature, or call Front Office directly.
@@ -92,7 +92,7 @@ A: Function halls include basic AV equipment, tables, chairs, and linens. Additi
 A: Please inquire about current recreational facilities as amenities may vary.
 
 **Q: How does the housekeeping system work?**
-A: Housekeeping staff monitor room status through their dashboard. Rooms marked for cleaning are prioritized based on check-out times and new check-ins.
+A: Housekeeping staff monitor room status through their dashboard. Rooms marked for cleaning are prioritized based on checked_out times and new checked_ins.
 
 **Q: How can I contact Front Office?**
 A: You can reach Front Office through the Guest Portal or by calling +63 917 302 4794.

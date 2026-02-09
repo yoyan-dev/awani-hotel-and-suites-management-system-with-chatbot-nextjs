@@ -7,7 +7,7 @@ export default function Header() {
         <h1 className="text-2xl font-bold">Hotel Bookings</h1>
         <p className="text-sm text-gray-600">
           View and manage room reservations, guest details, and
-          check-in/check-out statuses for the hotel.
+          check_in/check_out statuses for the hotel.
         </p>
       </div>
     </div>

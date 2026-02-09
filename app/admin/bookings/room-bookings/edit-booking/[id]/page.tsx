@@ -51,12 +51,12 @@ export default function EditBookingPage() {
     if (formData?.room_type_id) {
       fetchAvailableRooms({
         roomTypeID: formData?.room_type_id,
-        checkIn: formData.check_in,
-        checkOut: formData.check_out,
+        checkIn: formData.checked_in,
+        checkOut: formData.checked_out,
         isStatusSelected: true,
       });
     }
-  }, [formData?.room_type_id, formData?.check_in, formData?.check_out]);
+  }, [formData?.room_type_id, formData?.checked_in, formData?.checked_out]);
 
   React.useEffect(() => {
     if (
@@ -85,8 +85,8 @@ export default function EditBookingPage() {
       await updateBooking({
         id: booking.id,
         room_type_id: formData.room_type_id,
-        check_in: formData.check_in,
-        check_out: formData.check_out,
+        checked_in: formData.checked_in,
+        checked_out: formData.checked_out,
         room_id: formData.room_id,
         special_requests: specialRequests,
         number_of_guests: formData.number_of_guests,

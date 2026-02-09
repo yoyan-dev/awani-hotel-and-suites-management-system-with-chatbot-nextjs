@@ -111,8 +111,8 @@ export async function GET(
     };
 
     baseQuery = baseQuery
-      .gte("check_in", dateRange.start.toISOString())
-      .lte("check_out", dateRange.end.toISOString());
+      .gte("checked_in", dateRange.start.toISOString())
+      .lte("checked_out", dateRange.end.toISOString());
 
     if (params.status) {
       baseQuery = baseQuery.eq("status", params.status);
@@ -251,15 +251,15 @@ export async function GET(
     const checkedInToday = transformedBookings.filter(
       (b) =>
         b.status === "checked_in" &&
-        b.check_in &&
-        b.check_in >= todayStart.toISOString(),
+        b.checked_in &&
+        b.checked_in >= todayStart.toISOString(),
     ).length;
 
     const checkedOutToday = transformedBookings.filter(
       (b) =>
         b.status === "checked_out" &&
-        b.check_out &&
-        b.check_out >= todayStart.toISOString(),
+        b.checked_out &&
+        b.checked_out >= todayStart.toISOString(),
     ).length;
 
     const confirmedBookings = transformedBookings.filter(

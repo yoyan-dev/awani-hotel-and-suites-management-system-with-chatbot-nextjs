@@ -69,7 +69,7 @@ export default function PeakSeasonDate({
             ACCOMODATIONS AND FACILITIES
           </h3>
           <p className="text-gray-800 dark:text-gray-600">
-            Check-In 2:00 PM ● Check-out 12:00 NN ● Breakfast for (7:AM - 10:00
+            check_in 2:00 PM ● check_out 12:00 NN ● Breakfast for (7:AM - 10:00
             AM) ● Retaurant (8:00 AM - 8:00 PM) ● Swimming Pool (7:00 AM - 9:00
             PM) ● Parking Area ● Room Service ● Air Conditioning in all rooms ●
             Coffee and Tea Facilities in VIP Suite Rooms ● Free WiFi in all
