@@ -101,7 +101,7 @@ export default function BookingDetailsStunning() {
                     size="sm"
                     className={`px-2 rounded-full  font-medium ${bookingStatusColorMap[booking.status]}`}
                   >
-                    {booking.status.replace("_", " ")}
+                    {booking.status}
                   </Chip>
                   <span className="flex items-center gap-1 text-xs text-gray-500">
                     <Info className="w-3 h-3" /> Booking summary
