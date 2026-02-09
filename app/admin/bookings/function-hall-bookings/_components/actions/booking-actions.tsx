@@ -16,8 +16,8 @@ import {
   EllipsisVertical,
   Wallet,
 } from "lucide-react";
-import CheckOutButton from "./mark-check_out";
-import CheckInButton from "./mark-check_in";
+import CheckOutButton from "./mark-check-out";
+import CheckInButton from "./mark-check-in";
 import MarkCancelled from "./mark-cancelled";
 import React from "react";
 import ExtendModal from "../modals/extend-modal";
