@@ -16,6 +16,7 @@ import staffReducer from "@/features/staff/staff-slice";
 import guestRequestReducer from "@/features/guest-requests/guest-request-slice";
 import analyticsReducer from "@/features/analytics/analytics-slice";
 import roomReportReducer from "@/features/room-reports/room-report-slice";
+import notificationReducer from "@/features/notifications/notification-slice";
 
 export const store = configureStore({
   reducer: {
@@ -36,6 +37,7 @@ export const store = configureStore({
     guest_requests: guestRequestReducer,
     analytics: analyticsReducer,
     room_reports: roomReportReducer,
+    notifications: notificationReducer,
   },
 });
 

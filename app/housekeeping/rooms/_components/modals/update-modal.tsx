@@ -13,6 +13,8 @@ import {
 import { useRooms } from "@/hooks/use-rooms";
 import { statusOptions } from "@/app/constants/rooms";
 import React from "react";
+import { useNotification } from "@/hooks/use-notification";
+import { Notification } from "@/types/notification";
 
 interface UpdateRoomProps {
   room: Room;
@@ -22,6 +24,7 @@ interface UpdateRoomProps {
 
 const UpdateModal: React.FC<UpdateRoomProps> = ({ room, isOpen, onClose }) => {
   const { isLoading, updateRoom, fetchRooms } = useRooms();
+  const { addNotification } = useNotification();
   const [formData, setFormData] = React.useState<Room>(room);
 
   async function handleSubmit() {
@@ -30,6 +33,11 @@ const UpdateModal: React.FC<UpdateRoomProps> = ({ room, isOpen, onClose }) => {
       status: formData.status || room.status,
       remarks: formData.remarks,
     });
+    await addNotification({
+      title: `Room ${room.room_number} Status Updated`,
+      message: `Housekeeping updated room status for room ${room.room_number} to ${formData.status}`,
+      type: "update",
+    } as Notification);
     fetchRooms(null);
   }
   return (

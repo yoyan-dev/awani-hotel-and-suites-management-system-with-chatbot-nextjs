@@ -5,7 +5,7 @@ export default function AgendaEvent({ event }: any) {
   start.setHours(14, 0, 0, 0);
 
   const end = new Date(event.dateDuration.end);
-  end.setDate(end.getDate() + 1);
+  end.setDate(end.getDate());
   end.setHours(8, 0, 0, 0);
 
   const [guestName, nights] = event.title
