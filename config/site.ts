@@ -21,6 +21,7 @@ import {
   Calendar,
   Utensils,
   BookOpen,
+  InfoIcon,
 } from "lucide-react";
 import { Children } from "react";
 
@@ -153,7 +154,7 @@ export const siteConfig = {
     {
       label: "Room Reports",
       href: "/housekeeping/reportings",
-      icon: BookOpen,
+      icon: InfoIcon,
     },
     {
       label: "Guest Movement",

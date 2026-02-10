@@ -12,7 +12,7 @@ import {
   LoadingState,
   EmptyState,
 } from "@/components/dashboard/dashboard-layout";
-import { Input, Select, SelectItem, Button } from "@heroui/react";
+import { Input, Select, SelectItem, Button, Chip } from "@heroui/react";
 import {
   Bed,
   Users,
@@ -22,13 +22,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { statusColorMap, statusOptions } from "../constants/rooms";
+import { RoomStatus } from "@/types/room";
+import { bookingStatusColorMap } from "../constants/booking";
 
-type RoomStatus =
-  | "available"
-  | "occupied"
-  | "maintenance"
-  | "cleaning"
-  | "dirty";
 type CleaningStatus = "clean" | "dirty" | "in_progress" | "inspected";
 
 export default function HousekeepingDashboardPage() {
@@ -52,7 +48,7 @@ export default function HousekeepingDashboardPage() {
     const status = statusFilter as RoomStatus | undefined;
     const cleaningStatus = cleaningStatusFilter as CleaningStatus | undefined;
     fetchRoomList({
-      status: status || undefined,
+      status: status || "vacant",
       cleaning_status: cleaningStatus || undefined,
     });
     fetchTodayOperations({});
@@ -101,7 +97,7 @@ export default function HousekeepingDashboardPage() {
           <p className="text-gray-500">Room status and today's operations</p>
         </div>
         <div className="flex gap-2 items-center">
-          <Select
+          {/* <Select
             label="Status"
             placeholder="All"
             size="sm"
@@ -124,7 +120,7 @@ export default function HousekeepingDashboardPage() {
             <SelectItem key="dirty">Dirty</SelectItem>
             <SelectItem key="in_progress">In Progress</SelectItem>
             <SelectItem key="inspected">Inspected</SelectItem>
-          </Select>
+          </Select> */}
           <Button size="sm" isIconOnly variant="flat" onPress={handleRefresh}>
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -139,8 +135,8 @@ export default function HousekeepingDashboardPage() {
           color="primary"
         />
         <KPICard
-          title="Available"
-          value={summary?.by_status?.available || 0}
+          title="Vacant"
+          value={summary?.by_status?.vacant || 0}
           icon={<CheckCircle className="w-5 h-5" />}
           color="success"
         />
@@ -158,9 +154,9 @@ export default function HousekeepingDashboardPage() {
         />
       </StatGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1  lg:grid-cols-3 gap-6">
         <DashboardCard
-          title="Today's checked_ins"
+          title="Today's checked ins"
           subtitle={`${todayOperations?.checked_ins?.total || 0} arrivals`}
         >
           {todayOperations?.checked_ins?.rooms?.length ? (
@@ -176,11 +172,14 @@ export default function HousekeepingDashboardPage() {
                       {booking.guest_name}
                     </p>
                   </div>
-                  <Badge color={statusColorMap[booking.status || "default"]}>
-                    <span className="capitalize">
+                  <Chip
+                    size="sm"
+                    className={`${bookingStatusColorMap[booking.status || "default"]}`}
+                  >
+                    <span className="capitalize text-sm">
                       {booking.status.replace(/[-_]/g, " ")}
                     </span>
-                  </Badge>
+                  </Chip>
                 </div>
               ))}
             </div>
@@ -192,7 +191,7 @@ export default function HousekeepingDashboardPage() {
         </DashboardCard>
 
         <DashboardCard
-          title="Today's checked_outs"
+          title="Today's checked outs"
           subtitle={`${todayOperations?.checked_outs?.total || 0} departures`}
         >
           {todayOperations?.checked_outs?.rooms?.length ? (
@@ -208,7 +207,7 @@ export default function HousekeepingDashboardPage() {
                       {booking.guest_name}
                     </p>
                   </div>
-                  <Badge color="warning">Departing</Badge>
+                  <Chip color="warning">Departing</Chip>
                 </div>
               ))}
             </div>
@@ -219,9 +218,21 @@ export default function HousekeepingDashboardPage() {
           )}
         </DashboardCard>
 
+        {/* <DashboardCard
+          title="Guests not arrived"
+          subtitle={`${todayOperations?.booking_not_arrived?.total || 0} guests not arrived`}
+        >
+          <div className="text-center py-8">
+            <p className="text-3xl font-bold text-danger-600">
+              {todayOperations?.booking_not_arrived?.total || 0}
+            </p>
+            <p className="text-sm text-gray-500">Guests staying today</p>
+          </div>
+        </DashboardCard> */}
+
         <DashboardCard
           title="Stayovers"
-          subtitle={`${todayOperations?.stayovers?.total || 0} continuing stays`}
+          subtitle={`${todayOperations?.stayovers?.total || 0} guests staying`}
         >
           <div className="text-center py-8">
             <p className="text-3xl font-bold text-primary-600">
@@ -232,7 +243,7 @@ export default function HousekeepingDashboardPage() {
         </DashboardCard>
       </div>
 
-      <DashboardCard
+      {/* <DashboardCard
         title="Room Status"
         subtitle={`${roomList.pagination.total} rooms`}
       >
@@ -255,14 +266,14 @@ export default function HousekeepingDashboardPage() {
                   </span>
                 </div>
                 <div className="space-y-1">
-                  <Badge
-                    color={statusColorMap[room.status || "default"]}
+                  <Chip
+                    className={`bg-${statusColorMap[room.status || "default"]}`}
                     size="sm"
                   >
                     <span className="capitalize">
                       {room.status.replace(/[-_]/g, " ") || "N/A"}
                     </span>
-                  </Badge>
+                  </Chip>
                 </div>
                 {room.current_guest && (
                   <p className="text-xs text-gray-500 mt-2 truncate">
@@ -273,13 +284,13 @@ export default function HousekeepingDashboardPage() {
             ))}
           </div>
         )}
-      </DashboardCard>
+      </DashboardCard> */}
 
       <DashboardCard
         title="Cleaning Status Distribution"
         subtitle="Current cleaning progress"
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {summary &&
             Object.entries(summary.by_cleaning_status).map(
               ([status, count]) => (

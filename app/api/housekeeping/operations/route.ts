@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ApiResponse, TodayOperations } from "@/types/housekeeping";
 import { startOfDay, endOfDay, format, parseISO, isValid } from "date-fns";
+import { BookingStatus } from "@/types/booking";
 
 const generateResponse = <T>(
   success: boolean,
@@ -55,7 +56,8 @@ export async function GET(
         "id, room_id, guest_id, checked_in, checked_out, status, guest:guest(full_name)",
       )
       .gte("checked_in", dayStart.toISOString())
-      .lte("checked_in", dayEnd.toISOString());
+      .lte("checked_in", dayEnd.toISOString())
+      .eq("status", "confirmed");
 
     if (bookingsError) {
       console.error("Supabase error:", bookingsError);
@@ -68,18 +70,32 @@ export async function GET(
         "id, room_id, guest_id, checked_in, checked_out, status, guest:guest(full_name)",
       )
       .gte("checked_out", dayStart.toISOString())
-      .lte("checked_out", dayEnd.toISOString());
+      .lte("checked_out", dayEnd.toISOString())
+      .eq("status", "checked_in");
 
     if (checkoutError) {
       console.error("Supabase error:", checkoutError);
       throw checkoutError;
     }
 
+    const { data: notArrivedBookings, error: notArrivedBookingError } =
+      await supabase
+        .from("bookings")
+        .select("id, room_id, guest_id, checked_in, checked_out, status")
+        .gte("checked_in", dayStart.toISOString())
+        .eq("status", "checked_in");
+
+    if (notArrivedBookingError) {
+      console.error("Supabase error:", notArrivedBookingError);
+      throw notArrivedBookingError;
+    }
+
     const { data: stayoverBookings, error: stayoverError } = await supabase
       .from("bookings")
       .select("id, room_id, guest_id, checked_in, checked_out, status")
       .lte("checked_in", dayStart.toISOString())
-      .gte("checked_out", dayEnd.toISOString());
+      .gte("checked_out", dayEnd.toISOString())
+      .eq("status", "checked_in");
 
     if (stayoverError) {
       console.error("Supabase error:", stayoverError);
@@ -110,12 +126,7 @@ export async function GET(
         (booking.guest as unknown as { full_name?: string })?.full_name ||
         "Guest",
       expected_time: booking.checked_in as string,
-      status: booking.status as
-        | "pending"
-        | "confirmed"
-        | "checked_in"
-        | "checked_out"
-        | "cancelled",
+      status: booking.status as BookingStatus,
     }));
 
     const checkOuts = (checkoutBookings || []).map((booking) => ({
@@ -124,13 +135,12 @@ export async function GET(
       guest_name:
         (booking.guest as unknown as { full_name?: string })?.full_name ||
         "Guest",
-      status: booking.status as
-        | "pending"
-        | "confirmed"
-        | "checked_in"
-        | "checked_out"
-        | "cancelled",
+      status: booking.status as BookingStatus,
     }));
+
+    const notArrivedBookingIds = (notArrivedBookings || [])
+      .filter((b) => b.room_id)
+      .map((b) => b.room_id as string);
 
     const stayoverRoomIds = (stayoverBookings || [])
       .filter((b) => b.room_id)
@@ -145,6 +155,10 @@ export async function GET(
       checked_outs: {
         total: checkOuts.length,
         rooms: checkOuts,
+      },
+      booking_not_arrived: {
+        total: notArrivedBookingIds.length,
+        rooms: notArrivedBookingIds,
       },
       stayovers: {
         total: stayoverRoomIds.length,
@@ -165,6 +179,7 @@ export async function GET(
       date: format(startOfDay(new Date()), "yyyy-MM-dd"),
       checked_ins: { total: 0, rooms: [] },
       checked_outs: { total: 0, rooms: [] },
+      booking_not_arrived: { total: 0, rooms: [] },
       stayovers: { total: 0, rooms: [] },
     };
     return generateResponse(

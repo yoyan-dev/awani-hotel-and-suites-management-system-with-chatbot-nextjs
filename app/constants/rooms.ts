@@ -21,26 +21,22 @@ export const columns: ColumnType[] = [
 ];
 
 export const statusOptions = [
-  { name: "Stock Room", uid: "stock-room" },
-  { name: "VC", uid: "vacant" },
-  { name: "VD", uid: "vacant-dirty" },
-  { name: "Booked", uid: "booked" },
+  { name: "Stock Room", uid: "stock_room" },
+  { name: "Vacant", uid: "vacant" },
+  { name: "Vacant Dirty", uid: "vacant_dirty" },
   { name: "OS", uid: "out_of_service" },
   { name: "OCC", uid: "occupied" },
   { name: "Maintenance", uid: "maintenance" },
 ];
 
-export const statusColorMap: Record<
-  string,
-  "success" | "danger" | "warning" | "secondary" | "default"
-> = {
-  vacant: "success",
-  cleaning: "secondary",
-  reserved: "warning",
-  occupied: "warning",
-  maintenance: "default",
-  out_of_service: "danger",
-  booked: "default",
+export const statusColorMap: Record<string, string> = {
+  stock_room: "teal", // teal/cyan – neutral but stands out
+  vacant: "success", // green – available
+  vacant_dirty: "warning", // yellow – needs cleaning
+  out_of_service: "danger", // red – problem
+  occupied: "orange", // orange – occupied
+  maintenance: "purple", // purple – maintenance work
+  default: "default", // gray – fallback
 };
 
 export const ROOM_STATUS_CONFIG = {
