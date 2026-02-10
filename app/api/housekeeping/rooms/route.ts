@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     // Parse query params
     const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "20");
+    const limit = parseInt(searchParams.get("limit") || "100");
     const status = searchParams.get("status") || undefined;
     const room_type_id = searchParams.get("room_type_id") || undefined;
     const search = searchParams.get("search") || undefined;
@@ -31,18 +31,15 @@ export async function GET(req: NextRequest) {
     if (search) filters_applied.search = search;
 
     // Fetch rooms
-    let roomsQuery = supabase
-      .from("rooms")
-      .select("*", { count: "exact" })
-      .range(from, to)
-      .order(sort_by, { ascending: sort_order === "asc" });
+    let roomsQuery = supabase.from("rooms").select("*", { count: "exact" });
+
     if (status) roomsQuery = roomsQuery.eq("status", status);
     if (room_type_id) roomsQuery = roomsQuery.eq("room_type_id", room_type_id);
     if (search) roomsQuery = roomsQuery.ilike("room_id", `%${search}%`);
 
     const { data: rooms, error: roomsError, count } = await roomsQuery;
     if (roomsError) throw roomsError;
-
+    console.log(rooms.length);
     // Fetch bookings
     const roomIds = (rooms || []).map((r) => r.id);
     const { data: bookings, error: bookingsError } = await supabase

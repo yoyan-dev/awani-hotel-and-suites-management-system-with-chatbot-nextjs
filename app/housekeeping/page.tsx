@@ -47,20 +47,14 @@ export default function HousekeepingDashboardPage() {
   useEffect(() => {
     const status = statusFilter as RoomStatus | undefined;
     const cleaningStatus = cleaningStatusFilter as CleaningStatus | undefined;
-    fetchRoomList({
-      status: status || "vacant",
-      cleaning_status: cleaningStatus || undefined,
-    });
+    fetchRoomList({});
     fetchTodayOperations({});
   }, [statusFilter, cleaningStatusFilter]);
 
   const handleRefresh = () => {
     const status = statusFilter as RoomStatus | undefined;
     const cleaningStatus = cleaningStatusFilter as CleaningStatus | undefined;
-    fetchRoomList({
-      status: status || undefined,
-      cleaning_status: cleaningStatus || undefined,
-    });
+    fetchRoomList({});
     fetchTodayOperations({});
   };
 
