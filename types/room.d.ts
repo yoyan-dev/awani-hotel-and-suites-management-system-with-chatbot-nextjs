@@ -2,15 +2,13 @@ import { Pagination } from "@supabase/supabase-js";
 import { Booking } from "./booking";
 
 export type RoomStatus =
+  | "stock_room"
   | "vacant"
-  | "vacant-dirty"
-  | "cleaning"
-  | "reserved"
-  | "occupied"
+  | "vacant_dirty"
   | "dirty"
-  | "maintenance"
   | "out_of_service"
-  | undefined;
+  | "occupied"
+  | "maintenance";
 
 export interface RoomType {
   id?: string;

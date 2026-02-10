@@ -6,13 +6,6 @@ interface Props {
 }
 
 export function RoomStatusRow({ room }: Props) {
-  const statusColor = {
-    dirty: "danger",
-    cleaning: "warning",
-    ready: "success",
-    occupied: "default",
-  };
-
   return (
     <div className="flex justify-between items-center py-2 border-b">
       <div>

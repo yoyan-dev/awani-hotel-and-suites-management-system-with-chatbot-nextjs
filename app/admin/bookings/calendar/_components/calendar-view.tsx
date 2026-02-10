@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
+import { Calendar, dateFnsLocalizer, View, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, parse, startOfWeek, getDay } from "date-fns";
+import { format, parse, startOfWeek, getDay, set } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -18,6 +18,8 @@ import ViewModal from "./modals/view-modal";
 import CalendarHeader from "./calendar-custom/calendar-header";
 import { useBookings } from "@/hooks/use-bookings";
 import { toISODateOnly } from "@/utils/iso-format";
+import { splitBookingToAgendaEvents } from "@/helper/split-booking-agenda";
+import AgendaEvent from "../../../../../components/calendar/agenda-event";
 
 const locales = { "en-US": enUS };
 const localizer = dateFnsLocalizer({
@@ -62,26 +64,41 @@ export function CalendarView({
   const [events, setEvents] = React.useState<any[]>([]);
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedData, setSelectedData] = React.useState<any>();
+  const [currentView, setCurrentView] = React.useState<View>("week");
+  const isAgenda = currentView === "agenda";
 
   React.useEffect(() => {
     if (!bookings) return;
-    const mapped = bookings.map((booking) => ({
-      id: booking.id,
-      title: `${booking.user?.full_name || "Unknown Guest"} ● ${getNights(
-        booking.checked_in,
-        booking.checked_out,
-      )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
-      statusColor:
-        paymentStatusColorMap[booking.payment_status || "pending"] || "#CCCCCC",
-      start: new Date(booking.checked_in),
-      end: new Date(booking.checked_out),
-      resourceId: booking.room_id || "no assigned",
-      allDay: false,
-      color:
-        bookingStatusHexColorMap[booking.status] ||
-        bookingStatusHexColorMap["default"],
-    }));
-    setEvents(mapped);
+    if (isAgenda) {
+      const mapped = bookings.flatMap(splitBookingToAgendaEvents);
+      setEvents(mapped);
+    } else {
+      const mapped = bookings.map((booking) => ({
+        id: booking.id,
+        title: `${booking.user?.full_name || "Unknown Guest"} ● ${getNights(
+          booking.checked_in,
+          booking.checked_out,
+        )} night/nights (Room ${booking.room?.room_number || "Not assigned"} - ${booking.room_type.name})`,
+        roomType: booking.room?.room_type?.name,
+        roomNumber: booking.room?.room_number,
+        status: booking.status,
+        statusColor:
+          paymentStatusColorMap[booking.payment_status || "pending"] ||
+          "#CCCCCC",
+        start: new Date(booking.checked_in),
+        end: new Date(booking.checked_out),
+        dateDuration: {
+          start: booking.checked_in,
+          end: booking.checked_out,
+        },
+        resourceId: booking.room_id || "no assigned",
+        allDay: false,
+        color:
+          bookingStatusHexColorMap[booking.status] ||
+          bookingStatusHexColorMap["default"],
+      }));
+      setEvents(mapped);
+    }
   }, [bookings]);
 
   const handleEventDrop = ({ event, start, end }: any) => {
@@ -92,6 +109,7 @@ export function CalendarView({
   };
 
   const handleSelectEvent = (event: any) => {
+    if (event.status !== "pending") return;
     setSelectedData(event);
     setIsOpen(true);
   };
@@ -108,7 +126,10 @@ export function CalendarView({
   });
 
   const resources = React.useMemo(() => {
-    if (!rooms) return [];
+    if (rooms.length === 0)
+      return [{ id: "no assigned", title: "No Room" }].filter(
+        (resource) => resource.id === selectedRoom,
+      );
     const mappedResources = [
       ...rooms.map((room) => ({
         id: room.id,
@@ -147,6 +168,7 @@ export function CalendarView({
         onClose={() => setIsOpen(false)}
       />
       <DnDCalendar
+        onView={(view) => setCurrentView(view)}
         resources={resources}
         localizer={localizer}
         events={events}
@@ -163,6 +185,9 @@ export function CalendarView({
         eventPropGetter={eventStyleGetter}
         selectable
         components={{
+          agenda: {
+            event: AgendaEvent,
+          },
           toolbar: (props) => (
             <CalendarHeader
               selectedView={props.view}

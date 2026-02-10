@@ -1,8 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  fetchRoomList,
-  fetchTodayOperations,
-  updateRoomStatus,
   setSelectedRoom,
   clearError,
   clearHousekeepingState,
@@ -12,6 +9,11 @@ import type {
   TodayOperationsParams,
   RoomUpdatePayload,
 } from "@/types/housekeeping";
+import {
+  fetchRoomList,
+  fetchTodayOperations,
+  updateRoomStatus,
+} from "@/features/housekeeping/housekeeping-thunk";
 
 export function useHousekeeping() {
   const dispatch = useAppDispatch();

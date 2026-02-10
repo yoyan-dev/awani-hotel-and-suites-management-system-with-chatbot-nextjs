@@ -44,10 +44,8 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
         <div>
           <Chip
             size="sm"
-            color={
-              statusColorMap[room.status as keyof typeof statusColorMap] ||
-              "default"
-            }
+            className={`
+              bg-${statusColorMap[room.status as keyof typeof statusColorMap]}`}
           >
             {room.status}
           </Chip>

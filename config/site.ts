@@ -1,26 +1,15 @@
 import {
   Bed,
-  BrushCleaning,
   ChartPie,
-  Home,
-  icons,
-  Inbox,
   LayoutDashboard,
-  Paintbrush,
   LogOut,
   Notebook,
   Settings,
   ShieldUser,
   ShoppingCart,
-  User,
-  Users,
-  ArrowRightLeft,
-  House,
-  SatelliteDish,
   ChefHatIcon,
   Calendar,
-  Utensils,
-  BookOpen,
+  InfoIcon,
 } from "lucide-react";
 import { Children } from "react";
 
@@ -153,18 +142,8 @@ export const siteConfig = {
     {
       label: "Room Reports",
       href: "/housekeeping/reportings",
-      icon: BookOpen,
+      icon: InfoIcon,
     },
-    {
-      label: "Guest Movement",
-      href: "/housekeeping/guests",
-      icon: ArrowRightLeft,
-    },
-    // {
-    //   label: "Guest Requests",
-    //   href: "/housekeeping/requests",
-    //   icon: Inbox,
-    // },
     {
       label: "Inventory",
       href: "/housekeeping/inventory",

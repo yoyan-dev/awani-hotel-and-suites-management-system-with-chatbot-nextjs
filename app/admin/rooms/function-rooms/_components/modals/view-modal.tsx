@@ -55,8 +55,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
                       </h1>
                     </div>
                     <Chip
-                      color={statusColorMap[room.status || "default"]}
-                      className="uppercase"
+                      className={`bg-${statusColorMap[room.status as keyof typeof statusColorMap]} uppercase`}
                     >
                       {room.status}
                     </Chip>

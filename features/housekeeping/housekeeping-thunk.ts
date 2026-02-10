@@ -1,196 +1,125 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
-  FetchHousekeepingParams,
-  HousekeepingPagination,
-  HousekeepingTask,
+  RoomListParams,
+  RoomListResponse,
+  RoomUpdatePayload,
+  TodayOperations,
+  TodayOperationsParams,
+  UpdateRoomResponse,
 } from "@/types/housekeeping";
 import { addToast } from "@heroui/react";
 
 const apiUrl = "/api/housekeeping";
 
-export const fetchHousekeepingTasks = createAsyncThunk<
-  { data: HousekeepingTask[]; pagination: HousekeepingPagination },
-  FetchHousekeepingParams | undefined
->(
-  "housekeeping/fetchHousekeepingTasks",
-  async (params, { rejectWithValue }) => {
-    try {
-      const searchParams = new URLSearchParams();
-      if (params?.page) searchParams.append("page", String(params.page));
-      if (params?.query) searchParams.append("q", params.query);
-      if (params?.status) searchParams.append("status", params.status);
+export const fetchRoomList = createAsyncThunk<
+  RoomListResponse,
+  RoomListParams | undefined,
+  { rejectValue: string }
+>("housekeeping/fetchRoomList", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
 
-      const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
-      const data = await res.json();
+    if (params?.page) searchParams.append("page", params.page.toString());
+    if (params?.limit) searchParams.append("limit", params.limit.toString());
+    if (params?.status) searchParams.append("status", params.status);
+    if (params?.cleaning_status)
+      searchParams.append("cleaning_status", params.cleaning_status);
+    if (params?.room_type_id)
+      searchParams.append("room_type_id", params.room_type_id);
+    if (params?.search) searchParams.append("search", params.search);
+    if (params?.sort_by) searchParams.append("sort_by", params.sort_by);
+    if (params?.sort_order)
+      searchParams.append("sort_order", params.sort_order);
 
-      if (!res.ok || !data.success) {
-        addToast(data.message);
-        return rejectWithValue(
-          data.message?.description ?? "Failed to fetch housekeeping tasks"
-        );
-      }
-      return data as {
-        data: HousekeepingTask[];
-        pagination: HousekeepingPagination;
-      };
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+    const res = await fetch(`${apiUrl}/rooms?${searchParams.toString()}`);
+    const response = await res.json();
 
-export const fetchHousekeepingTask = createAsyncThunk<HousekeepingTask, string>(
-  "housekeeping/fetchHousekeepingTask",
-  async (id, { rejectWithValue }) => {
-    try {
-      const res = await fetch(`${apiUrl}/${id}`);
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        addToast(data.message);
-        return rejectWithValue(
-          data.message?.description ?? "Failed to fetch housekeeping task"
-        );
-      }
-      return data.data;
-    } catch (error: any) {
+    if (!res.ok) {
       addToast({
         title: "Error",
-        description: error.message,
+        description: response.error?.message ?? "Failed to fetch room list",
         color: "danger",
       });
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        response.error?.message ?? "Failed to fetch room list",
+      );
     }
-  }
-);
 
-export const addHousekeepingTask = createAsyncThunk<
-  HousekeepingTask,
-  HousekeepingTask
->(
-  "housekeeping/addHousekeepingTask",
-  async (housekeeping, { rejectWithValue }) => {
-    try {
-      const res = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(housekeeping),
-      });
-      const data = await res.json();
-      addToast(data.message);
-      if (!res.ok || !data.success) {
-        return rejectWithValue(
-          data.message?.description ?? "Failed to add housekeeping task"
-        );
-      }
-      return data.data;
-    } catch (err: any) {
-      console.log(err.message);
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching room list:", err);
+    return rejectWithValue("Failed to fetch room list");
+  }
+});
+
+export const fetchTodayOperations = createAsyncThunk<
+  TodayOperations,
+  TodayOperationsParams | undefined,
+  { rejectValue: string }
+>("housekeeping/fetchTodayOperations", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.date) searchParams.append("date", params.date);
+
+    const res = await fetch(`${apiUrl}/operations?${searchParams.toString()}`);
+    const response = await res.json();
+
+    if (!res.ok) {
       addToast({
         title: "Error",
-        description: err.message,
+        description:
+          response.error?.message ?? "Failed to fetch today's operations",
         color: "danger",
       });
-      return rejectWithValue(err.message);
+      return rejectWithValue(
+        response.error?.message ?? "Failed to fetch today's operations",
+      );
     }
-  }
-);
 
-// UPDATE
-export const updateHousekeepingTask = createAsyncThunk<
-  HousekeepingTask,
-  HousekeepingTask,
+    return response.data;
+  } catch (err) {
+    console.error("Error fetching today's operations:", err);
+    return rejectWithValue("Failed to fetch today's operations");
+  }
+});
+
+export const updateRoomStatus = createAsyncThunk<
+  UpdateRoomResponse,
+  { room_id: string; payload: RoomUpdatePayload },
   { rejectValue: string }
 >(
-  "housekeeping/updateHousekeepingTask",
-  async (housekeeping, { rejectWithValue }) => {
+  "housekeeping/updateRoomStatus",
+  async ({ room_id, payload }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${housekeeping.id}`, {
-        method: "PUT",
+      const res = await fetch(`${apiUrl}/rooms/${room_id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(housekeeping),
+        body: JSON.stringify(payload),
       });
+      const response = await res.json();
 
-      const data = await res.json();
-      addToast(data.message);
-
-      if (!res.ok || !data.success) {
+      if (!res.ok) {
+        addToast({
+          title: "Error",
+          description:
+            response.error?.message ?? "Failed to update room status",
+          color: "danger",
+        });
         return rejectWithValue(
-          data.message?.description ?? "Failed to update housekeeping task"
+          response.error?.message ?? "Failed to update room status",
         );
       }
 
-      return data.data;
-    } catch (err: any) {
       addToast({
-        title: "Error",
-        description: err.message,
-        color: "danger",
+        title: "Success",
+        description: "Room status updated successfully",
+        color: "success",
       });
-      return rejectWithValue(err.message);
+
+      return response.data;
+    } catch (err) {
+      console.error("Error updating room status:", err);
+      return rejectWithValue("Failed to update room status");
     }
-  }
-);
-
-// DELETE
-export const deleteHousekeepingTask = createAsyncThunk<string, string>(
-  "housekeeping/deleteHousekeepingTask",
-  async (id, { rejectWithValue }) => {
-    try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
-      const data = await res.json();
-
-      addToast(data.message);
-      if (!res.ok || !data.success) {
-        return rejectWithValue(
-          data.message?.description ?? "Failed to delete housekeeping task"
-        );
-      }
-
-      return data.data;
-    } catch (error: any) {
-      addToast({
-        title: "Error",
-        description: error.message,
-        color: "danger",
-      });
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-//  delete selected rooms or all
-export const deleteSelectedHousekeepingTask = createAsyncThunk<
-  HousekeepingTask[],
-  { selectedValues: Set<number> | "all" },
-  { rejectValue: string }
->(
-  "housekeeping/deleteSelectedHousekeepingTask",
-  async ({ selectedValues }, thunkAPI) => {
-    try {
-      const body =
-        selectedValues === "all"
-          ? { selectedValues: "all" }
-          : { selectedValues: Array.from(selectedValues) };
-
-      const res = await fetch(apiUrl, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      addToast(data.message);
-      if (!res.ok) return thunkAPI.rejectWithValue(data.error);
-
-      return data.data;
-    } catch (err: any) {
-      addToast({
-        title: "Error",
-        description: err.message,
-        color: "danger",
-      });
-      return thunkAPI.rejectWithValue(err.message);
-    }
-  }
+  },
 );
