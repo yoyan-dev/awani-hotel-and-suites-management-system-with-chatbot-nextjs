@@ -29,7 +29,6 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
   const [viewOpen, setViewOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
 
-
   switch (columnKey) {
     case "image":
       return (
@@ -46,10 +45,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
         <div>
           <Chip
             size="sm"
-            color={
-              statusColorMap[room.status as keyof typeof statusColorMap] ||
-              "default"
-            }
+            className={`bg-${statusColorMap[room.status as keyof typeof statusColorMap]}`}
           >
             {room.status}
           </Chip>

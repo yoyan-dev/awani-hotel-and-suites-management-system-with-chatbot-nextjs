@@ -23,7 +23,9 @@ export default function RoomDetails() {
     <div className="space-y-4">
       <div className="p-6 bg-white dark:bg-gray-900 rounded space-y-6">
         <div className="flex gap-2 items-center">
-          <Chip color={statusColorMap[room.status || "default"]} radius="sm">
+          <Chip
+            className={`bg-${statusColorMap[room.status as keyof typeof statusColorMap]}`}
+          >
             {room.status}
           </Chip>
           <span className="text-gray-500">Room #{room.room_number}</span>
