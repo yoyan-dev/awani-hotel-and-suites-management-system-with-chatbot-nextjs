@@ -9,6 +9,7 @@ import {
   NavbarMenuItem,
 } from "@heroui/navbar";
 import {
+  Avatar,
   cn,
   Image,
   Link,
@@ -23,6 +24,7 @@ import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
 import { User } from "@/types/users";
+import { NotificationContainer } from "@/components/notification-ui/notification-container";
 
 interface Props {
   user: User | undefined;
@@ -63,26 +65,24 @@ export default function AdminNavbar({ user, isLoading }: Props) {
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
-        <NavbarItem className="hidden sm:flex gap-2">
+        <NavbarItem className="hidden sm:flex items-center gap-2">
+          <NotificationContainer />
           <ThemeSwitch />
           {isLoading ? (
             <Spinner />
           ) : (
-            <UserAccount
-              name={user?.user_metadata?.full_name || user?.user_metadata?.name}
-              description={user?.app_metadata?.roles?.[0] || "admin"}
-              avatarProps={{
-                src:
-                  user?.user_metadata?.image ||
-                  "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg",
-              }}
-              className="cursor-pointer"
+            <Avatar
+              src={
+                user?.user_metadata?.image ||
+                "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
+              }
             />
           )}
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
+        <NotificationContainer />
         <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
