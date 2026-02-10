@@ -56,6 +56,7 @@ export default function GuestForm({
           </div>
 
           <Textarea
+            isRequired
             fullWidth
             variant="bordered"
             radius="sm"
@@ -67,6 +68,7 @@ export default function GuestForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
+              isRequired
               fullWidth
               variant="bordered"
               radius="sm"
@@ -76,6 +78,7 @@ export default function GuestForm({
               name="nationality"
             />
             <Input
+              isRequired
               fullWidth
               variant="bordered"
               radius="sm"

@@ -2,10 +2,12 @@ import { Select, SelectItem, Input, Chip, Button } from "@heroui/react";
 import { Minus, Plus } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 import React from "react";
+import { RoomType } from "@/types/room";
 
 interface Props {
   room_types: any[];
   rooms: any[];
+  roomType: RoomType;
   selectedRoomType?: string;
   setSelectedRoomType: (id: string) => void;
   specialRequests: { name: string; price: string; quantity: number }[];
@@ -31,6 +33,7 @@ function formatDateISO(d: Date) {
 export default function BookingDetailsSection({
   room_types,
   rooms,
+  roomType,
   selectedRoomType,
   setSelectedRoomType,
   specialRequests,
@@ -43,6 +46,7 @@ export default function BookingDetailsSection({
   roomLoading,
 }: Props) {
   const today = React.useMemo(() => formatDateISO(new Date()), []);
+  const [guestCount, setGuestCount] = React.useState(1);
   const minCheckout = React.useMemo(() => {
     if (!checkInDate) {
       const tomorrow = new Date();
@@ -83,6 +87,7 @@ export default function BookingDetailsSection({
           labelPlacement="outside"
           placeholder="Select booking source"
           variant="bordered"
+          defaultSelectedKeys={["walk-in"]}
         >
           <SelectItem key="walk-in">Walk In</SelectItem>
           <SelectItem key="online">Online</SelectItem>
@@ -268,11 +273,15 @@ export default function BookingDetailsSection({
       <Input
         isRequired
         variant="bordered"
-        label="Number of Guests"
+        label={`Number of Guests (max: ${roomType?.max_guest || 0})`}
         placeholder="Enter number of guest"
         labelPlacement="outside"
         name="number_of_guests"
         radius="none"
+        value={guestCount.toString()}
+        onChange={(e) => setGuestCount(Number(e.target.value))}
+        isInvalid={guestCount > (roomType?.max_guest || 0)}
+        errorMessage="Number of guests exceeds the maximum allowed"
       />
     </div>
   );

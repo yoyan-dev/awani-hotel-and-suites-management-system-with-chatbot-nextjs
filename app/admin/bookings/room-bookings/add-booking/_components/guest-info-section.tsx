@@ -36,12 +36,12 @@ export default function GuestInfoSection({
         placeholder="Select Guest"
         variant="bordered"
         items={[
-          ...guests,
           {
             id: "new",
-            full_name: "Register new guest",
+            full_name: "New guest +",
             email: "",
           },
+          ...guests,
         ]}
       >
         {(guest) => (

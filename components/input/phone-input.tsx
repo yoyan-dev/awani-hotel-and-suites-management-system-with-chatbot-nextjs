@@ -9,7 +9,6 @@ interface PhoneInputProps {
   onChange: (value: string) => void;
   label?: string;
   placeholder?: string;
-  isRequired?: boolean;
 }
 
 export const COUNTRY_CODES = [
@@ -41,7 +40,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   onChange,
   label = "Phone Number",
   placeholder = "",
-  isRequired = false,
 }) => {
   const [country, setCountry] = React.useState<string>("PH");
   const [number, setNumber] = React.useState<string>(value || "");
@@ -108,10 +106,11 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           variant="bordered"
           fullWidth
           value={number}
+          name="contact_number"
           onChange={handleNumberChange}
           isInvalid={!!error}
           errorMessage={error}
-          isRequired={isRequired}
+          isRequired
           placeholder={placeholder}
           labelPlacement="outside"
           radius="none"

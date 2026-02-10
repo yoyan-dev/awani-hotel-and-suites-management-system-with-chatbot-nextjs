@@ -44,10 +44,11 @@ export default function Calendar() {
     if (room_types && room_types.length > 0 && !selectedRoomType) {
       setSelectedRoomType(String(room_types[0].id));
     }
-    if (rooms && rooms.length > 0 && !selectedRoom) {
+    if (rooms.length === 0) setSelectedRoom("no assigned");
+    if (rooms && rooms.length > 0 && !roomLoading) {
       setSelectedRoom(String(rooms[0].id));
     }
-  }, [room_types, rooms]);
+  }, [room_types, rooms, selectedRoomType, roomLoading]);
 
   React.useEffect(() => {
     if (!selectedRoomType) return;
@@ -73,7 +74,7 @@ export default function Calendar() {
       <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
         Bookings for{" "}
         <span className="font-bold text-primary">{selectedName}</span>
-        {/* <RoomAvailability available_rooms={available_rooms} /> */}
+        {/* {!roomLoading && !bookingsLoading && selectedRoomType ? ( */}
         <CalendarView
           query={query}
           setQuery={setQuery}
@@ -89,22 +90,16 @@ export default function Calendar() {
           selectedRoom={selectedRoom}
           setSelectedRoom={setSelectedRoom}
         />
+        {/* // ) : (
+        //   <div className="p-4">
+        //     <Card className="w-full shadow-none" radius="none">
+        //       <Skeleton className="rounded-sm">
+        //         <div className="h-24 w-full rounded-lg bg-default-300" />
+        //       </Skeleton>
+        //     </Card>
+        //   </div>
+        // )} */}
       </div>
-      {/* {!roomLoading && !bookingsLoading && selectedRoomType ? (
-        <CalendarView
-          calendarRef={calendarRef}
-          rooms={rooms}
-          bookings={bookings}
-        />
-      ) : (
-        <div className="p-4">
-          <Card className="w-full shadow-none" radius="none">
-            <Skeleton className="rounded-sm">
-              <div className="h-24 w-full rounded-lg bg-default-300" />
-            </Skeleton>
-          </Card>
-        </div>
-      )} */}
     </div>
   );
 }

@@ -32,7 +32,6 @@ export default function AddBookingPage() {
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
   const [selectedGuest, setSelectedGuest] = React.useState<string>();
   const [roomType, setRoomType] = React.useState<RoomType>({});
-  const [selectedPurpose, setSelectedPurpose] = React.useState<string>();
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>();
   const [specialRequests, setSpecialRequests] = React.useState<
     { name: string; price: string; quantity: number }[]
@@ -51,7 +50,7 @@ export default function AddBookingPage() {
   }, []);
 
   React.useEffect(() => {
-    if (selectedRoomType) {
+    if (selectedRoomType && checkInDate && checkOutDate) {
       fetchAvailableRooms({
         roomTypeID: selectedRoomType,
         checkIn: checkInDate,
@@ -154,6 +153,7 @@ export default function AddBookingPage() {
           <BookingDetailsSection
             room_types={room_types}
             rooms={available_rooms}
+            roomType={roomType}
             selectedRoomType={selectedRoomType}
             setSelectedRoomType={setSelectedRoomType}
             specialRequests={specialRequests}
