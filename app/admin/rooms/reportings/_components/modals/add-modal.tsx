@@ -31,11 +31,11 @@ export default function AddRoomReportModal() {
     const report_type = data.get("report_type");
 
     addRoomReport(data);
-    await addNotification({
-      title: `Room ${room_number} reported`,
-      message: `Housekeeping reported room ${room_number} reported for ${report_type}`,
-      type: "update",
-    } as Notification);
+    // await addNotification({
+    //   title: `Room ${room_number} reported`,
+    //   message: `Housekeeping reported room ${room_number} reported for ${report_type}`,
+    //   type: "update",
+    // } as Notification);
   }
 
   return (
