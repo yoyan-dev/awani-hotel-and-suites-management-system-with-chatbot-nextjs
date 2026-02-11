@@ -35,3 +35,12 @@ export interface UserState {
   isLoading: boolean;
   error: string | undefined;
 }
+
+export interface UserFormData {
+  email: string;
+  full_name: string;
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+  user_metadata: UserMetadata;
+}

@@ -13,8 +13,18 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@heroui/react";
-import { Search, ChevronDown, Plus, SlidersHorizontal } from "lucide-react";
-import { columns, statusOptions } from "@/app/constants/rooms";
+import {
+  Search,
+  ChevronDown,
+  Plus,
+  SlidersHorizontal,
+  XIcon,
+} from "lucide-react";
+import {
+  columns,
+  INITIAL_VISIBLE_COLUMNS,
+  statusOptions,
+} from "@/app/constants/rooms";
 import { capitalize } from "@/app/utils/capitalize";
 import DeleteSelectedModal from "../modals/delete-selected-modal";
 import { FetchRoomsParams, RoomType } from "@/types/room";
@@ -57,6 +67,19 @@ export const TableTopContent: React.FC<Props> = ({
         />
 
         <div className="flex gap-3">
+          {query.roomTypeID || query.status ? (
+            <Button
+              size="sm"
+              color="primary"
+              variant="bordered"
+              onPress={() => {
+                setQuery({});
+                setVisibleColumns(new Set(INITIAL_VISIBLE_COLUMNS));
+              }}
+            >
+              <XIcon size={14} /> Clear Filters
+            </Button>
+          ) : null}
           <Popover placement="bottom-end">
             <PopoverTrigger>
               <Button

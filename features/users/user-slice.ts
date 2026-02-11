@@ -7,6 +7,7 @@ import {
   updateUser,
   deleteUser,
   deleteSelectedUser,
+  updateUserProfile,
 } from "./user-thunk";
 
 const initialState: UserState = {
@@ -26,7 +27,7 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // get single room
+      // get single
       .addCase(fetchUser.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -41,7 +42,7 @@ const userSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // get all rooms
+      // get all
       .addCase(fetchUsers.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -56,7 +57,7 @@ const userSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // add room
+      // add user
       .addCase(addUser.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -71,7 +72,7 @@ const userSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // update room
+      // update user
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -89,7 +90,24 @@ const userSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // delete room
+      // update user profile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = undefined;
+      })
+      .addCase(
+        updateUserProfile.fulfilled,
+        (state, action: PayloadAction<User>) => {
+          state.isLoading = false;
+          state.error = undefined;
+        },
+      )
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+
+      // delete user
       .addCase(deleteUser.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -104,7 +122,7 @@ const userSlice = createSlice({
         state.error = action.error.message;
       })
 
-      // delete rooms
+      // delete users
       .addCase(deleteSelectedUser.pending, (state) => {
         state.isLoading = true;
         state.error = undefined;
@@ -113,7 +131,7 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = undefined;
         state.users = state.users.filter(
-          (r) => !action.payload.map((room) => room.id).includes(r.id)
+          (r) => !action.payload.map((room) => room.id).includes(r.id),
         );
       })
       .addCase(deleteSelectedUser.rejected, (state, action) => {

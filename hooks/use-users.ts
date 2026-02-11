@@ -4,14 +4,15 @@ import {
   fetchUser,
   fetchUsers,
   updateUser,
+  updateUserProfile,
 } from "@/features/users/user-thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { User } from "@/types/users";
+import { User, UserFormData } from "@/types/users";
 
 export function useUsers() {
   const dispatch = useAppDispatch();
   const { user, users, isLoading, error } = useAppSelector(
-    (state) => state.users
+    (state) => state.users,
   );
   return {
     user,
@@ -22,6 +23,8 @@ export function useUsers() {
     fetchUsers: () => dispatch(fetchUsers()),
     addUser: (payload: FormData) => dispatch(addUser(payload)),
     updateUser: (payload: User) => dispatch(updateUser(payload)),
+    updateUserProfile: (payload: UserFormData) =>
+      dispatch(updateUserProfile(payload)),
     deleteUser: (id: string) => dispatch(deleteUser(id)),
   };
 }

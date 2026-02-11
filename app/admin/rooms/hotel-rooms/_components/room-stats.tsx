@@ -1,46 +1,40 @@
-import { statusOptions } from "@/app/constants/rooms";
-import { useRooms } from "@/hooks/use-rooms";
-import { Room } from "@/types/room";
-import { formatDate } from "@/utils/format-date";
+import { statusColorMap, statusOptions } from "@/app/constants/rooms";
+import { Circle } from "lucide-react";
 import React from "react";
 
-export default function RoomStats({ analytics }: { analytics: any }) {
+interface AnalyticsItem {
+  name: string;
+  count: number;
+}
+
+export default function RoomStats({
+  analytics,
+}: {
+  analytics: AnalyticsItem[];
+}) {
   return (
-    <div className="flex gap-4 flex-wrap px-2 pb-4">
-      {analytics.map((item: any) => {
-        const options = statusOptions.find((s) => s.uid === item.name);
+    <div className="flex gap-4 flex-wrap px-2 bg-gray-50 dark:bg-gray-800 mb-2">
+      {analytics.map((item) => {
+        const option = statusOptions.find((s) => s.uid === item.name);
+        const colorClass = statusColorMap[item.name];
         return (
           <div
-            className="flex-1 p-3 rounded-lg bg-slate-50 dark:bg-gray-900"
             key={item.name}
+            className="flex items-center gap-3 p-4 rounded-lg "
           >
-            <div className="text-xs text-slate-500 capitalize">
-              {options?.name || item.name}
+            <Circle
+              size={12}
+              className={`bg-${colorClass} text-${colorClass} rounded-full`}
+            />
+            <div className="font-bold text-sm text-gray-600 dark:text-gray-400">
+              {item.count}
             </div>
-            <div className="font-semibold text-lg">{item.count}</div>
+            <div className="text-sm text-slate-500 dark:text-gray-400 capitalize">
+              {option?.name || item.name}
+            </div>
           </div>
         );
       })}
     </div>
-    // <div className="flex flex-col w-full gap-4 flex-wrap md:flex-row">
-
-    //   <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
-    //   </div>
-
-    //   {/* <div className="flex-1 rounded-2xl bg-white dark:bg-gray-800 shadow-md p-4">
-    //     <div className="font-medium mb-3">Quick actions</div>
-    //     <div className="flex flex-col gap-2">
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-primary-600 text-white">
-    //         Create Booking
-    //       </button>
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-slate-50 dark:bg-gray-900">
-    //         Sync Calendar
-    //       </button>
-    //       <button className="w-full text-left px-4 py-2 rounded-lg bg-slate-50 dark:bg-gray-900">
-    //         Export CSV
-    //       </button>
-    //     </div>
-    //   </div> */}
-    // </div>
   );
 }
