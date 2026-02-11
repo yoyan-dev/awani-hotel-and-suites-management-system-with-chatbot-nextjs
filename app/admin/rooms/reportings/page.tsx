@@ -5,7 +5,7 @@ import { RoomReportFetchParams } from "@/types/room-report";
 import { useRoomReports } from "@/hooks/use-room-reports";
 import { Pagination } from "@heroui/react";
 import RoomReportsFilter from "./_components/room-report-filter";
-import Loader from "../rooms/_components/loader";
+import Loader from "@/app/housekeeping/rooms/_components/loader";
 import RoomReportCard from "./_components/room-report-card";
 import Header from "./_components/header";
 
