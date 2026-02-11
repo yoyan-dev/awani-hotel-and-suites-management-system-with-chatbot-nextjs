@@ -16,6 +16,7 @@ import {
   FunctionRoomStats,
 } from "./_components/stats";
 import { RecentBookingsTable } from "./_components/tables";
+
 import {
   format,
   startOfDay,
@@ -41,17 +42,17 @@ export default function OverviewPage() {
 
     if (searchQuery) params.search = searchQuery;
     if (statusFilter) params.status = statusFilter;
+
     if (dateFilter) {
       const today = new Date();
 
       switch (dateFilter) {
-        case "today": {
+        case "today":
           params.start = format(startOfDay(today), "yyyy-MM-dd");
           params.end = format(endOfDay(today), "yyyy-MM-dd");
           break;
-        }
 
-        case "week": {
+        case "week":
           params.start = format(
             startOfWeek(today, { weekStartsOn: 1 }),
             "yyyy-MM-dd",
@@ -61,13 +62,11 @@ export default function OverviewPage() {
             "yyyy-MM-dd",
           );
           break;
-        }
 
-        case "month": {
+        case "month":
           params.start = format(startOfMonth(today), "yyyy-MM-dd");
           params.end = format(endOfMonth(today), "yyyy-MM-dd");
           break;
-        }
       }
     }
 
@@ -75,12 +74,10 @@ export default function OverviewPage() {
   }, [searchQuery, statusFilter, dateFilter]);
 
   const handleRefresh = () => {
-    const params: Record<string, string> = {};
-    if (statusFilter) params.status = statusFilter;
-    fetchBookingOverview({ ...params, limit: 100 });
+    fetchBookingOverview({});
   };
 
-  const bookingsData = bookingOverview?.bookings || {
+  const bookingsData = bookingOverview?.bookings ?? {
     summary: {
       total_revenue: 0,
       total_bookings: 0,
@@ -97,7 +94,7 @@ export default function OverviewPage() {
     recent_bookings: [],
   };
 
-  const functionHallBookings = bookingOverview?.function_hall_bookings || {
+  const functionHallBookings = bookingOverview?.function_hall_bookings ?? {
     summary: {
       total_bookings: 0,
       total_revenue: 0,
@@ -111,25 +108,30 @@ export default function OverviewPage() {
     recent_bookings: [],
   };
 
-  const rooms = bookingOverview?.rooms || {
+  const rooms = bookingOverview?.rooms ?? {
     summary: {
       total_rooms: 0,
-      available_rooms: 0,
+      vacant_rooms: 0,
+      vacant_dirty_rooms: 0,
+      dirty_rooms: 0,
       occupied_rooms: 0,
       maintenance_rooms: 0,
+      out_of_service_rooms: 0,
+      stock_rooms: 0,
       occupancy_rate: 0,
       average_room_rate: 0,
+      total_room_revenue: 0,
     },
     status_distribution: {},
     recent_bookings: [],
   };
 
-  const functionRooms = bookingOverview?.function_rooms || {
+  const functionRooms = bookingOverview?.function_rooms ?? {
     summary: {
       total_rooms: 0,
       available_rooms: 0,
-      booked_rooms: 0,
-      maintenance_rooms: 0,
+      half_occupied_rooms: 0,
+      full_occupied_rooms: 0,
       utilization_rate: 0,
       total_revenue: 0,
     },
@@ -138,63 +140,38 @@ export default function OverviewPage() {
   };
 
   const stats = {
-    totalRevenue: Number(bookingsData.summary.total_revenue) || 0,
-    totalBookings: Number(bookingsData.summary.total_bookings) || 0,
-    pendingBookings: Number(bookingsData.summary.pending_bookings) || 0,
-    confirmedBookings: Number(bookingsData.summary.confirmed_bookings) || 0,
-    checkedInToday: Number(bookingsData.summary.checked_in_today) || 0,
-    checkedOutToday: Number(bookingsData.summary.checked_out_today) || 0,
-    cancelledBookings: Number(bookingsData.summary.cancelled_bookings) || 0,
-    upcomingBookings: Number(bookingsData.summary.upcoming_bookings) || 0,
-    occupancyRate: Number(bookingsData.summary.occupancy_rate) || 0,
-    averageBookingValue:
-      Number(bookingsData.summary.average_booking_value) || 0,
+    totalRevenue: bookingsData.summary.total_revenue,
+    totalBookings: bookingsData.summary.total_bookings,
+    pendingBookings: bookingsData.summary.pending_bookings,
+    confirmedBookings: bookingsData.summary.confirmed_bookings,
+    checkedInToday: bookingsData.summary.checked_in_today,
+    checkedOutToday: bookingsData.summary.checked_out_today,
+    cancelledBookings: bookingsData.summary.cancelled_bookings,
+    upcomingBookings: bookingsData.summary.upcoming_bookings,
+    occupancyRate: bookingsData.summary.occupancy_rate,
+    averageBookingValue: bookingsData.summary.average_booking_value,
   };
 
-  const fhStats = {
-    totalBookings: Number(functionHallBookings.summary.total_bookings) || 0,
-    totalRevenue: Number(functionHallBookings.summary.total_revenue) || 0,
-    upcomingBookings:
-      Number(functionHallBookings.summary.upcoming_bookings) || 0,
-    pendingBookings: Number(functionHallBookings.summary.pending_bookings) || 0,
-    completedBookings:
-      Number(functionHallBookings.summary.completed_bookings) || 0,
-    totalGuests:
-      Number(functionHallBookings.summary.total_guests_expected) || 0,
+  const functionHallStats = {
+    totalBookings: functionHallBookings.summary.total_bookings,
+    totalRevenue: functionHallBookings.summary.total_revenue,
+    upcomingBookings: functionHallBookings.summary.upcoming_bookings,
+    pendingBookings: functionHallBookings.summary.pending_bookings,
+    completedBookings: functionHallBookings.summary.completed_bookings,
+    totalGuests: functionHallBookings.summary.total_guests_expected,
   };
 
-  const roomStats = {
-    totalRooms: Number(rooms.summary.total_rooms) || 0,
-    availableRooms: Number(rooms.summary.available_rooms) || 0,
-    occupiedRooms: Number(rooms.summary.occupied_rooms) || 0,
-    maintenanceRooms: Number(rooms.summary.maintenance_rooms) || 0,
-    occupancyRate: Number(rooms.summary.occupancy_rate) || 0,
-  };
+  const roomStats = { ...rooms.summary };
 
-  const frStats = {
-    totalRooms: Number(functionRooms.summary.total_rooms) || 0,
-    availableRooms: Number(functionRooms.summary.available_rooms) || 0,
-    bookedRooms: Number(functionRooms.summary.booked_rooms) || 0,
-    maintenanceRooms: Number(functionRooms.summary.maintenance_rooms) || 0,
-    utilizationRate: Number(functionRooms.summary.utilization_rate) || 0,
-  };
+  const functionRoomStats = { ...functionRooms.summary };
 
-  const statusDistribution = bookingsData.status_distribution || {
-    pending: 0,
-    confirmed: 0,
-    checked_in: 0,
-    checked_out: 0,
-    cancelled: 0,
-  };
-
-  const bookings = bookingsData.recent_bookings || [];
-  const totalCount =
-    Number(bookingsData.summary.total_bookings) || bookings.length;
+  const bookings = bookingsData.recent_bookings;
+  const totalCount = bookingsData.summary.total_bookings;
 
   if (isLoading && !bookings.length) {
     return (
       <DashboardLayout>
-        <LoadingState message="Loading bookings..." />
+        <LoadingState message="Loading analytics..." />
       </DashboardLayout>
     );
   }
@@ -218,6 +195,7 @@ export default function OverviewPage() {
           </h1>
           <p className="text-gray-500">Manage and monitor all hotel bookings</p>
         </div>
+
         <BookingFilters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -241,7 +219,7 @@ export default function OverviewPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <StatusDistribution
           bookings={bookings}
-          statusDistribution={statusDistribution}
+          statusDistribution={bookingsData.status_distribution}
         />
         <TodayActivity
           checkedInToday={stats.checkedInToday}
@@ -258,27 +236,33 @@ export default function OverviewPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <FunctionHallStats
-          totalBookings={fhStats.totalBookings}
-          totalRevenue={fhStats.totalRevenue}
-          upcomingBookings={fhStats.upcomingBookings}
-          pendingBookings={fhStats.pendingBookings}
-          completedBookings={fhStats.completedBookings}
-          totalGuests={fhStats.totalGuests}
-        />
+        <FunctionHallStats {...functionHallStats} />
         <RoomStats
-          totalRooms={roomStats.totalRooms}
-          availableRooms={roomStats.availableRooms}
-          occupiedRooms={roomStats.occupiedRooms}
-          maintenanceRooms={roomStats.maintenanceRooms}
-          occupancyRate={roomStats.occupancyRate}
+          summary={
+            roomStats as {
+              total_rooms: number;
+              vacant_rooms: number;
+              vacant_dirty_rooms: number;
+              dirty_rooms: number;
+              occupied_rooms: number;
+              maintenance_rooms: number;
+              out_of_service_rooms: number;
+              stock_rooms: number;
+              occupancy_rate: number;
+            }
+          }
         />
         <FunctionRoomStats
-          totalRooms={frStats.totalRooms}
-          availableRooms={frStats.availableRooms}
-          bookedRooms={frStats.bookedRooms}
-          maintenanceRooms={frStats.maintenanceRooms}
-          utilizationRate={frStats.utilizationRate}
+          summary={
+            functionRoomStats as {
+              total_rooms: number;
+              available_rooms: number;
+              half_occupied_rooms: number;
+              full_occupied_rooms: number;
+              utilization_rate: number;
+              total_revenue: number;
+            }
+          }
         />
       </div>
 

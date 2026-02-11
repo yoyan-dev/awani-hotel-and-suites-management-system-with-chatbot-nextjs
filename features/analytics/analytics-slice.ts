@@ -175,7 +175,7 @@ const initialState: AnalyticsState = {
       has_prev: false,
     },
   },
-  bookingOverview: null,
+  bookingOverview: {} as BookingOverviewResponse,
   isLoading: false,
   error: undefined,
 };

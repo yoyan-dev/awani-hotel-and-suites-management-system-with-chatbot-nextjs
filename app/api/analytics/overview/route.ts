@@ -3,67 +3,14 @@ import { createClient } from "@/lib/supabase/server";
 import { ApiResponse } from "@/types/analytics";
 import { Tables } from "@/types/supabase";
 import { startOfDay, endOfDay, format, parseISO, isValid } from "date-fns";
-
-type Booking = Tables<"bookings">;
-type FunctionHallBooking = Tables<"function_hall_bookings">;
-type Room = Tables<"rooms">;
-type FunctionRoom = Tables<"function-rooms">;
-
-interface BookingOverviewResponse {
-  bookings: {
-    summary: {
-      total_revenue: number;
-      total_bookings: number;
-      pending_bookings: number;
-      confirmed_bookings: number;
-      checked_in_today: number;
-      checked_out_today: number;
-      cancelled_bookings: number;
-      upcoming_bookings: number;
-      occupancy_rate: number;
-      average_booking_value: number;
-    };
-    status_distribution: Record<string, number>;
-    recent_bookings: Booking[];
-  };
-  function_hall_bookings: {
-    summary: {
-      total_bookings: number;
-      total_revenue: number;
-      upcoming_bookings: number;
-      pending_bookings: number;
-      completed_bookings: number;
-      cancelled_bookings: number;
-      total_guests_expected: number;
-    };
-    status_distribution: Record<string, number>;
-    recent_bookings: FunctionHallBooking[];
-  };
-  rooms: {
-    summary: {
-      total_rooms: number;
-      available_rooms: number;
-      occupied_rooms: number;
-      maintenance_rooms: number;
-      occupancy_rate: number;
-      average_room_rate: number;
-    };
-    status_distribution: Record<string, number>;
-    recent_bookings: Booking[];
-  };
-  function_rooms: {
-    summary: {
-      total_rooms: number;
-      available_rooms: number;
-      booked_rooms: number;
-      maintenance_rooms: number;
-      utilization_rate: number;
-      total_revenue: number;
-    };
-    status_distribution: Record<string, number>;
-    recent_bookings: FunctionHallBooking[];
-  };
-}
+import {
+  Booking,
+  BookingOverviewResponse,
+  FunctionHallBooking,
+  FunctionRoom,
+  Room,
+} from "@/types/analytics-contracts";
+import { calculateDateRange } from "@/utils/overview/calculate-date-range";
 
 const generateResponse = <T>(
   success: boolean,
@@ -84,31 +31,6 @@ const generateResponse = <T>(
     },
     { status: success ? 200 : 500 },
   );
-};
-
-const calculateDateRange = (params: {
-  date?: string;
-  start?: string;
-  end?: string;
-}): { start: Date; end: Date } => {
-  const today = new Date();
-
-  if (params.start && params.end) {
-    const start = parseISO(params.start);
-    const end = parseISO(params.end);
-    if (isValid(start) && isValid(end)) {
-      return { start, end };
-    }
-  }
-
-  if (params.date) {
-    const date = parseISO(params.date);
-    if (isValid(date)) {
-      return { start: startOfDay(date), end: endOfDay(date) };
-    }
-  }
-
-  return { start: startOfDay(today), end: endOfDay(today) };
 };
 
 export async function GET(
@@ -221,71 +143,79 @@ export async function GET(
       recent_bookings: recentBookings,
     };
 
-    let fhBookingsQuery = supabase
+    let functionHallBookingsQuery = supabase
       .from("function_hall_bookings")
       .select("*", { count: "exact" })
       .gte("event_date", dateRange.start.toISOString())
       .lte("event_date", dateRange.end.toISOString());
 
     const {
-      data: fhBookings,
-      error: fhBookingsError,
-      count: fhBookingsCount,
-    } = await fhBookingsQuery;
+      data: functionHallBookings,
+      error: functionHallBookingsError,
+      count: functionHallBookingsCount,
+    } = await functionHallBookingsQuery;
 
-    if (fhBookingsError) throw fhBookingsError;
+    if (functionHallBookingsError) throw functionHallBookingsError;
 
-    const transformedFHBookings: FunctionHallBooking[] = (fhBookings ||
-      []) as FunctionHallBooking[];
+    const transformedFunctionHallBookings: FunctionHallBooking[] =
+      (functionHallBookings || []) as FunctionHallBooking[];
 
-    const fhTotalRevenue = transformedFHBookings.reduce(
+    const functionHallTotalRevenue = transformedFunctionHallBookings.reduce(
       (acc, b) => acc + (Number((b as any).total_amount ?? 0) || 0),
       0,
     );
 
-    const fhStatusDistribution = transformedFHBookings.reduce(
-      (acc, b) => {
-        const status = b.status || "unknown";
-        acc[status] = (acc[status] || 0) + 1;
-        return acc;
+    const functionHallStatusDistribution =
+      transformedFunctionHallBookings.reduce(
+        (acc, b) => {
+          const status = b.status || "unknown";
+          acc[status] = (acc[status] || 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+    const functionHallUpcomingBookings = transformedFunctionHallBookings.filter(
+      (b) => {
+        if (!b.event_date) return false;
+        return parseISO(b.event_date) > now;
       },
-      {} as Record<string, number>,
-    );
+    ).length;
 
-    const fhUpcomingBookings = transformedFHBookings.filter((b) => {
-      if (!b.event_date) return false;
-      return parseISO(b.event_date) > now;
-    }).length;
-
-    const fhPendingBookings = transformedFHBookings.filter(
+    const functionHallPendingBookings = transformedFunctionHallBookings.filter(
       (b) => b.status === "pending",
     ).length;
 
-    const fhCompletedBookings = transformedFHBookings.filter(
-      (b) => b.status === "completed",
-    ).length;
+    const functionHallCompletedBookings =
+      transformedFunctionHallBookings.filter(
+        (b) => b.status === "completed",
+      ).length;
 
-    const fhCancelledBookings = transformedFHBookings.filter(
-      (b) => b.status === "cancelled",
-    ).length;
+    const functionHallCancelledBookings =
+      transformedFunctionHallBookings.filter(
+        (b) => b.status === "cancelled",
+      ).length;
 
-    const fhRecentBookings = transformedFHBookings.slice(0, 10);
+    const functionHallRecentBookings = transformedFunctionHallBookings.slice(
+      0,
+      10,
+    );
 
     const functionHallData = {
       summary: {
-        total_bookings: fhBookingsCount || 0,
-        total_revenue: fhTotalRevenue,
-        upcoming_bookings: fhUpcomingBookings,
-        pending_bookings: fhPendingBookings,
-        completed_bookings: fhCompletedBookings,
-        cancelled_bookings: fhCancelledBookings,
-        total_guests_expected: transformedFHBookings.reduce(
+        total_bookings: functionHallBookingsCount || 0,
+        total_revenue: functionHallTotalRevenue,
+        upcoming_bookings: functionHallUpcomingBookings,
+        pending_bookings: functionHallPendingBookings,
+        completed_bookings: functionHallCompletedBookings,
+        cancelled_bookings: functionHallCancelledBookings,
+        total_guests_expected: transformedFunctionHallBookings.reduce(
           (acc, b) => acc + (Number((b as any).number_of_guest ?? 0) || 0),
           0,
         ),
       },
-      status_distribution: fhStatusDistribution,
-      recent_bookings: fhRecentBookings,
+      status_distribution: functionHallStatusDistribution,
+      recent_bookings: functionHallRecentBookings,
     };
 
     const {
@@ -307,8 +237,16 @@ export async function GET(
       {} as Record<string, number>,
     );
 
-    const availableRooms = transformedRooms.filter(
-      (b) => b.status === "available",
+    const vacantRooms = transformedRooms.filter(
+      (b) => b.status === "vacant",
+    ).length;
+
+    const vacantDirtyRooms = transformedRooms.filter(
+      (b) => b.status === "vacant_dirty",
+    ).length;
+
+    const dirtyRooms = transformedRooms.filter(
+      (b) => b.status === "dirty",
     ).length;
 
     const occupiedRooms = transformedRooms.filter(
@@ -319,12 +257,24 @@ export async function GET(
       (b) => b.status === "maintenance",
     ).length;
 
+    const outOfServiceRooms = transformedRooms.filter(
+      (b) => b.status === "out_of_service",
+    ).length;
+
+    const stockRooms = transformedRooms.filter(
+      (b) => b.status === "stock_room",
+    ).length;
+
     const roomsData = {
       summary: {
         total_rooms: roomsCount || 0,
-        available_rooms: availableRooms,
+        vacant_rooms: vacantRooms,
+        vacant_dirty_rooms: vacantDirtyRooms,
+        dirty_rooms: dirtyRooms,
         occupied_rooms: occupiedRooms,
         maintenance_rooms: maintenanceRooms,
+        out_of_service_rooms: outOfServiceRooms,
+        stock_rooms: stockRooms,
         occupancy_rate: (occupiedRooms / (transformedRooms.length || 1)) * 100,
         average_room_rate: 0,
         total_room_revenue: totalRevenue,
@@ -357,33 +307,37 @@ export async function GET(
       (b) => b.status === "available",
     ).length;
 
-    const frBookedRooms = transformedFunctionRooms.filter(
-      (b) => b.status === "booked",
+    const frHalfOccupiedRooms = transformedFunctionRooms.filter(
+      (b) => b.status === "half occupied",
     ).length;
 
-    const frMaintenanceRooms = transformedFunctionRooms.filter(
-      (b) => b.status === "maintenance",
+    const frFullOccupiedRooms = transformedFunctionRooms.filter(
+      (b) => b.status === "full occupied",
     ).length;
 
-    const frData = {
+    const functionRoomData = {
       summary: {
         total_rooms: functionRoomsCount || 0,
         available_rooms: frAvailableRooms,
-        booked_rooms: frBookedRooms,
-        maintenance_rooms: frMaintenanceRooms,
+        half_occupied_rooms: frHalfOccupiedRooms,
+        full_occupied_rooms: frFullOccupiedRooms,
         utilization_rate:
-          (frBookedRooms / (transformedFunctionRooms.length || 1)) * 100,
-        total_revenue: fhTotalRevenue,
+          ((frHalfOccupiedRooms + frFullOccupiedRooms) /
+            (transformedFunctionRooms.length || 1)) *
+          100,
+        total_revenue: functionHallTotalRevenue,
       },
+
       status_distribution: frStatusDistribution,
-      recent_bookings: fhRecentBookings,
+
+      recent_bookings: functionHallRecentBookings,
     };
 
     const response: BookingOverviewResponse = {
       bookings: bookingsData,
       function_hall_bookings: functionHallData,
       rooms: roomsData,
-      function_rooms: frData,
+      function_rooms: functionRoomData,
     };
 
     return generateResponse(true, response, undefined, {
@@ -428,11 +382,16 @@ export async function GET(
       rooms: {
         summary: {
           total_rooms: 0,
-          available_rooms: 0,
+          vacant_rooms: 0,
+          vacant_dirty_rooms: 0,
+          dirty_rooms: 0,
           occupied_rooms: 0,
           maintenance_rooms: 0,
+          out_of_service_rooms: 0,
+          stock_rooms: 0,
           occupancy_rate: 0,
           average_room_rate: 0,
+          total_room_revenue: 0,
         },
         status_distribution: {},
         recent_bookings: [],
@@ -441,8 +400,8 @@ export async function GET(
         summary: {
           total_rooms: 0,
           available_rooms: 0,
-          booked_rooms: 0,
-          maintenance_rooms: 0,
+          half_occupied_rooms: 0,
+          full_occupied_rooms: 0,
           utilization_rate: 0,
           total_revenue: 0,
         },
