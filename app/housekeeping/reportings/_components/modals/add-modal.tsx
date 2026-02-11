@@ -16,15 +16,26 @@ import {
 } from "@heroui/react";
 import { Plus } from "lucide-react";
 import { useRoomReports } from "@/hooks/use-room-reports";
+import { useNotification } from "@/hooks/use-notification";
+import { Notification } from "@/types/notification";
 
 export default function AddRoomReportModal() {
   const { isLoading, error, addRoomReport } = useRoomReports();
+  const { addNotification } = useNotification();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
+    const room_number = data.get("room_number");
+    const report_type = data.get("report_type");
+
     addRoomReport(data);
+    await addNotification({
+      title: `Room ${room_number} reported`,
+      message: `Housekeeping reported room ${room_number} reported for ${report_type}`,
+      type: "update",
+    } as Notification);
   }
 
   return (

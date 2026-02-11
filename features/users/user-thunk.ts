@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { User } from "@/types/users";
+import { User, UserFormData } from "@/types/users";
 import { addToast } from "@heroui/react";
 
 const apiUrl = "/api/users";
@@ -14,14 +14,14 @@ export const fetchUsers = createAsyncThunk<User[]>(
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch users"
+          data.message?.description ?? "Failed to fetch users",
         );
       }
       return data.data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const fetchUser = createAsyncThunk<User, string>(
@@ -34,7 +34,7 @@ export const fetchUser = createAsyncThunk<User, string>(
       if (!res.ok || !data.success) {
         addToast(data.message);
         return rejectWithValue(
-          data.message?.description ?? "Failed to fetch user"
+          data.message?.description ?? "Failed to fetch user",
         );
       }
       return data.data;
@@ -46,7 +46,7 @@ export const fetchUser = createAsyncThunk<User, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const addUser = createAsyncThunk<User, FormData>(
@@ -61,7 +61,7 @@ export const addUser = createAsyncThunk<User, FormData>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to add register new user"
+          data.message?.description ?? "Failed to add register new user",
         );
       }
       return data.data;
@@ -74,7 +74,7 @@ export const addUser = createAsyncThunk<User, FormData>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
 
 // UPDATE
@@ -93,7 +93,7 @@ export const updateUser = createAsyncThunk<User, User, { rejectValue: string }>(
 
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to update user"
+          data.message?.description ?? "Failed to update user",
         );
       }
 
@@ -106,8 +106,41 @@ export const updateUser = createAsyncThunk<User, User, { rejectValue: string }>(
       });
       return rejectWithValue(err.message);
     }
-  }
+  },
 );
+
+//UPDATE PROFILE
+export const updateUserProfile = createAsyncThunk<
+  User,
+  UserFormData,
+  { rejectValue: string }
+>("users/updateUserProfile", async (user, { rejectWithValue }) => {
+  try {
+    const res = await fetch(`${apiUrl}/update-profile`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    });
+
+    const data = await res.json();
+    addToast(data.message);
+
+    if (!res.ok || !data.success) {
+      return rejectWithValue(
+        data.message?.description ?? "Failed to update user",
+      );
+    }
+
+    return {} as User;
+  } catch (err: any) {
+    addToast({
+      title: "Error",
+      description: err.message,
+      color: "danger",
+    });
+    return rejectWithValue(err.message);
+  }
+});
 
 // DELETE
 export const deleteUser = createAsyncThunk<string, string>(
@@ -120,7 +153,7 @@ export const deleteUser = createAsyncThunk<string, string>(
       addToast(data.message);
       if (!res.ok || !data.success) {
         return rejectWithValue(
-          data.message?.description ?? "Failed to delete user"
+          data.message?.description ?? "Failed to delete user",
         );
       }
 
@@ -133,7 +166,7 @@ export const deleteUser = createAsyncThunk<string, string>(
       });
       return rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 //  delete selected rooms or all

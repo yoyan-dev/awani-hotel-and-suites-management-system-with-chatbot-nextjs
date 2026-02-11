@@ -1,3 +1,7 @@
+export type FunctionRoomStatus =
+  | "available"
+  | "half occupied"
+  | "full occupied";
 export interface FunctionRoom {
   id?: string;
   image?: string;
@@ -11,7 +15,7 @@ export interface FunctionRoom {
   total_guests?: number;
   remaining_slots?: number;
   availability?: string;
-  availability_status?: "available" | "half occupied" | "full occupied";
+  availability_status?: FunctionRoomStatus;
   function_hall_bookings?: any;
   remarks?: string;
 }
@@ -20,7 +24,7 @@ export interface AvailableFunctionRoom extends FunctionRoom {
   total_guests: number;
   remaining_slots: number;
   availability: string;
-  availability_status: "available" | "half occupied" | "full occupied";
+  availability_status: FunctionRoomStatus;
 }
 
 export interface FunctionRoomPagination {

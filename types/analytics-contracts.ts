@@ -1,3 +1,4 @@
+import { BookingStatus } from "./booking";
 import { Tables } from "./supabase";
 
 export type Booking = Tables<"bookings">;
@@ -5,12 +6,6 @@ export type FunctionHallBooking = Tables<"function_hall_bookings">;
 export type Room = Tables<"rooms">;
 export type FunctionRoom = Tables<"function-rooms">;
 
-export type BookingStatus =
-  | "pending"
-  | "confirmed"
-  | "checked_in"
-  | "checked_out"
-  | "cancelled";
 export type PaymentStatus = "pending" | "partial" | "paid" | "refunded";
 
 export interface PaginationParams {
@@ -284,4 +279,72 @@ export interface AnalyticsFilters {
   booking_source?: string;
   event_type?: string;
   search?: string;
+}
+
+export interface BookingOverviewResponse {
+  bookings: {
+    summary: {
+      total_revenue: number;
+      total_bookings: number;
+      pending_bookings: number;
+      confirmed_bookings: number;
+      checked_in_today: number;
+      checked_out_today: number;
+      cancelled_bookings: number;
+      upcoming_bookings: number;
+      occupancy_rate: number;
+      average_booking_value: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: Booking[];
+  };
+
+  function_hall_bookings: {
+    summary: {
+      total_bookings: number;
+      total_revenue: number;
+      upcoming_bookings: number;
+      pending_bookings: number;
+      completed_bookings: number;
+      cancelled_bookings: number;
+      total_guests_expected: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: FunctionHallBooking[];
+  };
+
+  rooms: {
+    summary: {
+      total_rooms: number;
+
+      vacant_rooms: number;
+      vacant_dirty_rooms: number;
+      dirty_rooms: number;
+      occupied_rooms: number;
+      maintenance_rooms: number;
+      out_of_service_rooms: number;
+      stock_rooms: number;
+
+      occupancy_rate: number;
+      average_room_rate: number;
+      total_room_revenue: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: Booking[];
+  };
+
+  function_rooms: {
+    summary: {
+      total_rooms: number;
+
+      available_rooms: number;
+      half_occupied_rooms: number;
+      full_occupied_rooms: number;
+
+      utilization_rate: number;
+      total_revenue: number;
+    };
+    status_distribution: Record<string, number>;
+    recent_bookings: FunctionHallBooking[];
+  };
 }
