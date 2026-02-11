@@ -1,27 +1,29 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "./lib/supabase/server";
+import { updateSession } from "./lib/supabase/proxy";
 
 export async function proxy(req: NextRequest) {
-  const res = NextResponse.next();
-  const supabase = await createClient();
-  await supabase.auth.getSession();
+  return await updateSession(req);
+  // const res = NextResponse.next();
+  // const supabase = await createClient();
+  // await supabase.auth.getSession();
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  // const {
+  //   data: { session },
+  // } = await supabase.auth.getSession();
 
-  const user = session?.user ?? null;
-  const roles: string[] = session?.user?.app_metadata?.roles || [];
+  // const user = session?.user ?? null;
+  // const roles: string[] = session?.user?.app_metadata?.roles || [];
 
-  const pathname = req.nextUrl.pathname;
-  console.log("user", user, roles);
-  const publicPaths = ["/auth"];
-  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+  // const pathname = req.nextUrl.pathname;
+  // console.log("user", user, roles);
+  // const publicPaths = ["/auth"];
+  // const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
-  // Root redirect
-  if (pathname === "/")
-    return NextResponse.redirect(new URL("/guest", req.url));
+  // // Root redirect
+  // if (pathname === "/")
+  //   return NextResponse.redirect(new URL("/guest", req.url));
 
   // Not authenticated
   // if (!user && !isPublicPath)
@@ -46,7 +48,7 @@ export async function proxy(req: NextRequest) {
   //   return NextResponse.redirect(new URL("/auth", req.url));
   // }
 
-  return res;
+  // return res;
 }
 
 export const config = {

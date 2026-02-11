@@ -23,10 +23,10 @@ export default function AccountSettingsPage() {
     try {
       setIsLoading(true);
       const { user, error: userError } = await getCurrentUser();
-      setUser(user as User);
+      setUser(user as any);
       setFormData({
         email: user?.email || "",
-        full_name: user?.user_metadata.full_name || "",
+        full_name: user?.user_metadata?.full_name || "",
         current_password: "",
         new_password: "",
         confirm_password: "",
