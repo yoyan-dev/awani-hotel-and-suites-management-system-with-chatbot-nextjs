@@ -13,7 +13,7 @@ export const ListboxWrapper = ({ children, collapsed }: any) => {
     <div
       className={cn(
         "relative h-screen flex flex-col border-r border-default-200 dark:border-default-100 transition-all duration-300 ease-in-out",
-        collapsed ? "w-[5rem]" : "w-[16rem]"
+        collapsed ? "w-[5rem]" : "w-[16rem]",
       )}
     >
       {children}
@@ -71,7 +71,7 @@ export default function Sidebar() {
                         ? "text-primary-600 font-semibold"
                         : item.label === "Logout"
                           ? "text-red-500 hover:text-red-600"
-                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}
                     startContent={
                       <item.icon
@@ -80,7 +80,7 @@ export default function Sidebar() {
                           "transition-all duration-300",
                           isActive
                             ? "text-primary-500"
-                            : "text-gray-400 group-hover:text-primary-500"
+                            : "text-gray-400 group-hover:text-primary-500",
                         )}
                       />
                     }
