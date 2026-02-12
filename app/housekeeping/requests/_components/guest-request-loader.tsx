@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardBody, Skeleton } from "@heroui/react";
 
 export function GuestRequestLoader() {

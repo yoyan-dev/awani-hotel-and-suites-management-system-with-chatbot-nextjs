@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Card, Badge, Button } from "@heroui/react";
 import { Users, Edit } from "lucide-react";

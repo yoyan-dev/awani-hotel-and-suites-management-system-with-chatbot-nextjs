@@ -1,3 +1,5 @@
+"use client";
+
 import { Chip, Button } from "@heroui/react";
 import { RoomStatus } from "@/types/room";
 

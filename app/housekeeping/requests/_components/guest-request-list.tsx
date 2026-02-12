@@ -1,3 +1,5 @@
+"use client";
+
 import { GuestRequest } from "@/types/gues-request";
 import { GuestRequestCard } from "./guest-request-card";
 

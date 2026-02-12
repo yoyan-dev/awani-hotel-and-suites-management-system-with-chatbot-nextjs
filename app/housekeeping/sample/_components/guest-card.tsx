@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@heroui/react";
 import { format } from "date-fns";
 

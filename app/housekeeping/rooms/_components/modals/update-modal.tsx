@@ -1,3 +1,5 @@
+"use client";
+
 import { Room, RoomStatus } from "@/types/room";
 import {
   Modal,

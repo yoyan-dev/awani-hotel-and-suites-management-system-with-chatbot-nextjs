@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardBody } from "@heroui/react";
 import { RoomStatus } from "@/types/room";
 import { RoomStatusRow } from "./room-status-row";

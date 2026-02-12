@@ -1,3 +1,5 @@
+"use client";
+
 import { statusOptions } from "@/app/constants/rooms";
 import { useRooms } from "@/hooks/use-rooms";
 import { Room } from "@/types/room";

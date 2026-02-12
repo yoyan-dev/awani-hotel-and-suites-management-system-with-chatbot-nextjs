@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import AddModal from "./modals/add-modal";
 

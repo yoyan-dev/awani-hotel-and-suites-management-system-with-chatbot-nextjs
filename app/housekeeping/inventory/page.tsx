@@ -1,4 +1,5 @@
 "use client";
+
 import { useInventory } from "@/hooks/use-inventory";
 import Header from "./_components/header";
 import InventoryTable from "./_components/table/inventory-table";

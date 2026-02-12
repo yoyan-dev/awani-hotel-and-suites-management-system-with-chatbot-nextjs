@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Card, Badge, Button } from "@heroui/react";
 import {
