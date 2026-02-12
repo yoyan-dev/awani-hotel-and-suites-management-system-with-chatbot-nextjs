@@ -1,3 +1,4 @@
+"use client";
 import { statusOptions } from "@/app/constants/rooms";
 
 export default function RoomStats({ analytics }: { analytics: any }) {

@@ -47,7 +47,7 @@ export const siteConfig = {
         { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
         {
           label: "Room Reports",
-          href: "admin/rooms/reportings",
+          href: "/admin/rooms/reportings",
         },
       ],
     },

@@ -31,9 +31,27 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const { data } = await supabase.auth.getClaims();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  const user = data?.claims;
+  if (!user) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/auth";
+    loginUrl.searchParams.set(
+      "next",
+      `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    );
+
+    const redirectResponse = NextResponse.redirect(loginUrl);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+
+    return redirectResponse;
+    // return NextResponse.redirect(new URL("/auth", request.url));
+  }
+
   console.log(user);
   const roles: string[] = user?.app_metadata?.roles || [];
 
@@ -47,8 +65,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL("/guest", request.url));
 
   // Not authenticated
-  if (!user && !isPublicPath)
-    return NextResponse.redirect(new URL("/auth", request.url));
+  // if (!user && !isPublicPath)
+  //   return NextResponse.redirect(new URL("/auth", request.url));
 
   // Block auth pages if logged in
   if (pathname.startsWith("/auth") && user) {
