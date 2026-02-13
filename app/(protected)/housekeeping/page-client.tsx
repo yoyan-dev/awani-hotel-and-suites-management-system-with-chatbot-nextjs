@@ -17,11 +17,8 @@ import {
   CheckCircle,
   AlertTriangle,
 } from "lucide-react";
-import { RoomStatus } from "@/types/room";
 import { bookingStatusColorMap } from "../../constants/booking";
 import type { RoomListResponse, TodayOperations } from "@/types/housekeeping";
-
-type CleaningStatus = "clean" | "dirty" | "in_progress" | "inspected";
 
 type HousekeepingDashboardClientPageProps = {
   initialRoomList: RoomListResponse;
@@ -45,32 +42,20 @@ export default function HousekeepingDashboardClientPage({
     clearError,
   } = useHousekeeping();
 
-  const [statusFilter, setStatusFilter] = useState<string>("");
-  const [cleaningStatusFilter, setCleaningStatusFilter] = useState<string>("");
   const [hasFetchedClientData, setHasFetchedClientData] = useState(false);
 
   useEffect(() => {
-    const status = statusFilter as RoomStatus | undefined;
-    const cleaningStatus = cleaningStatusFilter as CleaningStatus | undefined;
-
     const loadData = async () => {
       await Promise.all([fetchRoomList({}), fetchTodayOperations({})]);
       setHasFetchedClientData(true);
-      void status;
-      void cleaningStatus;
     };
 
     void loadData();
-  }, [statusFilter, cleaningStatusFilter, fetchRoomList, fetchTodayOperations]);
+  }, [fetchRoomList, fetchTodayOperations]);
 
   const handleRefresh = async () => {
-    const status = statusFilter as RoomStatus | undefined;
-    const cleaningStatus = cleaningStatusFilter as CleaningStatus | undefined;
-
     await Promise.all([fetchRoomList({}), fetchTodayOperations({})]);
     setHasFetchedClientData(true);
-    void status;
-    void cleaningStatus;
   };
 
   const displayRoomList = useMemo(

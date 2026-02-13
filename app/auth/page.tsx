@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { Input, Button, Checkbox, Link, Form, Image } from "@heroui/react";
+import { Input, Button, Link, Form, Image } from "@heroui/react";
 import { MailIcon, LockIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
-import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth/actions";
 
 export default function Auth() {
@@ -15,7 +13,6 @@ export default function Auth() {
     message: string;
   } | null>(null);
 
-  const router = useRouter();
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);

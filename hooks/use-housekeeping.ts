@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   setSelectedRoom,
@@ -19,22 +20,59 @@ export function useHousekeeping() {
   const dispatch = useAppDispatch();
   const state = useAppSelector((s) => s.housekeeping);
 
-  return {
-    roomList: state.roomList,
-    todayOperations: state.todayOperations,
-    summary: state.summary,
-    selectedRoom: state.selectedRoom,
-    isLoading: state.isLoading,
-    error: state.error,
-    setSelectedRoom: (room: typeof state.selectedRoom) =>
-      dispatch(setSelectedRoom(room)),
-    clearError: () => dispatch(clearError()),
-    clearHousekeepingState: () => dispatch(clearHousekeepingState()),
-    fetchRoomList: (params: RoomListParams | null) =>
-      dispatch(fetchRoomList(params || {})),
-    fetchTodayOperations: (params: TodayOperationsParams | null) =>
+  const onSetSelectedRoom = useCallback(
+    (room: typeof state.selectedRoom) => dispatch(setSelectedRoom(room)),
+    [dispatch],
+  );
+
+  const onClearError = useCallback(() => dispatch(clearError()), [dispatch]);
+  const onClearHousekeepingState = useCallback(
+    () => dispatch(clearHousekeepingState()),
+    [dispatch],
+  );
+  const onFetchRoomList = useCallback(
+    (params: RoomListParams | null) => dispatch(fetchRoomList(params || {})),
+    [dispatch],
+  );
+  const onFetchTodayOperations = useCallback(
+    (params: TodayOperationsParams | null) =>
       dispatch(fetchTodayOperations(params || {})),
-    updateRoomStatus: (room_id: string, payload: RoomUpdatePayload) =>
+    [dispatch],
+  );
+  const onUpdateRoomStatus = useCallback(
+    (room_id: string, payload: RoomUpdatePayload) =>
       dispatch(updateRoomStatus({ room_id, payload })),
-  };
+    [dispatch],
+  );
+
+  return useMemo(
+    () => ({
+      roomList: state.roomList,
+      todayOperations: state.todayOperations,
+      summary: state.summary,
+      selectedRoom: state.selectedRoom,
+      isLoading: state.isLoading,
+      error: state.error,
+      setSelectedRoom: onSetSelectedRoom,
+      clearError: onClearError,
+      clearHousekeepingState: onClearHousekeepingState,
+      fetchRoomList: onFetchRoomList,
+      fetchTodayOperations: onFetchTodayOperations,
+      updateRoomStatus: onUpdateRoomStatus,
+    }),
+    [
+      state.roomList,
+      state.todayOperations,
+      state.summary,
+      state.selectedRoom,
+      state.isLoading,
+      state.error,
+      onSetSelectedRoom,
+      onClearError,
+      onClearHousekeepingState,
+      onFetchRoomList,
+      onFetchTodayOperations,
+      onUpdateRoomStatus,
+    ],
+  );
 }

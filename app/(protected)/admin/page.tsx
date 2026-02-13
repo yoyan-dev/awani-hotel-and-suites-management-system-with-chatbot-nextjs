@@ -172,26 +172,25 @@ async function getAdminInitialData(): Promise<AdminInitialData> {
     headers: cookieHeader ? { cookie: cookieHeader } : undefined,
   };
 
-  const [
-    bookingResult,
-    functionHallResult,
-    roomResult,
-    functionRoomResult,
-  ] = await Promise.all([
-    fetchAnalytics<BookingAnalyticsResponse>(
-      `${baseUrl}/api/analytics/bookings`,
-      requestInit,
-    ),
-    fetchAnalytics<FunctionHallAnalyticsResponse>(
-      `${baseUrl}/api/analytics/function-hall-bookings`,
-      requestInit,
-    ),
-    fetchAnalytics<RoomAnalyticsResponse>(`${baseUrl}/api/analytics/rooms`, requestInit),
-    fetchAnalytics<FunctionRoomAnalyticsResponse>(
-      `${baseUrl}/api/analytics/function-rooms`,
-      requestInit,
-    ),
-  ]);
+  const [bookingResult, functionHallResult, roomResult, functionRoomResult] =
+    await Promise.all([
+      fetchAnalytics<BookingAnalyticsResponse>(
+        `${baseUrl}/api/analytics/bookings`,
+        requestInit,
+      ),
+      fetchAnalytics<FunctionHallAnalyticsResponse>(
+        `${baseUrl}/api/analytics/function-hall-bookings`,
+        requestInit,
+      ),
+      fetchAnalytics<RoomAnalyticsResponse>(
+        `${baseUrl}/api/analytics/rooms`,
+        requestInit,
+      ),
+      fetchAnalytics<FunctionRoomAnalyticsResponse>(
+        `${baseUrl}/api/analytics/function-rooms`,
+        requestInit,
+      ),
+    ]);
 
   return {
     bookingAnalyticsData: bookingResult.data ?? EMPTY_BOOKING_ANALYTICS,

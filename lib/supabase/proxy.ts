@@ -5,35 +5,52 @@ export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error(
+      "Missing Supabase env vars. Set SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL and a publishable or anon key.",
+    );
+  }
 
   // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
-  const supabase = createServerClient(
-    process.env.SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
+  const supabase = createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) =>
+          request.cookies.set(name, value),
+        );
+        supabaseResponse = NextResponse.next({
+          request,
+        });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options),
+        );
       },
     },
-  );
+    cookieOptions: {
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  });
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+  // Root redirect
+  if (pathname === "/")
+    return NextResponse.redirect(new URL("/guest", request.url));
 
   if (!user) {
     const loginUrl = request.nextUrl.clone();
@@ -55,14 +72,9 @@ export async function updateSession(request: NextRequest) {
   console.log(user);
   const roles: string[] = user?.app_metadata?.roles || [];
 
-  const pathname = request.nextUrl.pathname;
   console.log("user", user, roles);
   const publicPaths = ["/auth"];
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-
-  // Root redirect
-  if (pathname === "/")
-    return NextResponse.redirect(new URL("/guest", request.url));
 
   // Not authenticated
   // if (!user && !isPublicPath)
