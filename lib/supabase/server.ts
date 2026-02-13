@@ -2,7 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 export async function createClient() {
-  const cookieStore = await cookies();
+  const cookieStore = await cookies(); // ✅ synchronous
+
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
   const supabaseKey =
@@ -11,30 +12,33 @@ export async function createClient() {
     process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      "Missing Supabase env vars. Set SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL and a publishable or anon key.",
-    );
+    throw new Error("Missing Supabase env vars!");
   }
 
   return createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
-        return cookieStore.getAll();
+        // ReadonlyRequestCookies doesn't have getAll() like before, we map keys
+        return cookieStore.getAll().map((c) => ({
+          name: c.name,
+          value: c.value,
+          options: {
+            path: "/",
+            httpOnly: true,
+          },
+        }));
       },
       setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
-          );
-        } catch {
-          // Server Components cannot always set cookies.
-          // Middleware will handle refresh/session cookie updates.
-        }
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookieStore.set(name, value, options);
+        });
       },
     },
     cookieOptions: {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
+      domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
     },
   });
 }
