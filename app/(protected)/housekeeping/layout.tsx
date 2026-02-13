@@ -11,7 +11,6 @@ export default async function HousekeepingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [isLoading, setIsLoading] = React.useState(false);
   const { user, error } = await getCurrentUser();
 
   return (
@@ -20,7 +19,7 @@ export default async function HousekeepingLayout({
         <Sidebar />
 
         <div className="w-full min-h-screen max-h-screen overflow-y-auto space-y-4 transition-all duration-300 ease-in-out pb-8">
-          <Navbar user={user as User} isLoading={isLoading} />
+          <Navbar user={user as User} isLoading={false} />
 
           <main className="w-full space-y-4 pb-sm p-4">{children}</main>
         </div>
