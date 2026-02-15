@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -16,39 +17,63 @@ export async function login(email: string, password: string) {
     return { error: error.message };
   }
 
+  // ✅ Get mutable cookies
+  const cookieStore = await cookies(); // do NOT await it
+
+  // Save session in HttpOnly cookie
+  if (data.session) {
+    const sessionCookie = Buffer.from(JSON.stringify(data.session)).toString(
+      "base64",
+    );
+
+    cookieStore.set({
+      name: "sb-session",
+      value: sessionCookie,
+      httpOnly: true,
+      secure: true,
+      path: "/",
+      sameSite: "lax",
+      maxAge: data.session.expires_in,
+    });
+  }
+
   const roles: string[] = data.user?.app_metadata?.roles || [];
 
-  // Optional: refresh auth-based layouts
   revalidatePath("/", "layout");
 
-  // ✅ SERVER-SIDE REDIRECT (role-based)
-  if (roles.includes("admin")) {
-    redirect("/admin");
-  } else if (roles.includes("front-office")) {
-    redirect("/front-office");
-  } else if (roles.includes("housekeeping")) {
-    redirect("/housekeeping");
-  } else {
-    redirect("/guest");
-  }
+  if (roles.includes("admin")) redirect("/admin");
+  else if (roles.includes("housekeeping")) redirect("/housekeeping");
+  else redirect("/guest");
 }
 
-export async function signup(email: string, password: string) {
-  const supabase = await createClient();
+// export async function signup(email: string, password: string) {
+//   const supabase = await createClient();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: email,
-    password: password,
-  };
+//   const { data, error } = await supabase.auth.signUp({
+//     email,
+//     password,
+//   });
 
-  const { error } = await supabase.auth.signUp(data);
+//   if (error) {
+//     redirect("/error");
+//   }
 
-  if (error) {
-    redirect("/error");
-  }
+//   // Optionally store session if auto-login is enabled after signup
+//   if (data.session) {
+//     const sessionCookie = Buffer.from(JSON.stringify(data.session)).toString(
+//       "base64",
+//     );
+//     cookies().set({
+//       name: "sb-session",
+//       value: sessionCookie,
+//       httpOnly: true,
+//       secure: true,
+//       path: "/",
+//       sameSite: "lax",
+//       maxAge: data.session?.expires_in,
+//     });
+//   }
 
-  revalidatePath("/", "layout");
-  redirect("/account");
-}
+//   revalidatePath("/", "layout");
+//   redirect("/account");
+// }
