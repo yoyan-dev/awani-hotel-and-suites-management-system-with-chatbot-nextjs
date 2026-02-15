@@ -128,12 +128,22 @@ export default function Page() {
   }
 
   return (
-    <div className="pb-16 min-h-screen">
-      <Card className="border-none shadow-none">
-        <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
-          Hotel Reservation
+    <div className="min-h-screen pb-12 pt-6 md:pt-8">
+      <Card className="mx-auto w-full max-w-7xl border border-default-200/70 bg-content1 shadow-sm dark:border-default-100/10">
+        <CardHeader className="flex flex-col items-start gap-2 border-b border-default-200/60 bg-content2/40 px-5 py-5 sm:px-8 dark:border-default-100/10">
+          {/* Refined page header for stronger visual hierarchy */}
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+            Hotel Reservation
+          </h1>
+          <p className="text-sm text-default-600 dark:text-default-300">
+            Complete your details and select your preferred room arrangement.
+          </p>
         </CardHeader>
-        <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
+        <CardBody className="w-full gap-8 p-4 sm:p-6 lg:p-8 dark:bg-gray-900">
+          {/* Responsive two-column layout:
+              mobile/tablet: stacked
+              desktop: booking form + room summary/available rooms side panel */}
+          <div className="grid w-full grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)]">
           <BookingForm
             onSubmit={(e) => handleSubmit(e, summary)}
             query={query}
@@ -158,6 +168,7 @@ export default function Page() {
               setSelectedRoom={setSelectedRoom}
             />
           ) : null}
+          </div>
         </CardBody>
       </Card>
     </div>

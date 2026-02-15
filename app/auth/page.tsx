@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
-import { Input, Button, Checkbox, Link, Form, Image } from "@heroui/react";
+import { Input, Button, Link, Form, Image } from "@heroui/react";
 import { MailIcon, LockIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
-import { useRouter } from "next/navigation";
 import { login } from "@/lib/auth/actions";
+import { useRouter } from "next/navigation";
+import { useAuthGuard } from "@/lib/auth/use-auth-guard";
 
 export default function Auth() {
+  const router = useRouter();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
@@ -15,23 +16,40 @@ export default function Auth() {
     message: string;
   } | null>(null);
 
-  const router = useRouter();
+  useAuthGuard();
+
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const { error } = await login(email, password);
+      const { error, user, session } = await login(email, password);
 
       if (error) {
         setMessage({ error: true, message: error });
         return;
-      } else {
-        setMessage({ error: false, message: "Logged in successfully!" });
       }
 
-      setIsLoading(false);
+      if (user && session) {
+        // ✅ Save session in localStorage
+        localStorage.setItem(
+          "sb-session",
+          JSON.stringify({
+            user,
+            access_token: session.access_token,
+          }),
+        );
+
+        const roles: string[] = user?.app_metadata?.roles || [];
+
+        // ✅ Redirect based on roles
+        if (roles.includes("admin")) router.push("/admin");
+        else if (roles.includes("housekeeping")) router.push("/housekeeping");
+        else router.push("/guest");
+      }
+
+      setMessage({ error: false, message: "Logged in successfully!" });
     } catch (e) {
-      setMessage({ error: true, message: "Unknow Error!" });
+      setMessage({ error: true, message: "Unknown Error!" });
     } finally {
       setIsLoading(false);
     }

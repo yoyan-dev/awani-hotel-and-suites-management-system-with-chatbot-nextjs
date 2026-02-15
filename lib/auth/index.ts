@@ -1,13 +1,36 @@
-"use server";
+"use client";
 
-import { createClient } from "../supabase/server";
+import type { User } from "@/types/users";
 
-export async function getCurrentUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+type StoredSession = {
+  user?: User;
+  access_token?: string;
+};
 
-  return { user, error };
+export function getStoredSession() {
+  const sessionStr = localStorage.getItem("sb-session");
+  if (!sessionStr) {
+    return { session: null, error: "No session found" };
+  }
+
+  try {
+    const session = JSON.parse(sessionStr) as StoredSession;
+    if (!session?.user) {
+      return { session: null, error: "Invalid session payload" };
+    }
+    return { session, error: null };
+  } catch {
+    return { session: null, error: "Invalid session payload" };
+  }
+}
+
+export function getCurrentUser() {
+  const { session, error } = getStoredSession();
+  return { user: session?.user ?? null, error };
+}
+
+export function getCurrentUserRoles() {
+  const { session } = getStoredSession();
+  const roles = session?.user?.app_metadata?.roles;
+  return Array.isArray(roles) ? [...roles] : [];
 }

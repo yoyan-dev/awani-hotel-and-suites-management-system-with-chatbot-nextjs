@@ -1,5 +1,6 @@
-"use client";
-import { supabase } from "@/lib/supabase-client";
+"use server";
+
+import { createClient } from "./supabase/server";
 
 function randomString(length = 12) {
   const chars =
@@ -12,6 +13,7 @@ function randomString(length = 12) {
 }
 
 export async function uploadRoomImage(file: File, roomNumber: string | number) {
+  const supabase = await createClient();
   if (!file) return "";
   const ext = file.name.split(".").pop();
   const newName = `${Date.now()}-${randomString()}.${ext}`;

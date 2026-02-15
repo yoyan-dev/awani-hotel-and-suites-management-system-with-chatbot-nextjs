@@ -43,4 +43,5 @@ export interface UserFormData {
   new_password: string;
   confirm_password: string;
   user_metadata: UserMetadata;
+  image: string;
 }
