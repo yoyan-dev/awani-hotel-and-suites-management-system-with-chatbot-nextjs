@@ -1,5 +1,3 @@
-"use client";
-
 import { User, UserFormData } from "@/types/users";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";

@@ -10,6 +10,7 @@ import {
 import { useUsers } from "@/hooks/use-users";
 import { addToast } from "@heroui/react";
 import { redirect } from "next/navigation";
+import { uploadUserImage } from "@/lib/upload-user-image";
 
 export default function AccountSettingsPage() {
   const { isLoading: updateUserLoading, updateUserProfile } = useUsers();
@@ -31,6 +32,7 @@ export default function AccountSettingsPage() {
         new_password: "",
         confirm_password: "",
         user_metadata: user?.user_metadata || {},
+        image: user?.user_metadata.image || "",
       });
       console.log(user);
     } catch (e) {
@@ -46,9 +48,18 @@ export default function AccountSettingsPage() {
 
   async function onSubmit(e: any, payload: UserFormData) {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const imageFile = data.get("image") as File;
+
     await updateUserProfile({
       ...payload,
-      user_metadata: { ...payload.user_metadata, full_name: payload.full_name },
+      user_metadata: {
+        ...payload.user_metadata,
+        full_name: payload.full_name,
+        image: imageFile
+          ? await uploadUserImage(imageFile)
+          : payload.user_metadata.image,
+      },
     });
     await fetchCurrentUser();
     if (formData.new_password) {

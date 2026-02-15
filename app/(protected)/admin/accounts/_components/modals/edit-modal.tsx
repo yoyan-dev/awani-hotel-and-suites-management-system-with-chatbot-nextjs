@@ -22,6 +22,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { updateUser, fetchUsers } from "@/features/users/user-thunk";
 import { User } from "@/types/users";
 import { Mail, Phone, MapPin, Calendar, Shield } from "lucide-react";
+import { useUsers } from "@/hooks/use-users";
 
 interface EditModalProps {
   user: User;
@@ -30,16 +31,10 @@ interface EditModalProps {
 }
 
 const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { isLoading } = useSelector((state: RootState) => state.users);
+  const { isLoading, fetchUsers, updateUser } = useUsers();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [formData, setFormData] = React.useState({
     full_name: user.user_metadata?.full_name || "",
-    phone: user.user_metadata?.phone || "",
-    gender: user.user_metadata?.gender || "",
-    birthday: user.user_metadata?.birthday || "",
-    address: user.user_metadata?.address || "",
-    shift_type: user.user_metadata?.shift_type || "",
     role: user.app_metadata?.roles?.[0] || "guest",
   });
 
@@ -47,11 +42,6 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
   React.useEffect(() => {
     setFormData({
       full_name: user.user_metadata?.full_name || "",
-      phone: user.user_metadata?.phone || "",
-      gender: user.user_metadata?.gender || "",
-      birthday: user.user_metadata?.birthday || "",
-      address: user.user_metadata?.address || "",
-      shift_type: user.user_metadata?.shift_type || "",
       role: user.app_metadata?.roles?.[0] || "guest",
     });
   }, [user]);
@@ -66,11 +56,6 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
         user_metadata: {
           ...user.user_metadata,
           full_name: formData.full_name,
-          phone: formData.phone,
-          gender: formData.gender as "male" | "female",
-          birthday: formData.birthday,
-          address: formData.address,
-          shift_type: formData.shift_type as "AM" | "MID" | "PM" | "GY",
         },
         app_metadata: {
           ...user.app_metadata,
@@ -78,8 +63,8 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
         },
       };
 
-      await dispatch(updateUser(updatedUser)).unwrap();
-      await dispatch(fetchUsers()).unwrap();
+      await updateUser(updatedUser);
+      await fetchUsers();
       onClose();
     } catch (err) {
       console.error("Failed to update user", err);
@@ -88,10 +73,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
     }
   }
 
-  const handleChange = (
-    name: string,
-    value: string | "AM" | "MID" | "PM" | "GY",
-  ) => {
+  const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -109,15 +91,18 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
               <div className="flex items-center gap-3">
                 <Avatar name={formData.full_name || user.email} size="md" />
                 <div>
-                  <h3 className="text-lg font-semibold">Edit User</h3>
+                  <h3 className="text-lg font-semibold">
+                    {user.user_metadata.full_name}{" "}
+                  </h3>
                   <p className="text-small text-default-500">{user.email}</p>
                 </div>
               </div>
             </ModalHeader>
             <ModalBody>
-              <Form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-2 gap-4">
+              <Form className="space-y-4 " onSubmit={handleSubmit}>
+                <div className="grid grid-cols-2 gap-4 w-full">
                   <Input
+                    fullWidth
                     label="Full Name"
                     name="full_name"
                     value={formData.full_name}
@@ -125,16 +110,31 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                     placeholder="Full name"
                     required
                   />
-                  <Input
+                  <Select
+                    fullWidth
+                    label="Role"
+                    name="role"
+                    selectedKeys={[formData.role]}
+                    onSelectionChange={(keys) => {
+                      const value = Array.from(keys)[0] as string;
+                      handleChange("role", value);
+                    }}
+                    placeholder="Select role"
+                  >
+                    <SelectItem key="admin">Admin</SelectItem>
+                    <SelectItem key="housekeeping">Housekeeping</SelectItem>
+                  </Select>
+                  {/* <Input
+                    fullWidth
                     label="Phone"
                     name="phone"
                     value={formData.phone}
                     onValueChange={(value) => handleChange("phone", value)}
                     placeholder="Phone number"
-                  />
+                  /> */}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                {/* <div className="grid grid-cols-2 gap-4 w-full">
                   <Select
                     label="Gender"
                     name="gender"
@@ -149,6 +149,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                     <SelectItem key="female">Female</SelectItem>
                   </Select>
                   <Input
+                    fullWidth
                     label="Birthday"
                     name="birthday"
                     type="date"
@@ -157,8 +158,9 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 w-full">
                   <Select
+                    fullWidth
                     label="Shift Type"
                     name="shift_type"
                     selectedKeys={
@@ -180,6 +182,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                     <SelectItem key="GY">GY</SelectItem>
                   </Select>
                   <Select
+                    fullWidth
                     label="Role"
                     name="role"
                     selectedKeys={[formData.role]}
@@ -194,15 +197,16 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                     <SelectItem key="housekeeping">Housekeeping</SelectItem>
                     <SelectItem key="guest">Guest</SelectItem>
                   </Select>
-                </div>
+                </div> */}
 
-                <Textarea
+                {/* <Textarea
+                  fullWidth
                   label="Address"
                   name="address"
                   value={formData.address}
                   onValueChange={(value) => handleChange("address", value)}
                   placeholder="Address"
-                />
+                /> */}
 
                 <ModalFooter className="flex justify-end gap-2 w-full px-0">
                   <Button onPress={onClose} variant="bordered">

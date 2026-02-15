@@ -54,43 +54,9 @@ export async function PUT(
   const { id } = await context.params;
   const body = await req.json();
 
-  const { data, error } = await supabase
-    .from("users")
-    .update(body)
-    .eq("id", id)
-    .select()
-    .single();
+  const result = await supabaseAdmin.auth.admin.updateUserById(id, body);
 
-  if (error) {
-    console.error("Update error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "error",
-        },
-        error: error.message,
-      },
-      { status: 500 },
-    );
-  }
-
-  if (!data) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: "User not found",
-          color: "error",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
+  console.log(result);
   return NextResponse.json({
     success: true,
     message: {
@@ -98,7 +64,7 @@ export async function PUT(
       description: "Account updated successfully",
       color: "success",
     },
-    data: data,
+    data: [],
   });
 }
 

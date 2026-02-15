@@ -1,5 +1,4 @@
 "use client";
-
 import AccountCard from "./_components/account-card";
 import React from "react";
 import { User, UserFormData } from "@/types/users";
@@ -11,6 +10,7 @@ import {
 import { useUsers } from "@/hooks/use-users";
 import { addToast } from "@heroui/react";
 import { redirect } from "next/navigation";
+import { uploadUserImage } from "@/lib/upload-user-image";
 
 export default function AccountSettingsPage() {
   const { isLoading: updateUserLoading, updateUserProfile } = useUsers();
@@ -27,11 +27,12 @@ export default function AccountSettingsPage() {
       setUser(user as User);
       setFormData({
         email: user?.email || "",
-        full_name: user?.user_metadata?.full_name || "",
+        full_name: user?.user_metadata.full_name || "",
         current_password: "",
         new_password: "",
         confirm_password: "",
         user_metadata: user?.user_metadata || {},
+        image: user?.user_metadata.image || "",
       });
       console.log(user);
     } catch (e) {
@@ -47,9 +48,18 @@ export default function AccountSettingsPage() {
 
   async function onSubmit(e: any, payload: UserFormData) {
     e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const imageFile = data.get("image") as File;
+
     await updateUserProfile({
       ...payload,
-      user_metadata: { ...payload.user_metadata, full_name: payload.full_name },
+      user_metadata: {
+        ...payload.user_metadata,
+        full_name: payload.full_name,
+        image: imageFile
+          ? await uploadUserImage(imageFile)
+          : payload.user_metadata.image,
+      },
     });
     await fetchCurrentUser();
     if (formData.new_password) {

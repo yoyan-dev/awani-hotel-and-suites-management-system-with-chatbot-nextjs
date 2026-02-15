@@ -9,6 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
+// import AuthSessionSync from "./auth-session-sync";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -53,6 +54,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   return (
     <HeroUIProvider navigate={router.push}>
       <NextThemesProvider {...themeProps}>
+        {/* <AuthSessionSync /> */}
         <RouteLoader>
           <ReduxProvider>{children}</ReduxProvider>
         </RouteLoader>

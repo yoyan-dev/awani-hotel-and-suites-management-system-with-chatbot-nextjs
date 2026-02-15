@@ -5,6 +5,7 @@ import AccountAvatar from "./account-avatar";
 import AccountForm from "./account-form";
 import { CameraIcon } from "lucide-react";
 import { User, UserFormData } from "@/types/users";
+import React from "react";
 
 export default function AccountCard({
   user,
@@ -19,6 +20,20 @@ export default function AccountCard({
   onSubmit: (e: any, formData: UserFormData) => void;
   isLoading: boolean;
 }) {
+  const [previewImage, setPreviewImage] = React.useState<string>(
+    user.user_metadata.image || "",
+  );
+
+  const handleImageChange = (e: any) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <Card
       as={Form}
@@ -29,12 +44,25 @@ export default function AccountCard({
         <div className="flex flex-col  items-center mb-4">
           <AccountAvatar
             image={
-              user.user_metadata.image ||
+              previewImage ||
               "https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg"
             }
             name={user.user_metadata.full_name || "Awani User"}
           />
-          <Button size="sm" variant="flat" className="mt-4">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            name="image"
+            id="file-upload"
+          />
+          <Button
+            size="sm"
+            variant="flat"
+            className="mt-4"
+            onPress={() => document.getElementById("file-upload")?.click()}
+          >
             <CameraIcon /> Change Profile
           </Button>
         </div>

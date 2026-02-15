@@ -8,11 +8,9 @@ import {
   Button,
   useDisclosure,
 } from "@heroui/react";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "@/store/store";
-import { deleteUser } from "@/features/users/user-thunk";
 import { User } from "@/types/users";
 import { Trash2, AlertTriangle } from "lucide-react";
+import { useUsers } from "@/hooks/use-users";
 
 interface DeleteModalProps {
   user: User;
@@ -20,32 +18,25 @@ interface DeleteModalProps {
 }
 
 export default function DeleteModal({ user, trigger }: DeleteModalProps) {
-  const dispatch = useDispatch<AppDispatch>();
-  const isLoading = useSelector((state: RootState) => state.users.isLoading);
+  const { isLoading, deleteUser } = useUsers();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   function handleDelete() {
-    dispatch(deleteUser(user.id));
+    deleteUser(user.id);
     onOpenChange();
   }
 
   return (
     <>
-      {trigger ? (
-        <div onClick={onOpen} className="cursor-pointer">
-          {trigger}
-        </div>
-      ) : (
-        <Button
-          onPress={onOpen}
-          variant="flat"
-          isIconOnly
-          color="danger"
-          size="sm"
-        >
-          <Trash2 size={16} />
-        </Button>
-      )}
+      <Button
+        onPress={onOpen}
+        variant="flat"
+        isIconOnly
+        color="danger"
+        size="sm"
+      >
+        <Trash2 size={16} />
+      </Button>
       <Modal backdrop="blur" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (

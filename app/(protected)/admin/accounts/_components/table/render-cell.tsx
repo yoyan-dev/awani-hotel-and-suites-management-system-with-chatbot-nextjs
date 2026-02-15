@@ -9,7 +9,7 @@ import {
   SelectItem,
 } from "@heroui/react";
 import { statusColorMap } from "@/app/constants/staff";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Shield, Trash2 } from "lucide-react";
 import DeleteModal from "../modals/delete-modal";
 import EditModal from "../modals/edit-modal";
 import ViewModal from "../modals/view-modal";
@@ -27,39 +27,10 @@ type RoleType = "admin" | "housekeeping" | "guest" | "front_office";
 
 const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
   const cellValue = user[columnKey as keyof User];
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [role, setRole] = React.useState<RoleType>(
-    (user.app_metadata?.roles?.[0] as RoleType) || "guest",
-  );
-  const [isSaving, setIsSaving] = React.useState(false);
-  const dispatch = useDispatch<AppDispatch>();
-
   // Modals state
   const [isEditOpen, setIsEditOpen] = React.useState(false);
   const [isViewOpen, setIsViewOpen] = React.useState(false);
-
-  const handleSaveRole = async () => {
-    setIsSaving(true);
-    try {
-      const updatedUser: User = {
-        ...user,
-        app_metadata: {
-          ...user.app_metadata,
-          roles: [role],
-        },
-      };
-      await dispatch(updateUser(updatedUser));
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Failed to update role:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleRoleChange = (newRole: RoleType) => {
-    setRole(newRole);
-  };
+  const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
 
   switch (columnKey) {
     case "name":
@@ -76,63 +47,23 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
         />
       );
     case "email":
-      return user.email;
+      return <div className="lowercase">{user.email}</div>;
     case "role":
-      if (isEditing) {
-        return (
-          <div className="flex gap-2 items-center">
-            <Select
-              radius="sm"
-              size="sm"
-              variant="bordered"
-              selectedKeys={[role]}
-              onSelectionChange={(keys) => {
-                const selectedRole = Array.from(keys)[0] as RoleType;
-                handleRoleChange(selectedRole);
-              }}
-              className="w-32"
-            >
-              <SelectItem key="admin">Admin</SelectItem>
-              <SelectItem key="housekeeping">Housekeeping</SelectItem>
-              <SelectItem key="guest">Guest</SelectItem>
-            </Select>
-            <Button
-              size="sm"
-              variant="flat"
-              color="success"
-              onPress={handleSaveRole}
-              isLoading={isSaving}
-            >
-              Save
-            </Button>
-            <Button
-              size="sm"
-              variant="flat"
-              color="danger"
-              onPress={() => {
-                setIsEditing(false);
-                setRole((user.app_metadata?.roles?.[0] as RoleType) || "guest");
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        );
-      }
       return (
         <Chip
-          className="capitalize border-none gap-1 text-default-600"
+          className="capitalize"
           color={
-            role === "admin"
+            user?.app_metadata?.roles?.[0] === "admin"
               ? "primary"
-              : role === "housekeeping"
+              : user?.app_metadata?.roles?.[0] === "housekeeping"
                 ? "warning"
                 : "default"
           }
           size="sm"
           variant="flat"
+          startContent={<Shield size={14} />}
         >
-          {role}
+          {user?.app_metadata?.roles?.[0]}
         </Chip>
       );
     case "shift_type":
@@ -162,7 +93,7 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
     case "actions":
       return (
         <div className="flex justify-end items-center gap-2">
-          <Button
+          {/* <Button
             variant="flat"
             isIconOnly
             size="sm"
@@ -170,12 +101,12 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
             onPress={() => setIsViewOpen(true)}
           >
             <Eye size={16} />
-          </Button>
+          </Button> */}
           <Button
             variant="flat"
             isIconOnly
             size="sm"
-            color={isEditing ? "warning" : "success"}
+            color="success"
             onPress={() => setIsEditOpen(true)}
           >
             <Pencil size={16} />
@@ -195,7 +126,6 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
             isOpen={isEditOpen}
             onClose={() => {
               setIsEditOpen(false);
-              setIsEditing(false);
             }}
           />
           <ViewModal

@@ -44,9 +44,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
 
     let imageUrl = formData.image;
 
-    // if (file && file.size > 0) {
-    //   imageUrl = await uploadRoomImage(file, "type-image");
-    // }
+    if (file && file.size > 0) {
+      imageUrl = await uploadRoomImage(file, "type-image");
+    }
 
     await updateRoomType({
       ...formData,

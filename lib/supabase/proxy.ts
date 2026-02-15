@@ -18,7 +18,7 @@ export async function updateSession(request: NextRequest) {
     );
   }
 
-  // With Fluid compute, don't put this client in a global environment
+  // // With Fluid compute, don't put this client in a global environment
   // variable. Always create a new one on each request.
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
@@ -47,27 +47,31 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // const data = await getSession();
+  // console.log("session data: ", data);
   const pathname = request.nextUrl.pathname;
   // Root redirect
-  if (pathname === "/")
-    return NextResponse.redirect(new URL("/guest", request.url));
-
-  if (!user) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/auth";
-    loginUrl.searchParams.set(
-      "next",
-      `${request.nextUrl.pathname}${request.nextUrl.search}`,
-    );
-
-    const redirectResponse = NextResponse.redirect(loginUrl);
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      redirectResponse.cookies.set(cookie);
-    });
-
+  if (pathname === "/") {
+    const redirectResponse = NextResponse.redirect("/guest");
     return redirectResponse;
-    // return NextResponse.redirect(new URL("/auth", request.url));
   }
+
+  // if (!user) {
+  //   const loginUrl = request.nextUrl.clone();
+  //   loginUrl.pathname = "/auth";
+  //   loginUrl.searchParams.set(
+  //     "next",
+  //     `${request.nextUrl.pathname}${request.nextUrl.search}`,
+  //   );
+
+  //   const redirectResponse = NextResponse.redirect(loginUrl);
+  //   supabaseResponse.cookies.getAll().forEach((cookie) => {
+  //     redirectResponse.cookies.set(cookie);
+  //   });
+
+  //   return redirectResponse;
+  //   // return NextResponse.redirect(new URL("/auth", request.url));
+  // }
 
   console.log(user);
   const roles: string[] = user?.app_metadata?.roles || [];
@@ -81,23 +85,23 @@ export async function updateSession(request: NextRequest) {
   //   return NextResponse.redirect(new URL("/auth", request.url));
 
   // Block auth pages if logged in
-  if (pathname.startsWith("/auth") && user) {
-    if (roles.includes("admin"))
-      return NextResponse.redirect(new URL("/admin", request.url));
-    if (roles.includes("housekeeping"))
-      return NextResponse.redirect(new URL("/housekeeping", request.url));
-    return NextResponse.redirect(new URL("/guest", request.url));
-  }
+  // if (pathname.startsWith("/auth") && user) {
+  //   if (roles.includes("admin"))
+  //     return NextResponse.redirect(new URL("/admin", request.url));
+  //   if (roles.includes("housekeeping"))
+  //     return NextResponse.redirect(new URL("/housekeeping", request.url));
+  //   return NextResponse.redirect(new URL("/guest", request.url));
+  // }
 
-  // Admin guard
-  if (pathname.startsWith("/admin") && !roles.includes("admin")) {
-    return NextResponse.redirect(new URL("/auth", request.url));
-  }
+  // // Admin guard
+  // if (pathname.startsWith("/admin") && !roles.includes("admin")) {
+  //   return NextResponse.redirect(new URL("/auth", request.url));
+  // }
 
-  // Housekeeping guard
-  if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
-    return NextResponse.redirect(new URL("/auth", request.url));
-  }
+  // // Housekeeping guard
+  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
+  //   return NextResponse.redirect(new URL("/auth", request.url));
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
