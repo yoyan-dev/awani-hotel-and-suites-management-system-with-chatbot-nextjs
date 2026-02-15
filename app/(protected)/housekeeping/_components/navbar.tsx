@@ -22,7 +22,7 @@ import { Link } from "@heroui/link";
 import { SearchIcon } from "lucide-react";
 import NextLink from "next/link";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { User } from "@/types/users";
 
@@ -33,6 +33,7 @@ interface Props {
 
 export default function Navbar({ user, isLoading }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <HeroUINavbar
@@ -92,19 +93,26 @@ export default function Navbar({ user, isLoading }: Props) {
       <NavbarMenu className="backdrop-blur-lg bg-white/80 dark:bg-gray-900/80">
         {siteConfig.housekeepingNavMenuItems.map((item: any) => {
           const isActive = pathname === item.href;
+          const isLogoutItem = item.href === "/api/auth/signout";
 
           return (
             <div key={item.label} className="mb-1">
               <Listbox aria-label="menu">
                 <ListboxItem
                   key={item.href}
-                  as={NextLink}
-                  href={item.href}
+                  onClick={() => {
+                    if (isLogoutItem) {
+                      localStorage.removeItem("sb-session");
+                      router.replace("/auth");
+                    }
+                  }}
+                  as={!isLogoutItem ? NextLink : undefined}
+                  href={!isLogoutItem ? item.href : undefined}
                   className={cn(
                     "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
                     isActive
                       ? "text-primary-600 font-semibold"
-                      : item.label === "Logout"
+                      : isLogoutItem
                         ? "text-red-500 hover:text-red-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                   )}

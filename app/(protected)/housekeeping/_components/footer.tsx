@@ -1,12 +1,13 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import { cn } from "@heroui/react";
 
 export default function FooterNav() {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <footer
@@ -16,11 +17,19 @@ export default function FooterNav() {
     >
       {siteConfig.housekeepingNavMenuItems.map((item) => {
         const isActive = pathname === item.href;
+        const isLogoutItem = item.href === "/api/auth/signout";
 
         return (
           <Link
             key={item.href}
-            href={item.href}
+            href={isLogoutItem ? "#" : item.href}
+            onClick={(e) => {
+              if (isLogoutItem) {
+                e.preventDefault();
+                localStorage.removeItem("sb-session");
+                router.replace("/auth");
+              }
+            }}
             className={cn(
               "py-4 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 transition-all duration-200 hover:text-primary-500",
               isActive && "text-primary-600 dark:text-primary-400 scale-110",

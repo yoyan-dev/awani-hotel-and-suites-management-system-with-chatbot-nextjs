@@ -2,7 +2,7 @@
 
 import React from "react";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,6 +26,7 @@ export const ListboxWrapper = ({ children, collapsed }: any) => (
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
 
@@ -60,14 +61,19 @@ export default function AdminSidebar() {
           {siteConfig.navItems.map((item: any) => {
             const isActive = pathname === item.href;
             const isExpanded = expandedItem === item.label;
-
+            const isLogoutItem = item.href === "/api/auth/signout";
             return (
               <div key={item.label} className="mb-1">
                 <Listbox aria-label="menu">
                   <ListboxItem
                     key={item.href}
                     onClick={() =>
-                      item.isExpandable ? toggleExpand(item.label) : null
+                      item.isExpandable
+                        ? toggleExpand(item.label)
+                        : isLogoutItem
+                          ? (localStorage.removeItem("sb-session"),
+                            router.replace("/auth"))
+                          : null
                     }
                     as={!item.isExpandable ? NextLink : undefined}
                     href={!item.isExpandable ? item.href : undefined}

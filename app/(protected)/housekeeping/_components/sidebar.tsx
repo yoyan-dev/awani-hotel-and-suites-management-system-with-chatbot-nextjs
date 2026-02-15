@@ -1,7 +1,7 @@
 "use client";
 
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Image, Listbox, ListboxItem, cn } from "@heroui/react";
 import { siteConfig } from "@/config/site";
@@ -23,6 +23,7 @@ export const ListboxWrapper = ({ children, collapsed }: any) => {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -57,19 +58,28 @@ export default function Sidebar() {
         <nav className="flex-1 overflow-y-auto scrollbar-hide px-2 mt-3">
           {siteConfig.housekeepingNavMenuItems.map((item: any) => {
             const isActive = pathname === item.href;
+            const isLogoutItem = item.href === "/api/auth/signout";
 
             return (
               <div key={item.label} className="mb-1">
                 <Listbox aria-label="menu">
                   <ListboxItem
                     key={item.href}
-                    as={!item.isExpandable ? NextLink : undefined}
-                    href={!item.isExpandable ? item.href : undefined}
+                    onClick={() => {
+                      if (isLogoutItem) {
+                        localStorage.removeItem("sb-session");
+                        router.replace("/auth");
+                      }
+                    }}
+                    as={!item.isExpandable && !isLogoutItem ? NextLink : undefined}
+                    href={
+                      !item.isExpandable && !isLogoutItem ? item.href : undefined
+                    }
                     className={cn(
                       "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
                       isActive
                         ? "text-primary-600 font-semibold"
-                        : item.label === "Logout"
+                        : isLogoutItem
                           ? "text-red-500 hover:text-red-600"
                           : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}

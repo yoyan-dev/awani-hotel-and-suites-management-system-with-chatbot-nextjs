@@ -20,7 +20,7 @@ import {
   User as UserAccount,
 } from "@heroui/react";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
@@ -34,6 +34,7 @@ interface Props {
 
 export default function AdminNavbar({ user, isLoading }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
 
@@ -92,22 +93,32 @@ export default function AdminNavbar({ user, isLoading }: Props) {
         {siteConfig.navItems.map((item: any) => {
           const isActive = pathname === item.href;
           const isExpanded = expandedItem === item.label;
+          const isLogoutItem = item.href === "/api/auth/signout";
 
           return (
             <div key={item.label} className="mb-1">
               <Listbox aria-label="menu">
                 <ListboxItem
                   key={item.href}
-                  onClick={() =>
-                    item.isExpandable ? toggleExpand(item.label) : null
+                  onClick={() => {
+                    if (item.isExpandable) {
+                      toggleExpand(item.label);
+                    } else if (isLogoutItem) {
+                      localStorage.removeItem("sb-session");
+                      router.replace("/auth");
+                    }
+                  }}
+                  as={
+                    !item.isExpandable && !isLogoutItem ? NextLink : undefined
                   }
-                  as={!item.isExpandable ? NextLink : undefined}
-                  href={!item.isExpandable ? item.href : undefined}
+                  href={
+                    !item.isExpandable && !isLogoutItem ? item.href : undefined
+                  }
                   className={cn(
                     "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
                     isActive
                       ? "text-primary-600 font-semibold"
-                      : item.label === "Logout"
+                      : isLogoutItem
                         ? "text-red-500 hover:text-red-600"
                         : "text-gray-600 dark:text-gray-300 hover:text-primary-500 hover:bg-gray-100 dark:hover:bg-gray-800",
                   )}
