@@ -33,7 +33,7 @@ export async function login(email: string, password: string) {
       secure: true,
       path: "/",
       sameSite: "lax",
-      maxAge: data.session.expires_in,
+      maxAge: 60 * 60 * 24 * 7,
     });
   }
 
