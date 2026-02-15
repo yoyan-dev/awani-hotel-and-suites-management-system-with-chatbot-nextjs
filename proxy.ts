@@ -1,56 +1,20 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { createClient } from "./lib/supabase/server";
-import { updateSession } from "./lib/supabase/proxy";
+import { NextResponse, type NextRequest } from "next/server";
+import { createClient } from "./lib/supabase/proxy";
 
-export async function proxy(req: NextRequest) {
-  return await updateSession(req);
-  // const res = NextResponse.next();
-  // const supabase = await createClient();
-  // await supabase.auth.getSession();
-
-  // const {
-  //   data: { session },
-  // } = await supabase.auth.getSession();
-
-  // const user = session?.user ?? null;
-  // const roles: string[] = session?.user?.app_metadata?.roles || [];
-
-  // const pathname = req.nextUrl.pathname;
-  // console.log("user", user, roles);
-  // const publicPaths = ["/auth"];
-  // const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
-
-  // // Root redirect
-  // if (pathname === "/")
-  //   return NextResponse.redirect(new URL("/guest", req.url));
-
-  // Not authenticated
-  // if (!user && !isPublicPath)
-  //   return NextResponse.redirect(new URL("/auth", req.url));
-
-  // // Block auth pages if logged in
-  // if (pathname.startsWith("/auth") && user) {
-  //   if (roles.includes("admin"))
-  //     return NextResponse.redirect(new URL("/admin", req.url));
-  //   if (roles.includes("housekeeping"))
-  //     return NextResponse.redirect(new URL("/housekeeping", req.url));
-  //   return NextResponse.redirect(new URL("/guest", req.url));
-  // }
-
-  // // Admin guard
-  // if (pathname.startsWith("/admin") && !roles.includes("admin")) {
-  //   return NextResponse.redirect(new URL("/auth", req.url));
-  // }
-
-  // // Housekeeping guard
-  // if (pathname.startsWith("/housekeeping") && !roles.includes("housekeeping")) {
-  //   return NextResponse.redirect(new URL("/auth", req.url));
-  // }
-
-  // return res;
+export async function proxy(request: NextRequest) {
+  const { supabase, response } = createClient(request);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  console.log(user);
+  if (!user) {
+    return NextResponse.redirect(new URL("/auth", request.url));
+  }
+  return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/housekeeping/:path*", "/guest/:path*"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

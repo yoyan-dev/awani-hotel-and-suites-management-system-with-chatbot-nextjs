@@ -6,10 +6,7 @@ export async function createClient() {
 
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
-  const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    process.env.SUPABASE_ANON_KEY;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     throw new Error("Missing Supabase env vars!");
@@ -19,14 +16,7 @@ export async function createClient() {
     cookies: {
       getAll() {
         // ReadonlyRequestCookies doesn't have getAll() like before, we map keys
-        return cookieStore.getAll().map((c) => ({
-          name: c.name,
-          value: c.value,
-          options: {
-            path: "/",
-            httpOnly: true,
-          },
-        }));
+        return cookieStore.getAll();
       },
       setAll(cookiesToSet) {
         cookiesToSet.forEach(({ name, value, options }) => {
