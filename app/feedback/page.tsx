@@ -47,7 +47,7 @@ export default function FeedbackPage() {
   if (submitted) return <SuccessScreen />;
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-[#f4f6f8] dark:bg-gray-900 flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-2xl">
         <FeedbackHeader />
         <FeedbackForm

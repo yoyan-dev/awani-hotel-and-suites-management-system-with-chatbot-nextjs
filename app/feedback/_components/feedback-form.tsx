@@ -37,7 +37,7 @@ export default function FeedbackForm({
   isLoading,
 }: FeedbackFormProps) {
   return (
-    <Card className="bg-white border border-gray-200 rounded-lg shadow-sm">
+    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-100 rounded-lg shadow-sm">
       <CardBody className="p-10">
         <form onSubmit={handleSubmit} className="space-y-10">
           {/* Guest Info */}
