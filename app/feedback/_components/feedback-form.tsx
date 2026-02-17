@@ -17,9 +17,9 @@ interface FeedbackFormProps {
   rating: RatingScale | "";
   hovered: number | null;
   setHovered: React.Dispatch<React.SetStateAction<number | null>>;
-  setRating: React.Dispatch<React.SetStateAction<RatingScale>>;
+  setRating: React.Dispatch<React.SetStateAction<RatingScale | "">>;
   recommend: RecommendationValue | "";
-  setRecommend: React.Dispatch<React.SetStateAction<RecommendationValue>>;
+  setRecommend: React.Dispatch<React.SetStateAction<RecommendationValue | "">>;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   ratingMessages: Record<RatingScale, string>;
   isLoading: boolean;

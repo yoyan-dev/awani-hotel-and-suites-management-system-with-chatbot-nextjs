@@ -4,8 +4,26 @@ import { ApiResponse } from "@/types/response";
 
 const dbTable = "feedback";
 
-export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const { data, error } = await supabase.from(dbTable).select("*");
+export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
+  const { searchParams } = new URL(req.url);
+
+  const query = searchParams.get("q") || "";
+  const page = Number(searchParams.get("page") || "1");
+  const limit = 10;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let q = supabase.from(dbTable).select(`*`, { count: "exact" });
+
+  if (query) {
+    q = q.or(
+      `full_name.ilike.%${query}%,email.ilike.%${query}%,room_number.ilike.%${query}%,recommend.ilike.%${query}%,comments.ilike.%${query}%`,
+    );
+  }
+
+  const { data, error, count } = await q
+    .range(from, to)
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.error("Error fetching guest feedback:", error.message);
@@ -31,7 +49,13 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: data,
+      data: data || [],
+      pagination: {
+        page,
+        limit,
+        total: count ?? 0,
+        total_pages: Math.ceil((count ?? 0) / limit),
+      },
     },
     { status: 201 },
   );

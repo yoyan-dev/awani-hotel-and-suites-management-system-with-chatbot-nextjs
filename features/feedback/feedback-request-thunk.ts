@@ -1,28 +1,39 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
-import { FeedbackPayload } from "@/types/feedback";
+import {
+  FeedbackFetchParams,
+  FeedbackPagination,
+  FeedbackPayload,
+} from "@/types/feedback";
 
 const apiUrl = "/api/feedback";
 
-export const fetchGuestFeedbacks = createAsyncThunk<FeedbackPayload[]>(
-  "inventory/fetchGuestFeedbacks",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await fetch(apiUrl);
-      const data = await res.json();
+export const fetchGuestFeedbacks = createAsyncThunk<
+  { data: FeedbackPayload[]; pagination: FeedbackPagination },
+  FeedbackFetchParams | undefined
+>("inventory/fetchGuestFeedbacks", async (params, { rejectWithValue }) => {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.append("page", String(params.page));
+    if (params?.query) searchParams.append("q", params.query);
 
-      if (!res.ok || !data.success) {
-        addToast(data.message);
-        return rejectWithValue(
-          data.message?.description ?? "Failed to fetch guest feedbacks",
-        );
-      }
-      return data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      addToast(data.message);
+      return rejectWithValue(
+        data.message?.description ?? "Failed to fetch guest feedbacks",
+      );
     }
-  },
-);
+    return {
+      data: data.data,
+      pagination: data.pagination,
+    };
+  } catch (error: any) {
+    return rejectWithValue(error.message);
+  }
+});
 
 export const fetchGuestFeedback = createAsyncThunk<FeedbackPayload, string>(
   "inventory/fetchGuestFeedback",

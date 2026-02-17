@@ -10,6 +10,7 @@ import {
   ChefHatIcon,
   Calendar,
   InfoIcon,
+  MessageSquare,
 } from "lucide-react";
 import { Children } from "react";
 
@@ -66,12 +67,12 @@ export const siteConfig = {
         },
       ],
     },
-    // {
-    //   label: "Restaurant Menus",
-    //   href: "/admin/restaurant-menus",
-    //   isExpandable: true,
-    //   icon: Utensils,
-    // },
+    {
+      label: "Guest Feedbacks",
+      href: "/admin/feedback",
+      isExpandable: false,
+      icon: MessageSquare,
+    },
     // {
     //   label: "Guest",
     //   href: "/admin/guest",

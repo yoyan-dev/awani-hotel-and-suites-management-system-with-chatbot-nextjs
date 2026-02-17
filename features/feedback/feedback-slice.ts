@@ -1,4 +1,8 @@
-import { FeedbackPayload, GuestFeedbackState } from "@/types/feedback";
+import {
+  FeedbackPagination,
+  FeedbackPayload,
+  GuestFeedbackState,
+} from "@/types/feedback";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   addGuestFeedback,
@@ -12,6 +16,12 @@ import {
 const initialState: GuestFeedbackState = {
   guest_feedbacks: [],
   guest_feedback: null,
+  pagination: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    total_pages: 0,
+  },
   isLoading: false,
   error: undefined,
 };
@@ -51,9 +61,16 @@ const guestRequestFeedback = createSlice({
       })
       .addCase(
         fetchGuestFeedbacks.fulfilled,
-        (state, action: PayloadAction<FeedbackPayload[]>) => {
+        (
+          state,
+          action: PayloadAction<{
+            data: FeedbackPayload[];
+            pagination: FeedbackPagination;
+          }>,
+        ) => {
           state.isLoading = false;
-          state.guest_feedbacks = action.payload;
+          state.guest_feedbacks = action.payload.data;
+          state.pagination = action.payload.pagination;
           state.error = undefined;
         },
       )
