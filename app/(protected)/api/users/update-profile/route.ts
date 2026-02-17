@@ -8,30 +8,14 @@ export async function PUT(
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await req.json();
-
     const {
+      user,
       email,
       current_password,
       new_password,
       confirm_password,
       user_metadata,
     } = body;
-
-    const { user, error: userError } = await getCurrentUser();
-
-    if (userError || !user) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Unauthorized",
-            description: "User not authenticated",
-            color: "error",
-          },
-        },
-        { status: 401 },
-      );
-    }
 
     // ============================
     // PASSWORD CHANGE
