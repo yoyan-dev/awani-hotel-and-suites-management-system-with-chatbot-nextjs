@@ -1,9 +1,11 @@
 "use client";
 
-import type { User } from "@/types/users";
+import type { User, UserMetadata } from "@/types/users";
 
 type StoredSession = {
+  user_metadata?: UserMetadata;
   user?: User;
+  email?: string;
   access_token?: string;
 };
 
@@ -33,4 +35,39 @@ export function getCurrentUserRoles() {
   const { session } = getStoredSession();
   const roles = session?.user?.app_metadata?.roles;
   return Array.isArray(roles) ? [...roles] : [];
+}
+
+/**
+ * 🔥 Update entire stored session
+ */
+export function updateStoredSession(updates: Partial<StoredSession>) {
+  const { session } = getStoredSession();
+  if (!session) return;
+
+  const updatedSession: StoredSession = {
+    ...session,
+    ...updates,
+  };
+
+  localStorage.setItem("sb-session", JSON.stringify(updatedSession));
+}
+
+/**
+ * 🔥 Update user metadata
+ */
+export function updateStoredUser(updates: Partial<User>) {
+  const { session } = getStoredSession();
+  if (!session?.user) return;
+
+  const updatedUser: User = {
+    ...session.user,
+    ...updates,
+  };
+
+  const updatedSession: StoredSession = {
+    ...session,
+    user: updatedUser,
+  };
+
+  localStorage.setItem("sb-session", JSON.stringify(updatedSession));
 }

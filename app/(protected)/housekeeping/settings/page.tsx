@@ -2,7 +2,11 @@
 import AccountCard from "./_components/account-card";
 import React from "react";
 import { User, UserFormData } from "@/types/users";
-import { getCurrentUser } from "@/lib/auth";
+import {
+  getCurrentUser,
+  updateStoredSession,
+  updateStoredUser,
+} from "@/lib/auth";
 import {
   DashboardLayout,
   LoadingState,
@@ -33,7 +37,7 @@ export default function AccountSettingsPage() {
         confirm_password: "",
         user_metadata: user?.user_metadata || {},
         image: user?.user_metadata.image || "",
-      });
+      } as UserFormData);
       console.log(user);
     } catch (e) {
       console.log(e);
@@ -50,17 +54,29 @@ export default function AccountSettingsPage() {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const imageFile = data.get("image") as File;
+    const imageUrl = imageFile
+      ? await uploadUserImage(imageFile)
+      : user?.user_metadata.image;
 
     await updateUserProfile({
       ...payload,
       user_metadata: {
         ...payload.user_metadata,
         full_name: payload.full_name,
-        image: imageFile
-          ? await uploadUserImage(imageFile)
-          : payload.user_metadata.image,
+        image: imageUrl,
       },
+      user: user as User,
     });
+
+    updateStoredUser({
+      user_metadata: {
+        ...user?.user_metadata,
+        full_name: payload.full_name,
+        image: imageUrl,
+      },
+      email: payload?.email,
+    });
+
     await fetchCurrentUser();
     if (formData.new_password) {
       addToast({
@@ -68,7 +84,7 @@ export default function AccountSettingsPage() {
         description: "Please login with your new password",
         color: "success",
       });
-
+      localStorage.removeItem("sb-session");
       redirect("/auth");
     }
   }

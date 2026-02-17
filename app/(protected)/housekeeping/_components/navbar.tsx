@@ -73,8 +73,8 @@ export default function Navbar({ user, isLoading }: Props) {
           <Spinner />
         ) : (
           <UserAccount
-            name={user?.user_metadata?.full_name || user?.user_metadata?.name}
-            description={user?.app_metadata?.roles?.[0] || "admin"}
+            name=""
+            description=""
             avatarProps={{
               src:
                 user?.user_metadata?.image ||
