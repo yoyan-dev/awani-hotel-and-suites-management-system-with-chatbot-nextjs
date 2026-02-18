@@ -4,6 +4,7 @@ import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import BookingActionsDropdown from "../actions/booking-actions";
 import { formatTime } from "@/utils/formta-time";
+import { formateDateAndTime } from "@/app/utils/to-date-range";
 
 type OccupancyType = "available" | "half occupied" | "full occupied";
 
@@ -56,11 +57,16 @@ export const RenderCell = ({
         ? new Date(booking.event_date).toLocaleDateString()
         : "N/A";
     case "event_duration":
+      console.log(booking.event_duration);
       return (
-        <span className="flex gap-2 min-w-48">
-          {formatTime(booking.event_duration?.start)} -{" "}
-          {formatTime(booking.event_duration?.end)}
-        </span>
+        <div className="flex flex-col w-60">
+          <p className="text-bold text-small capitalize">
+            {formateDateAndTime(booking.event_duration?.start)}
+          </p>
+          <p className="text-bold text-small capitalize">
+            {formateDateAndTime(booking.event_duration?.end)}
+          </p>
+        </div>
       );
 
     case "status":

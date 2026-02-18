@@ -2,7 +2,6 @@ import { ColumnType } from "@/types/column";
 
 export const columns: ColumnType[] = [
   { name: "EVENT TYPE", uid: "event_type" },
-  { name: "EVENT DATE", uid: "event_date" },
   { name: "DURATION", uid: "event_duration" },
   { name: "GUEST NAME", uid: "guest" },
   { name: "NO. OF GUESTS", uid: "number_of_guest" },
@@ -72,7 +71,6 @@ export const VISIBLE_COLUMNS = [
 export const INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS = [
   "room",
   "guest",
-  "event_date",
   "event_duration",
   "status",
 ];

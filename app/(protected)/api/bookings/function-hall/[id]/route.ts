@@ -16,6 +16,7 @@ export async function GET(
     .select(
       `
       id,
+      booking_number,
       guest_id,
       event_type,
       event_date,

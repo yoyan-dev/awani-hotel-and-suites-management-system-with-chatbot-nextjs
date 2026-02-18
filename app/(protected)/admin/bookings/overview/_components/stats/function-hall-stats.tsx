@@ -26,7 +26,7 @@ export function FunctionHallStats({
       </CardHeader>
       <CardBody>
         <div className="grid grid-cols-2 gap-4 mt-2">
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <span className="text-sm text-gray-500">Total Bookings</span>
             <span className="text-xl font-semibold">{totalBookings}</span>
           </div>
@@ -35,7 +35,7 @@ export function FunctionHallStats({
             <span className="text-xl font-semibold">
               ₱{totalRevenue.toLocaleString()}
             </span>
-          </div>
+          </div> */}
           <Divider className="col-span-2" />
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Upcoming</span>
