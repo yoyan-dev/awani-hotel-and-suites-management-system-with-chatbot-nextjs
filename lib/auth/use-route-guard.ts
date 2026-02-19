@@ -2,35 +2,35 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentUserRoles, getStoredSession } from ".";
+import { useSession } from "next-auth/react";
 import type { AppMetadata, User } from "@/types/users";
 
 type Role = NonNullable<AppMetadata["roles"]>[number];
 
 export function useRouteGuard(requiredRole: Role) {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const loading = status === "loading";
 
   useEffect(() => {
-    try {
-      const { session } = getStoredSession();
-      if (!session?.user) {
-        router.replace("/auth");
-        return;
-      }
-
-      const roles = getCurrentUserRoles();
-      if (!roles.includes(requiredRole)) {
-        router.replace("/auth");
-        return;
-      }
-
-      setUser(session.user);
-    } finally {
-      setLoading(false);
+    if (status === "loading") {
+      return;
     }
-  }, [requiredRole, router]);
+
+    if (status === "unauthenticated" || !session?.user) {
+      router.replace("/auth");
+      return;
+    }
+
+    const roles = Array.isArray(session.user.roles) ? session.user.roles : [];
+    if (!roles.includes(requiredRole)) {
+      router.replace("/auth");
+      return;
+    }
+
+    setUser(session.user as User);
+  }, [requiredRole, router, session, status]);
 
   return { user, loading };
 }

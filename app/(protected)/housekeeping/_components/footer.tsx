@@ -1,13 +1,13 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import { cn } from "@heroui/react";
+import { signOut } from "next-auth/react";
 
 export default function FooterNav() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <footer
@@ -26,8 +26,7 @@ export default function FooterNav() {
             onClick={(e) => {
               if (isLogoutItem) {
                 e.preventDefault();
-                localStorage.removeItem("sb-session");
-                router.replace("/auth");
+                signOut({ callbackUrl: "/auth" });
               }
             }}
             className={cn(

@@ -1,16 +1,20 @@
 "use client";
+
 import React from "react";
 import { Input, Button, Link, Form, Image } from "@heroui/react";
 import { MailIcon, LockIcon } from "lucide-react";
-import { login } from "@/lib/auth/actions";
 import { useRouter } from "next/navigation";
+import { getSession, signIn } from "next-auth/react";
+
 import { useAuthGuard } from "@/lib/auth/use-auth-guard";
+import { handleResetPassword } from "@/lib/auth/handle-reset-password";
 
 export default function Auth() {
   const router = useRouter();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isForgotMode, setIsForgotMode] = React.useState<boolean>(false);
   const [message, setMessage] = React.useState<{
     error: boolean;
     message: string;
@@ -21,35 +25,56 @@ export default function Auth() {
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
+
     try {
-      const { error, user, session } = await login(email, password);
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setMessage({ error: true, message: result.error });
+        return;
+      }
+
+      const session = await getSession();
+      const roles = Array.isArray(session?.user?.roles)
+        ? session.user.roles
+        : [];
+
+      if (roles.includes("admin")) router.push("/admin");
+      else if (roles.includes("housekeeping")) router.push("/housekeeping");
+      else router.push("/guest");
+
+      setMessage({ error: false, message: "Logged in successfully!" });
+    } catch {
+      setMessage({ error: true, message: "Unknown Error!" });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleForgotPassword(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const redirectTo = `${window.location.origin}/auth/reset-password`;
+      const { error } = await handleResetPassword(email, redirectTo);
 
       if (error) {
         setMessage({ error: true, message: error });
         return;
       }
 
-      if (user && session) {
-        // ✅ Save session in localStorage
-        localStorage.setItem(
-          "sb-session",
-          JSON.stringify({
-            user,
-            access_token: session.access_token,
-          }),
-        );
-
-        const roles: string[] = user?.app_metadata?.roles || [];
-
-        // ✅ Redirect based on roles
-        if (roles.includes("admin")) router.push("/admin");
-        else if (roles.includes("housekeeping")) router.push("/housekeeping");
-        else router.push("/guest");
-      }
-
-      setMessage({ error: false, message: "Logged in successfully!" });
-    } catch (e) {
-      setMessage({ error: true, message: "Unknown Error!" });
+      setMessage({
+        error: false,
+        message: "Password reset email sent. Please check your inbox.",
+      });
+      setIsForgotMode(false);
+    } catch {
+      setMessage({ error: true, message: "Unable to send reset email." });
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +88,10 @@ export default function Auth() {
           Welcome to Awani Hotel and Suite.
           <span className="text-gray-500"> Please login to continue.</span>
         </div>
-        <Form onSubmit={handleLogin} className="mt-4 flex flex-col gap-4">
+        <Form
+          onSubmit={isForgotMode ? handleForgotPassword : handleLogin}
+          className="mt-4 flex flex-col gap-4"
+        >
           {message && (
             <p className={message.error ? "text-warning" : "text-success"}>
               {message.message}
@@ -83,26 +111,52 @@ export default function Auth() {
             placeholder="Enter your email"
             variant="bordered"
           />
-          <Input
-            radius="sm"
-            isRequired
-            color="primary"
-            endContent={
-              <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
-            }
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            label="Password"
-            labelPlacement="outside"
-            placeholder="Enter your password"
-            type="password"
-            variant="bordered"
-          />
-          <div className="flex">
-            <Link color="primary" href="#" size="sm">
-              Forgot password?
-            </Link>
+          {!isForgotMode && (
+            <Input
+              radius="sm"
+              isRequired
+              color="primary"
+              endContent={
+                <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
+              }
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              label="Password"
+              labelPlacement="outside"
+              placeholder="Enter your password"
+              type="password"
+              variant="bordered"
+            />
+          )}
+
+          <div className="flex justify-between">
+            {!isForgotMode ? (
+              <Link
+                color="primary"
+                href="#"
+                size="sm"
+                onPress={() => {
+                  setMessage(null);
+                  setIsForgotMode(true);
+                }}
+              >
+                Forgot password?
+              </Link>
+            ) : (
+              <Link
+                color="primary"
+                href="#"
+                size="sm"
+                onPress={() => {
+                  setMessage(null);
+                  setIsForgotMode(false);
+                }}
+              >
+                Back to login
+              </Link>
+            )}
           </div>
+
           <Button
             type="submit"
             color="primary"
@@ -110,7 +164,7 @@ export default function Auth() {
             fullWidth
             isLoading={isLoading}
           >
-            Login
+            {isForgotMode ? "Send reset email" : "Login"}
           </Button>
         </Form>
       </div>

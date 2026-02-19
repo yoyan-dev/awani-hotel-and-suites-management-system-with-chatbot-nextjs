@@ -1,103 +1,91 @@
 "use client";
-import AccountCard from "./_components/account-card";
+
 import React from "react";
-import { User, UserFormData } from "@/types/users";
-import {
-  getCurrentUser,
-  updateStoredSession,
-  updateStoredUser,
-} from "@/lib/auth";
-import {
-  DashboardLayout,
-  LoadingState,
-} from "@/components/dashboard/dashboard-layout";
-import { useUsers } from "@/hooks/use-users";
 import { addToast } from "@heroui/react";
-import { redirect } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
+
+import AccountCard from "./_components/account-card";
+import { User, UserFormData } from "@/types/users";
+import { DashboardLayout, LoadingState } from "@/components/dashboard/dashboard-layout";
+import { useUsers } from "@/hooks/use-users";
 import { uploadUserImage } from "@/lib/upload-user-image";
 
 export default function AccountSettingsPage() {
   const { isLoading: updateUserLoading, updateUserProfile } = useUsers();
-  const [user, setUser] = React.useState<User>();
-  const [formData, setFormData] = React.useState<UserFormData>(
-    {} as UserFormData,
-  );
-  const [isLoading, setIsLoading] = React.useState(false);
+  const { data: session, status, update } = useSession();
 
-  async function fetchCurrentUser() {
-    try {
-      setIsLoading(true);
-      const { user, error: userError } = await getCurrentUser();
-      setUser(user as User);
-      setFormData({
-        email: user?.email || "",
-        full_name: user?.user_metadata.full_name || "",
-        current_password: "",
-        new_password: "",
-        confirm_password: "",
-        user_metadata: user?.user_metadata || {},
-        image: user?.user_metadata.image || "",
-      } as UserFormData);
-      console.log(user);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const [user, setUser] = React.useState<User>();
+  const [formData, setFormData] = React.useState<UserFormData>({} as UserFormData);
 
   React.useEffect(() => {
-    fetchCurrentUser();
-  }, []);
+    if (status !== "authenticated" || !session?.user) {
+      return;
+    }
 
-  async function onSubmit(e: any, payload: UserFormData) {
+    const sessionUser = session.user as User;
+    setUser(sessionUser);
+    setFormData({
+      email: sessionUser.email || "",
+      full_name: sessionUser.user_metadata?.full_name || "",
+      current_password: "",
+      new_password: "",
+      confirm_password: "",
+      user_metadata: sessionUser.user_metadata || {},
+      image: sessionUser.user_metadata?.image || "",
+      user: sessionUser,
+    });
+  }, [session, status]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>, payload: UserFormData) {
     e.preventDefault();
+
     const data = new FormData(e.currentTarget);
     const imageFile = data.get("image") as File;
-    const imageUrl = imageFile
-      ? await uploadUserImage(imageFile)
-      : user?.user_metadata.image;
+    const imageUrl = imageFile?.size ? await uploadUserImage(imageFile) : user?.user_metadata?.image;
+
+    const nextUserMetadata = {
+      ...payload.user_metadata,
+      full_name: payload.full_name,
+      image: imageUrl,
+    };
 
     await updateUserProfile({
       ...payload,
-      user_metadata: {
-        ...payload.user_metadata,
-        full_name: payload.full_name,
-        image: imageUrl,
-      },
+      user_metadata: nextUserMetadata,
       user: user as User,
     });
 
-    updateStoredUser({
-      user_metadata: {
-        ...user?.user_metadata,
-        full_name: payload.full_name,
-        image: imageUrl,
+    await update({
+      user: {
+        ...session?.user,
+        email: payload.email,
+        name: payload.full_name,
+        image: imageUrl || null,
+        user_metadata: {
+          ...(session?.user.user_metadata || {}),
+          ...nextUserMetadata,
+        },
       },
-      email: payload?.email,
     });
 
-    await fetchCurrentUser();
-    if (formData.new_password) {
+    if (payload.new_password) {
       addToast({
         title: "Password updated successfully",
         description: "Please login with your new password",
         color: "success",
       });
-      localStorage.removeItem("sb-session");
-      redirect("/auth");
+
+      await signOut({ callbackUrl: "/auth" });
     }
   }
 
-  if (isLoading) {
+  if (status === "loading" || !user) {
     return (
       <DashboardLayout>
         <LoadingState message="Loading user data..." />
       </DashboardLayout>
     );
   }
-
-  if (!user) return <div>Error: User not found</div>;
 
   return (
     <main className="min-h-screen bg-default-50 p-6">

@@ -21,7 +21,7 @@ export default function SelectedGuest({ guest }: SelectedGuestProps) {
       radius="sm"
     >
       <CardHeader className="flex items-start gap-4">
-        <Image
+        {/* <Image
           alt={`${guest?.full_name} avatar`}
           className="object-cover"
           height={150}
@@ -31,7 +31,7 @@ export default function SelectedGuest({ guest }: SelectedGuestProps) {
             guest?.image ||
             "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"
           }
-        />
+        /> */}
         <div className="flex flex-col">
           <p className="text-lg font-semibold capitalize">{guest?.full_name}</p>
           <p className="text-sm text-default-700 dark:text-default-500">
@@ -54,11 +54,11 @@ export default function SelectedGuest({ guest }: SelectedGuestProps) {
       </CardBody>
 
       <Divider />
-      <CardFooter className="flex justify-end">
+      {/* <CardFooter className="flex justify-end">
         <Link isExternal showAnchorIcon className="text-primary font-medium">
           View valid ID
         </Link>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

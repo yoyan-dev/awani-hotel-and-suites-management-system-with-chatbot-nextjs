@@ -16,15 +16,13 @@ import { useGuests } from "@/hooks/use-guests";
 import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { Guest as GuestType } from "@/types/guest";
 import { BanquetPackageFetchParams } from "@/types/banquet-package";
-import { TimeInput } from "@heroui/react";
-import { TimerIcon } from "lucide-react";
 import { Time } from "@internationalized/date";
 import GuestInfoSection from "./_components/guest-info-section";
 import BookingDetailsSection from "./_components/booking-details-section";
 
 interface EventDuration {
-  start: Time | null;
-  end: Time | null;
+  start: any;
+  end: any;
 }
 
 export default function AddFunctionHallBookingPage() {
@@ -34,14 +32,8 @@ export default function AddFunctionHallBookingPage() {
     addBooking,
   } = useFunctionHallBookings();
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
-  const {
-    items: banquetPackages,
-    isLoading: packageLoading,
-    fetchBanquetPackages,
-  } = useBanquetPackages();
 
   const [selectedGuest, setSelectedGuest] = React.useState<string>();
-  const [selectedPackage, setSelectedPackage] = React.useState<string>("");
   const [eventDuration, setEventDuration] = React.useState<EventDuration>({
     start: null,
     end: null,
@@ -49,7 +41,6 @@ export default function AddFunctionHallBookingPage() {
 
   React.useEffect(() => {
     fetchGuests();
-    fetchBanquetPackages({} as BanquetPackageFetchParams);
   }, []);
 
   const filteredGuest = React.useMemo(
@@ -124,10 +115,6 @@ export default function AddFunctionHallBookingPage() {
           handleSubmit={handleSubmit}
           eventDuration={eventDuration}
           setEventDuration={setEventDuration}
-          banquetPackages={banquetPackages}
-          selectedPackage={selectedPackage}
-          setSelectedPackage={setSelectedPackage}
-          packageLoading={packageLoading}
           bookingIsLoading={bookingIsLoading}
         />
       </div>

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ApiResponse } from "@/types/response";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { getCurrentUser } from "@/lib/auth";
 
 export async function PUT(
   req: NextRequest,

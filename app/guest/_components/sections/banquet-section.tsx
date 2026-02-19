@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Button, Image } from "@heroui/react";
+import Link from "next/link";
 
 const SAMPLE_IMAGES = [
   "/banquet/image-1.jpg",
@@ -31,8 +32,12 @@ export default function BanquetSection() {
           </p>
 
           <div className="mt-6 flex justify-center">
-            <Button color="primary" as="a" href="#packages">
-              View Packages
+            <Button
+              color="primary"
+              as={Link}
+              href={`function-room/reservation`}
+            >
+              Book Now
             </Button>
           </div>
         </div>
@@ -71,14 +76,14 @@ export default function BanquetSection() {
             <li>• Dedicated Event Coordinator</li>
           </ul>
 
-          <div className="flex gap-3">
+          {/* <div className="flex gap-3">
             <Button color="primary" as="a" href="#packages">
               See Packages
             </Button>
             <Button variant="flat" as="a" href="#gallery">
               View Gallery
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -110,8 +115,8 @@ export default function BanquetSection() {
             visits.
           </p>
 
-          <Button color="primary" as="a" href="/contact">
-            Contact Events Team
+          <Button color="primary" as={Link} href={`function-room/reservation`}>
+            Book Now
           </Button>
         </div>
       </div>

@@ -26,16 +26,16 @@ export const siteConfig = {
       isExpandable: false,
       icon: ChartPie,
     },
-    {
-      label: "Banquet Packages",
-      href: "/admin/banquet/packages",
-      isExpandable: false,
-      icon: ChefHatIcon,
-      Children: [
-        { label: "Banquet Menu", href: "/admin/banquet/menus" },
-        { label: "Banquet Packages", href: "/admin/banquet/packages" },
-      ],
-    },
+    // {
+    //   label: "Banquet Packages",
+    //   href: "/admin/banquet/packages",
+    //   isExpandable: false,
+    //   icon: ChefHatIcon,
+    //   Children: [
+    //     { label: "Banquet Menu", href: "/admin/banquet/menus" },
+    //     { label: "Banquet Packages", href: "/admin/banquet/packages" },
+    //   ],
+    // },
     {
       label: "Room Management",
       href: "/admin/rooms",
@@ -176,8 +176,11 @@ export const siteConfig = {
       href: "",
       isExpandable: true,
       Children: [
-        { label: "Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
-        { label: "Function Room", href: "/guest/reservations/function-room" },
+        { label: "Book Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
+        {
+          label: "Event Reservations",
+          href: "/guest/reservations/function-room/reservation",
+        },
       ],
     },
     // {

@@ -22,9 +22,10 @@ import { Link } from "@heroui/link";
 import { SearchIcon } from "lucide-react";
 import NextLink from "next/link";
 import { ThemeSwitch } from "@/components/theme-switch";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { User } from "@/types/users";
+import { signOut } from "next-auth/react";
 
 interface Props {
   user: User | undefined;
@@ -33,7 +34,6 @@ interface Props {
 
 export default function Navbar({ user, isLoading }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <HeroUINavbar
@@ -102,8 +102,7 @@ export default function Navbar({ user, isLoading }: Props) {
                   key={item.href}
                   onClick={() => {
                     if (isLogoutItem) {
-                      localStorage.removeItem("sb-session");
-                      router.replace("/auth");
+                      signOut({ callbackUrl: "/auth" });
                     }
                   }}
                   as={!isLogoutItem ? NextLink : undefined}

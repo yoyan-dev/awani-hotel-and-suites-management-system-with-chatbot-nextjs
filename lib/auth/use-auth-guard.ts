@@ -2,25 +2,25 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { getStoredSession, getCurrentUserRoles } from ".";
+import { useSession } from "next-auth/react";
 
 export function useAuthGuard() {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (pathname !== "/auth") {
+    if (pathname !== "/auth" || status === "loading") {
       return;
     }
 
-    const { session } = getStoredSession();
-    if (!session?.user) {
+    if (status !== "authenticated" || !session?.user) {
       return;
     }
 
-    const roles = getCurrentUserRoles();
+    const roles = Array.isArray(session.user.roles) ? session.user.roles : [];
     if (roles.includes("admin")) router.replace("/admin");
     else if (roles.includes("housekeeping")) router.replace("/housekeeping");
     else router.replace("/guest");
-  }, [pathname, router]);
+  }, [pathname, router, session, status]);
 }

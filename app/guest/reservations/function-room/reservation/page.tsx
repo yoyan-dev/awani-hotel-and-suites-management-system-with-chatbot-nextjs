@@ -6,7 +6,7 @@ import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
@@ -16,6 +16,7 @@ import { Booking } from "@/types/booking";
 import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { BanquetPackageFetchParams } from "@/types/banquet-package";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
+import SuccessMessage from "./_components/success-message";
 
 export default function Page() {
   const { id } = useParams();
@@ -27,7 +28,7 @@ export default function Page() {
     start: "",
     end: "",
   });
-  const { items, isLoading, fetchBanquetPackages } = useBanquetPackages();
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
   const {
     function_hall_bookings,
     isLoading: bookingIsLoading,
@@ -35,17 +36,6 @@ export default function Page() {
     fetchBookings,
     addBooking,
   } = useFunctionHallBookings();
-
-  React.useEffect(() => {
-    fetchBanquetPackages({} as BanquetPackageFetchParams);
-  }, []);
-
-  const banquetPackage = React.useMemo(() => {
-    if (selectedPackage) {
-      return items.find((pkg) => pkg.id === selectedPackage);
-    }
-    return null;
-  }, [items, selectedPackage]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,42 +63,46 @@ export default function Page() {
         color: "success",
       });
       // router.push("/");
+      setIsSubmitted(true);
     }
   }
 
   return (
-    <div className="min-h-screen pb-16">
-      <Card className="border-none shadow-none">
-        <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
-          Hotel Reservation
-        </CardHeader>
-        <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
-          <BookingForm
-            onSubmit={handleSubmit}
-            guestId={guestId}
-            setGuestId={setGuestId}
-            items={items}
-            banquetPackage={banquetPackage || null}
-            isLoading={isLoading}
-            selectedPackage={selectedPackage}
-            setSelectedPackage={setSelectedPackage}
-            eventDate={eventDate}
-            setEventDate={setEventDate}
-            eventDuration={EventDuration}
-            setEventDuration={setEventDuration}
-            bookingIsLoading={bookingIsLoading}
-          />
-          {/* {room ? (
-            <SelectedRoom room={room} isLoading={isLoading} />
-          ) : (
-            <AvailableRooms
-              rooms={availabel_room_types}
-              isLoading={isLoading}
-              setSelectedRoom={setSelectedRoom}
-            />
-          )} */}
-        </CardBody>
-      </Card>
-    </div>
+    <>
+      {!isSubmitted ? (
+        <div className="min-h-screen pb-16">
+          <Card className="border-none shadow-none">
+            <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
+              Hotel Reservation
+            </CardHeader>
+            <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
+              <BookingForm
+                onSubmit={handleSubmit}
+                guestId={guestId}
+                setGuestId={setGuestId}
+                selectedPackage={selectedPackage}
+                setSelectedPackage={setSelectedPackage}
+                eventDate={eventDate}
+                setEventDate={setEventDate}
+                eventDuration={EventDuration}
+                setEventDuration={setEventDuration}
+                bookingIsLoading={bookingIsLoading}
+              />
+              {/* {room ? (
+              <SelectedRoom room={room} isLoading={isLoading} />
+            ) : (
+              <AvailableRooms
+                rooms={availabel_room_types}
+                isLoading={isLoading}
+                setSelectedRoom={setSelectedRoom}
+              />
+            )} */}
+            </CardBody>
+          </Card>
+        </div>
+      ) : (
+        <SuccessMessage />
+      )}
+    </>
   );
 }

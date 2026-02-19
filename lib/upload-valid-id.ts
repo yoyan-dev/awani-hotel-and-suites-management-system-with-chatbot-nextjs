@@ -1,4 +1,4 @@
-import { supabase } from "./supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 
 function randomString(length = 12) {
   const chars =
@@ -12,7 +12,7 @@ function randomString(length = 12) {
 
 export async function uploadValidIDImage(
   frontImageFile: File,
-  backImageFile: File
+  backImageFile: File,
 ) {
   if (!frontImageFile || !backImageFile) return {};
 

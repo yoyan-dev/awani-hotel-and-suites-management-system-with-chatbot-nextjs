@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { Booking } from "@/types/booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
@@ -16,6 +16,7 @@ export async function GET(
     .select(
       `
       id,
+      booking_number,
       guest_id,
       event_type,
       event_date,

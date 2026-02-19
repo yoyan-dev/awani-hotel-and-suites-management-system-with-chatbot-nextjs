@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Room } from "@/types/room";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 
 const tableName = "room-reports";

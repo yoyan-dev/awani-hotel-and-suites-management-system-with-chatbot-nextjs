@@ -1,12 +1,13 @@
 "use client";
 
 import NextLink from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Image, Listbox, ListboxItem, cn } from "@heroui/react";
 import { siteConfig } from "@/config/site";
 import { useState } from "react";
 import UserPopover from "./user-popover";
+import { signOut } from "next-auth/react";
 
 export const ListboxWrapper = ({ children, collapsed }: any) => {
   return (
@@ -23,7 +24,6 @@ export const ListboxWrapper = ({ children, collapsed }: any) => {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -67,8 +67,7 @@ export default function Sidebar() {
                     key={item.href}
                     onClick={() => {
                       if (isLogoutItem) {
-                        localStorage.removeItem("sb-session");
-                        router.replace("/auth");
+                        signOut({ callbackUrl: "/auth" });
                       }
                     }}
                     as={!item.isExpandable && !isLogoutItem ? NextLink : undefined}

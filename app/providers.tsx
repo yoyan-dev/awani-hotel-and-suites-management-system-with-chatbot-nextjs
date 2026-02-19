@@ -8,6 +8,7 @@ import { Spinner } from "@heroui/react";
 import { useRouter, usePathname } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { Provider } from "react-redux";
+import { SessionProvider } from "next-auth/react";
 import { store } from "@/store/store";
 // import AuthSessionSync from "./auth-session-sync";
 
@@ -52,13 +53,15 @@ export function Providers({ children, themeProps }: ProvidersProps) {
   const router = useRouter();
 
   return (
-    <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>
-        {/* <AuthSessionSync /> */}
-        <RouteLoader>
-          <ReduxProvider>{children}</ReduxProvider>
-        </RouteLoader>
-      </NextThemesProvider>
-    </HeroUIProvider>
+    <SessionProvider>
+      <HeroUIProvider navigate={router.push}>
+        <NextThemesProvider {...themeProps}>
+          {/* <AuthSessionSync /> */}
+          <RouteLoader>
+            <ReduxProvider>{children}</ReduxProvider>
+          </RouteLoader>
+        </NextThemesProvider>
+      </HeroUIProvider>
+    </SessionProvider>
   );
 }

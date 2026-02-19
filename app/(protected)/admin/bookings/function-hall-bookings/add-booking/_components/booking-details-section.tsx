@@ -8,22 +8,19 @@ import {
   Form,
   TimeInput,
   Textarea,
+  DateRangePicker,
 } from "@heroui/react";
-import { Time } from "@internationalized/date";
+import { parseAbsoluteToLocal, Time } from "@internationalized/date";
 import { TimerIcon } from "lucide-react";
 interface EventDuration {
-  start: Time | null;
-  end: Time | null;
+  start: any;
+  end: any;
 }
 
 interface Props {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   eventDuration: EventDuration;
   setEventDuration: React.Dispatch<React.SetStateAction<EventDuration>>;
-  banquetPackages: BanquetPackage[];
-  selectedPackage: string;
-  setSelectedPackage: React.Dispatch<React.SetStateAction<string>>;
-  packageLoading: boolean;
   bookingIsLoading: boolean;
 }
 
@@ -31,12 +28,12 @@ export default function BookingDetailsSection({
   handleSubmit,
   eventDuration,
   setEventDuration,
-  banquetPackages,
-  selectedPackage,
-  setSelectedPackage,
-  packageLoading,
   bookingIsLoading,
 }: Props) {
+  const today = new Date();
+  const fiveDaysLater = new Date();
+  fiveDaysLater.setDate(today.getDate() + 5);
+
   return (
     <Form onSubmit={handleSubmit} className="space-y-4 w-full">
       {/* Event Details */}
@@ -49,7 +46,7 @@ export default function BookingDetailsSection({
           isRequired
           fullWidth
           radius="none"
-          className="flex-1 w-full min-w-40 mt-4"
+          className="flex-1 w-full min-w-40 pt-4"
           name="event_type"
           label="Event Type"
           labelPlacement="outside"
@@ -62,8 +59,20 @@ export default function BookingDetailsSection({
           <SelectItem key="debut">Debut</SelectItem>
           <SelectItem key="others">Others</SelectItem>
         </Select>
-
-        <Input
+        <DateRangePicker
+          variant="bordered"
+          hideTimeZone
+          defaultValue={{
+            start: parseAbsoluteToLocal(fiveDaysLater.toISOString()),
+            end: parseAbsoluteToLocal(fiveDaysLater.toISOString()),
+          }}
+          label="Event duration"
+          className="pt-4"
+          onChange={(value) =>
+            setEventDuration({ start: value?.start, end: value?.end })
+          }
+        />
+        {/* <Input
           className="mt-4"
           isRequired
           fullWidth
@@ -106,16 +115,16 @@ export default function BookingDetailsSection({
             }
             className="flex-1"
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Package & Guests */}
       <div className="space-y-4 w-full">
-        <h2 className="w-full bg-primary px-2 py-1 text-white">
+        {/* <h2 className="w-full bg-primary px-2 py-1 text-white">
           Package & Guests
-        </h2>
+        </h2> */}
 
-        <Select
+        {/* <Select
           isRequired
           fullWidth
           radius="none"
@@ -139,7 +148,7 @@ export default function BookingDetailsSection({
               </div>
             </SelectItem>
           ))}
-        </Select>
+        </Select> */}
 
         <Input
           className="mt-4"

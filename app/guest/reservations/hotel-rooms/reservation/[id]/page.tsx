@@ -6,7 +6,7 @@ import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
@@ -144,30 +144,30 @@ export default function Page() {
               mobile/tablet: stacked
               desktop: booking form + room summary/available rooms side panel */}
           <div className="grid w-full grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)]">
-          <BookingForm
-            onSubmit={(e) => handleSubmit(e, summary)}
-            query={query}
-            setQuery={setQuery}
-            guestId={guestId}
-            setGuestId={setGuestId}
-            roomTypes={availabel_room_types}
-            room={room || null}
-            isLoading={isLoading}
-            selectedRoom={selectedRoom}
-            setSelectedRoom={setSelectedRoom}
-            specialRequests={specialRequests}
-            setSpecialRequests={setSpecialRequests}
-            bookingIsLoading={bookingIsLoading}
-          />
-          {room && guestId ? (
-            <SelectedRoom room={room} isLoading={isLoading} />
-          ) : guestId ? (
-            <AvailableRooms
-              rooms={availabel_room_types}
+            <BookingForm
+              onSubmit={(e) => handleSubmit(e, summary)}
+              query={query}
+              setQuery={setQuery}
+              guestId={guestId}
+              setGuestId={setGuestId}
+              roomTypes={availabel_room_types}
+              room={room || null}
               isLoading={isLoading}
+              selectedRoom={selectedRoom}
               setSelectedRoom={setSelectedRoom}
+              specialRequests={specialRequests}
+              setSpecialRequests={setSpecialRequests}
+              bookingIsLoading={bookingIsLoading}
             />
-          ) : null}
+            {room && guestId ? (
+              <SelectedRoom room={room} isLoading={isLoading} />
+            ) : guestId ? (
+              <AvailableRooms
+                rooms={availabel_room_types}
+                isLoading={isLoading}
+                setSelectedRoom={setSelectedRoom}
+              />
+            ) : null}
           </div>
         </CardBody>
       </Card>

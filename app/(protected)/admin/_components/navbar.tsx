@@ -20,12 +20,13 @@ import {
   User as UserAccount,
 } from "@heroui/react";
 import NextLink from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
 import { User } from "@/types/users";
 import { NotificationContainer } from "@/components/notification-ui/notification-container";
+import { signOut } from "next-auth/react";
 
 interface Props {
   user: User | undefined;
@@ -34,7 +35,6 @@ interface Props {
 
 export default function AdminNavbar({ user, isLoading }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
 
@@ -104,8 +104,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                     if (item.isExpandable) {
                       toggleExpand(item.label);
                     } else if (isLogoutItem) {
-                      localStorage.removeItem("sb-session");
-                      router.replace("/auth");
+                      signOut({ callbackUrl: "/auth" });
                     }
                   }}
                   as={
