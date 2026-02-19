@@ -3,16 +3,17 @@ import Sidebar from "./_components/sidebar";
 import Navbar from "./_components/navbar";
 import FooterNav from "./_components/footer";
 import React from "react";
-import { useRouteGuard } from "@/lib/auth/use-route-guard";
+import { useSession } from "next-auth/react";
+import { User } from "@/types/users";
 
 export default function HousekeepingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useRouteGuard("housekeeping");
-
-  if (loading || !user) return "loading...";
+  const { data: session, status } = useSession();
+  const user = session?.user as User | undefined;
+  if (!user || status === "loading") return "loading...";
 
   return (
     <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-200 fixed w-full">
