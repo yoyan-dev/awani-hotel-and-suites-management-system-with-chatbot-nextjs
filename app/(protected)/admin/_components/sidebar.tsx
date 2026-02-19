@@ -2,7 +2,8 @@
 
 import React from "react";
 import NextLink from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,7 +27,6 @@ export const ListboxWrapper = ({ children, collapsed }: any) => (
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [collapsed, setCollapsed] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
 
@@ -71,8 +71,7 @@ export default function AdminSidebar() {
                       item.isExpandable
                         ? toggleExpand(item.label)
                         : isLogoutItem
-                          ? (localStorage.removeItem("sb-session"),
-                            router.replace("/auth"))
+                          ? signOut({ callbackUrl: "/auth" })
                           : null
                     }
                     as={!item.isExpandable ? NextLink : undefined}
