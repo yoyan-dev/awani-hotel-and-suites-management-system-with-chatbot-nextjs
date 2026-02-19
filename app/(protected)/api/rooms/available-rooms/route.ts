@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { Room } from "@/types/room";
 import { Booking } from "@/types/booking";

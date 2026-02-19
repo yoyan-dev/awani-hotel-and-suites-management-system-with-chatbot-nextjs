@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Footer from "./_components/footer";
 import Navbar from "./_components/navbar";
 import { User } from "@/types/users";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import Chatbot from "./_components/chatbot";
 
 export default function HousekeepingLayout({

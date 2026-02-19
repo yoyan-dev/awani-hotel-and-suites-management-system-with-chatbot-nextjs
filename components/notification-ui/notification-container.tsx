@@ -11,7 +11,7 @@ import {
   Badge,
 } from "@heroui/react";
 import { Bell } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { useNotification } from "@/hooks/use-notification";
 
 export function NotificationContainer() {

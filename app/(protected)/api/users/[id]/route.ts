@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { User } from "@/types/users";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 

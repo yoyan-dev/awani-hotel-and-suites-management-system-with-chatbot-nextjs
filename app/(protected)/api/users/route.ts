@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { User } from "@/types/users";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { uploadUserImage } from "@/lib/upload-user-image";
 import { createClient } from "@/lib/supabase/server";

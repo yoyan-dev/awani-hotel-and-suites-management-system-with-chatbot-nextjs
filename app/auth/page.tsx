@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 
 import { useAuthGuard } from "@/lib/auth/use-auth-guard";
-import { supabase } from "@/lib/supabase-client";
+import { handleResetPassword } from "@/lib/auth/handle-reset-password";
 
 export default function Auth() {
   const router = useRouter();
@@ -42,7 +42,6 @@ export default function Auth() {
       const roles = Array.isArray(session?.user?.roles)
         ? session.user.roles
         : [];
-      console.log(session);
 
       if (roles.includes("admin")) router.push("/admin");
       else if (roles.includes("housekeeping")) router.push("/housekeeping");
@@ -62,12 +61,10 @@ export default function Auth() {
 
     try {
       const redirectTo = `${window.location.origin}/auth/reset-password`;
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo,
-      });
+      const { error } = await handleResetPassword(email, redirectTo);
 
       if (error) {
-        setMessage({ error: true, message: error.message });
+        setMessage({ error: true, message: error });
         return;
       }
 

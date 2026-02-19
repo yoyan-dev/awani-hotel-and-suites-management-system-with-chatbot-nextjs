@@ -24,7 +24,7 @@ import {
   EyeOff,
   CloudDownloadIcon,
 } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { handleFileChange } from "@/app/utils/image-file-handler";
 import { uploadUserImage } from "@/lib/upload-user-image";
 import { useRouter } from "next/navigation";

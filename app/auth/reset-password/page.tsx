@@ -4,7 +4,7 @@ import React from "react";
 import { Button, Form, Input } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { LockIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -65,7 +65,10 @@ export default function ResetPasswordPage() {
             Enter a new password for your account.
           </span>
         </div>
-        <Form onSubmit={handleResetPassword} className="mt-4 flex flex-col gap-4">
+        <Form
+          onSubmit={handleResetPassword}
+          className="mt-4 flex flex-col gap-4"
+        >
           {message && (
             <p className={message.error ? "text-warning" : "text-success"}>
               {message.message}

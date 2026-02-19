@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { Room } from "@/types/room";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 import { ApiResponse } from "@/types/response";
 

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { FunctionRoom } from "@/types/function-room";
 import { computeFunctionRoomAvailabilityByDate } from "@/lib/function-room/function-room-availability";
