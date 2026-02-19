@@ -5,12 +5,14 @@ import { MailIcon, LockIcon } from "lucide-react";
 import { login } from "@/lib/auth/actions";
 import { useRouter } from "next/navigation";
 import { useAuthGuard } from "@/lib/auth/use-auth-guard";
+import { supabase } from "@/lib/supabase-client";
 
 export default function Auth() {
   const router = useRouter();
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isForgotMode, setIsForgotMode] = React.useState<boolean>(false);
   const [message, setMessage] = React.useState<{
     error: boolean;
     message: string;
@@ -55,6 +57,32 @@ export default function Auth() {
     }
   }
 
+  async function handleForgotPassword(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const redirectTo = `${window.location.origin}/auth/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo,
+      });
+
+      if (error) {
+        setMessage({ error: true, message: error.message });
+        return;
+      }
+
+      setMessage({
+        error: false,
+        message: "Password reset email sent. Please check your inbox.",
+      });
+      setIsForgotMode(false);
+    } catch {
+      setMessage({ error: true, message: "Unable to send reset email." });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center gap-4 p-4 bg-primary">
       <div className="p-8 max-w-md w-full bg-white dark:bg-gray-800 rounded shadow space-y-4">
@@ -63,7 +91,10 @@ export default function Auth() {
           Welcome to Awani Hotel and Suite.
           <span className="text-gray-500"> Please login to continue.</span>
         </div>
-        <Form onSubmit={handleLogin} className="mt-4 flex flex-col gap-4">
+        <Form
+          onSubmit={isForgotMode ? handleForgotPassword : handleLogin}
+          className="mt-4 flex flex-col gap-4"
+        >
           {message && (
             <p className={message.error ? "text-warning" : "text-success"}>
               {message.message}
@@ -83,26 +114,52 @@ export default function Auth() {
             placeholder="Enter your email"
             variant="bordered"
           />
-          <Input
-            radius="sm"
-            isRequired
-            color="primary"
-            endContent={
-              <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
-            }
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            label="Password"
-            labelPlacement="outside"
-            placeholder="Enter your password"
-            type="password"
-            variant="bordered"
-          />
-          <div className="flex">
-            <Link color="primary" href="#" size="sm">
-              Forgot password?
-            </Link>
+          {!isForgotMode && (
+            <Input
+              radius="sm"
+              isRequired
+              color="primary"
+              endContent={
+                <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
+              }
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              label="Password"
+              labelPlacement="outside"
+              placeholder="Enter your password"
+              type="password"
+              variant="bordered"
+            />
+          )}
+
+          <div className="flex justify-between">
+            {!isForgotMode ? (
+              <Link
+                color="primary"
+                href="#"
+                size="sm"
+                onPress={() => {
+                  setMessage(null);
+                  setIsForgotMode(true);
+                }}
+              >
+                Forgot password?
+              </Link>
+            ) : (
+              <Link
+                color="primary"
+                href="#"
+                size="sm"
+                onPress={() => {
+                  setMessage(null);
+                  setIsForgotMode(false);
+                }}
+              >
+                Back to login
+              </Link>
+            )}
           </div>
+
           <Button
             type="submit"
             color="primary"
@@ -110,7 +167,7 @@ export default function Auth() {
             fullWidth
             isLoading={isLoading}
           >
-            Login
+            {isForgotMode ? "Send reset email" : "Login"}
           </Button>
         </Form>
       </div>
