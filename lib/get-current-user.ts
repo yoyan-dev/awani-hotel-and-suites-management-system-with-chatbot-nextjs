@@ -1,5 +1,5 @@
 import { User } from "@/types/users";
-import { supabase } from "./supabase-client";
+import { supabase } from "@/lib/supabase/supabase-client";
 
 export async function getCurrentUser() {
   const {
