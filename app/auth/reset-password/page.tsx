@@ -4,7 +4,7 @@ import React from "react";
 import { Button, Form, Input } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { LockIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { saveNewPassword } from "@/lib/auth/handle-reset-password";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -35,9 +35,7 @@ export default function ResetPasswordPage() {
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
+      const { error } = await saveNewPassword(newPassword);
 
       if (error) {
         setMessage({ error: true, message: error.message });

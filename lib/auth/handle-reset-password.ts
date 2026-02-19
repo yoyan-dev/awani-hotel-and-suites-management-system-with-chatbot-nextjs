@@ -18,3 +18,16 @@ export async function handleResetPassword(email: string, redirectTo: string) {
 
   return { error: null };
 }
+
+export async function saveNewPassword(password: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({
+    password,
+  });
+
+  if (error) {
+    return { error: error };
+  }
+
+  return { error: null };
+}
