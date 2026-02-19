@@ -12,6 +12,36 @@ import {
 } from "@/types/analytics-contracts";
 import { calculateDateRange } from "@/utils/overview/calculate-date-range";
 
+const parseEventDurationBoundary = (
+  eventDuration: unknown,
+  boundary: "start" | "end",
+): Date | null => {
+  if (!eventDuration || typeof eventDuration !== "object") return null;
+
+  const durationRecord = eventDuration as Record<string, unknown>;
+  const boundaryData = durationRecord[boundary];
+  if (!boundaryData || typeof boundaryData !== "object") return null;
+
+  const point = boundaryData as Record<string, unknown>;
+  const year = Number(point.year);
+  const month = Number(point.month);
+  const day = Number(point.day);
+  const hour = Number(point.hour ?? 0);
+  const minute = Number(point.minute ?? 0);
+  const second = Number(point.second ?? 0);
+  const millisecond = Number(point.millisecond ?? 0);
+  const offset = Number(point.offset ?? 0);
+
+  if (!year || !month || !day) return null;
+
+  // Offset is milliseconds from UTC in stored event_duration payload.
+  const utcTime =
+    Date.UTC(year, month - 1, day, hour, minute, second, millisecond) - offset;
+  const parsedDate = new Date(utcTime);
+
+  return isValid(parsedDate) ? parsedDate : null;
+};
+
 const generateResponse = <T>(
   success: boolean,
   data: T,
@@ -145,14 +175,11 @@ export async function GET(
 
     let functionHallBookingsQuery = supabase
       .from("function_hall_bookings")
-      .select("*", { count: "exact" })
-      .gte("event_date", dateRange.start.toISOString())
-      .lte("event_date", dateRange.end.toISOString());
+      .select("*");
 
     const {
       data: functionHallBookings,
       error: functionHallBookingsError,
-      count: functionHallBookingsCount,
     } = await functionHallBookingsQuery;
 
     if (functionHallBookingsError) throw functionHallBookingsError;
@@ -160,56 +187,76 @@ export async function GET(
     const transformedFunctionHallBookings: FunctionHallBooking[] =
       (functionHallBookings || []) as FunctionHallBooking[];
 
-    const functionHallTotalRevenue = transformedFunctionHallBookings.reduce(
+    const filteredFunctionHallBookings = transformedFunctionHallBookings.filter(
+      (booking) => {
+        const startDate = parseEventDurationBoundary(
+          (booking as any).event_duration,
+          "start",
+        );
+        const endDate =
+          parseEventDurationBoundary((booking as any).event_duration, "end") ||
+          startDate;
+
+        if (!startDate && !endDate) return false;
+
+        const bookingStart = startDate || endDate!;
+        const bookingEnd = endDate || startDate!;
+
+        return bookingStart <= dateRange.end && bookingEnd >= dateRange.start;
+      },
+    );
+
+    const functionHallTotalRevenue = filteredFunctionHallBookings.reduce(
       (acc, b) => acc + (Number((b as any).total_amount ?? 0) || 0),
       0,
     );
 
-    const functionHallStatusDistribution =
-      transformedFunctionHallBookings.reduce(
-        (acc, b) => {
-          const status = b.status || "unknown";
-          acc[status] = (acc[status] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
+    const functionHallStatusDistribution = filteredFunctionHallBookings.reduce(
+      (acc, b) => {
+        const status = b.status || "unknown";
+        acc[status] = (acc[status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const functionHallUpcomingBookings = transformedFunctionHallBookings.filter(
+    const functionHallUpcomingBookings = filteredFunctionHallBookings.filter(
       (b) => {
-        if (!b.event_date) return false;
-        return parseISO(b.event_date) > now;
+        const startDate = parseEventDurationBoundary(
+          (b as any).event_duration,
+          "start",
+        );
+        if (!startDate) return false;
+        return startDate > now;
       },
     ).length;
 
-    const functionHallPendingBookings = transformedFunctionHallBookings.filter(
+    const functionHallPendingBookings = filteredFunctionHallBookings.filter(
       (b) => b.status === "pending",
     ).length;
 
-    const functionHallCompletedBookings =
-      transformedFunctionHallBookings.filter(
-        (b) => b.status === "completed",
-      ).length;
+    const functionHallCompletedBookings = filteredFunctionHallBookings.filter(
+      (b) => b.status === "completed",
+    ).length;
 
-    const functionHallCancelledBookings =
-      transformedFunctionHallBookings.filter(
-        (b) => b.status === "cancelled",
-      ).length;
+    const functionHallCancelledBookings = filteredFunctionHallBookings.filter(
+      (b) => b.status === "cancelled",
+    ).length;
 
-    const functionHallRecentBookings = transformedFunctionHallBookings.slice(
+    const functionHallRecentBookings = filteredFunctionHallBookings.slice(
       0,
       10,
     );
 
     const functionHallData = {
       summary: {
-        total_bookings: functionHallBookingsCount || 0,
+        total_bookings: filteredFunctionHallBookings.length,
         total_revenue: functionHallTotalRevenue,
         upcoming_bookings: functionHallUpcomingBookings,
         pending_bookings: functionHallPendingBookings,
         completed_bookings: functionHallCompletedBookings,
         cancelled_bookings: functionHallCancelledBookings,
-        total_guests_expected: transformedFunctionHallBookings.reduce(
+        total_guests_expected: filteredFunctionHallBookings.reduce(
           (acc, b) => acc + (Number((b as any).number_of_guest ?? 0) || 0),
           0,
         ),

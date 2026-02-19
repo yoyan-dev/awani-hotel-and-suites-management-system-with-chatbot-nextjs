@@ -104,14 +104,22 @@ export async function GET(
       .select("*", { count: "exact" });
 
     const dateRange = calculateDateRange(params);
-    filters_applied.date_range = {
-      start: format(dateRange.start, "yyyy-MM-dd"),
-      end: format(dateRange.end, "yyyy-MM-dd"),
-    };
+
+    const startYear = dateRange.start.getFullYear();
+    const startMonth = dateRange.start.getMonth() + 1;
+    const startDay = dateRange.start.getDate();
+
+    const endYear = dateRange.end.getFullYear();
+    const endMonth = dateRange.end.getMonth() + 1;
+    const endDay = dateRange.end.getDate();
 
     baseQuery = baseQuery
-      .gte("event_date", dateRange.start.toISOString())
-      .lte("event_date", dateRange.end.toISOString());
+      .filter("event_duration->start->>year", "gte", startYear)
+      .filter("event_duration->start->>month", "gte", startMonth)
+      .filter("event_duration->start->>day", "gte", startDay)
+      .filter("event_duration->end->>year", "lte", endYear)
+      .filter("event_duration->end->>month", "lte", endMonth)
+      .filter("event_duration->end->>day", "lte", endDay);
 
     if (params.status) {
       baseQuery = baseQuery.eq("status", params.status);
