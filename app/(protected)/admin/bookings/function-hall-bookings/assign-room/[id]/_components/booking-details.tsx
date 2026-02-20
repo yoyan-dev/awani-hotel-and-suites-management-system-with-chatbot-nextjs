@@ -3,6 +3,8 @@ import {
   getOccupancyColor,
   OccupancyType,
 } from "@/utils/function-room/occupancy";
+import { formateDateAndTime } from "@/app/utils/to-date-range";
+import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 
 interface Props {
   booking: any;
@@ -17,14 +19,17 @@ export default function BookingDetails({ booking }: Props) {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm capitalize">
         <Info label="Event" value={booking.event_type} />
-        <Info label="Date" value={booking.event_date} />
+        <Info
+          label="Date"
+          value={`start: ${formateDateAndTime(booking.event_duration?.start)} end: ${formateDateAndTime(booking.event_duration?.end)}`}
+        />
         <Info label="Guests" value={booking.number_of_guest} />
 
         <div>
           <span className="text-gray-500">Status:</span>
           <Chip
             size="sm"
-            color={getOccupancyColor(booking.status as OccupancyType)}
+            className={bookingStatusColorMap[booking.status || "default"]}
           >
             {booking.status}
           </Chip>

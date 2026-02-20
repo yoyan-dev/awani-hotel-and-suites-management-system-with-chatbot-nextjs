@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Divider } from "@heroui/react";
-import { BedDouble } from "lucide-react";
+import { BedDouble, InfoIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
@@ -44,11 +44,10 @@ export default function Page() {
     if (!function_hall_booking?.event_date) return;
 
     fetchAvailableFunctionRooms({
-      event_date: function_hall_booking.event_date,
       start: function_hall_booking.event_duration?.start,
       end: function_hall_booking.event_duration?.end,
     });
-  }, [function_hall_booking?.event_date]);
+  }, [function_hall_booking?.event_duration]);
 
   const handleAssign = (room: FunctionRoom, occupancy: OccupancyType) => {
     setSelectedRoom(room);
@@ -107,15 +106,21 @@ export default function Page() {
       <BookingDetails booking={function_hall_booking} />
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {function_rooms.map((room) => (
-          <FunctionRoomCard
-            key={room.id}
-            room={room}
-            booking={function_hall_booking}
-            isLoading={bookingLoading}
-            onAssign={handleAssign}
-          />
-        ))}
+        {function_rooms.length > 0 ? (
+          function_rooms.map((room) => (
+            <FunctionRoomCard
+              key={room.id}
+              room={room}
+              booking={function_hall_booking}
+              isLoading={bookingLoading}
+              onAssign={handleAssign}
+            />
+          ))
+        ) : (
+          <div className="flex gap-2 items-center">
+            <InfoIcon className="text-warning" /> No available rooms
+          </div>
+        )}
       </div>
 
       <AssignRoomModal

@@ -68,8 +68,20 @@ export const fetchAvailableFunctionRooms = createAsyncThunk<
     const searchParams = new URLSearchParams();
     if (params?.status) searchParams.append("status", params.status);
     if (params?.event_date) searchParams.append("eventDate", params.event_date);
-    if (params?.start) searchParams.append("start", params.start);
-    if (params?.end) searchParams.append("end", params.end);
+
+    if (params?.start) {
+      const serializedStart =
+        typeof params.start === "string"
+          ? params.start
+          : JSON.stringify(params.start);
+      searchParams.append("start", serializedStart);
+    }
+
+    if (params?.end) {
+      const serializedEnd =
+        typeof params.end === "string" ? params.end : JSON.stringify(params.end);
+      searchParams.append("end", serializedEnd);
+    }
 
     const res = await fetch(
       `${path}/available-rooms?${searchParams.toString()}`,

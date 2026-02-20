@@ -8,18 +8,15 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
   const status = searchParams.get("status") || "";
-  const eventDate = searchParams.get("eventDate") || "";
   const start = searchParams.get("start") || "";
   const end = searchParams.get("end") || "";
 
-  // ✅ build query dynamically
   let roomQuery = supabase.from("function-rooms").select("*");
 
   if (status) {
     roomQuery = roomQuery.eq("status", status);
   }
 
-  // execute query
   const { data: rooms, error } = await roomQuery;
 
   if (error || !rooms) {
@@ -36,7 +33,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
-  // ✅ fetch bookings for each room
   const roomsWithBookings = await Promise.all(
     rooms.map(async (room: FunctionRoom) => {
       const { data: bookings, error: bookingsError } = await supabase
@@ -56,10 +52,10 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     }),
   );
 
-  // ✅ compute availability
-  const computedRooms = eventDate
-    ? computeFunctionRoomAvailabilityByDate(roomsWithBookings, eventDate)
-    : roomsWithBookings;
+  const computedRooms =
+    start || end
+      ? computeFunctionRoomAvailabilityByDate(roomsWithBookings, start, end)
+      : roomsWithBookings;
 
   return NextResponse.json(
     {
