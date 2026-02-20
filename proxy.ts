@@ -12,7 +12,7 @@ export async function proxy(request: NextRequest) {
   const isAuthPage = pathname.startsWith("/auth");
   const isAdminPage = pathname.startsWith("/admin");
   const isHousekeepingPage = pathname.startsWith("/housekeeping");
-  console.log(token);
+
   if (pathname === "/") {
     if (!token) {
       return NextResponse.redirect(new URL("/guest", request.url));

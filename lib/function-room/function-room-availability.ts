@@ -1,20 +1,47 @@
 import { FunctionRoom } from "@/types/function-room";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import {
+  parseEventDurationBoundaryDateOnly,
+  parseISODateOnly,
+} from "@/utils/function-room/event-duration-date";
 
 export type OccupancyStatus = "available" | "half occupied" | "full occupied";
 
 export function computeFunctionRoomAvailabilityByDate(
   rooms: FunctionRoom[],
-  eventDate: string,
+  start: unknown,
+  end: unknown,
 ) {
+  const requestedStartISO =
+    parseEventDurationBoundaryDateOnly(start, "start") ?? parseISODateOnly(start);
+  const requestedEndISO =
+    parseEventDurationBoundaryDateOnly(end, "end") ?? parseISODateOnly(end);
+
+  if (!requestedStartISO || !requestedEndISO) {
+    return rooms;
+  }
+
+  const rangeStartISO =
+    requestedStartISO <= requestedEndISO ? requestedStartISO : requestedEndISO;
+  const rangeEndISO =
+    requestedEndISO >= requestedStartISO ? requestedEndISO : requestedStartISO;
+
   return rooms.map((room) => {
     const function_hall_bookings =
       room.function_hall_bookings?.filter((b: FunctionHallBooking) => {
         if (b.status === "cancelled") return false;
-        if (!b.event_date) return false;
 
-        // ✅ same date only
-        return b.event_date === eventDate;
+        const bookingStartISO = parseEventDurationBoundaryDateOnly(
+          b.event_duration,
+          "start",
+        );
+        const bookingEndISO =
+          parseEventDurationBoundaryDateOnly(b.event_duration, "end") ??
+          bookingStartISO;
+
+        if (!bookingStartISO || !bookingEndISO) return false;
+
+        return bookingStartISO <= rangeEndISO && bookingEndISO >= rangeStartISO;
       }) ?? [];
 
     const bookingCount = function_hall_bookings.length;
@@ -29,7 +56,7 @@ export function computeFunctionRoomAvailabilityByDate(
 
     let status: OccupancyStatus = "available";
 
-    if (bookingCount >= 2) {
+    if (bookingCount >= 2 || totalGuests >= maxGuests) {
       status = "full occupied";
     } else if (bookingCount === 1) {
       status = "half occupied";
@@ -39,7 +66,7 @@ export function computeFunctionRoomAvailabilityByDate(
       ...room,
       total_guests: totalGuests,
       remaining_slots: remainingSlots,
-      booking_count: bookingCount, // 👈 helpful for UI/debug
+      booking_count: bookingCount,
       status,
       availability_status: status,
     };

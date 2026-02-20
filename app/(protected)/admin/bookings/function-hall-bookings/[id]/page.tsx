@@ -1,38 +1,14 @@
 "use client";
 
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Divider,
-  Button,
-  Link,
-} from "@heroui/react";
+import { Card, CardBody, Chip, Button, Link } from "@heroui/react";
 import { useParams } from "next/navigation";
 import React from "react";
 import Loader from "./loader";
 import { Mail, Phone } from "lucide-react";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import { formateDateAndTime } from "@/app/utils/to-date-range";
-
-type OccupancyType = "available" | "half occupied" | "full occupied";
-
-const getOccupancyColor = (
-  occupancy?: OccupancyType,
-): "success" | "warning" | "danger" | "default" => {
-  switch (occupancy) {
-    case "available":
-      return "success";
-    case "half occupied":
-      return "warning";
-    case "full occupied":
-      return "danger";
-    default:
-      return "default";
-  }
-};
+import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
@@ -41,13 +17,9 @@ export default function BookingDetailsPage() {
 
   React.useEffect(() => {
     fetchBooking(id as string);
-  }, []);
+  }, [id]);
 
   if (isLoading) return <Loader />;
-
-  const balance =
-    (function_hall_booking.total_amount || 0) -
-    (function_hall_booking.amount_paid || 0);
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -61,15 +33,8 @@ export default function BookingDetailsPage() {
         </div>
 
         <Chip
-          color={
-            function_hall_booking.status === "confirmed"
-              ? "success"
-              : function_hall_booking.status === "cancelled"
-                ? "danger"
-                : "warning"
-          }
           variant="flat"
-          className="uppercase text-sm"
+          className={`uppercase text-sm ${bookingStatusColorMap[function_hall_booking.status || "default"]}`}
         >
           {function_hall_booking.status || "Pending"}
         </Chip>
@@ -110,55 +75,22 @@ export default function BookingDetailsPage() {
       </Card>
 
       {/* Event & Payment */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Event Details */}
-        <Card radius="sm" className="shadow-none border border-gray-200">
-          <CardBody className="space-y-2">
-            <p className="text-gray-500 text-xs">Event Date</p>
-            <p className="text-sm">
-              {formateDateAndTime(function_hall_booking.event_duration?.start)}{" "}
-              – {formateDateAndTime(function_hall_booking.event_duration?.end)}
-            </p>
-            <p className="text-gray-500 text-xs">Guests</p>
-            <p className="text-sm">{function_hall_booking.number_of_guest}</p>
-          </CardBody>
-        </Card>
-
-        <Card radius="sm" className="shadow-none border border-gray-200">
-          <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-gray-500 text-xs">Room</p>
-              <p className="font-medium">
-                {function_hall_booking.room?.name || "Not assigned"}
-              </p>
-              <p className="text-gray-500 text-xs">
-                Capacity: {function_hall_booking.room?.capacity || "-"}
-              </p>
-              {function_hall_booking.room_id && (
-                <Chip
-                  size="sm"
-                  color={getOccupancyColor(
-                    function_hall_booking.occupancy_type,
-                  )}
-                  variant="flat"
-                  className="mt-1 text-xs"
-                >
-                  {function_hall_booking.occupancy_type === "half occupied"
-                    ? "Half Occupied"
-                    : function_hall_booking.occupancy_type === "full occupied"
-                      ? "Fully Occupied"
-                      : "Available"}
-                </Chip>
-              )}
-            </div>
-          </CardBody>
-        </Card>
-      </div>
+      <Card radius="sm" className="shadow-none border border-gray-200">
+        <CardBody className="space-y-2">
+          <p className="text-gray-500 text-xs">Event Date</p>
+          <p className="text-sm">
+            {formateDateAndTime(function_hall_booking.event_duration?.start)} –{" "}
+            {formateDateAndTime(function_hall_booking.event_duration?.end)}
+          </p>
+          <p className="text-gray-500 text-xs">Guests</p>
+          <p className="text-sm">{function_hall_booking.number_of_guest}</p>
+        </CardBody>
+      </Card>
       <Card radius="sm" className="shadow-none border border-gray-200">
         <CardBody className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <p className="text-gray-500 text-xs">Notes</p>
-            <p className="text-sm">{function_hall_booking.notes}</p>
+            <p className="text-sm">{function_hall_booking.notes || "-"}</p>
           </div>
         </CardBody>
       </Card>
@@ -179,7 +111,7 @@ export default function BookingDetailsPage() {
                     } as FunctionHallBooking)
                   }
                 >
-                  Reject
+                  Reject Booking
                 </Button>
               ) : (
                 <Button
@@ -192,7 +124,7 @@ export default function BookingDetailsPage() {
                     } as FunctionHallBooking)
                   }
                 >
-                  Cancel
+                  Mark Cancelled
                 </Button>
               )}
               <Button

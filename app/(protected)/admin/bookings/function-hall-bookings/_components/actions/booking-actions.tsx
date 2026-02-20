@@ -65,7 +65,7 @@ export default function BookingActionsDropdown({
         isOpen={extendOpen}
         onClose={() => setExtendOpen(false)}
       /> */}
-      <ViewSummary
+      {/* <ViewSummary
         isOpen={isViewSummaryOpen}
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
@@ -75,7 +75,7 @@ export default function BookingActionsDropdown({
         onClose={() => setAddPaymentOpen(false)}
         summary={summary}
         id={booking.id}
-      />
+      /> */}
       <Dropdown>
         <DropdownTrigger>
           <Button isIconOnly variant="light" size="sm">
@@ -127,7 +127,7 @@ export default function BookingActionsDropdown({
               <CheckOutButton booking={booking} />
             </DropdownItem>
           ) : null} */}
-          <DropdownItem
+          {/* <DropdownItem
             key="summary"
             startContent={<FileText className="w-4 h-4 text-gray-700" />}
             onClick={() => setIsViewSummaryOpen(true)}
@@ -142,7 +142,7 @@ export default function BookingActionsDropdown({
             >
               Add Payment
             </DropdownItem>
-          ) : null}
+          ) : null} */}
 
           <DropdownItem isReadOnly key="div3">
             <div className="border-t border-gray-200 my-1"></div>
