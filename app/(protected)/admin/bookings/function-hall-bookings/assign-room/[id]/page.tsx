@@ -40,7 +40,7 @@ export default function Page() {
   }, [id]);
 
   useEffect(() => {
-    if (!function_hall_booking?.event_date) return;
+    if (!function_hall_booking?.event_duration) return;
 
     fetchAvailableFunctionRooms({
       start: function_hall_booking.event_duration?.start,

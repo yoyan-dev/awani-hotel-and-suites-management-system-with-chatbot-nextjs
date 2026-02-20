@@ -1,13 +1,7 @@
 "use client";
 
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
-import {
-  Card,
-  CardBody,
-  Chip,
-  Button,
-  Link,
-} from "@heroui/react";
+import { Card, CardBody, Chip, Button, Link } from "@heroui/react";
 import { useParams } from "next/navigation";
 import React from "react";
 import Loader from "./loader";
@@ -23,7 +17,7 @@ export default function BookingDetailsPage() {
 
   React.useEffect(() => {
     fetchBooking(id as string);
-  }, []);
+  }, [id]);
 
   if (isLoading) return <Loader />;
 
