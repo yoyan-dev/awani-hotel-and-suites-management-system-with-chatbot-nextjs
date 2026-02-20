@@ -12,7 +12,6 @@ import FunctionRoomCard from "./_components/function-room-card";
 import AssignRoomModal from "./_components/modals/assign-room-modal";
 import BookingDetails from "./_components/booking-details";
 import { OccupancyType } from "@/utils/function-room/occupancy";
-import { BanquetPackage } from "@/types/banquet";
 
 export default function Page() {
   const { id } = useParams();

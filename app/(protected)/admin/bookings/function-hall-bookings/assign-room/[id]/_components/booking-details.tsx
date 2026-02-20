@@ -1,8 +1,5 @@
 import { Chip } from "@heroui/react";
-import {
-  getOccupancyColor,
-  OccupancyType,
-} from "@/utils/function-room/occupancy";
+import type { ReactNode } from "react";
 import { formateDateAndTime } from "@/app/utils/to-date-range";
 import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 
@@ -49,7 +46,7 @@ export default function BookingDetails({ booking }: Props) {
   );
 }
 
-function Info({ label, value }: { label: string; value: React.ReactNode }) {
+function Info({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="text-xs font-medium tracking-wide text-gray-500 uppercase">
