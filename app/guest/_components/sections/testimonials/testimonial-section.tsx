@@ -1,5 +1,7 @@
 import { Carousel } from "@/components/ui/carousel";
 import TestimonialCard from "./testimonial-card";
+import { useGuestFeedback } from "@/hooks/use-feedback";
+import { useEffect } from "react";
 
 const TESTIMONIALS = [
   {
@@ -29,6 +31,14 @@ const TESTIMONIALS = [
 ];
 
 export default function TestimonialsSection() {
+  const { guest_feedbacks, isLoading, error, fetchGuestFeedbacks } =
+    useGuestFeedback();
+
+  useEffect(() => {
+    fetchGuestFeedbacks({});
+  }, [error]);
+
+  if (isLoading) return "Loading...";
   return (
     <main className=" py-10 px-4">
       <div className="max-w-5xl mx-auto">
@@ -48,12 +58,13 @@ export default function TestimonialsSection() {
             hasButton={false}
             autoScrollInterval={5000}
           >
-            {TESTIMONIALS.map((t, idx) => (
+            {guest_feedbacks.map((feedback) => (
               <TestimonialCard
-                key={idx}
-                name={t.name}
-                role={t.role}
-                comment={t.comment}
+                key={feedback.id}
+                name="Awani Guest"
+                role="guest"
+                rating={feedback.rating}
+                comment={feedback.comments || ""}
               />
             ))}
           </Carousel>
