@@ -1,6 +1,9 @@
 import React from "react";
 import { Chip } from "@heroui/react";
-import { bookingStatusColorMap } from "@/app/constants/booking";
+import {
+  bookingStatusColorMap,
+  paymentStatusColorMap,
+} from "@/app/constants/booking";
 import { Booking } from "@/types/booking";
 import { formatPHP } from "@/lib/format-php";
 import { calculateBookingPrice, getNights } from "@/utils/pricing";
@@ -46,6 +49,15 @@ export const RenderCell = ({ booking, columnKey }: RenderCellProps) => {
       return formatPHP(Number(booking.amount_paid));
     case "total_price":
       return formatPHP(Number(booking.total));
+    case "payment_status":
+      return (
+        <Chip
+          size="sm"
+          className={`px-2 rounded-full  font-medium ${paymentStatusColorMap[booking.payment_status || "pending"].bg}`}
+        >
+          {booking.payment_status || "pending"}
+        </Chip>
+      );
     case "status":
       return (
         <Chip

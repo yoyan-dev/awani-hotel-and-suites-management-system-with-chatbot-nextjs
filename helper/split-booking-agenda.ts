@@ -27,7 +27,8 @@ export function splitBookingToAgendaEvents(booking: Booking) {
       roomNumber: booking.room?.room_number,
       status: booking.status,
       statusColor:
-        paymentStatusColorMap[booking.payment_status || "pending"] || "#CCCCCC",
+        paymentStatusColorMap[booking.payment_status || "pending"].code ||
+        "#CCCCCC",
       start: isCheckIn
         ? new Date(booking.checked_in)
         : new Date(date.setHours(0, 0)),

@@ -1,23 +1,11 @@
 "use client";
 
 import React from "react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Button,
-  Listbox,
-  ListboxItem,
-  Spinner,
-  Skeleton,
-  Card,
-} from "@heroui/react";
 
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useRooms } from "@/hooks/use-rooms";
 import { useBookings } from "@/hooks/use-bookings";
 import { CalendarView } from "./_components/calendar-view";
-import { formatDate } from "@/utils/format-date";
 import { FetchBookingParams } from "@/types/booking";
 
 export default function Calendar() {
@@ -31,7 +19,7 @@ export default function Calendar() {
   } = useRoomTypes();
 
   const { rooms, isLoading: roomLoading, fetchRooms } = useRooms();
-  const { bookings, isLoading: bookingsLoading, fetchBookings } = useBookings();
+  const { bookings, fetchBookings } = useBookings();
 
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>("");
   const [selectedRoom, setSelectedRoom] = React.useState<string>("");
@@ -74,7 +62,6 @@ export default function Calendar() {
       <div className=" p-2 md:p-4 bg-white dark:bg-gray-900 rounded">
         Bookings for{" "}
         <span className="font-bold text-primary">{selectedName}</span>
-        {/* {!roomLoading && !bookingsLoading && selectedRoomType ? ( */}
         <CalendarView
           query={query}
           setQuery={setQuery}
@@ -90,15 +77,6 @@ export default function Calendar() {
           selectedRoom={selectedRoom}
           setSelectedRoom={setSelectedRoom}
         />
-        {/* // ) : (
-        //   <div className="p-4">
-        //     <Card className="w-full shadow-none" radius="none">
-        //       <Skeleton className="rounded-sm">
-        //         <div className="h-24 w-full rounded-lg bg-default-300" />
-        //       </Skeleton>
-        //     </Card>
-        //   </div>
-        // )} */}
       </div>
     </div>
   );
