@@ -72,17 +72,7 @@ export default function BookingDetailsSection({
             setEventDuration({ start: value?.start, end: value?.end })
           }
         />
-        {/* <Input
-          className="mt-4"
-          isRequired
-          fullWidth
-          variant="bordered"
-          radius="none"
-          type="date"
-          label="Event Date"
-          name="event_date"
-          labelPlacement="outside"
-        />
+        {/* 
 
         <div className="flex gap-4">
           <TimeInput
@@ -120,36 +110,6 @@ export default function BookingDetailsSection({
 
       {/* Package & Guests */}
       <div className="space-y-4 w-full">
-        {/* <h2 className="w-full bg-primary px-2 py-1 text-white">
-          Package & Guests
-        </h2> */}
-
-        {/* <Select
-          isRequired
-          fullWidth
-          radius="none"
-          className="flex-1 w-full min-w-40 mt-4"
-          name="banquet_package_id"
-          label="Banquet Package"
-          labelPlacement="outside"
-          placeholder="Select banquet package"
-          variant="bordered"
-          isLoading={packageLoading}
-          selectedKeys={selectedPackage ? [selectedPackage] : []}
-          onChange={(e) => setSelectedPackage(e.target.value)}
-        >
-          {banquetPackages.map((pkg) => (
-            <SelectItem key={pkg.id} textValue={pkg.name}>
-              <div className="flex flex-col">
-                <span className="text-small font-medium">{pkg.name}</span>
-                <span className="text-tiny text-gray-600 dark:text-gray-300">
-                  ₱{pkg.price_per_cover} per cover
-                </span>
-              </div>
-            </SelectItem>
-          ))}
-        </Select> */}
-
         <Input
           className="mt-4"
           isRequired

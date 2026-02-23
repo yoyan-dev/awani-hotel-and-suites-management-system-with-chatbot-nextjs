@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { FunctionHallBooking } from "@/types/function-room-booking";
+import { parseEventDurationBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 interface CompletionRequest {
   booking_id: string;
@@ -49,17 +49,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       );
     }
 
-    if (
-      !booking.event_date ||
-      !booking.event_duration?.start ||
-      !booking.event_duration?.end
-    ) {
+    if (!booking.event_duration?.start || !booking.event_duration?.end) {
       return NextResponse.json(
         {
           success: false,
           message: {
             title: "Invalid Booking",
-            description: "Booking is missing event date or duration",
+            description: "Booking is missing event duration",
             color: "warning",
           },
         },
@@ -89,7 +85,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
     const { data: existingBookings, error: conflictError } = await supabase
       .from("function_hall_bookings")
-      .select("id, event_date, event_duration, number_of_guest, status")
+      .select("id, event_duration, number_of_guest, status")
       .eq("room_id", room_id)
       .neq("status", "cancelled")
       .neq("id", booking_id);
@@ -108,12 +104,27 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       );
     }
 
-    const bookingStart = new Date(
-      `${booking.event_date}T${booking.event_duration.start}:00`,
+    const bookingStart = parseEventDurationBoundaryDateTime(
+      booking.event_duration,
+      "start",
     );
-    const bookingEnd = new Date(
-      `${booking.event_date}T${booking.event_duration.end}:00`,
-    );
+    const bookingEnd =
+      parseEventDurationBoundaryDateTime(booking.event_duration, "end") ||
+      bookingStart;
+
+    if (!bookingStart || !bookingEnd) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Duration",
+            description: "Booking has invalid event duration format",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
 
     if (bookingStart >= bookingEnd) {
       return NextResponse.json(
@@ -131,19 +142,21 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
     const conflictingBookings =
       existingBookings?.filter((b) => {
-        if (
-          !b.event_date ||
-          !b.event_duration?.start ||
-          !b.event_duration?.end
-        ) {
+        if (!b.event_duration?.start || !b.event_duration?.end) {
           return false;
         }
-        const existingStart = new Date(
-          `${b.event_date}T${b.event_duration.start}:00`,
+
+        const existingStart = parseEventDurationBoundaryDateTime(
+          b.event_duration,
+          "start",
         );
-        const existingEnd = new Date(
-          `${b.event_date}T${b.event_duration.end}:00`,
-        );
+        const existingEnd =
+          parseEventDurationBoundaryDateTime(b.event_duration, "end") ||
+          existingStart;
+
+        if (!existingStart || !existingEnd) {
+          return false;
+        }
 
         return bookingStart < existingEnd && bookingEnd > existingStart;
       }) || [];

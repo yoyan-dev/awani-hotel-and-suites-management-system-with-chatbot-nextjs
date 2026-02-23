@@ -14,6 +14,7 @@ import {
   parseISO,
   isValid,
 } from "date-fns";
+import { parseEventDurationBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 type FunctionHallBooking = Tables<"function_hall_bookings">;
 
@@ -228,15 +229,23 @@ export async function GET(
     const now = new Date();
     const todayStart = startOfDay(now);
     const weekStart = subDays(todayStart, 7);
-    const todayEnd = endOfDay(now);
 
-    const upcomingBookings = transformedBookings.filter(
-      (b) =>
-        b.event_date &&
-        b.event_date >= todayStart.toISOString() &&
-        b.event_date <= todayEnd.toISOString() &&
-        b.status !== "cancelled",
-    ).length;
+    const upcomingBookings = transformedBookings.filter((b) => {
+      if (b.status === "cancelled" || b.status === "completed") return false;
+
+      const startDate = parseEventDurationBoundaryDateTime(
+        (b as any).event_duration,
+        "start",
+      );
+      const endDate =
+        parseEventDurationBoundaryDateTime((b as any).event_duration, "end") ||
+        startDate;
+
+      if (!startDate && !endDate) return false;
+
+      const eventEnd = endDate || startDate!;
+      return eventEnd >= now;
+    }).length;
 
     const completedBookings = transformedBookings.filter(
       (b) => b.status === "completed",

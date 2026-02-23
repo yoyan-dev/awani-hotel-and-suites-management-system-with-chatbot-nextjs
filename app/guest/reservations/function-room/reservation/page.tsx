@@ -23,7 +23,6 @@ export default function Page() {
   const router = useRouter();
   const [selectedPackage, setSelectedPackage] = React.useState(id || null);
   const [guestId, setGuestId] = React.useState<string | null>(null);
-  const [eventDate, setEventDate] = React.useState();
   const [EventDuration, setEventDuration] = React.useState({
     start: "",
     end: "",
@@ -41,7 +40,7 @@ export default function Page() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    await fetchBookings({ guest_id: guestId || "", event_date: eventDate });
+    await fetchBookings({ guest_id: guestId || "" });
     if (!bookingIsLoading && function_hall_bookings.length > 0) {
       addToast({
         title: "Error!",
@@ -82,8 +81,6 @@ export default function Page() {
                 setGuestId={setGuestId}
                 selectedPackage={selectedPackage}
                 setSelectedPackage={setSelectedPackage}
-                eventDate={eventDate}
-                setEventDate={setEventDate}
                 eventDuration={EventDuration}
                 setEventDuration={setEventDuration}
                 bookingIsLoading={bookingIsLoading}

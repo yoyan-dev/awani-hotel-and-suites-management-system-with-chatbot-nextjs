@@ -45,7 +45,6 @@ export interface FetchFunctionRoomParams {
   page?: number;
   query?: string;
   status?: string | undefined;
-  event_date?: any;
   start?: any;
   end?: any;
 }

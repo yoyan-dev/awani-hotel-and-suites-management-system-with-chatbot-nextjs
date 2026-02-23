@@ -52,10 +52,6 @@ export const RenderCell = ({
     case "banquet_package":
       return booking.banquet_package?.name || "N/A";
 
-    case "event_date":
-      return booking.event_date
-        ? new Date(booking.event_date).toLocaleDateString()
-        : "N/A";
     case "event_duration":
       console.log(booking.event_duration);
       return (

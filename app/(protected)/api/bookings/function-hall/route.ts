@@ -3,10 +3,15 @@ import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { GenerateBookingNumber } from "@/lib/generate-booking-number";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import {
+  parseEventDurationBoundaryDateOnly,
+  parseEventDurationBoundaryDateTime,
+} from "@/utils/function-room/event-duration-date";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
+  const query = searchParams.get("query")?.trim() || "";
   const guest_id = searchParams.get("guest_id") || "";
   const room_id = searchParams.get("room_id") || "";
   const status = searchParams.get("status") || "";
@@ -17,6 +22,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
+  const hasDateRangeFilter = Boolean(start && end);
 
   let q = supabase
     .from("function_hall_bookings")
@@ -24,21 +30,23 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
       `
       *,
       guest: guest_id(*),
-      banquet_package: banquet_package_id(*),
       room: room_id(*)
     `,
       { count: "exact" },
     )
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    .order("created_at", { ascending: false });
 
   if (guest_id) q = q.eq("guest_id", guest_id);
   if (room_id) q = q.eq("room_id", room_id);
   if (status) q = q.eq("status", status);
+  if (query) {
+    q = q.or(
+      `booking_number.ilike.%${query}%,event_type.ilike.%${query}%,notes.ilike.%${query}%`,
+    );
+  }
 
-  // DATE + TIME filter (JSONB)
-  if (start && end) {
-    q = q.gte("event_duration->>start", start).lte("event_duration->>end", end);
+  if (!hasDateRangeFilter) {
+    q = q.range(from, to);
   }
 
   const { data, error, count } = await q;
@@ -54,6 +62,44 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         },
       },
       { status: 500 },
+    );
+  }
+
+  if (hasDateRangeFilter && start && end) {
+    const filtered =
+      (data ?? []).filter((booking) => {
+        const bookingStart = parseEventDurationBoundaryDateOnly(
+          booking.event_duration,
+          "start",
+        );
+        const bookingEnd =
+          parseEventDurationBoundaryDateOnly(booking.event_duration, "end") ||
+          bookingStart;
+
+        if (!bookingStart || !bookingEnd) {
+          return false;
+        }
+
+        return bookingStart >= start && bookingEnd <= end;
+      }) ?? [];
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: {
+          title: "Success",
+          description: "",
+          color: "success",
+        },
+        data: filtered.slice(from, to + 1),
+        pagination: {
+          page,
+          limit,
+          total: filtered.length,
+          total_pages: Math.ceil(filtered.length / limit),
+        },
+      },
+      { status: 200 },
     );
   }
 
@@ -83,7 +129,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-    const roomId = formObj.room_id as string;
     // Parse JSON safely
     const eventDuration =
       typeof formObj.event_duration === "string"
@@ -112,8 +157,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       booking_number: bookingNumber,
       guest_id: formObj.guest_id as string,
       event_type: formObj.event_type as string,
-      event_date: formObj.event_date as string,
-      banquet_package_id: formObj.banquet_package_id as string,
       number_of_guest: Number(formObj.number_of_guest),
       event_duration: eventDuration,
       // room_id: roomId,
@@ -123,21 +166,34 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     if (newBooking.guest_id) {
       const { data: existing, error: overlapError } = await supabase
         .from("function_hall_bookings")
-        .select("id, event_date, event_duration, status")
+        .select("id, event_duration, status")
         .eq("guest", newBooking.guest_id)
         .not("status", "in", "(cancelled,completed)");
 
-      const hasOverlap = existing?.some((b) => {
-        const eventDate = new Date(b.event_date);
-        const existingStart = new Date(b.event_duration.start);
-        const existingEnd = new Date(b.event_duration.end);
-        const newStart = new Date(eventDuration.start);
-        const newEnd = new Date(eventDuration.end);
+      if (overlapError) {
+        throw overlapError;
+      }
 
-        return (
-          (newStart < existingEnd && newEnd > existingStart) ||
-          eventDate === new Date(formObj.event_date as string)
+      const hasOverlap = existing?.some((b) => {
+        const existingStart = parseEventDurationBoundaryDateTime(
+          b.event_duration,
+          "start",
         );
+        const existingEnd =
+          parseEventDurationBoundaryDateTime(b.event_duration, "end") ||
+          existingStart;
+        const newStart = parseEventDurationBoundaryDateTime(
+          eventDuration,
+          "start",
+        );
+        const newEnd =
+          parseEventDurationBoundaryDateTime(eventDuration, "end") || newStart;
+
+        if (!existingStart || !existingEnd || !newStart || !newEnd) {
+          return false;
+        }
+
+        return newStart < existingEnd && newEnd > existingStart;
       });
 
       if (hasOverlap) {

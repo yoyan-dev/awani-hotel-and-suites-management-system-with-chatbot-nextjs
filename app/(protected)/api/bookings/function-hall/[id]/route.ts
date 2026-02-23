@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 
 //GET ONE
@@ -19,9 +18,7 @@ export async function GET(
       booking_number,
       guest_id,
       event_type,
-      event_date,
       event_duration,
-      banquet_package_id,
       number_of_guest,
       room_id,
       notes,
@@ -29,7 +26,6 @@ export async function GET(
       booking_source,
       created_at,
       guest: guest_id(*),
-      banquet_package: banquet_package_id(*),
       room: room_id(*)
     `,
     )

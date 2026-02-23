@@ -42,7 +42,6 @@ export const bookingStatusHexColorMap: Record<string, string> = {
 
 export const INITIAL_VISIBLE_COLUMNS = [
   "event_type",
-  "event_date",
   "event_duration",
   "number_of_guest",
   "banquet_package",
@@ -56,7 +55,6 @@ export const INITIAL_VISIBLE_COLUMNS = [
 
 export const VISIBLE_COLUMNS = [
   "event_type",
-  "event_date",
   "event_duration",
   "number_of_guest",
   "banquet_package",

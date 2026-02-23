@@ -45,8 +45,6 @@ interface BookingFormProps {
   setGuestId: React.Dispatch<React.SetStateAction<string | null>>;
   selectedPackage: any;
   setSelectedPackage: React.Dispatch<React.SetStateAction<any>>;
-  eventDate: any;
-  setEventDate: React.Dispatch<React.SetStateAction<any>>;
   eventDuration: { start: any; end: any };
   setEventDuration: React.Dispatch<
     React.SetStateAction<{ start: any; end: any }>
@@ -60,8 +58,6 @@ export default function BookingForm({
   setGuestId,
   selectedPackage,
   setSelectedPackage,
-  eventDate,
-  setEventDate,
   eventDuration,
   setEventDuration,
   bookingIsLoading,
