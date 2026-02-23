@@ -9,11 +9,18 @@ import { Mail, Phone } from "lucide-react";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import { formateDateAndTime } from "@/app/utils/to-date-range";
 import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
+import { formatPHP } from "@/lib/format-php";
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
   const { function_hall_booking, isLoading, fetchBooking, updateBooking } =
     useFunctionHallBookings();
+  const totalAmount = Number(function_hall_booking.total_amount || 0);
+  const amountPaid = Number(function_hall_booking.amount_paid || 0);
+  const balance = Number(
+    function_hall_booking.balance || Math.max(totalAmount - amountPaid, 0),
+  );
+  const paymentStatus = function_hall_booking.payment_status || "pending";
 
   React.useEffect(() => {
     fetchBooking(id as string);
@@ -91,6 +98,38 @@ export default function BookingDetailsPage() {
           <div>
             <p className="text-gray-500 text-xs">Notes</p>
             <p className="text-sm">{function_hall_booking.notes || "-"}</p>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card radius="sm" className="shadow-none border border-gray-200">
+        <CardBody className="space-y-3">
+          <p className="text-gray-500 text-xs">Payment Summary</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-500">Total Amount</span>
+              <span className="font-medium">{formatPHP(totalAmount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Amount Paid</span>
+              <span className="font-medium">{formatPHP(amountPaid)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Balance</span>
+              <span className="font-medium">{formatPHP(balance)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Payment Method</span>
+              <span className="font-medium">
+                {function_hall_booking.payment_method || "Not set"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500">Payment Status</span>
+              <Chip size="sm" variant="flat" className="uppercase">
+                {paymentStatus}
+              </Chip>
+            </div>
           </div>
         </CardBody>
       </Card>

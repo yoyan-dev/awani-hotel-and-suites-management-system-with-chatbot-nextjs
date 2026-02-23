@@ -13,10 +13,17 @@ export default function KPISection({ booking, rooms, functionHall }: any) {
         color="primary"
       />
       <KPICard
-        title="Booking Revenue"
+        title="Room Revenue"
         value={formatPHP(booking?.summary?.total_revenue || 0)}
         icon={<DollarSign className="w-5 h-5" />}
         color="success"
+      />
+      <KPICard
+        title="Function Hall Revenue"
+        value={formatPHP(functionHall?.summary?.total_revenue || 0)}
+        subtitle={`${functionHall?.summary?.total_bookings || 0} events`}
+        icon={<Building2 className="w-5 h-5" />}
+        color="warning"
       />
       <KPICard
         title="Room Occupancy"
@@ -24,13 +31,6 @@ export default function KPISection({ booking, rooms, functionHall }: any) {
         subtitle={`${rooms?.summary?.occupied_rooms || 0} occupied`}
         icon={<Bed className="w-5 h-5" />}
         color="secondary"
-      />
-      <KPICard
-        title="Function Halls"
-        value={functionHall?.summary?.total_bookings || 0}
-        subtitle="Total events"
-        icon={<Building2 className="w-5 h-5" />}
-        color="warning"
       />
     </StatGrid>
   );

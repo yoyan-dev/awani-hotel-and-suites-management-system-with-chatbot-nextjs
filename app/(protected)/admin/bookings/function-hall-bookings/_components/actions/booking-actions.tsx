@@ -7,25 +7,18 @@ import {
 } from "@heroui/react";
 import {
   Eye,
-  Pencil,
   Bed,
-  RotateCcw,
-  FileText,
-  BrushCleaning,
-  MessageSquare,
   EllipsisVertical,
   Wallet,
+  FileText,
+  CircleDollarSign,
 } from "lucide-react";
-import CheckOutButton from "./mark-check-out";
-import CheckInButton from "./mark-check-in";
 import MarkCancelled from "./mark-cancelled";
 import React from "react";
-import ExtendModal from "../modals/extend-modal";
-import { generateSummary } from "@/utils/generate-summary";
 import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
 import { FunctionHallBooking } from "@/types/function-room-booking";
-import { BanquetPackage } from "@/types/banquet";
+import SetTotalAmountModal from "../modals/payment/set-total-amount-modal";
 
 export default function BookingActionsDropdown({
   booking,
@@ -34,38 +27,40 @@ export default function BookingActionsDropdown({
   booking: FunctionHallBooking;
   disabled: boolean;
 }) {
-  const [extendOpen, setExtendOpen] = React.useState(false);
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
+  const [setTotalAmountOpen, setSetTotalAmountOpen] = React.useState(false);
 
-  const summary = React.useMemo(() => {
-    return {
-      banquet_package: booking.banquet_package as BanquetPackage,
-      number_of_guest: booking.number_of_guest,
-      total_amount: booking.total_amount,
-      balance: booking.balance,
+  const totalAmount = Number(booking.total_amount || 0);
+  const amountPaid = Number(booking.amount_paid || 0);
+  const balance = Number(booking.balance || Math.max(totalAmount - amountPaid, 0));
+
+  const summary = React.useMemo(
+    () => ({
+      total_amount: totalAmount,
+      balance,
       status: booking.payment_status,
       payment_method: booking.payment_method,
-      amount_paid: booking.amount_paid,
-    } as {
-      banquet_package: BanquetPackage;
-      package_price: number;
-      number_of_guest: number;
-      total_amount: number;
-      balance: number;
-      status: string;
-      payment_method: string;
-      amount_paid: any;
-    };
-  }, [booking, isViewSummaryOpen]);
+      amount_paid: amountPaid,
+    }),
+    [totalAmount, balance, booking.payment_status, booking.payment_method, amountPaid],
+  );
+
+  const canShowPaymentActions = totalAmount > 0;
+  const canAddPayment =
+    canShowPaymentActions &&
+    (booking.payment_status || "pending") !== "paid" &&
+    booking.status !== "cancelled";
+
   return (
     <>
-      {/* <ExtendModal
-        booking={booking}
-        isOpen={extendOpen}
-        onClose={() => setExtendOpen(false)}
-      /> */}
-      {/* <ViewSummary
+      <SetTotalAmountModal
+        isOpen={setTotalAmountOpen}
+        onClose={() => setSetTotalAmountOpen(false)}
+        bookingId={booking.id}
+        currentTotalAmount={totalAmount}
+      />
+      <ViewSummary
         isOpen={isViewSummaryOpen}
         onClose={() => setIsViewSummaryOpen(false)}
         summary={summary}
@@ -75,10 +70,11 @@ export default function BookingActionsDropdown({
         onClose={() => setAddPaymentOpen(false)}
         summary={summary}
         id={booking.id}
-      /> */}
+      />
+
       <Dropdown>
         <DropdownTrigger>
-          <Button isIconOnly variant="light" size="sm">
+          <Button isIconOnly variant="light" size="sm" isDisabled={disabled}>
             <EllipsisVertical className="w-5 h-5 text-gray-600" />
           </Button>
         </DropdownTrigger>
@@ -92,22 +88,7 @@ export default function BookingActionsDropdown({
           >
             View Details
           </DropdownItem>
-          {/* {booking.status === "pending" ? (
-            <DropdownItem
-              key="edit"
-              startContent={<Pencil className="w-4 h-4" />}
-              href={`/admin/bookings/function-hall-bookings/edit-booking/${booking.id}`}
-            >
-              Edit Booking
-            </DropdownItem>
-          ) : null} */}
 
-          {/* <DropdownItem
-            key="message"
-            startContent={<MessageSquare className="w-4 h-4 text-gray-600" />}
-          >
-            View Messages
-          </DropdownItem> */}
           <DropdownItem
             key="assign"
             href={`/admin/bookings/function-hall-bookings/assign-room/${booking.id}`}
@@ -116,37 +97,38 @@ export default function BookingActionsDropdown({
             Assign Room
           </DropdownItem>
 
-          {/* {!["check_in", "pending"].includes(booking.status || "default") ? (
-            <DropdownItem key="checkin">
-              <CheckInButton booking={booking} />
-            </DropdownItem>
-          ) : null} */}
-
-          {/* {booking.status === "check_in" ? (
-            <DropdownItem key="checkout">
-              <CheckOutButton booking={booking} />
-            </DropdownItem>
-          ) : null} */}
-          {/* <DropdownItem
-            key="summary"
-            startContent={<FileText className="w-4 h-4 text-gray-700" />}
-            onClick={() => setIsViewSummaryOpen(true)}
+          <DropdownItem
+            key="set_total_amount"
+            startContent={<CircleDollarSign className="w-4 h-4 text-gray-700" />}
+            onPress={() => setSetTotalAmountOpen(true)}
           >
-            Summary
+            Set Total Amount
           </DropdownItem>
-          {booking.payment_status !== "paid" ? (
+
+          {canShowPaymentActions ? (
+            <DropdownItem
+              key="summary"
+              startContent={<FileText className="w-4 h-4 text-gray-700" />}
+              onPress={() => setIsViewSummaryOpen(true)}
+            >
+              Summary
+            </DropdownItem>
+          ) : null}
+
+          {canAddPayment ? (
             <DropdownItem
               key="payment"
               startContent={<Wallet className="w-4 h-4 text-gray-700" />}
-              onClick={() => setAddPaymentOpen(true)}
+              onPress={() => setAddPaymentOpen(true)}
             >
               Add Payment
             </DropdownItem>
-          ) : null} */}
+          ) : null}
 
           <DropdownItem isReadOnly key="div3">
             <div className="border-t border-gray-200 my-1"></div>
           </DropdownItem>
+
           {booking.status === "confirmed" || booking.status === "pending" ? (
             <DropdownItem key="cancel" color="danger">
               <MarkCancelled id={booking.id} />

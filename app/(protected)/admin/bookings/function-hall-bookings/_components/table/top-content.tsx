@@ -10,7 +10,7 @@ import {
   PopoverContent,
 } from "@heroui/react";
 import { Search, Plus, Filter, RefreshCw } from "lucide-react";
-import { bookingStatusOptions } from "@/app/constants/booking";
+import { bookingStatusOptions } from "@/app/constants/function-hall-booking";
 import { CalendarDate } from "@heroui/system/dist/types";
 import Link from "next/link";
 import {
@@ -33,6 +33,13 @@ interface Props {
   bookingsCount: number;
 }
 
+const toDateString = (date: CalendarDate | null) =>
+  date
+    ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
+        date.day,
+      ).padStart(2, "0")}`
+    : null;
+
 export const TableTopContent: React.FC<Props> = ({
   query,
   setQuery,
@@ -40,6 +47,26 @@ export const TableTopContent: React.FC<Props> = ({
 }) => {
   const { fetchBookings } = useFunctionHallBookings();
   const filterResetKey = `${query.status ?? ""}-${query.event_duration?.start ?? ""}-${query.event_duration?.end ?? ""}`;
+
+  const handleSearchChange = (value: string) =>
+    setQuery({ ...query, query: value, page: 1 });
+
+  const handleDateRangeChange = (range: {
+    start: CalendarDate | null;
+    end: CalendarDate | null;
+  }) =>
+    setQuery({
+      ...query,
+      page: 1,
+      event_duration: {
+        start: toDateString(range.start),
+        end: toDateString(range.end),
+      },
+    });
+
+  const handleStatusChange = (status: string) =>
+    setQuery({ ...query, status, page: 1 });
+
   const clearFilters = () =>
     setQuery({
       page: 1,
@@ -49,13 +76,6 @@ export const TableTopContent: React.FC<Props> = ({
       date_range: undefined,
       guest_id: undefined,
     });
-
-  const formatDate = (date: CalendarDate | null) =>
-    date
-      ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
-          date.day,
-        ).padStart(2, "0")}`
-      : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -71,10 +91,8 @@ export const TableTopContent: React.FC<Props> = ({
           startContent={<Search className="text-default-300" />}
           value={query.query || ""}
           variant="bordered"
-          onClear={() => setQuery({ ...query, query: "", page: 1 })}
-          onValueChange={(value) =>
-            setQuery({ ...query, query: value, page: 1 })
-          }
+          onClear={() => handleSearchChange("")}
+          onValueChange={handleSearchChange}
         />
         <div className="flex gap-4">
           <Popover placement="bottom-end">
@@ -102,13 +120,9 @@ export const TableTopContent: React.FC<Props> = ({
                   size="sm"
                   radius="sm"
                   onChange={(e) =>
-                    setQuery({
-                      ...query,
-                      page: 1,
-                      event_duration: {
-                        start: formatDate(e?.start ?? null),
-                        end: formatDate(e?.end ?? null),
-                      },
+                    handleDateRangeChange({
+                      start: e?.start ?? null,
+                      end: e?.end ?? null,
                     })
                   }
                 />
@@ -123,9 +137,7 @@ export const TableTopContent: React.FC<Props> = ({
                   fullWidth
                   placeholder="Select status"
                   items={bookingStatusOptions}
-                  onChange={(e) =>
-                    setQuery({ ...query, status: e.target.value, page: 1 })
-                  }
+                  onChange={(e) => handleStatusChange(e.target.value)}
                 >
                   {(item) => (
                     <SelectItem key={item.uid}>{item.name}</SelectItem>

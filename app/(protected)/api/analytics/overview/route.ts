@@ -207,7 +207,7 @@ export async function GET(
     );
 
     const functionHallTotalRevenue = filteredFunctionHallBookings.reduce(
-      (acc, b) => acc + (Number((b as any).total_amount ?? 0) || 0),
+      (acc, b) => acc + (Number((b as any).amount_paid ?? 0) || 0),
       0,
     );
 

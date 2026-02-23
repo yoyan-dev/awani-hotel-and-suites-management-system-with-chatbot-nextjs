@@ -3,8 +3,8 @@ import { Chip } from "@heroui/react";
 import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import BookingActionsDropdown from "../actions/booking-actions";
-import { formatTime } from "@/utils/formta-time";
 import { formateDateAndTime } from "@/app/utils/to-date-range";
+import { formatPHP } from "@/lib/format-php";
 
 type OccupancyType = "available" | "half occupied" | "full occupied";
 
@@ -35,6 +35,12 @@ export const RenderCell = ({
   bookingLoading,
 }: RenderCellProps) => {
   const cellValue = booking[columnKey as keyof FunctionHallBooking];
+  const paymentStatusColorMap: Record<string, string> = {
+    pending: "bg-gray-100 text-gray-700",
+    unpaid: "bg-red-100 text-red-700",
+    deposit: "bg-amber-100 text-amber-700",
+    paid: "bg-green-100 text-green-700",
+  };
 
   switch (columnKey) {
     case "guest":
@@ -49,11 +55,7 @@ export const RenderCell = ({
     case "room":
       return booking.room?.room_number || booking.room?.name || "N/A";
 
-    case "banquet_package":
-      return booking.banquet_package?.name || "N/A";
-
     case "event_duration":
-      console.log(booking.event_duration);
       return (
         <div className="flex flex-col w-60">
           <p className="text-bold text-small capitalize">
@@ -85,6 +87,27 @@ export const RenderCell = ({
           variant="flat"
         >
           {booking.occupancy_type || "N/A"}
+        </Chip>
+      );
+
+    case "total_amount":
+      return formatPHP(Number(booking.total_amount || 0));
+
+    case "amount_paid":
+      return formatPHP(Number(booking.amount_paid || 0));
+
+    case "balance":
+      return formatPHP(Number(booking.balance || 0));
+
+    case "payment_status":
+      return (
+        <Chip
+          size="sm"
+          className={`px-2 rounded-full font-medium ${
+            paymentStatusColorMap[booking.payment_status || "pending"]
+          }`}
+        >
+          {booking.payment_status || "pending"}
         </Chip>
       );
 
