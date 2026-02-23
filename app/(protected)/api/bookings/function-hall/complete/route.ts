@@ -177,7 +177,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     }
 
     const { data: roomData, error: roomError } = await supabase
-      .from("function-rooms")
+      .from("function_rooms")
       .select("max_guest")
       .eq("id", room_id)
       .single();

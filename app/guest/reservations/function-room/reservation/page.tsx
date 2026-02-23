@@ -1,20 +1,9 @@
 "use client";
 
 import BookingForm from "./_components/booking-form";
-import SelectedRoom from "./_components/selected-room";
 import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
-import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase/supabase-client";
-import { useGuests } from "@/hooks/use-guests";
-import { useRoomTypes } from "@/hooks/use-room-types";
-import { useBookings } from "@/hooks/use-bookings";
-import { FetchRoomTypesParams } from "@/types/room";
-import { generateSummary } from "@/utils/generate-summary";
-import { Booking } from "@/types/booking";
-import { useBanquetPackages } from "@/hooks/use-banquet-packages";
-import { BanquetPackageFetchParams } from "@/types/banquet-package";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import SuccessMessage from "./_components/success-message";
 

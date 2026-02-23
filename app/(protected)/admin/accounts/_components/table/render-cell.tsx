@@ -36,14 +36,14 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
     case "name":
       return (
         <UserUi
-          avatarProps={{ radius: "full", size: "sm", src: "" }}
+          avatarProps={{
+            radius: "full",
+            size: "sm",
+            src: user.user_metadata.image,
+          }}
           classNames={{ description: "text-default-500" }}
           description={user.email}
-          name={
-            user.user_metadata?.full_name ||
-            user.user_metadata?.name ||
-            "Unknown User"
-          }
+          name={user.user_metadata?.full_name || "Unknown User"}
         />
       );
     case "email":
@@ -91,7 +91,7 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
         </Chip>
       );
     case "actions":
-      return (
+      return user.app_metadata?.roles?.[0] !== "admin" ? (
         <div className="flex justify-end items-center gap-2">
           {/* <Button
             variant="flat"
@@ -134,7 +134,7 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
             onClose={() => setIsViewOpen(false)}
           />
         </div>
-      );
+      ) : null;
     default:
       // Convert objects to strings for rendering
       if (typeof cellValue === "object" && cellValue !== null) {

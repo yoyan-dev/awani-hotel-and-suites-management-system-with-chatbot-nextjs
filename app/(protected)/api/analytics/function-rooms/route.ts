@@ -7,7 +7,7 @@ import {
 } from "@/types/analytics";
 import { Tables } from "@/types/supabase";
 
-type FunctionRoom = Tables<"function-rooms">;
+type FunctionRoom = Tables<"function_rooms">;
 
 const generateResponse = <T>(
   success: boolean,
@@ -57,7 +57,7 @@ export async function GET(
     if (type) filters_applied.type = type;
 
     let baseQuery = supabase
-      .from("function-rooms")
+      .from("function_rooms")
       .select("*", { count: "exact" });
 
     if (status) {

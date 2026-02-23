@@ -1,5 +1,5 @@
 import { Users, Leaf, Home } from "lucide-react";
-import PageHeader from "../menus/components/menu/ui/page-header";
+import PageHeader from "./components/page-header";
 import AboutSection from "./components/about/about-section";
 
 const ABOUT_ITEMS = [

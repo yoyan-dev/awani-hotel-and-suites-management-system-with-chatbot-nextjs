@@ -13,37 +13,49 @@ import {
   Input,
   Select,
   SelectItem,
-  Textarea,
+  addToast,
 } from "@heroui/react";
-import { addUser } from "@/features/users/user-thunk";
 import { Copyright, Plus } from "lucide-react";
-import { useStaff } from "@/hooks/use-staff";
+import { useUsers } from "@/hooks/use-users";
 
 export default function AddModal() {
-  const { isLoading, addStaff, error } = useStaff();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const { addUser, fetchUsers, isLoading } = useUsers();
+  const [confirmPassword, setConfirmPassword] = React.useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const password = String(formData.get("password") || "");
+
+    if (password !== confirmPassword) {
+      addToast({
+        title: "Validation Error",
+        description: "Password and confirm password do not match.",
+        color: "warning",
+      });
+      return;
+    }
 
     try {
-      await addStaff(formData);
+      const resultAction = await addUser(formData);
+      if (resultAction.meta.requestStatus !== "fulfilled") {
+        return;
+      }
+      await fetchUsers();
       onClose();
-      e.currentTarget.reset();
+      form.reset();
+      setConfirmPassword("");
     } catch (err) {
       console.error("Failed to add user", err);
-    } finally {
-      if (!error) {
-        onClose();
-      }
     }
   }
 
   return (
     <>
       <Button color="primary" endContent={<Plus />} size="sm" onPress={onOpen}>
-        Add New Staff
+        Add New User
       </Button>
 
       <Modal
@@ -71,10 +83,12 @@ export default function AddModal() {
                   <Select
                     radius="sm"
                     label="System Role"
-                    name="role"
+                    name="roles"
                     variant="bordered"
+                    defaultSelectedKeys={["housekeeping"]}
+                    isRequired
                   >
-                    {["admin", "housekeeping"].map((role) => (
+                    {["admin", "housekeeping", "front_office"].map((role) => (
                       <SelectItem className="capitalize" key={role}>
                         {role}
                       </SelectItem>
@@ -87,13 +101,8 @@ export default function AddModal() {
                     type="email"
                     label="Email"
                     name="email"
+                    isRequired
                   />
-
-                  {/* <Select radius="sm" label="Shift Type" name="shift_type">
-                    {["AM", "MID", "PM", "GY"].map((shift) => (
-                      <SelectItem key={shift}>{shift}</SelectItem>
-                    ))}
-                  </Select> */}
 
                   <Input
                     radius="sm"
@@ -103,8 +112,22 @@ export default function AddModal() {
                     name="password"
                     isRequired
                   />
+                  <Input
+                    radius="sm"
+                    variant="bordered"
+                    type="password"
+                    label="Confirm Password"
+                    isRequired
+                    value={confirmPassword}
+                    onValueChange={setConfirmPassword}
+                  />
                   <div className="flex justify-end w-full gap-4">
-                    <Button radius="sm" onPress={onClose} variant="bordered">
+                    <Button
+                      radius="sm"
+                      onPress={onClose}
+                      variant="bordered"
+                      isDisabled={isLoading}
+                    >
                       Cancel
                     </Button>
                     <Button

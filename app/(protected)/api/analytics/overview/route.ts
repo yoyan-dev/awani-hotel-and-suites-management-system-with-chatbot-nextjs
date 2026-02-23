@@ -177,10 +177,8 @@ export async function GET(
       .from("function_hall_bookings")
       .select("*");
 
-    const {
-      data: functionHallBookings,
-      error: functionHallBookingsError,
-    } = await functionHallBookingsQuery;
+    const { data: functionHallBookings, error: functionHallBookingsError } =
+      await functionHallBookingsQuery;
 
     if (functionHallBookingsError) throw functionHallBookingsError;
 
@@ -334,7 +332,7 @@ export async function GET(
       data: functionRooms,
       error: functionRoomsError,
       count: functionRoomsCount,
-    } = await supabase.from("function-rooms").select("*", { count: "exact" });
+    } = await supabase.from("function_rooms").select("*", { count: "exact" });
 
     if (functionRoomsError) throw functionRoomsError;
 
@@ -343,7 +341,7 @@ export async function GET(
 
     const frStatusDistribution = transformedFunctionRooms.reduce(
       (acc, b) => {
-        const status = b.status || "unknown";
+        const status = (b as any).status || "unknown";
         acc[status] = (acc[status] || 0) + 1;
         return acc;
       },
@@ -351,15 +349,15 @@ export async function GET(
     );
 
     const frAvailableRooms = transformedFunctionRooms.filter(
-      (b) => b.status === "available",
+      (b) => (b as any).status === "available",
     ).length;
 
     const frHalfOccupiedRooms = transformedFunctionRooms.filter(
-      (b) => b.status === "half occupied",
+      (b) => (b as any).status === "half occupied",
     ).length;
 
     const frFullOccupiedRooms = transformedFunctionRooms.filter(
-      (b) => b.status === "full occupied",
+      (b) => (b as any).status === "full occupied",
     ).length;
 
     const functionRoomData = {

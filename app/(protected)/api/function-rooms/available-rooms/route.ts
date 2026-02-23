@@ -11,7 +11,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const start = searchParams.get("start") || "";
   const end = searchParams.get("end") || "";
 
-  let roomQuery = supabase.from("function-rooms").select("*");
+  let roomQuery = supabase.from("function_rooms").select("*");
 
   if (status) {
     roomQuery = roomQuery.eq("status", status);

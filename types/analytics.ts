@@ -1,12 +1,10 @@
 import {
-  Tables as SupabaseTables,
+  Tables,
   TablesInsert,
   TablesUpdate,
 } from "./supabase";
 
-export { TablesInsert, TablesUpdate } from "./supabase";
-export type Tables<T extends keyof SupabaseTables["public"]["Tables"]> =
-  SupabaseTables["public"]["Tables"][T]["Row"];
+export type { TablesInsert, TablesUpdate } from "./supabase";
 
 export type Booking = Tables<"bookings">;
 export type BookingInsert = TablesInsert<"bookings">;

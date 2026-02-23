@@ -17,7 +17,6 @@ export interface FeedbackCore {
   rating: RatingScale;
   comments?: string;
   recommend: RecommendationValue;
-  contact_manager?: ContactManagerValue;
 }
 
 export interface FeedbackPayload extends GuestInfo, StayDetails, FeedbackCore {

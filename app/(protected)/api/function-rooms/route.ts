@@ -13,7 +13,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let q = supabase.from("function-rooms").select(
+  let q = supabase.from("function_rooms").select(
     `
     id,
     image,
@@ -98,7 +98,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     };
 
     const { data, error } = await supabase
-      .from("function-rooms")
+      .from("function_rooms")
       .insert([newRoom])
       .select();
 
@@ -166,7 +166,7 @@ export async function DELETE(
     const body = await request.json();
     const selectedValues: number[] | "all" = body.selectedValues;
 
-    let query = supabase.from("function-rooms").delete();
+    let query = supabase.from("function_rooms").delete();
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {

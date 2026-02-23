@@ -1,6 +1,5 @@
 export type UserMetadata = {
   full_name?: string;
-  name?: string;
   phone?: string;
   gender?: "male" | "female";
   address?: string;
@@ -13,10 +12,8 @@ export type AppMetadata = {
   roles?:
     | ["admin", "editor"]
     | ["housekeeping", "editor"]
-    | ["guest"]
     | ["admin"]
-    | ["housekeeping"]
-    | ["front_office"];
+    | ["housekeeping"];
   department?: string;
   permissions?: string[];
   provider?: string;

@@ -112,7 +112,7 @@ export async function GET(
     }
 
     const { data: functionRooms, error: frError } = await supabase
-      .from("function-rooms")
+      .from("function_rooms")
       .select("id, status");
 
     if (frError) {
@@ -191,11 +191,9 @@ export async function GET(
     const upcomingEvents = (functionHallBookings || []).filter((b) => {
       if (b.status === "cancelled" || b.status === "completed") return false;
 
-      const startDate = parseEventDurationBoundary(
-        b.event_duration,
-        "start",
-      );
-      const endDate = parseEventDurationBoundary(b.event_duration, "end") || startDate;
+      const startDate = parseEventDurationBoundary(b.event_duration, "start");
+      const endDate =
+        parseEventDurationBoundary(b.event_duration, "end") || startDate;
 
       if (startDate || endDate) {
         const eventEnd = endDate || startDate!;

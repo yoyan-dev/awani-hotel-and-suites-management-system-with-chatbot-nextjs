@@ -15,130 +15,6 @@ export type Database = {
   };
   public: {
     Tables: {
-      archives: {
-        Row: {
-          checked_in: string | null;
-          checked_out: string | null;
-          company: string | null;
-          created_at: string | null;
-          guest_id: string | null;
-          id: string;
-          number_of_guests: string | null;
-          places_last_visited: string | null;
-          purpose: string | null;
-          room_id: string | null;
-          room_type_id: string | null;
-          special_requests: Json[] | null;
-          status: string;
-          total: string | null;
-          total_add_ons: string | null;
-        };
-        Insert: {
-          checked_in?: string | null;
-          checked_out?: string | null;
-          company?: string | null;
-          created_at?: string | null;
-          guest_id?: string | null;
-          id?: string;
-          number_of_guests?: string | null;
-          places_last_visited?: string | null;
-          purpose?: string | null;
-          room_id?: string | null;
-          room_type_id?: string | null;
-          special_requests?: Json[] | null;
-          status?: string;
-          total?: string | null;
-          total_add_ons?: string | null;
-        };
-        Update: {
-          checked_in?: string | null;
-          checked_out?: string | null;
-          company?: string | null;
-          created_at?: string | null;
-          guest_id?: string | null;
-          id?: string;
-          number_of_guests?: string | null;
-          places_last_visited?: string | null;
-          purpose?: string | null;
-          room_id?: string | null;
-          room_type_id?: string | null;
-          special_requests?: Json[] | null;
-          status?: string;
-          total?: string | null;
-          total_add_ons?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "archives_guest_id_fkey";
-            columns: ["guest_id"];
-            isOneToOne: false;
-            referencedRelation: "guest";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "archives_room_id_fkey";
-            columns: ["room_id"];
-            isOneToOne: false;
-            referencedRelation: "rooms";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "archives_room_type_id_fkey";
-            columns: ["room_type_id"];
-            isOneToOne: false;
-            referencedRelation: "room_types";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      banquet_menus: {
-        Row: {
-          category: string | null;
-          created_at: string;
-          id: string;
-          name: string | null;
-        };
-        Insert: {
-          category?: string | null;
-          created_at?: string;
-          id?: string;
-          name?: string | null;
-        };
-        Update: {
-          category?: string | null;
-          created_at?: string;
-          id?: string;
-          name?: string | null;
-        };
-        Relationships: [];
-      };
-      banquet_packages: {
-        Row: {
-          categories: string[] | null;
-          created_at: string;
-          id: string;
-          is_active: boolean | null;
-          name: string | null;
-          price_per_cover: number | null;
-        };
-        Insert: {
-          categories?: string[] | null;
-          created_at?: string;
-          id?: string;
-          is_active?: boolean | null;
-          name?: string | null;
-          price_per_cover?: number | null;
-        };
-        Update: {
-          categories?: string[] | null;
-          created_at?: string;
-          id?: string;
-          is_active?: boolean | null;
-          name?: string | null;
-          price_per_cover?: number | null;
-        };
-        Relationships: [];
-      };
       booking_count: {
         Row: {
           count: number | null;
@@ -254,15 +130,55 @@ export type Database = {
           },
         ];
       };
+      feedback: {
+        Row: {
+          check_in: string;
+          check_out: string;
+          comments: string | null;
+          contact_manager: string | null;
+          created_at: string;
+          email: string;
+          full_name: string;
+          id: string;
+          rating: number;
+          recommend: string;
+          room_number: string;
+        };
+        Insert: {
+          check_in: string;
+          check_out: string;
+          comments?: string | null;
+          contact_manager?: string | null;
+          created_at?: string;
+          email: string;
+          full_name: string;
+          id?: string;
+          rating: number;
+          recommend: string;
+          room_number: string;
+        };
+        Update: {
+          check_in?: string;
+          check_out?: string;
+          comments?: string | null;
+          contact_manager?: string | null;
+          created_at?: string;
+          email?: string;
+          full_name?: string;
+          id?: string;
+          rating?: number;
+          recommend?: string;
+          room_number?: string;
+        };
+        Relationships: [];
+      };
       function_hall_bookings: {
         Row: {
           amount_paid: number | null;
           balance: number | null;
-          banquet_package_id: string | null;
           booking_number: string | null;
           booking_source: string | null;
           created_at: string;
-          event_date: string | null;
           event_duration: Json | null;
           event_type: string | null;
           guest_id: string | null;
@@ -279,11 +195,9 @@ export type Database = {
         Insert: {
           amount_paid?: number | null;
           balance?: number | null;
-          banquet_package_id?: string | null;
           booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
-          event_date?: string | null;
           event_duration?: Json | null;
           event_type?: string | null;
           guest_id?: string | null;
@@ -300,11 +214,9 @@ export type Database = {
         Update: {
           amount_paid?: number | null;
           balance?: number | null;
-          banquet_package_id?: string | null;
           booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
-          event_date?: string | null;
           event_duration?: Json | null;
           event_type?: string | null;
           guest_id?: string | null;
@@ -330,19 +242,12 @@ export type Database = {
             foreignKeyName: "function_hall_bookings_room_id_fkey";
             columns: ["room_id"];
             isOneToOne: false;
-            referencedRelation: "function-rooms";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "function_room_bookings_banquet_package_id_fkey";
-            columns: ["banquet_package_id"];
-            isOneToOne: false;
-            referencedRelation: "banquet_packages";
+            referencedRelation: "function_rooms";
             referencedColumns: ["id"];
           },
         ];
       };
-      "function-rooms": {
+      function_rooms: {
         Row: {
           created_at: string;
           description: string | null;
@@ -393,7 +298,6 @@ export type Database = {
           full_name: string | null;
           gender: string | null;
           id: string;
-          image: string | null;
           nationality: string | null;
           valid_id: Json | null;
         };
@@ -405,7 +309,6 @@ export type Database = {
           full_name?: string | null;
           gender?: string | null;
           id?: string;
-          image?: string | null;
           nationality?: string | null;
           valid_id?: Json | null;
         };
@@ -417,75 +320,8 @@ export type Database = {
           full_name?: string | null;
           gender?: string | null;
           id?: string;
-          image?: string | null;
           nationality?: string | null;
           valid_id?: Json | null;
-        };
-        Relationships: [];
-      };
-      guest_requests: {
-        Row: {
-          created_at: string;
-          fullname: string | null;
-          id: string;
-          request_details: string | null;
-          request_type: string | null;
-          room_number: string | null;
-          status: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          fullname?: string | null;
-          id?: string;
-          request_details?: string | null;
-          request_type?: string | null;
-          room_number?: string | null;
-          status?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          fullname?: string | null;
-          id?: string;
-          request_details?: string | null;
-          request_type?: string | null;
-          room_number?: string | null;
-          status?: string | null;
-        };
-        Relationships: [];
-      };
-      housekeeping: {
-        Row: {
-          created_at: string;
-          guest_name: string | null;
-          id: string;
-          message: string | null;
-          requests: string | null;
-          room_number: number | null;
-          scheduled_time: string | null;
-          status: string | null;
-          task_type: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          guest_name?: string | null;
-          id?: string;
-          message?: string | null;
-          requests?: string | null;
-          room_number?: number | null;
-          scheduled_time?: string | null;
-          status?: string | null;
-          task_type?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          guest_name?: string | null;
-          id?: string;
-          message?: string | null;
-          requests?: string | null;
-          room_number?: number | null;
-          scheduled_time?: string | null;
-          status?: string | null;
-          task_type?: string | null;
         };
         Relationships: [];
       };
@@ -516,6 +352,33 @@ export type Database = {
           price?: number | null;
           quantity?: number | null;
           status?: string | null;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          created_at: string;
+          id: number;
+          is_read: boolean | null;
+          message: string | null;
+          title: string | null;
+          type: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: number;
+          is_read?: boolean | null;
+          message?: string | null;
+          title?: string | null;
+          type?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: number;
+          is_read?: boolean | null;
+          message?: string | null;
+          title?: string | null;
+          type?: string | null;
         };
         Relationships: [];
       };
@@ -656,85 +519,13 @@ export type Database = {
           },
         ];
       };
-      staff: {
-        Row: {
-          created_at: string;
-          email: string | null;
-          full_name: string | null;
-          id: string;
-          image: string | null;
-          phone: string | null;
-          position: string | null;
-          role: string | null;
-          shift_type: string | null;
-          status: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          email?: string | null;
-          full_name?: string | null;
-          id?: string;
-          image?: string | null;
-          phone?: string | null;
-          position?: string | null;
-          role?: string | null;
-          shift_type?: string | null;
-          status?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          email?: string | null;
-          full_name?: string | null;
-          id?: string;
-          image?: string | null;
-          phone?: string | null;
-          position?: string | null;
-          role?: string | null;
-          shift_type?: string | null;
-          status?: string | null;
-        };
-        Relationships: [];
-      };
-      users: {
-        Row: {
-          created_at: string | null;
-          email: string;
-          full_name: string;
-          id: string;
-          image: string | null;
-          phone: string | null;
-          role: string;
-          valid_id_image: string | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          email: string;
-          full_name: string;
-          id?: string;
-          image?: string | null;
-          phone?: string | null;
-          role: string;
-          valid_id_image?: string | null;
-        };
-        Update: {
-          created_at?: string | null;
-          email?: string;
-          full_name?: string;
-          id?: string;
-          image?: string | null;
-          phone?: string | null;
-          role?: string;
-          valid_id_image?: string | null;
-        };
-        Relationships: [];
-      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       get_available_room_types: {
-        Args: { checked_in: string; checked_out: string; guests: number };
+        Args: { check_in: string; check_out: string; guests: number };
         Returns: {
           add_ons: Json[];
           description: string;
@@ -749,8 +540,8 @@ export type Database = {
       };
       get_room_availability: {
         Args: {
-          checked_in: string;
-          checked_out: string;
+          check_in: string;
+          check_out: string;
           room_status: string;
           room_type_id: string;
           selected_date: string;

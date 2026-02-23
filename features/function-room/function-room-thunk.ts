@@ -67,7 +67,6 @@ export const fetchAvailableFunctionRooms = createAsyncThunk<
   try {
     const searchParams = new URLSearchParams();
     if (params?.status) searchParams.append("status", params.status);
-    if (params?.event_date) searchParams.append("eventDate", params.event_date);
 
     if (params?.start) {
       const serializedStart =
@@ -79,7 +78,9 @@ export const fetchAvailableFunctionRooms = createAsyncThunk<
 
     if (params?.end) {
       const serializedEnd =
-        typeof params.end === "string" ? params.end : JSON.stringify(params.end);
+        typeof params.end === "string"
+          ? params.end
+          : JSON.stringify(params.end);
       searchParams.append("end", serializedEnd);
     }
 
