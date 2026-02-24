@@ -2,11 +2,9 @@ import { BookingStatus } from "./booking";
 import { RoomStatus } from "./room";
 import { Tables } from "./supabase";
 
-export type Booking = Tables<"bookings">;
 export type Room = Tables<"rooms">;
 
 export type CleaningStatus = "clean" | "dirty" | "not_available";
-export type TaskStatus = "pending" | "in_progress" | "done" | "cancelled";
 
 export interface PaginationParams {
   page?: number;
@@ -23,8 +21,7 @@ export interface HousekeepingFilterParams {
 }
 
 export interface FilterParams
-  extends HousekeepingFilterParams,
-    PaginationParams {}
+  extends HousekeepingFilterParams, PaginationParams {}
 
 export interface ApiError {
   code: string;
@@ -124,42 +121,40 @@ export interface RoomUpdatePayload {
   notes?: string;
 }
 
-export interface UpdateRoomParams {
-  room_id: string;
-  payload: RoomUpdatePayload;
-}
-
 export interface UpdateRoomResponse {
   room: RoomDetail;
   message: string;
 }
 
-export interface HousekeepingTask {
+export type HousekeepingRoom = {
   id?: string;
-  status?: TaskStatus;
-  [key: string]: unknown;
-}
+  status?: string;
+  cleaning_status?: string;
+  last_cleaned_at?: string;
+  current_guest?: unknown | null;
+  notes?: string;
+};
 
-export interface HousekeepingPagination {
+export type HousekeepingPagination = {
   page: number;
   limit: number;
   total: number;
   total_pages: number;
   has_next: boolean;
   has_prev: boolean;
-}
+};
 
-export interface StateType {
-  tasks: HousekeepingTask[];
-  task: HousekeepingTask;
+export type HousekeepingState = {
+  tasks: unknown[];
+  task: Record<string, unknown>;
   pagination: HousekeepingPagination | null;
   roomList: {
-    data: RoomDetail[];
+    data: HousekeepingRoom[];
     pagination: HousekeepingPagination;
   };
   todayOperations: TodayOperations | null;
   summary: HousekeepingSummary | null;
-  selectedRoom: RoomDetail | null;
+  selectedRoom: HousekeepingRoom | null;
   isLoading: boolean;
   error: string | undefined;
-}
+};

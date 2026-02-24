@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  HousekeepingRoom,
+  HousekeepingState,
   HousekeepingSummary,
   TodayOperations,
 } from "@/types/housekeeping";
@@ -8,39 +10,6 @@ import {
   fetchTodayOperations,
   updateRoomStatus,
 } from "./housekeeping-thunk";
-
-type HousekeepingRoom = {
-  id?: string;
-  status?: string;
-  cleaning_status?: string;
-  last_cleaned_at?: string;
-  current_guest?: unknown | null;
-  notes?: string;
-};
-
-type HousekeepingPagination = {
-  page: number;
-  limit: number;
-  total: number;
-  total_pages: number;
-  has_next: boolean;
-  has_prev: boolean;
-};
-
-type HousekeepingState = {
-  tasks: unknown[];
-  task: Record<string, unknown>;
-  pagination: HousekeepingPagination | null;
-  roomList: {
-    data: HousekeepingRoom[];
-    pagination: HousekeepingPagination;
-  };
-  todayOperations: TodayOperations | null;
-  summary: HousekeepingSummary | null;
-  selectedRoom: HousekeepingRoom | null;
-  isLoading: boolean;
-  error: string | undefined;
-};
 
 const initialState: HousekeepingState = {
   tasks: [],
