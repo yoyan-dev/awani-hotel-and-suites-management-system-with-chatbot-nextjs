@@ -8,10 +8,7 @@ import {
   DropdownItem,
   Link,
 } from "@heroui/react";
-import { Search, ChevronDown, Plus } from "lucide-react";
-import { columns, statusOptions } from "@/app/constants/banquet-menus";
-import { capitalize } from "@/app/utils/capitalize";
-import AddModal from "../modals/add-modal";
+import { Search } from "lucide-react";
 import { FeedbackFetchParams } from "@/types/feedback";
 
 interface Props {

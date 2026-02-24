@@ -30,8 +30,8 @@ export default function Accounts() {
     let filteredUsers = [...users];
 
     if (hasSearchFilter) {
-      filteredUsers = filteredUsers.filter((staff) =>
-        staff.user_metadata.full_name
+      filteredUsers = filteredUsers.filter((user) =>
+        user.user_metadata.full_name
           ?.toLowerCase()
           .includes(filterValue.toLowerCase()),
       );

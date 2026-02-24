@@ -12,9 +12,12 @@ import {
   DashboardSummaryParams,
   DashboardSummaryResponse,
   FilterParams,
-  Tables,
   BookingOverviewParams,
   BookingOverviewResponse,
+  Booking,
+  FunctionHallBooking,
+  Room,
+  FunctionRoom,
 } from "@/types/analytics";
 
 const apiUrl = "/api/analytics";
@@ -257,7 +260,7 @@ type PaginatedResult<T> = {
 };
 
 export const fetchPaginatedBookings = createAsyncThunk<
-  PaginatedResult<Tables<"bookings">>,
+  PaginatedResult<Booking>,
   FilterParams | undefined,
   { rejectValue: string }
 >("analytics/fetchPaginatedBookings", async (params, { rejectWithValue }) => {
@@ -300,7 +303,7 @@ export const fetchPaginatedBookings = createAsyncThunk<
       );
     }
 
-    return response.data as PaginatedResult<Tables<"bookings">>;
+    return response.data as PaginatedResult<Booking>;
   } catch (err) {
     console.error("Error fetching bookings:", err);
     return rejectWithValue("Failed to fetch bookings");
@@ -308,7 +311,7 @@ export const fetchPaginatedBookings = createAsyncThunk<
 });
 
 export const fetchPaginatedFunctionHallBookings = createAsyncThunk<
-  PaginatedResult<Tables<"function_hall_bookings">>,
+  PaginatedResult<FunctionHallBooking>,
   FilterParams | undefined,
   { rejectValue: string }
 >(
@@ -356,7 +359,7 @@ export const fetchPaginatedFunctionHallBookings = createAsyncThunk<
         );
       }
 
-      return response.data as PaginatedResult<Tables<"function_hall_bookings">>;
+      return response.data as PaginatedResult<FunctionHallBooking>;
     } catch (err) {
       console.error("Error fetching function hall bookings:", err);
       return rejectWithValue("Failed to fetch function hall bookings");
@@ -365,7 +368,7 @@ export const fetchPaginatedFunctionHallBookings = createAsyncThunk<
 );
 
 export const fetchPaginatedRooms = createAsyncThunk<
-  PaginatedResult<Tables<"rooms">>,
+  PaginatedResult<Room>,
   FilterParams | undefined,
   { rejectValue: string }
 >("analytics/fetchPaginatedRooms", async (params, { rejectWithValue }) => {
@@ -405,7 +408,7 @@ export const fetchPaginatedRooms = createAsyncThunk<
       );
     }
 
-    return response.data as PaginatedResult<Tables<"rooms">>;
+    return response.data as PaginatedResult<Room>;
   } catch (err) {
     console.error("Error fetching rooms:", err);
     return rejectWithValue("Failed to fetch rooms");
@@ -413,7 +416,7 @@ export const fetchPaginatedRooms = createAsyncThunk<
 });
 
 export const fetchPaginatedFunctionRooms = createAsyncThunk<
-  PaginatedResult<Tables<"function-rooms">>,
+  PaginatedResult<FunctionRoom>,
   FilterParams | undefined,
   { rejectValue: string }
 >(
@@ -455,7 +458,7 @@ export const fetchPaginatedFunctionRooms = createAsyncThunk<
         );
       }
 
-      return response.data as PaginatedResult<Tables<"function-rooms">>;
+      return response.data as PaginatedResult<FunctionRoom>;
     } catch (err) {
       console.error("Error fetching function rooms:", err);
       return rejectWithValue("Failed to fetch function rooms");

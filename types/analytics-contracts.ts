@@ -4,7 +4,7 @@ import { Tables } from "./supabase";
 export type Booking = Tables<"bookings">;
 export type FunctionHallBooking = Tables<"function_hall_bookings">;
 export type Room = Tables<"rooms">;
-export type FunctionRoom = Tables<"function-rooms">;
+export type FunctionRoom = Tables<"function_rooms">;
 
 export type PaymentStatus = "pending" | "partial" | "paid" | "refunded";
 

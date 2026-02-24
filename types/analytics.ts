@@ -1,8 +1,4 @@
-import {
-  Tables,
-  TablesInsert,
-  TablesUpdate,
-} from "./supabase";
+import { Tables, TablesInsert, TablesUpdate } from "./supabase";
 
 export type { TablesInsert, TablesUpdate } from "./supabase";
 
@@ -18,9 +14,9 @@ export type Room = Tables<"rooms">;
 export type RoomInsert = TablesInsert<"rooms">;
 export type RoomUpdate = TablesUpdate<"rooms">;
 
-export type FunctionRoom = Tables<"function-rooms">;
-export type FunctionRoomInsert = TablesInsert<"function-rooms">;
-export type FunctionRoomUpdate = TablesUpdate<"function-rooms">;
+export type FunctionRoom = Tables<"function_rooms">;
+export type FunctionRoomInsert = TablesInsert<"function_rooms">;
+export type FunctionRoomUpdate = TablesUpdate<"function_rooms">;
 
 export type BookingStatus =
   | "pending"

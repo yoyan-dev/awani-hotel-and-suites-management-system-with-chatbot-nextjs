@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import {
   bookingAnalytics,
   functionHallAnalytics,
@@ -11,15 +11,7 @@ import {
   fetchPaginatedFunctionRooms,
   fetchBookingOverview,
 } from "./analytics-thunk";
-import {
-  AnalyticsState,
-  BookingAnalyticsResponse,
-  FunctionHallAnalyticsResponse,
-  RoomAnalyticsResponse,
-  FunctionRoomAnalyticsResponse,
-  DashboardSummaryResponse,
-  BookingOverviewResponse,
-} from "@/types/analytics";
+import { AnalyticsState } from "@/types/analytics";
 
 const initialState: AnalyticsState = {
   bookingAnalyticsData: {
@@ -175,7 +167,7 @@ const initialState: AnalyticsState = {
       has_prev: false,
     },
   },
-  bookingOverview: {} as BookingOverviewResponse,
+  bookingOverview: null,
   isLoading: false,
   error: undefined,
 };
@@ -189,157 +181,138 @@ const analyticsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(bookingAnalytics.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        bookingAnalytics.fulfilled,
-        (state, action: PayloadAction<BookingAnalyticsResponse>) => {
-          state.isLoading = false;
-          state.bookingAnalyticsData = action.payload;
-        },
-      )
-      .addCase(bookingAnalytics.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(bookingAnalytics.pending, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(bookingAnalytics.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.bookingAnalyticsData = action.payload;
+    });
+    builder.addCase(bookingAnalytics.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(functionHallAnalytics.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        functionHallAnalytics.fulfilled,
-        (state, action: PayloadAction<FunctionHallAnalyticsResponse>) => {
-          state.isLoading = false;
-          state.functionHallAnalyticsData = action.payload;
-        },
-      )
-      .addCase(functionHallAnalytics.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(functionHallAnalytics.pending, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(functionHallAnalytics.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.functionHallAnalyticsData = action.payload;
+    });
+    builder.addCase(functionHallAnalytics.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(roomAnalytics.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        roomAnalytics.fulfilled,
-        (state, action: PayloadAction<RoomAnalyticsResponse>) => {
-          state.isLoading = false;
-          state.roomAnalyticsData = action.payload;
-        },
-      )
-      .addCase(roomAnalytics.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(roomAnalytics.pending, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(roomAnalytics.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.roomAnalyticsData = action.payload;
+    });
+    builder.addCase(roomAnalytics.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(functionRoomAnalytics.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        functionRoomAnalytics.fulfilled,
-        (state, action: PayloadAction<FunctionRoomAnalyticsResponse>) => {
-          state.isLoading = false;
-          state.functionRoomAnalyticsData = action.payload;
-        },
-      )
-      .addCase(functionRoomAnalytics.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(functionRoomAnalytics.pending, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(functionRoomAnalytics.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.functionRoomAnalyticsData = action.payload;
+    });
+    builder.addCase(functionRoomAnalytics.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(getDashboardSummary.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        getDashboardSummary.fulfilled,
-        (state, action: PayloadAction<DashboardSummaryResponse>) => {
-          state.isLoading = false;
-          state.dashboardSummary = action.payload;
-        },
-      )
-      .addCase(getDashboardSummary.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(getDashboardSummary.pending, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(getDashboardSummary.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.dashboardSummary = action.payload;
+    });
+    builder.addCase(getDashboardSummary.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(fetchPaginatedBookings.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(fetchPaginatedBookings.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.paginatedBookings = action.payload;
-      })
-      .addCase(fetchPaginatedBookings.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(fetchPaginatedBookings.pending.type, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(fetchPaginatedBookings.fulfilled.type, (state, action: any) => {
+      state.isLoading = false;
+      state.paginatedBookings = action.payload;
+    });
+    builder.addCase(fetchPaginatedBookings.rejected.type, (state, action: any) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(fetchPaginatedFunctionHallBookings.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        fetchPaginatedFunctionHallBookings.fulfilled,
-        (state, action) => {
-          state.isLoading = false;
-          state.paginatedFunctionHallBookings = action.payload;
-        },
-      )
-      .addCase(fetchPaginatedFunctionHallBookings.rejected, (state, action) => {
+    builder.addCase(fetchPaginatedFunctionHallBookings.pending.type, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(
+      fetchPaginatedFunctionHallBookings.fulfilled.type,
+      (state, action: any) => {
         state.isLoading = false;
-        state.error = action.payload as string;
-      })
+        state.paginatedFunctionHallBookings = action.payload;
+      },
+    );
+    builder.addCase(fetchPaginatedFunctionHallBookings.rejected.type, (state, action: any) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(fetchPaginatedRooms.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(fetchPaginatedRooms.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.paginatedRooms = action.payload;
-      })
-      .addCase(fetchPaginatedRooms.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(fetchPaginatedRooms.pending.type, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(fetchPaginatedRooms.fulfilled.type, (state, action: any) => {
+      state.isLoading = false;
+      state.paginatedRooms = action.payload;
+    });
+    builder.addCase(fetchPaginatedRooms.rejected.type, (state, action: any) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(fetchPaginatedFunctionRooms.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(fetchPaginatedFunctionRooms.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.paginatedFunctionRooms = action.payload;
-      })
-      .addCase(fetchPaginatedFunctionRooms.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
+    builder.addCase(fetchPaginatedFunctionRooms.pending.type, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(fetchPaginatedFunctionRooms.fulfilled.type, (state, action: any) => {
+      state.isLoading = false;
+      state.paginatedFunctionRooms = action.payload;
+    });
+    builder.addCase(fetchPaginatedFunctionRooms.rejected.type, (state, action: any) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
 
-      .addCase(fetchBookingOverview.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        fetchBookingOverview.fulfilled,
-        (state, action: PayloadAction<BookingOverviewResponse>) => {
-          state.isLoading = false;
-          state.bookingOverview = action.payload;
-        },
-      )
-      .addCase(fetchBookingOverview.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      });
+    builder.addCase(fetchBookingOverview.pending.type, (state) => {
+      state.isLoading = true;
+      state.error = undefined;
+    });
+    builder.addCase(fetchBookingOverview.fulfilled.type, (state, action: any) => {
+      state.isLoading = false;
+      state.bookingOverview = action.payload;
+    });
+    builder.addCase(fetchBookingOverview.rejected.type, (state, action: any) => {
+      state.isLoading = false;
+      state.error = action.payload as string;
+    });
   },
 });
 

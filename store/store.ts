@@ -10,7 +10,6 @@ import housekeepingReducer from "@/features/housekeeping/housekeeping-slice";
 import userReducer from "@/features/users/user-slice";
 import guestReducer from "@/features/guest/guest-slice";
 import authReducer from "@/features/auth/auth-slice";
-import staffReducer from "@/features/staff/staff-slice";
 import analyticsReducer from "@/features/analytics/analytics-slice";
 import roomReportReducer from "@/features/room-reports/room-report-slice";
 import notificationReducer from "@/features/notifications/notification-slice";
@@ -29,7 +28,6 @@ export const store = configureStore({
     users: userReducer,
     guests: guestReducer,
     auth_user: authReducer,
-    staff: staffReducer,
     analytics: analyticsReducer,
     room_reports: roomReportReducer,
     notifications: notificationReducer,

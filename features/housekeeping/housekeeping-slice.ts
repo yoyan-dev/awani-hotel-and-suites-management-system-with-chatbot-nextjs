@@ -1,12 +1,48 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RoomDetail, StateType } from "@/types/housekeeping";
+import {
+  HousekeepingSummary,
+  TodayOperations,
+} from "@/types/housekeeping";
 import {
   fetchRoomList,
   fetchTodayOperations,
   updateRoomStatus,
 } from "./housekeeping-thunk";
 
-const initialState: StateType = {
+type HousekeepingRoom = {
+  id?: string;
+  status?: string;
+  cleaning_status?: string;
+  last_cleaned_at?: string;
+  current_guest?: unknown | null;
+  notes?: string;
+};
+
+type HousekeepingPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+};
+
+type HousekeepingState = {
+  tasks: unknown[];
+  task: Record<string, unknown>;
+  pagination: HousekeepingPagination | null;
+  roomList: {
+    data: HousekeepingRoom[];
+    pagination: HousekeepingPagination;
+  };
+  todayOperations: TodayOperations | null;
+  summary: HousekeepingSummary | null;
+  selectedRoom: HousekeepingRoom | null;
+  isLoading: boolean;
+  error: string | undefined;
+};
+
+const initialState: HousekeepingState = {
   tasks: [],
   task: {},
   pagination: null,
@@ -32,7 +68,10 @@ export const housekeepingSlice = createSlice({
   name: "housekeeping",
   initialState,
   reducers: {
-    setSelectedRoom: (state, action: PayloadAction<RoomDetail | null>) => {
+    setSelectedRoom: (
+      state,
+      action: PayloadAction<HousekeepingRoom | null>,
+    ) => {
       state.selectedRoom = action.payload;
     },
     clearError: (state) => {
