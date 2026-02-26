@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
-import type { User } from "@/types/users";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { uploadUserImage } from "@/lib/upload-user-image";
-import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-
-let users: User[];
 
 export async function GET(): Promise<NextResponse<ApiResponse>> {
   try {
@@ -36,7 +32,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         },
         data: data.users,
       },
-      { status: 201 },
+      { status: 200 },
     );
   } catch (err: any) {
     console.error("Unexpected error:", err);
@@ -140,7 +136,7 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
-    const selectedValues: number[] | "all" = body.selectedValues;
+    const selectedValues: string[] | "all" = body.selectedValues;
 
     let query = supabase.from("users").delete();
 

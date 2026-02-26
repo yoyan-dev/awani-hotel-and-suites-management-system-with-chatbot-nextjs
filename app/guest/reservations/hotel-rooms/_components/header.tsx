@@ -41,6 +41,8 @@ export default function Header({
             radius="none"
             variant="bordered"
             labelPlacement="outside"
+            isDisabled={!query.checkIn}
+            minValue={query.checkIn}
             value={query.checkOut}
             onChange={(e) => setQuery({ ...query, checkOut: e })}
           />

@@ -97,7 +97,7 @@ export const updateUser = createAsyncThunk<User, User, { rejectValue: string }>(
         );
       }
 
-      return data.room;
+      return data.data;
     } catch (err: any) {
       addToast({
         title: "Error",
@@ -172,7 +172,7 @@ export const deleteUser = createAsyncThunk<string, string>(
 //  delete selected rooms or all
 export const deleteSelectedUser = createAsyncThunk<
   User[],
-  { selectedValues: Set<number> | "all" },
+  { selectedValues: Set<string> | "all" },
   { rejectValue: string }
 >("users/deleteSelectedUser", async ({ selectedValues }, thunkAPI) => {
   try {
@@ -201,3 +201,4 @@ export const deleteSelectedUser = createAsyncThunk<
     return thunkAPI.rejectWithValue(err.message);
   }
 });
+

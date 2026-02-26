@@ -7,6 +7,7 @@ export function generateSummary(
   specialRequests: BookingSpecialRequest[],
 ) {
   const amountPaid = booking.amount_paid ?? 0;
+  const roomPrice = Number(booking.room_type?.price ?? 0);
 
   const totalAddOnsPrice =
     specialRequests.length > 0
@@ -26,7 +27,7 @@ export function generateSummary(
 
   return {
     specialRequests,
-    roomPrice: booking.room_type.price,
+    roomPrice,
     totalAddOnsPrice,
     nights,
     totalPerNights,

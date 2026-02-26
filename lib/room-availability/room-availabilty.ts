@@ -11,6 +11,7 @@ export function isRoomAvailable(
   }
 
   return !room.bookings.some((booking: Booking) => {
+    if (booking.status === "cancelled") return false;
     return booking.checked_in < checkOut && booking.checked_out > checkIn;
   });
 }

@@ -4,10 +4,10 @@ import React from "react";
 import { RoomReportFetchParams } from "@/types/room-report";
 import { useRoomReports } from "@/hooks/use-room-reports";
 import { Pagination } from "@heroui/react";
-import RoomReportsFilter from "./_components/room-report-filter";
 import Loader from "../rooms/_components/loader";
-import RoomReportCard from "./_components/room-report-card";
-import Header from "./_components/header";
+import Header from "@/components/room-reportings/header";
+import RoomReportsFilter from "@/components/room-reportings/room-report-filter";
+import RoomReportCard from "@/components/room-reportings/room-report-card";
 
 export default function HousekeepingRoomsReportPage() {
   const {
@@ -26,7 +26,10 @@ export default function HousekeepingRoomsReportPage() {
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 px-6 py-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Header />
+        <Header
+          title="Housekeeping Room Reports"
+          description="Track lost, damaged, and reported room items efficiently"
+        />
 
         <RoomReportsFilter query={query} setQuery={setQuery} />
         {isLoading ? (

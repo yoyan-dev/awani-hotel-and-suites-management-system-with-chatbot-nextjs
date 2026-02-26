@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { User } from "@/types/users";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -42,7 +41,7 @@ export async function GET(
       },
       data: user,
     },
-    { status: 201 },
+    { status: 200 },
   );
 }
 
@@ -51,21 +50,48 @@ export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
-  const body = await req.json();
+  try {
+    const { id } = await context.params;
+    const body = await req.json();
 
-  const result = await supabaseAdmin.auth.admin.updateUserById(id, body);
+    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, body);
 
-  console.log(result);
-  return NextResponse.json({
-    success: true,
-    message: {
-      title: "Success",
-      description: "Account updated successfully",
-      color: "success",
-    },
-    data: [],
-  });
+    if (error) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Error",
+            description: error.message,
+            color: "danger",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: {
+        title: "Success",
+        description: "Account updated successfully",
+        color: "success",
+      },
+      data: data.user,
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Error",
+          description: err.message,
+          color: "danger",
+        },
+      },
+      { status: 500 },
+    );
+  }
 }
 
 // DELETE

@@ -43,7 +43,14 @@ export default function Page() {
     e.preventDefault();
     setLoading();
 
-    await updateRoom(formData);
+    await updateRoom({
+      room_number: formData.room_number,
+      room_type_id: formData.room_type_id,
+      area: formData.area,
+      description: formData.description,
+      remarks: formData.remarks,
+      id: id as string,
+    });
     router.push("/admin/rooms/hotel-rooms");
   }
 

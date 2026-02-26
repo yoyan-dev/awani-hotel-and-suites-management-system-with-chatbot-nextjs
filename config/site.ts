@@ -179,7 +179,7 @@ export const siteConfig = {
         { label: "Book Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
         {
           label: "Event Reservations",
-          href: "/guest/reservations/function-room/reservation",
+          href: "/guest/reservations/function-room",
         },
       ],
     },
