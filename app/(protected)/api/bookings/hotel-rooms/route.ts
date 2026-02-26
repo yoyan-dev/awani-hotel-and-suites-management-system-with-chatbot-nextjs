@@ -44,7 +44,9 @@ async function getRoomTypeWithAvailability(
   }
 
   const totals = collectRequestedQuantities(
-    (overlappingBookings ?? []).flatMap((booking) => booking.special_requests ?? []),
+    (overlappingBookings ?? []).flatMap(
+      (booking) => booking.special_requests ?? [],
+    ),
   );
 
   return {
@@ -91,7 +93,8 @@ function sanitizeSpecialRequests(
 
 function computeTotalAddOns(specialRequests: BookingSpecialRequest[]) {
   return specialRequests.reduce(
-    (total, item) => total + Number(item.price ?? 0) * Number(item.quantity ?? 0),
+    (total, item) =>
+      total + Number(item.price ?? 0) * Number(item.quantity ?? 0),
     0,
   );
 }
@@ -215,7 +218,22 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const roomTypeId = String(formObj.room_type_id ?? "");
     const checkedIn = String(formObj.checked_in ?? "");
     const checkedOut = String(formObj.checked_out ?? "");
-    const guestId = formObj.guest_id;
+    const guestId = String(formObj.guest_id ?? "");
+
+    if (!guestId || !roomTypeId || !checkedIn || !checkedOut) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Data",
+            description:
+              "guest_id, room_type_id, checked_in, and checked_out are required.",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
 
     const requestedSpecialRequests = JSON.parse(
       String(formObj.special_requests ?? "[]"),
@@ -227,14 +245,36 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       checkedOut,
     );
 
-    const specialRequests = sanitizeSpecialRequests(requestedSpecialRequests, addOns);
+    const specialRequests = sanitizeSpecialRequests(
+      requestedSpecialRequests,
+      addOns,
+    );
     const totalAddOns = computeTotalAddOns(specialRequests);
 
     const newData = {
-      ...formObj,
       booking_number: bookingNumber,
+      guest_id: guestId,
+      room_type_id: roomTypeId,
+      room_id: formObj.room_id ? String(formObj.room_id) : null,
+      checked_in: checkedIn,
+      checked_out: checkedOut,
+      number_of_guests: formObj.number_of_guests
+        ? String(formObj.number_of_guests)
+        : null,
+      payment_status: formObj.payment_status
+        ? String(formObj.payment_status)
+        : null,
+      payment_method: formObj.payment_method
+        ? String(formObj.payment_method)
+        : null,
+      booking_source: formObj.booking_source
+        ? String(formObj.booking_source)
+        : null,
+      amount_paid: formObj.amount_paid ? Number(formObj.amount_paid) : null,
+      total: formObj.total ? String(formObj.total) : null,
+      status: formObj.status ? String(formObj.status) : "pending",
       special_requests: specialRequests,
-      total_add_ons: totalAddOns,
+      total_add_ons: String(totalAddOns),
     };
 
     const newCheckIn = new Date(checkedIn);
@@ -269,7 +309,10 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       );
     }
 
-    const { data, error } = await supabase.from("bookings").insert([newData]).select();
+    const { data, error } = await supabase
+      .from("bookings")
+      .insert([newData])
+      .select();
 
     if (error) {
       if (error.code === "23505") {

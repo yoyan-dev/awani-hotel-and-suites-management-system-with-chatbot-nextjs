@@ -16,7 +16,8 @@ export function calculateBookingPrice(booking: Booking): number {
   if (!booking.room_type) return 0;
 
   const nights = getNights(booking.checked_in, booking.checked_out);
-  return booking.room_type.price * nights;
+  const roomPrice = Number(booking.room_type.price ?? 0);
+  return roomPrice * nights;
 }
 
 export function calculateTotalBookingsPrice(bookings: Booking[]): number {

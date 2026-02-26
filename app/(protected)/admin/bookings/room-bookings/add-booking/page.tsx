@@ -1,5 +1,4 @@
 "use client";
-import { Guest } from "@/types/guest";
 import { Button, Form, addToast } from "@heroui/react";
 import { Copyright } from "lucide-react";
 import React from "react";
@@ -9,27 +8,30 @@ import { useBookings } from "@/hooks/use-bookings";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useRooms } from "@/hooks/use-rooms";
 import { useGuests } from "@/hooks/use-guests";
+import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
+import { addBooking as addBookingThunk } from "@/features/booking/hotel-rooms/booking-thunk";
 import PaymentSection from "./_components/payment-section";
 import { RoomType } from "@/types/room";
 import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
 import ViewSummary from "../_components/modals/payment/view-summary-modal";
 import { BookingSpecialRequest } from "@/types/add-on";
+import { useRouter } from "next/navigation";
 
 export default function AddBookingPage() {
+  const router = useRouter();
   const {
     room_types,
     isLoading: typesLoading,
     fetchRoomTypes,
   } = useRoomTypes();
-  const { isLoading: bookingIsLoading, error, addBooking } = useBookings();
+  const { isLoading: bookingIsLoading, addBooking } = useBookings();
   const {
     available_rooms,
     isLoading: roomLoading,
     fetchAvailableRooms,
   } = useRooms();
-  const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
-  const [selectedGuest, setSelectedGuest] = React.useState<string>();
+  const { addGuest } = useGuests();
   const [roomType, setRoomType] = React.useState<RoomType>({});
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>();
   const [specialRequests, setSpecialRequests] = React.useState<
@@ -45,7 +47,6 @@ export default function AddBookingPage() {
 
   React.useEffect(() => {
     fetchRoomTypes({});
-    fetchGuests();
   }, []);
 
   React.useEffect(() => {
@@ -58,13 +59,6 @@ export default function AddBookingPage() {
       });
     }
   }, [selectedRoomType, checkInDate, checkOutDate]);
-
-  const filteredGuest = React.useMemo(
-    () =>
-      guests.find((guest) => guest.id === selectedGuest) ||
-      ({ full_name: "", contact_number: "", address: "" } as Guest),
-    [selectedGuest],
-  );
 
   React.useEffect(() => {
     const room = room_types.find((room) => room.id === selectedRoomType);
@@ -87,7 +81,7 @@ export default function AddBookingPage() {
   }, [selectedRoomType]);
 
   const summary = React.useMemo(() => {
-    if (!roomType || !checkInDate || !checkOutDate) return null;
+    if (!roomType?.id || !checkInDate || !checkOutDate) return null;
     return generateSummary(
       {
         checked_in: checkInDate,
@@ -107,27 +101,57 @@ export default function AddBookingPage() {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
-      if (!selectedGuest) {
+      const guestId = crypto.randomUUID();
+      const guestFormData = new FormData();
+      guestFormData.append("id", guestId);
+      guestFormData.append(
+        "full_name",
+        String(formData.get("guest_full_name") ?? ""),
+      );
+      guestFormData.append(
+        "contact_number",
+        String(formData.get("guest_contact_number") ?? ""),
+      );
+      guestFormData.append(
+        "address",
+        String(formData.get("guest_address") ?? ""),
+      );
+      guestFormData.append(
+        "nationality",
+        String(formData.get("guest_nationality") ?? ""),
+      );
+      guestFormData.append("email", String(formData.get("guest_email") ?? ""));
+
+      const addGuestResult = await addGuest(guestFormData);
+      if (!addGuestThunk.fulfilled.match(addGuestResult)) {
         addToast({
           title: "Error",
-          description: "Please select or register guest.",
-          color: "warning",
+          description: "Unable to create guest record.",
+          color: "danger",
         });
         return;
       }
 
       formData.append("status", "confirmed");
-      formData.append("guest_id", selectedGuest);
+      formData.append("guest_id", addGuestResult.payload.id || guestId);
       formData.append("total", payload?.total);
       formData.append("total_add_ons", payload?.totalAddOnsPrice);
       formData.append(
         "payment_status",
         payload?.balance >= 0 ? payload?.status : "pending",
       );
-      console.log(formData);
       formData.append("special_requests", JSON.stringify(specialRequests));
 
-      await addBooking(formData);
+      const addBookingResult = await addBooking(formData);
+      if (!addBookingThunk.fulfilled.match(addBookingResult)) {
+        addToast({
+          title: "Error",
+          description: "Unable to create booking record.",
+          color: "danger",
+        });
+        return;
+      }
+      router.push("/admin/bookings/room-bookings");
     } catch (e: any) {
       addToast({
         title: "Error!",
@@ -140,14 +164,8 @@ export default function AddBookingPage() {
   return (
     <>
       <div className="flex-1 px-4 w-full space-y-4 py-4">
-        <GuestInfoSection
-          guests={guests}
-          selectedGuest={selectedGuest}
-          setSelectedGuest={setSelectedGuest}
-          filteredGuest={filteredGuest}
-          loading={guestLoading}
-        />
         <Form onSubmit={(e) => handleSubmit(e, summary)}>
+          <GuestInfoSection />
           <BookingDetailsSection
             room_types={room_types}
             rooms={available_rooms}

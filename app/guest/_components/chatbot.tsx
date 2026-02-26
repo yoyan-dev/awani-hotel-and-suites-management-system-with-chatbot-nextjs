@@ -24,7 +24,7 @@ type ChatMessage = {
 const QUICK_QUESTIONS = [
   "What are your room types?",
   "How do I make a reservation?",
-  "What are the checked_in times?",
+  "What are the check-in times?",
   "Do you have function halls?",
   "What amenities are included?",
   "How can I contact Front Office?",
@@ -62,24 +62,33 @@ export default function Chatbot() {
     try {
       const res = await fetch("/api/chatbot", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ message: msg, history }),
       });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Chatbot request failed");
+      }
 
       if (!res.body) {
         throw new Error("No response body");
       }
 
       const reader = res.body.getReader();
+      const decoder = new TextDecoder();
       let botReply = "";
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        botReply += new TextDecoder().decode(value);
+        botReply += decoder.decode(value, { stream: true });
         const botMessage: ChatMessage = { from: "bot", text: botReply };
         setChat([...newChat, botMessage]);
       }
-    } catch (error) {
+    } catch (_error) {
       const fallbackMessage: ChatMessage = {
         from: "bot",
         text: "I'm sorry, I'm having trouble connecting right now. Please contact Front Office directly for assistance.",
@@ -132,7 +141,7 @@ export default function Chatbot() {
               <div>
                 <h3 className="font-medium text-base">Awani Assistant</h3>
                 <p className="text-xs text-white/80">
-                  Hotel & Booking Help · Remembers last {CHATBOT_MEMORY_ITEMS}{" "}
+                  Hotel & Booking Help - Remembers last {CHATBOT_MEMORY_ITEMS}{" "}
                   messages
                 </p>
               </div>
@@ -252,3 +261,4 @@ export default function Chatbot() {
     </>
   );
 }
+
