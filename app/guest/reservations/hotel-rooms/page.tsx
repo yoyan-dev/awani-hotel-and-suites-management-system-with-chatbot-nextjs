@@ -7,14 +7,20 @@ import { formatDate } from "@/utils/format-date";
 import { useRoomTypes } from "@/hooks/use-room-types";
 
 export default function Page() {
-  const today = new Date().toISOString().split("T")[0];
+  const date = new Date();
+  const today = date.toISOString().split("T")[0];
+  const tomorrow = new Date(date);
+  tomorrow.setDate(date.getDate() + 1);
   const { availabel_room_types, isLoading, error, fetchAvailableRoomTypes } =
     useRoomTypes();
   const [desiredGuest, setDesiredGuest] = React.useState<number>(1);
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
 
   React.useEffect(() => {
-    fetchAvailableRoomTypes({ checkIn: today, checkOut: today });
+    fetchAvailableRoomTypes({
+      checkIn: today,
+      checkOut: tomorrow.toISOString().split("T")[0],
+    });
   }, []);
 
   function checkAvailability() {
@@ -39,7 +45,7 @@ export default function Page() {
           -{" "}
           {query.checkOut
             ? formatDate(new Date(query.checkOut))
-            : formatDate(new Date(today))}
+            : formatDate(new Date(tomorrow))}
         </span>
         <RoomsList rooms={availabel_room_types} typesLoading={isLoading} />
       </div>

@@ -106,6 +106,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     .select("*")
     .in("room_type_id", roomTypeIds)
     .neq("status", "cancelled")
+    .neq("status", "checked_out")
     .lte("checked_in", normalizedCheckOut)
     .gte("checked_out", checkIn);
 
@@ -153,9 +154,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   });
 
   /** Compute availability */
-  const availableRoomTypes = filterAvailableRoomTypes(
-    roomTypesWithBookings,
-  );
+  const availableRoomTypes = filterAvailableRoomTypes(roomTypesWithBookings);
 
   return NextResponse.json(
     {
