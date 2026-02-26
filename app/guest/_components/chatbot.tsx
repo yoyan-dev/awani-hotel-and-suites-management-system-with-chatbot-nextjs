@@ -14,13 +14,6 @@ import {
 } from "@heroui/react";
 import { MessageCircle, Send, X, HelpCircle } from "lucide-react";
 
-const CHATBOT_MEMORY_ITEMS = 20;
-
-type ChatMessage = {
-  from: "user" | "bot";
-  text: string;
-};
-
 const QUICK_QUESTIONS = [
   "What are your room types?",
   "How do I make a reservation?",
@@ -35,7 +28,7 @@ export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [chat, setChat] = useState<ChatMessage[]>([
+  const [chat, setChat] = useState([
     {
       from: "bot",
       text: "Hello! Welcome to Awani Hotel. I'm here to help you with information about our rooms, bookings, amenities, and more. What can I assist you with today?",
@@ -53,16 +46,14 @@ export default function Chatbot() {
     if (!msg.trim()) return;
 
     setIsLoading(true);
-    const history = chat.slice(-CHATBOT_MEMORY_ITEMS);
-    const userMessage: ChatMessage = { from: "user", text: msg };
-    const newChat: ChatMessage[] = [...chat, userMessage];
+    const newChat = [...chat, { from: "user", text: msg }];
     setChat(newChat);
     setMessage("");
 
     try {
       const res = await fetch("/api/chatbot", {
         method: "POST",
-        body: JSON.stringify({ message: msg, history }),
+        body: JSON.stringify({ message: msg }),
       });
 
       if (!res.body) {
@@ -76,17 +67,15 @@ export default function Chatbot() {
         const { done, value } = await reader.read();
         if (done) break;
         botReply += new TextDecoder().decode(value);
-        const botMessage: ChatMessage = { from: "bot", text: botReply };
-        setChat([...newChat, botMessage]);
+        setChat([...newChat, { from: "bot", text: botReply }]);
       }
     } catch (error) {
-      const fallbackMessage: ChatMessage = {
-        from: "bot",
-        text: "I'm sorry, I'm having trouble connecting right now. Please contact Front Office directly for assistance.",
-      };
       setChat([
         ...newChat,
-        fallbackMessage,
+        {
+          from: "bot",
+          text: "I'm sorry, I'm having trouble connecting right now. Please contact Front Office directly for assistance.",
+        },
       ]);
     } finally {
       setIsLoading(false);
@@ -134,9 +123,7 @@ export default function Chatbot() {
               />
               <div>
                 <h3 className="font-medium text-base">Awani Assistant</h3>
-                <p className="text-xs text-white/80">
-                  Hotel & Booking Help · Remembers last {CHATBOT_MEMORY_ITEMS} messages
-                </p>
+                <p className="text-xs text-white/80">Hotel & Booking Help</p>
               </div>
             </div>
             <Button
@@ -173,7 +160,7 @@ export default function Chatbot() {
                     />
                   )}
                   <div
-                    className={`rounded-2xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap break-words leading-relaxed ${
+                    className={`rounded-2xl px-4 py-2 max-w-[80%] text-sm ${
                       msg.from === "user"
                         ? "bg-primary text-white"
                         : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700"
