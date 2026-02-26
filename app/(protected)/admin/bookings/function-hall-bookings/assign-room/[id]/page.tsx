@@ -40,13 +40,14 @@ export default function Page() {
   }, [id]);
 
   useEffect(() => {
-    if (!function_hall_booking?.event_duration) return;
+    if (!function_hall_booking?.event_start || !function_hall_booking?.event_end)
+      return;
 
     fetchAvailableFunctionRooms({
-      start: function_hall_booking.event_duration?.start,
-      end: function_hall_booking.event_duration?.end,
+      start: function_hall_booking.event_start,
+      end: function_hall_booking.event_end,
     });
-  }, [function_hall_booking?.event_duration]);
+  }, [function_hall_booking?.event_start, function_hall_booking?.event_end]);
 
   const handleAssign = (room: FunctionRoom, occupancy: OccupancyType) => {
     setSelectedRoom(room);

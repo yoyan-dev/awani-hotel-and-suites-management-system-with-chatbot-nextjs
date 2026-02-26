@@ -3,7 +3,8 @@ export interface FunctionHallBooking {
   booking_number?: string;
   guest_id?: string;
   event_type?: string;
-  event_duration?: any;
+  event_start?: string;
+  event_end?: string;
   number_of_guest?: number;
   room_id?: string;
   notes?: string;
@@ -30,7 +31,8 @@ export interface FetchFunctionHallBookingParams {
   page?: number;
   query?: string;
   guest_id?: string;
-  event_duration?: { start: any; end: any };
+  event_start?: string;
+  event_end?: string;
   date_range?: { start: any; end: any };
   status?: string | undefined;
 }

@@ -225,7 +225,8 @@ export interface FunctionRoomStatusDetail {
   max_guest: number | null;
   current_booking?: {
     guest_name: string;
-    event_duration: string;
+    event_start: string;
+    event_end: string;
     number_of_guest: number;
   } | null;
   utilization_percentage?: number;

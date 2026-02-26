@@ -32,9 +32,9 @@ export default function BookingDetails({ booking }: Props) {
           label="Event Date"
           value={
             <div className="flex flex-col">
-              <span>{formateDateAndTime(booking.event_duration?.start)}</span>
+              <span>{formateDateAndTime(booking.event_start)}</span>
               <span className="text-gray-500 text-xs">
-                to {formateDateAndTime(booking.event_duration?.end)}
+                to {formateDateAndTime(booking.event_end)}
               </span>
             </div>
           }

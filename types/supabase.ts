@@ -179,7 +179,8 @@ export type Database = {
           booking_number: string | null;
           booking_source: string | null;
           created_at: string;
-          event_duration: Json | null;
+          event_end: string | null;
+          event_start: string | null;
           event_type: string | null;
           guest_id: string | null;
           id: string;
@@ -198,7 +199,8 @@ export type Database = {
           booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
-          event_duration?: Json | null;
+          event_end?: string | null;
+          event_start?: string | null;
           event_type?: string | null;
           guest_id?: string | null;
           id?: string;
@@ -217,7 +219,8 @@ export type Database = {
           booking_number?: string | null;
           booking_source?: string | null;
           created_at?: string;
-          event_duration?: Json | null;
+          event_end?: string | null;
+          event_start?: string | null;
           event_type?: string | null;
           guest_id?: string | null;
           id?: string;
@@ -384,7 +387,6 @@ export type Database = {
       };
       room_types: {
         Row: {
-          add_ons: Json[] | null;
           created_at: string;
           description: string | null;
           id: string;
@@ -396,7 +398,6 @@ export type Database = {
           room_size: string | null;
         };
         Insert: {
-          add_ons?: Json[] | null;
           created_at?: string;
           description?: string | null;
           id?: string;
@@ -408,7 +409,6 @@ export type Database = {
           room_size?: string | null;
         };
         Update: {
-          add_ons?: Json[] | null;
           created_at?: string;
           description?: string | null;
           id?: string;
@@ -420,6 +420,45 @@ export type Database = {
           room_size?: string | null;
         };
         Relationships: [];
+      };
+      room_type_add_ons: {
+        Row: {
+          created_at: string;
+          id: string;
+          inventory_id: string;
+          quantity_limit: number;
+          room_type_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          inventory_id: string;
+          quantity_limit?: number;
+          room_type_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          inventory_id?: string;
+          quantity_limit?: number;
+          room_type_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "room_type_add_ons_inventory_id_fkey";
+            columns: ["inventory_id"];
+            isOneToOne: false;
+            referencedRelation: "inventory";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_type_add_ons_room_type_id_fkey";
+            columns: ["room_type_id"];
+            isOneToOne: false;
+            referencedRelation: "room_types";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       "room-reports": {
         Row: {
@@ -527,7 +566,7 @@ export type Database = {
       get_available_room_types: {
         Args: { check_in: string; check_out: string; guests: number };
         Returns: {
-          add_ons: Json[];
+          room_type_add_ons: Json[];
           description: string;
           id: string;
           image: string;

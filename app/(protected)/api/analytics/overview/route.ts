@@ -11,36 +11,7 @@ import {
   Room,
 } from "@/types/analytics-contracts";
 import { calculateDateRange } from "@/utils/overview/calculate-date-range";
-
-const parseEventDurationBoundary = (
-  eventDuration: unknown,
-  boundary: "start" | "end",
-): Date | null => {
-  if (!eventDuration || typeof eventDuration !== "object") return null;
-
-  const durationRecord = eventDuration as Record<string, unknown>;
-  const boundaryData = durationRecord[boundary];
-  if (!boundaryData || typeof boundaryData !== "object") return null;
-
-  const point = boundaryData as Record<string, unknown>;
-  const year = Number(point.year);
-  const month = Number(point.month);
-  const day = Number(point.day);
-  const hour = Number(point.hour ?? 0);
-  const minute = Number(point.minute ?? 0);
-  const second = Number(point.second ?? 0);
-  const millisecond = Number(point.millisecond ?? 0);
-  const offset = Number(point.offset ?? 0);
-
-  if (!year || !month || !day) return null;
-
-  // Offset is milliseconds from UTC in stored event_duration payload.
-  const utcTime =
-    Date.UTC(year, month - 1, day, hour, minute, second, millisecond) - offset;
-  const parsedDate = new Date(utcTime);
-
-  return isValid(parsedDate) ? parsedDate : null;
-};
+import { parseBookingBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 const generateResponse = <T>(
   success: boolean,
@@ -187,13 +158,8 @@ export async function GET(
 
     const filteredFunctionHallBookings = transformedFunctionHallBookings.filter(
       (booking) => {
-        const startDate = parseEventDurationBoundary(
-          (booking as any).event_duration,
-          "start",
-        );
-        const endDate =
-          parseEventDurationBoundary((booking as any).event_duration, "end") ||
-          startDate;
+        const startDate = parseBookingBoundaryDateTime(booking as any, "start");
+        const endDate = parseBookingBoundaryDateTime(booking as any, "end") || startDate;
 
         if (!startDate && !endDate) return false;
 
@@ -220,10 +186,7 @@ export async function GET(
 
     const functionHallUpcomingBookings = filteredFunctionHallBookings.filter(
       (b) => {
-        const startDate = parseEventDurationBoundary(
-          (b as any).event_duration,
-          "start",
-        );
+        const startDate = parseBookingBoundaryDateTime(b as any, "start");
         if (!startDate) return false;
         return startDate > now;
       },

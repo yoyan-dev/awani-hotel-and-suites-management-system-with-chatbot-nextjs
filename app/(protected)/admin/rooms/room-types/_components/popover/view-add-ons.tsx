@@ -9,7 +9,12 @@ import {
 } from "@heroui/react";
 
 interface AddOnsProps {
-  addOns: { name: string; price: string }[];
+  addOns: {
+    id?: string;
+    quantity_limit: number;
+    add_on?: { name?: string; price?: string | number } | null;
+    remaining_quantity?: number;
+  }[];
 }
 
 export default function ViewAddOns({ addOns }: AddOnsProps) {
@@ -29,8 +34,14 @@ export default function ViewAddOns({ addOns }: AddOnsProps) {
             <div className="mt-2 flex flex-col gap-2 w-full">
               {addOns.map((row, index) => (
                 <Chip key={index}>
-                  {row.name}{" "}
-                  {row.price && ` - ${formatPHP(Number(row.price) || 0)}`}
+                  {row.add_on?.name}{" "}
+                  {row.add_on?.price !== undefined &&
+                    ` - ${formatPHP(Number(row.add_on.price) || 0)}`}{" "}
+                  (limit: {row.quantity_limit}
+                  {row.remaining_quantity !== undefined
+                    ? `, remaining: ${row.remaining_quantity}`
+                    : ""}
+                  )
                 </Chip>
               ))}
             </div>

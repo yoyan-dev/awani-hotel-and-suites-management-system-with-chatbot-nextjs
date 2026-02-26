@@ -4,8 +4,10 @@ import { ApiResponse } from "@/types/response";
 import { GenerateBookingNumber } from "@/lib/generate-booking-number";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import {
-  parseEventDurationBoundaryDateOnly,
-  parseEventDurationBoundaryDateTime,
+  parseBookingBoundaryDateOnly,
+  parseBookingBoundaryDateTime,
+  parseISODateTime,
+  parseISODateOnly,
 } from "@/utils/function-room/event-duration-date";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
@@ -66,21 +68,32 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 
   if (hasDateRangeFilter && start && end) {
+    const filterStartDate = parseISODateOnly(start);
+    const filterEndDate = parseISODateOnly(end);
+    if (!filterStartDate || !filterEndDate) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Date Filter",
+            description: "Invalid start or end date filter.",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
     const filtered =
       (data ?? []).filter((booking) => {
-        const bookingStart = parseEventDurationBoundaryDateOnly(
-          booking.event_duration,
-          "start",
-        );
-        const bookingEnd =
-          parseEventDurationBoundaryDateOnly(booking.event_duration, "end") ||
-          bookingStart;
+        const bookingStart = parseBookingBoundaryDateOnly(booking, "start");
+        const bookingEnd = parseBookingBoundaryDateOnly(booking, "end") || bookingStart;
 
         if (!bookingStart || !bookingEnd) {
           return false;
         }
 
-        return bookingStart >= start && bookingEnd <= end;
+        return bookingStart >= filterStartDate && bookingEnd <= filterEndDate;
       }) ?? [];
 
     return NextResponse.json(
@@ -129,45 +142,92 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-    // Parse JSON safely
-    const eventDuration =
-      typeof formObj.event_duration === "string"
-        ? JSON.parse(formObj.event_duration)
-        : null;
+    const eventStart = formObj.event_start as string;
+    const eventEnd = formObj.event_end as string;
 
-    if (!eventDuration?.start || !eventDuration?.end) {
+    if (!eventStart || !eventEnd) {
       return NextResponse.json(
         {
           success: false,
           message: {
             title: "Invalid Data",
-            description: "Event duration is required",
+            description: "Event start and end are required",
             color: "warning",
           },
         },
         { status: 400 },
       );
     }
-    console.log(formObj);
+
+    const parsedStart = parseISODateTime(eventStart);
+    const parsedEnd = parseISODateTime(eventEnd);
+    if (!parsedStart || !parsedEnd || parsedStart >= parsedEnd) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Data",
+            description: "Event range is invalid",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
 
     const bookingNumber = await GenerateBookingNumber("function-room");
     if (!bookingNumber) throw new Error("Failed to generate booking number");
+
+    const bookingSource =
+      formObj.booking_source === "walk-in" ? "walk-in" : "online";
+    const bookingStatus =
+      formObj.status === "confirmed" ? "confirmed" : "pending";
 
     const newBooking = {
       booking_number: bookingNumber,
       guest_id: formObj.guest_id as string,
       event_type: formObj.event_type as string,
       number_of_guest: Number(formObj.number_of_guest),
-      event_duration: eventDuration,
-      // room_id: roomId,
+      event_start: eventStart,
+      event_end: eventEnd,
       notes: formObj.notes as string,
+      status: bookingStatus,
+      booking_source: bookingSource,
     };
+
+    if (!newBooking.guest_id || !newBooking.event_type) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Data",
+            description: "Guest and event type are required",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!Number.isFinite(newBooking.number_of_guest) || newBooking.number_of_guest <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Data",
+            description: "Number of guest must be greater than zero",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
 
     if (newBooking.guest_id) {
       const { data: existing, error: overlapError } = await supabase
         .from("function_hall_bookings")
-        .select("id, event_duration, status")
-        .eq("guest", newBooking.guest_id)
+        .select("id, event_start, event_end, status")
+        .eq("guest_id", newBooking.guest_id)
         .not("status", "in", "(cancelled,completed)");
 
       if (overlapError) {
@@ -175,19 +235,10 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       }
 
       const hasOverlap = existing?.some((b) => {
-        const existingStart = parseEventDurationBoundaryDateTime(
-          b.event_duration,
-          "start",
-        );
-        const existingEnd =
-          parseEventDurationBoundaryDateTime(b.event_duration, "end") ||
-          existingStart;
-        const newStart = parseEventDurationBoundaryDateTime(
-          eventDuration,
-          "start",
-        );
-        const newEnd =
-          parseEventDurationBoundaryDateTime(eventDuration, "end") || newStart;
+        const existingStart = parseBookingBoundaryDateTime(b as any, "start");
+        const existingEnd = parseBookingBoundaryDateTime(b as any, "end") || existingStart;
+        const newStart = parsedStart;
+        const newEnd = parsedEnd;
 
         if (!existingStart || !existingEnd || !newStart || !newEnd) {
           return false;
@@ -202,7 +253,8 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
             success: false,
             message: {
               title: "Booking Conflict",
-              description: "Room already booked for this time range.",
+              description:
+                "Guest already has an existing booking that overlaps this event schedule.",
               color: "warning",
             },
           },

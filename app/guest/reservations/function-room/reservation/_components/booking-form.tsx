@@ -36,7 +36,8 @@ import PolicyModal from "./modals/policy-modal";
 import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
 import {
-  parseZonedDateTime,
+  today as todayDate,
+  getLocalTimeZone,
   parseAbsoluteToLocal,
 } from "@internationalized/date";
 interface BookingFormProps {
@@ -65,6 +66,12 @@ export default function BookingForm({
   const today = new Date();
   const fiveDaysLater = new Date();
   fiveDaysLater.setDate(today.getDate() + 5);
+  const minDate = todayDate(getLocalTimeZone()).add({ days: 5 });
+  setEventDuration({
+    start: fiveDaysLater.toISOString(),
+    end: fiveDaysLater.toISOString(),
+  });
+
   return (
     <>
       {!guestId ? (
@@ -72,7 +79,7 @@ export default function BookingForm({
       ) : (
         <Card className="w-full max-w-3xl mx-auto shadow-md rounded-2xl border border-gray-100 dark:border-gray-700">
           <CardHeader className="text-xl font-semibold">
-            📝 Event / Banquet Booking
+            📝 Event Booking
           </CardHeader>
 
           <CardBody className="dark:bg-gray-900">
@@ -98,9 +105,10 @@ export default function BookingForm({
                 <DateRangePicker
                   variant="bordered"
                   hideTimeZone
+                  minValue={minDate}
                   defaultValue={{
-                    start: parseAbsoluteToLocal(fiveDaysLater.toISOString()),
-                    end: parseAbsoluteToLocal(fiveDaysLater.toISOString()),
+                    start: parseAbsoluteToLocal(eventDuration.start),
+                    end: parseAbsoluteToLocal(eventDuration.end),
                   }}
                   label="Event duration"
                   className="pt-4"

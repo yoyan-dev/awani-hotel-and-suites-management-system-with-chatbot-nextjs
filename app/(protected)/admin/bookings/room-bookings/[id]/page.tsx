@@ -242,6 +242,9 @@ export default function BookingDetailsStunning() {
                     <Chip key={req.name}>
                       {req.quantity} {req.name} -{" "}
                       {req.price > 0 ? req.price : "free"}
+                      {req.remaining_quantity !== undefined
+                        ? ` (remaining ${req.remaining_quantity})`
+                        : ""}
                     </Chip>
                   ))}
                 </div>

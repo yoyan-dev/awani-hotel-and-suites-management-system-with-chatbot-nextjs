@@ -66,6 +66,7 @@ export default function BookingDetailsSection({
           }}
           label="Event duration"
           className="pt-4"
+          isRequired
           onChange={(value) =>
             setEventDuration({ start: value?.start, end: value?.end })
           }

@@ -2,15 +2,17 @@
 
 import BookingForm from "./_components/booking-form";
 import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
-import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import SuccessMessage from "./_components/success-message";
+import {
+  fetchBookings as fetchFunctionHallBookings,
+  addBooking as addFunctionHallBooking,
+} from "@/features/booking/function-hall/booking-thunk";
+import { toEventBoundaryISO } from "@/utils/function-room/event-duration-date";
 
 export default function Page() {
-  const { id } = useParams();
-  const router = useRouter();
-  const [selectedPackage, setSelectedPackage] = React.useState(id || null);
+  const [selectedPackage, setSelectedPackage] = React.useState(null);
   const [guestId, setGuestId] = React.useState<string | null>(null);
   const [EventDuration, setEventDuration] = React.useState({
     start: "",
@@ -18,32 +20,73 @@ export default function Page() {
   });
   const [isSubmitted, setIsSubmitted] = React.useState(false);
   const {
-    function_hall_bookings,
-    isLoading: bookingIsLoading,
-    error,
     fetchBookings,
+    isLoading: bookingIsLoading,
     addBooking,
   } = useFunctionHallBookings();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-
-    await fetchBookings({ guest_id: guestId || "" });
-    if (!bookingIsLoading && function_hall_bookings.length > 0) {
+    if (!guestId) {
       addToast({
-        title: "Error!",
-        description:
-          "You still have a pending booking reservation. Please contact awani customer service for assistance.",
+        title: "Error",
+        description: "Please register or select a guest first.",
         color: "warning",
       });
       return;
     }
-    formData.append("guest_id", guestId || "");
-    formData.append("event_duration", JSON.stringify(EventDuration));
+    if (!EventDuration.start || !EventDuration.end) {
+      addToast({
+        title: "Error",
+        description: "Please select event start and end date.",
+        color: "warning",
+      });
+      return;
+    }
 
-    await addBooking(formData);
-    if (error === undefined) {
+    const eventStartISO = toEventBoundaryISO(EventDuration.start, "start");
+    const eventEndISO = toEventBoundaryISO(EventDuration.end, "end");
+
+    if (!eventStartISO || !eventEndISO) {
+      addToast({
+        title: "Error",
+        description: "Invalid event date range.",
+        color: "warning",
+      });
+      return;
+    }
+
+    const fetchResult = await fetchBookings({ guest_id: guestId });
+    if (fetchFunctionHallBookings.fulfilled.match(fetchResult)) {
+      const hasActiveBooking = fetchResult.payload.data.some(
+        (booking) =>
+          booking.status !== "cancelled" && booking.status !== "completed",
+      );
+      if (hasActiveBooking) {
+        addToast({
+          title: "Error!",
+          description:
+            "You still have a pending booking reservation. Please contact awani customer service for assistance.",
+          color: "warning",
+        });
+        return;
+      }
+    } else {
+      addToast({
+        title: "Error!",
+        description: "Unable to validate existing bookings. Please try again.",
+        color: "danger",
+      });
+      return;
+    }
+
+    formData.append("guest_id", guestId || "");
+    formData.append("event_start", eventStartISO);
+    formData.append("event_end", eventEndISO);
+
+    const addResult = await addBooking(formData);
+    if (addFunctionHallBooking.fulfilled.match(addResult)) {
       addToast({
         title: "Reservation Successful",
         description:

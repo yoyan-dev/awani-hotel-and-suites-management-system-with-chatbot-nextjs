@@ -1,7 +1,7 @@
 import { FunctionRoom } from "@/types/function-room";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import {
-  parseEventDurationBoundaryDateOnly,
+  parseBookingBoundaryDateOnly,
   parseISODateOnly,
 } from "@/utils/function-room/event-duration-date";
 
@@ -13,9 +13,9 @@ export function computeFunctionRoomAvailabilityByDate(
   end: unknown,
 ) {
   const requestedStartISO =
-    parseEventDurationBoundaryDateOnly(start, "start") ?? parseISODateOnly(start);
+    parseISODateOnly(start);
   const requestedEndISO =
-    parseEventDurationBoundaryDateOnly(end, "end") ?? parseISODateOnly(end);
+    parseISODateOnly(end);
 
   if (!requestedStartISO || !requestedEndISO) {
     return rooms;
@@ -31,13 +31,8 @@ export function computeFunctionRoomAvailabilityByDate(
       room.function_hall_bookings?.filter((b: FunctionHallBooking) => {
         if (b.status === "cancelled") return false;
 
-        const bookingStartISO = parseEventDurationBoundaryDateOnly(
-          b.event_duration,
-          "start",
-        );
-        const bookingEndISO =
-          parseEventDurationBoundaryDateOnly(b.event_duration, "end") ??
-          bookingStartISO;
+        const bookingStartISO = parseBookingBoundaryDateOnly(b, "start");
+        const bookingEndISO = parseBookingBoundaryDateOnly(b, "end") ?? bookingStartISO;
 
         if (!bookingStartISO || !bookingEndISO) return false;
 

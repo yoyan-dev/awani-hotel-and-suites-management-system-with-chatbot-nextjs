@@ -46,7 +46,7 @@ export const TableTopContent: React.FC<Props> = ({
   bookingsCount,
 }) => {
   const { fetchBookings } = useFunctionHallBookings();
-  const filterResetKey = `${query.status ?? ""}-${query.event_duration?.start ?? ""}-${query.event_duration?.end ?? ""}`;
+  const filterResetKey = `${query.status ?? ""}-${query.event_start ?? ""}-${query.event_end ?? ""}`;
 
   const handleSearchChange = (value: string) =>
     setQuery({ ...query, query: value, page: 1 });
@@ -58,10 +58,12 @@ export const TableTopContent: React.FC<Props> = ({
     setQuery({
       ...query,
       page: 1,
-      event_duration: {
-        start: toDateString(range.start),
-        end: toDateString(range.end),
-      },
+      event_start: toDateString(range.start)
+        ? `${toDateString(range.start)}T00:00:00.000Z`
+        : undefined,
+      event_end: toDateString(range.end)
+        ? `${toDateString(range.end)}T23:59:59.999Z`
+        : undefined,
     });
 
   const handleStatusChange = (status: string) =>
@@ -72,7 +74,8 @@ export const TableTopContent: React.FC<Props> = ({
       page: 1,
       query: "",
       status: undefined,
-      event_duration: undefined,
+      event_start: undefined,
+      event_end: undefined,
       date_range: undefined,
       guest_id: undefined,
     });

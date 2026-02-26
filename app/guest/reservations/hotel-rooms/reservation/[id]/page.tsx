@@ -13,6 +13,7 @@ import { useBookings } from "@/hooks/use-bookings";
 import { FetchRoomTypesParams } from "@/types/room";
 import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
+import { BookingSpecialRequest } from "@/types/add-on";
 
 export default function Page() {
   const { id } = useParams();
@@ -31,7 +32,7 @@ export default function Page() {
   } = useBookings();
 
   const [specialRequests, setSpecialRequests] = React.useState<
-    { name: string; price: string; quantity: number }[]
+    BookingSpecialRequest[]
   >([]);
 
   React.useEffect(() => {
@@ -48,12 +49,15 @@ export default function Page() {
   }, [availabel_room_types, selectedRoom]);
 
   React.useEffect(() => {
-    if (room?.add_ons) {
+    if (room?.room_type_add_ons) {
       setSpecialRequests(
-        room.add_ons.map((item: any) => ({
-          name: item.name,
-          price: item.price,
-          max_quantity: item.max_quantity,
+        room.room_type_add_ons.map((item: any) => ({
+          room_type_add_on_id: item.id,
+          add_on_id: item.add_on_id,
+          name: item.add_on?.name,
+          price: item.add_on?.price,
+          quantity_limit: item.quantity_limit,
+          remaining_quantity: item.remaining_quantity ?? item.quantity_limit,
           quantity: 0,
         })),
       );
@@ -94,19 +98,7 @@ export default function Page() {
     );
 
     const checked_in_date = formData.get("checked_in") || "";
-    await fetchBookings({
-      guest_id: guestId || "",
-      checked_in: checked_in_date,
-    });
-    if (!bookingIsLoading && bookings.length > 0) {
-      addToast({
-        title: "Error!",
-        description:
-          "You still have a pending booking reservation. Please contact awani customer service for assistance.",
-        color: "warning",
-      });
-      return;
-    }
+    
     formData.append("guest_id", guestId || "");
     formData.append("total", payload?.total);
     formData.append("total_add_ons", payload?.totalAddOnsPrice);

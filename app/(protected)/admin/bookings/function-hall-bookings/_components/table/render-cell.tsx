@@ -55,14 +55,14 @@ export const RenderCell = ({
     case "room":
       return booking.room?.room_number || booking.room?.name || "N/A";
 
-    case "event_duration":
+    case "event_start":
       return (
         <div className="flex flex-col w-60">
           <p className="text-bold text-small capitalize">
-            {formateDateAndTime(booking.event_duration?.start)}
+            {formateDateAndTime(booking.event_start)}
           </p>
           <p className="text-bold text-small capitalize">
-            {formateDateAndTime(booking.event_duration?.end)}
+            {formateDateAndTime(booking.event_end)}
           </p>
         </div>
       );

@@ -143,3 +143,36 @@ export const parseEventDurationBoundaryDateTime = (
 
   return null;
 };
+
+export const toEventBoundaryISO = (
+  value: unknown,
+  boundary: EventDurationBoundary,
+): string | null => {
+  const dateOnly = parseISODateOnly(value);
+  if (!dateOnly) return null;
+  return boundary === "start"
+    ? `${dateOnly}T00:00:00.000Z`
+    : `${dateOnly}T23:59:59.999Z`;
+};
+
+export const parseBookingBoundaryDateOnly = (
+  booking: { event_start?: unknown; event_end?: unknown },
+  boundary: EventDurationBoundary,
+): string | null => {
+  if (boundary === "start") {
+    return parseISODateOnly(booking.event_start);
+  }
+
+  return parseISODateOnly(booking.event_end);
+};
+
+export const parseBookingBoundaryDateTime = (
+  booking: { event_start?: unknown; event_end?: unknown },
+  boundary: EventDurationBoundary,
+): Date | null => {
+  if (boundary === "start") {
+    return parseISODateTime(booking.event_start);
+  }
+
+  return parseISODateTime(booking.event_end);
+};

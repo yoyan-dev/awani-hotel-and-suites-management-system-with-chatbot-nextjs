@@ -1,10 +1,127 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
 import { GenerateBookingNumber } from "@/lib/generate-booking-number";
+import { ROOM_TYPE_ADD_ONS_SELECT } from "@/lib/add-ons/selects";
+import {
+  collectRequestedQuantities,
+  resolveRoomTypeAddOnAvailability,
+} from "@/lib/add-ons/availability";
+import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
+import { BookingSpecialRequest } from "@/types/add-on";
 
-let bookings: Booking[];
+async function getRoomTypeWithAvailability(
+  roomTypeId: string,
+  checkIn: string,
+  checkOut: string,
+  excludeBookingId?: string,
+) {
+  const { data: roomType, error: roomTypeError } = await supabase
+    .from("room_types")
+    .select(ROOM_TYPE_ADD_ONS_SELECT)
+    .eq("id", roomTypeId)
+    .single();
+
+  if (roomTypeError || !roomType) {
+    throw new Error(roomTypeError?.message || "Room type not found");
+  }
+
+  let query = supabase
+    .from("bookings")
+    .select("id, special_requests")
+    .eq("room_type_id", roomTypeId)
+    .not("status", "in", "(cancelled,completed,checked_out)")
+    .lt("checked_in", checkOut)
+    .gt("checked_out", checkIn);
+
+  if (excludeBookingId) {
+    query = query.neq("id", excludeBookingId);
+  }
+
+  const { data: overlappingBookings, error: overlapError } = await query;
+  if (overlapError) {
+    throw new Error(overlapError.message);
+  }
+
+  const totals = collectRequestedQuantities(
+    (overlappingBookings ?? []).flatMap((booking) => booking.special_requests ?? []),
+  );
+
+  return {
+    roomType,
+    addOns: resolveRoomTypeAddOnAvailability(roomType, totals),
+  };
+}
+
+function sanitizeSpecialRequests(
+  requests: BookingSpecialRequest[],
+  availableAddOns: ReturnType<typeof resolveRoomTypeAddOnAvailability>,
+) {
+  const cleaned: BookingSpecialRequest[] = [];
+
+  for (const request of requests ?? []) {
+    const qty = Number(request.quantity ?? 0);
+    if (!Number.isFinite(qty) || qty <= 0) continue;
+
+    const addOn = findRequestedAddOn(availableAddOns, request);
+    if (!addOn) {
+      throw new Error(`Invalid add-on request: ${request.name}`);
+    }
+
+    if (qty > addOn.remaining_quantity) {
+      throw new Error(
+        `${addOn.name} only has ${addOn.remaining_quantity} remaining`,
+      );
+    }
+
+    cleaned.push({
+      room_type_add_on_id: addOn.room_type_add_on_id,
+      inventory_id: addOn.inventory_id,
+      add_on_id: addOn.add_on_id,
+      name: addOn.name,
+      price: addOn.price,
+      quantity: qty,
+      quantity_limit: addOn.quantity_limit,
+      remaining_quantity: addOn.remaining_quantity - qty,
+    });
+  }
+
+  return cleaned;
+}
+
+function computeTotalAddOns(specialRequests: BookingSpecialRequest[]) {
+  return specialRequests.reduce(
+    (total, item) => total + Number(item.price ?? 0) * Number(item.quantity ?? 0),
+    0,
+  );
+}
+
+const BOOKING_SELECT = `
+  id,
+  booking_number,
+  room_id,
+  guest_id,
+  room_type_id,
+  checked_in,
+  checked_out,
+  total_add_ons,
+  total,
+  company,
+  special_requests,
+  places_last_visited,
+  purpose,
+  number_of_guests,
+  recent_sickness,
+  payment_status,
+  payment_method,
+  booking_source,
+  amount_paid,
+  status,
+  created_at,
+  room_type:room_type_id(${ROOM_TYPE_ADD_ONS_SELECT}),
+  room:room_id (*),
+  user:guest_id (*)
+`;
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
@@ -25,42 +142,13 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
   let q = supabase
     .from("bookings")
-    .select(
-      `
-      id,
-      booking_number,
-      room_id,
-      guest_id,
-      room_type_id,
-      checked_in,
-      checked_out,
-      total_add_ons,
-      total,
-      company,
-      special_requests,
-      places_last_visited,
-      purpose,
-      number_of_guests,
-      recent_sickness,
-      payment_status,
-      payment_method,
-      booking_source,
-      amount_paid,
-      status,
-      created_at,
-      room_type:room_type_id(*),
-      room:room_id (*),
-      user:guest_id (*)
-    `,
-      { count: "exact" },
-    )
+    .select(BOOKING_SELECT, { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (roomTypeID) q = q.eq("room_type_id", roomTypeID);
   if (guest_id) q = q.eq("guest_id", guest_id);
   if (status) q = q.eq("status", status);
 
-  // date range filter
   if (start && end) {
     q = q.gte("checked_in", start).lte("checked_in", end);
   }
@@ -70,7 +158,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { data, error, count } = await q;
 
   if (error) {
-    console.error("Error fetching bookings:", error.message);
     return NextResponse.json(
       {
         success: false,
@@ -105,13 +192,10 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   );
 }
 
-// CREATE
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-    const specialRequests = JSON.parse(formObj.special_requests as string);
-
     const bookingNumber = await GenerateBookingNumber("hotel-room");
 
     if (!bookingNumber) {
@@ -127,17 +211,35 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         { status: 400 },
       );
     }
+
+    const roomTypeId = String(formObj.room_type_id ?? "");
+    const checkedIn = String(formObj.checked_in ?? "");
+    const checkedOut = String(formObj.checked_out ?? "");
+    const guestId = formObj.guest_id;
+
+    const requestedSpecialRequests = JSON.parse(
+      String(formObj.special_requests ?? "[]"),
+    ) as BookingSpecialRequest[];
+
+    const { addOns } = await getRoomTypeWithAvailability(
+      roomTypeId,
+      checkedIn,
+      checkedOut,
+    );
+
+    const specialRequests = sanitizeSpecialRequests(requestedSpecialRequests, addOns);
+    const totalAddOns = computeTotalAddOns(specialRequests);
+
     const newData = {
       ...formObj,
       booking_number: bookingNumber,
       special_requests: specialRequests,
-    } as Booking;
+      total_add_ons: totalAddOns,
+    };
 
-    const guestId = formObj.guest_id;
-    const newCheckIn = new Date(newData.checked_in);
-    const newCheckOut = new Date(newData.checked_out);
+    const newCheckIn = new Date(checkedIn);
+    const newCheckOut = new Date(checkedOut);
 
-    // Check existing bookings for this guest
     const { data: existingBookings, error: checkError } = await supabase
       .from("bookings")
       .select("id, checked_in, checked_out, status")
@@ -149,7 +251,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const hasOverlap = existingBookings?.some((booking) => {
       const existingIn = new Date(booking.checked_in);
       const existingOut = new Date(booking.checked_out);
-
       return newCheckIn <= existingOut && newCheckOut >= existingIn;
     });
 
@@ -168,13 +269,9 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       );
     }
 
-    const { data, error } = await supabase
-      .from("bookings")
-      .insert([newData])
-      .select();
+    const { data, error } = await supabase.from("bookings").insert([newData]).select();
 
     if (error) {
-      console.error("Supabase insert error:", error);
       if (error.code === "23505") {
         return NextResponse.json(
           {
@@ -214,7 +311,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       { status: 201 },
     );
   } catch (err: any) {
-    console.error("Unexpected error:", err);
     return NextResponse.json(
       {
         success: false,
@@ -239,6 +335,7 @@ export async function DELETE(
     let query = supabase.from("bookings").delete();
 
     if (selectedValues === "all") {
+      // delete all
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
       query = query.in("id", selectedValues);
     } else {

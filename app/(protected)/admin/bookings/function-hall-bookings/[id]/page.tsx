@@ -86,8 +86,8 @@ export default function BookingDetailsPage() {
         <CardBody className="space-y-2">
           <p className="text-gray-500 text-xs">Event Date</p>
           <p className="text-sm">
-            {formateDateAndTime(function_hall_booking.event_duration?.start)} –{" "}
-            {formateDateAndTime(function_hall_booking.event_duration?.end)}
+            {formateDateAndTime(function_hall_booking.event_start)} -{" "}
+            {formateDateAndTime(function_hall_booking.event_end)}
           </p>
           <p className="text-gray-500 text-xs">Guests</p>
           <p className="text-sm">{function_hall_booking.number_of_guest}</p>

@@ -7,22 +7,22 @@ import {
   SelectItem,
   Input,
   Textarea,
-  TimeInput,
+  DateRangePicker,
 } from "@heroui/react";
 import { Copyright } from "lucide-react";
 import React from "react";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { useGuests } from "@/hooks/use-guests";
 import { Guest as GuestType } from "@/types/guest";
-import { TimerIcon } from "lucide-react";
-import { Time } from "@internationalized/date";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 import { useParams } from "next/navigation";
 import Header from "./_components/header";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { toEventBoundaryISO } from "@/utils/function-room/event-duration-date";
 
 interface EventDuration {
-  start: Time | null;
-  end: Time | null;
+  start: any;
+  end: any;
 }
 
 export default function EditFunctionHallBookingPage() {
@@ -63,16 +63,10 @@ export default function EditFunctionHallBookingPage() {
       );
       setNotes(function_hall_booking.notes || "");
 
-      // Parse event duration if it exists
-      if (function_hall_booking.event_duration) {
-        const duration = function_hall_booking.event_duration;
+      if (function_hall_booking.event_start && function_hall_booking.event_end) {
         setEventDuration({
-          start: duration.start
-            ? new Time(duration.start.hour, duration.start.minute)
-            : null,
-          end: duration.end
-            ? new Time(duration.end.hour, duration.end.minute)
-            : null,
+          start: parseAbsoluteToLocal(function_hall_booking.event_start),
+          end: parseAbsoluteToLocal(function_hall_booking.event_end),
         });
       }
     }
@@ -106,25 +100,17 @@ export default function EditFunctionHallBookingPage() {
         return;
       }
 
+      const eventStartISO = toEventBoundaryISO(eventDuration.start, "start");
+      const eventEndISO = toEventBoundaryISO(eventDuration.end, "end");
+
       const updateData: Partial<FunctionHallBooking> = {
         id: id as string,
         guest_id: selectedGuest,
         event_type: eventType,
         number_of_guest: parseInt(numberOfGuests) || 0,
         notes: notes,
-        event_duration:
-          eventDuration.start && eventDuration.end
-            ? {
-                start: {
-                  hour: eventDuration.start.hour,
-                  minute: eventDuration.start.minute,
-                },
-                end: {
-                  hour: eventDuration.end.hour,
-                  minute: eventDuration.end.minute,
-                },
-              }
-            : undefined,
+        event_start: eventStartISO ?? undefined,
+        event_end: eventEndISO ?? undefined,
       };
 
       await updateBooking(updateData as FunctionHallBooking);
@@ -234,36 +220,16 @@ export default function EditFunctionHallBookingPage() {
               <SelectItem key="others">Others</SelectItem>
             </Select>
 
-            <div className="flex gap-4">
-              <TimeInput
-                label="Start Time"
-                labelPlacement="outside"
-                variant="bordered"
-                startContent={<TimerIcon size={16} />}
-                value={eventDuration.start}
-                onChange={(time) =>
-                  setEventDuration((prev: EventDuration) => ({
-                    ...prev,
-                    start: time,
-                  }))
-                }
-                className="flex-1"
-              />
-              <TimeInput
-                label="End Time"
-                labelPlacement="outside"
-                variant="bordered"
-                startContent={<TimerIcon size={16} />}
-                value={eventDuration.end}
-                onChange={(time) =>
-                  setEventDuration((prev: EventDuration) => ({
-                    ...prev,
-                    end: time,
-                  }))
-                }
-                className="flex-1"
-              />
-            </div>
+            <DateRangePicker
+              variant="bordered"
+              hideTimeZone
+              label="Event duration"
+              className="pt-2"
+              value={eventDuration}
+              onChange={(value) =>
+                setEventDuration({ start: value?.start, end: value?.end })
+              }
+            />
           </div>
 
           {/* Package & Guests */}

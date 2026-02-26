@@ -3,6 +3,11 @@ import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { filterAvailableRoomTypes } from "@/lib/room-availability/room-type-availability";
 import { RoomType } from "@/types/room";
+import {
+  collectRequestedQuantities,
+  resolveRoomTypeAddOnAvailability,
+} from "@/lib/add-ons/availability";
+import { ROOM_TYPE_ADD_ONS_SELECT } from "@/lib/add-ons/selects";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
@@ -30,7 +35,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     .from("room_types")
     .select(
       `
-        *,
+        ${ROOM_TYPE_ADD_ONS_SELECT},
         rooms (
           id,
           room_number
@@ -76,10 +81,31 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 
   /** Attach bookings to room types */
-  const roomTypesWithBookings: RoomType[] = roomTypes.map((roomType) => ({
-    ...roomType,
-    bookings: bookings?.filter((b) => b.room_type_id === roomType.id) || [],
-  }));
+  const roomTypesWithBookings: RoomType[] = roomTypes.map((roomType) => {
+    const overlappingBookings =
+      bookings?.filter((b) => b.room_type_id === roomType.id) || [];
+    const totals = collectRequestedQuantities(
+      overlappingBookings.flatMap((b) => b.special_requests ?? []),
+    );
+    const availableAddOns = resolveRoomTypeAddOnAvailability(roomType, totals);
+
+    return {
+      ...roomType,
+      room_type_add_ons: (roomType.room_type_add_ons ?? []).map(
+        (relation: any) => {
+          const matched = availableAddOns.find(
+            (row) => row.room_type_add_on_id === relation.id,
+          );
+          return {
+            ...relation,
+            reserved_quantity: matched?.reserved_quantity ?? 0,
+            remaining_quantity: matched?.remaining_quantity ?? 0,
+          };
+        },
+      ),
+      bookings: overlappingBookings,
+    };
+  });
 
   /** Compute availability */
   const availableRoomTypes = filterAvailableRoomTypes(

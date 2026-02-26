@@ -16,9 +16,19 @@ type DateTime = {
   timeZone: string;
 };
 
-// Convert DateTime to JS Date
-function parseDateTime(dt?: DateTime): Date | null {
+type DateInput = DateTime | string | Date | null | undefined;
+
+// Convert DateTime or ISO string to JS Date
+function parseDateTime(dt?: DateInput): Date | null {
   if (!dt) return null;
+  if (typeof dt === "string") {
+    const parsed = new Date(dt);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (dt instanceof Date) {
+    return Number.isNaN(dt.getTime()) ? null : dt;
+  }
+
   const utc = Date.UTC(
     dt.year,
     dt.month - 1,
@@ -31,10 +41,10 @@ function parseDateTime(dt?: DateTime): Date | null {
   return new Date(utc - dt.offset); // adjust for offset
 }
 
-// Format single DateTime as ISO string
-export function formateDateAndTime(dt?: DateTime): string | null {
+// Format date/time for booking displays.
+export function formateDateAndTime(dt?: DateInput): string | null {
   const date = parseDateTime(dt);
-  if (!date) return "Invalid DateTime";
+  if (!date) return "Invalid Date";
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",

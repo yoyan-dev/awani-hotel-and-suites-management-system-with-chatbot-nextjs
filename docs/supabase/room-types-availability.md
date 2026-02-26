@@ -8,7 +8,7 @@ id uuid,
 name text,
 image text,
 description text,
-add_ons jsonb[],
+room_type_add_ons jsonb[],
 room_size text,
 max_guest int,
 price numeric,
@@ -21,7 +21,20 @@ rt.id,
 rt.name,
 rt.image,
 rt.description,
-rt.add_ons,
+coalesce(
+  (
+    select jsonb_agg(
+      jsonb_build_object(
+        'id', rta.id,
+        'quantity_limit', rta.quantity_limit,
+        'inventory_id', rta.inventory_id
+      )
+    )
+    from room_type_add_ons rta
+    where rta.room_type_id = rt.id
+  ),
+  '[]'::jsonb
+) as room_type_add_ons,
 rt.room_size,
 rt.max_guest,
 rt.price,

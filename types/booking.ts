@@ -1,3 +1,5 @@
+import { BookingSpecialRequest } from "./add-on";
+
 export type BookingStatus =
   | "pending"
   | "reserved"
@@ -15,7 +17,7 @@ export interface Booking {
   checked_in: string;
   checked_out: string;
   company?: string;
-  special_requests: any;
+  special_requests: BookingSpecialRequest[];
   places_last_visited?: string;
   purpose?: string;
   number_of_guests?: number;

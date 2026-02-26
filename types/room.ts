@@ -1,5 +1,6 @@
 import { Pagination } from "@supabase/supabase-js";
 import { Booking } from "./booking";
+import { RoomTypeAddOn } from "./add-on";
 
 export type RoomStatus =
   | "stock_room"
@@ -15,7 +16,7 @@ export interface RoomType {
   image?: string;
   name?: string;
   description?: string;
-  add_ons?: any;
+  room_type_add_ons?: RoomTypeAddOn[];
   room_size?: string;
   max_guest?: number;
   price?: number;

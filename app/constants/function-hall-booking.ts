@@ -2,7 +2,7 @@ import { ColumnType } from "@/types/column";
 
 export const columns: ColumnType[] = [
   { name: "EVENT TYPE", uid: "event_type" },
-  { name: "DURATION", uid: "event_duration" },
+  { name: "DURATION", uid: "event_start" },
   { name: "GUEST NAME", uid: "guest" },
   { name: "NO. OF GUESTS", uid: "number_of_guest" },
   { name: "ROOM", uid: "room" },
@@ -43,7 +43,7 @@ export const bookingStatusHexColorMap: Record<string, string> = {
 
 export const INITIAL_VISIBLE_COLUMNS = [
   "event_type",
-  "event_duration",
+  "event_start",
   "number_of_guest",
   "room",
   "occupancy_type",
@@ -58,7 +58,7 @@ export const INITIAL_VISIBLE_COLUMNS = [
 
 export const VISIBLE_COLUMNS = [
   "event_type",
-  "event_duration",
+  "event_start",
   "number_of_guest",
   "room",
   "occupancy_type",
@@ -75,6 +75,6 @@ export const VISIBLE_COLUMNS = [
 export const INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS = [
   "room",
   "guest",
-  "event_duration",
+  "event_start",
   "status",
 ];

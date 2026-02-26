@@ -23,6 +23,7 @@ import { useRooms } from "@/hooks/use-rooms";
 import { FetchBookingParams } from "@/types/booking";
 import { useGuests } from "@/hooks/use-guests";
 import PaymentSection from "./payment-section";
+import { BookingSpecialRequest } from "@/types/add-on";
 
 export default function AddModal({ query }: { query: FetchBookingParams }) {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -43,7 +44,7 @@ export default function AddModal({ query }: { query: FetchBookingParams }) {
   const [selectedPurpose, setSelectedPurpose] = React.useState<string>();
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>();
   const [specialRequests, setSpecialRequests] = React.useState<
-    { name: string; price: string; quantity: number }[]
+    BookingSpecialRequest[]
   >([]);
 
   React.useEffect(() => {
@@ -66,11 +67,15 @@ export default function AddModal({ query }: { query: FetchBookingParams }) {
 
   React.useEffect(() => {
     const room = room_types.find((room) => room.id === selectedRoomType);
-    if (room?.add_ons) {
+    if (room?.room_type_add_ons) {
       setSpecialRequests(
-        room.add_ons.map((item: any) => ({
-          name: item.name,
-          price: item.price,
+        room.room_type_add_ons.map((item: any) => ({
+          room_type_add_on_id: item.id,
+          add_on_id: item.add_on_id,
+          name: item.add_on?.name,
+          price: item.add_on?.price,
+          quantity_limit: item.quantity_limit,
+          remaining_quantity: item.remaining_quantity ?? item.quantity_limit,
           quantity: 0,
         }))
       );

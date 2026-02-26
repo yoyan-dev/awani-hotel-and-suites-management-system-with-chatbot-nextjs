@@ -1,46 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardSummaryResponse, ApiResponse } from "@/types/analytics";
-import { startOfDay, endOfDay, subDays, isValid } from "date-fns";
-
-const parseEventDurationBoundary = (
-  eventDuration: unknown,
-  boundary: "start" | "end",
-): Date | null => {
-  if (!eventDuration || typeof eventDuration !== "object") return null;
-
-  const durationRecord = eventDuration as Record<string, unknown>;
-  const boundaryData = durationRecord[boundary];
-
-  if (!boundaryData) return null;
-
-  if (typeof boundaryData === "string") {
-    const parsed = new Date(boundaryData);
-    return isValid(parsed) ? parsed : null;
-  }
-
-  if (typeof boundaryData !== "object") return null;
-
-  const point = boundaryData as Record<string, unknown>;
-  const year = Number(point.year);
-  const month = Number(point.month);
-  const day = Number(point.day);
-  const hour = Number(point.hour ?? 0);
-  const minute = Number(point.minute ?? 0);
-  const second = Number(point.second ?? 0);
-  const millisecond = Number(point.millisecond ?? 0);
-  const offset = Number(point.offset ?? 0);
-
-  if (year && month && day) {
-    const utcTime =
-      Date.UTC(year, month - 1, day, hour, minute, second, millisecond) -
-      offset;
-    const parsedDate = new Date(utcTime);
-    return isValid(parsedDate) ? parsedDate : null;
-  }
-
-  return null;
-};
+import { startOfDay, endOfDay, subDays } from "date-fns";
+import { parseBookingBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 const generateResponse = <T>(
   success: boolean,
@@ -95,7 +57,7 @@ export async function GET(
 
     const { data: functionHallBookings, error: fhError } = await supabase
       .from("function_hall_bookings")
-      .select("id, event_duration, status, amount_paid, created_at");
+      .select("id, event_start, event_end, status, amount_paid, created_at");
 
     if (fhError) {
       console.error("Supabase error:", fhError);
@@ -191,9 +153,8 @@ export async function GET(
     const upcomingEvents = (functionHallBookings || []).filter((b) => {
       if (b.status === "cancelled" || b.status === "completed") return false;
 
-      const startDate = parseEventDurationBoundary(b.event_duration, "start");
-      const endDate =
-        parseEventDurationBoundary(b.event_duration, "end") || startDate;
+      const startDate = parseBookingBoundaryDateTime(b as any, "start");
+      const endDate = parseBookingBoundaryDateTime(b as any, "end") || startDate;
 
       if (startDate || endDate) {
         const eventEnd = endDate || startDate!;
