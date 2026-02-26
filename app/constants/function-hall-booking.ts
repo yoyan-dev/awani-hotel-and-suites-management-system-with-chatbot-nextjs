@@ -2,12 +2,15 @@ import { ColumnType } from "@/types/column";
 
 export const columns: ColumnType[] = [
   { name: "EVENT TYPE", uid: "event_type" },
-  { name: "DURATION", uid: "event_duration" },
+  { name: "DURATION", uid: "event_start" },
   { name: "GUEST NAME", uid: "guest" },
   { name: "NO. OF GUESTS", uid: "number_of_guest" },
-  { name: "BANQUET PACKAGE", uid: "banquet_package" },
   { name: "ROOM", uid: "room" },
   { name: "OCCUPANCY", uid: "occupancy_type" },
+  { name: "TOTAL AMOUNT", uid: "total_amount" },
+  { name: "AMOUNT PAID", uid: "amount_paid" },
+  { name: "BALANCE", uid: "balance" },
+  { name: "PAYMENT STATUS", uid: "payment_status" },
   { name: "NOTES", uid: "notes" },
   { name: "STATUS", uid: "status", sortable: true },
   { name: "ACTIONS", uid: "actions" },
@@ -17,10 +20,8 @@ export const bookingStatusOptions = [
   { name: "Confirmed", uid: "confirmed" },
   { name: "Cancelled", uid: "cancelled" },
   { name: "Pending", uid: "pending" },
-  { name: "Processing", uid: "processing" },
-  { name: "Reserved", uid: "reserved" },
-  { name: "Deposit", uid: "deposit" },
-  { name: "Paid", uid: "paid" },
+  { name: "Checked In", uid: "checked_in" },
+  { name: "Checked Out", uid: "checked_out" },
 ];
 
 export const bookingStatusColorMap: Record<string, string> = {
@@ -42,12 +43,13 @@ export const bookingStatusHexColorMap: Record<string, string> = {
 
 export const INITIAL_VISIBLE_COLUMNS = [
   "event_type",
-  "event_date",
-  "event_duration",
+  "event_start",
   "number_of_guest",
-  "banquet_package",
   "room",
   "occupancy_type",
+  "total_amount",
+  "payment_status",
+  "balance",
   "notes",
   "status",
   "guest",
@@ -56,12 +58,14 @@ export const INITIAL_VISIBLE_COLUMNS = [
 
 export const VISIBLE_COLUMNS = [
   "event_type",
-  "event_date",
-  "event_duration",
+  "event_start",
   "number_of_guest",
-  "banquet_package",
   "room",
   "occupancy_type",
+  "total_amount",
+  "amount_paid",
+  "balance",
+  "payment_status",
   "notes",
   "status",
   "guest",
@@ -71,6 +75,6 @@ export const VISIBLE_COLUMNS = [
 export const INITIAL_HOUSEKEEPING_VISIBLE_COLUMNS = [
   "room",
   "guest",
-  "event_duration",
+  "event_start",
   "status",
 ];

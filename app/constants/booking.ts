@@ -68,11 +68,14 @@ export const bookingStatusHexColorMap: Record<string, string> = {
   default: "#9ca3af", // gray
 };
 
-export const paymentStatusColorMap: Record<string, string> = {
-  pending: "#D3D3D3", // gray
-  paid: "#4CAF50", // green
-  deposit: "#FF9800", // orange
-  unpaid: "#F44336", // red
+export const paymentStatusColorMap: Record<
+  string,
+  { code: string; bg: string }
+> = {
+  pending: { code: "#D3D3D3", bg: "bg-gray-100" }, // gray
+  paid: { code: "#4CAF50", bg: "bg-green-100" }, // green
+  deposit: { code: "#FF9800", bg: "bg-orange-100" }, // orange
+  unpaid: { code: "#F44336", bg: "bg-red-100" }, // red
 };
 
 export const INITIAL_VISIBLE_COLUMNS = [
@@ -82,6 +85,7 @@ export const INITIAL_VISIBLE_COLUMNS = [
   "room_type",
   "nights",
   "total_price",
+  "payment_status",
   "status",
   "actions",
 ];

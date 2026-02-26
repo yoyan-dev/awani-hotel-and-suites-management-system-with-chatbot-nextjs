@@ -53,7 +53,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       email,
     } = Object.fromEntries(formData.entries());
 
-    const imageFile = (formData.get("image") as File) || null;
     const frontImageFile = (formData.get("front") as File) || null;
     const backImageFIle = (formData.get("back") as File) || null;
 
@@ -84,7 +83,6 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       nationality,
       gender,
       email,
-      image: await uploadUserImage(imageFile),
       valid_id: { front: validIdImage.front, back: validIdImage.back },
     };
     const { data, error } = await supabase

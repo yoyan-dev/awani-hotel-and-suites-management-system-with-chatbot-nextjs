@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+
+const toNumberOr = (value: unknown, fallback: number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const resolvePaymentStatus = (
+  totalAmount: number,
+  amountPaid: number,
+): "pending" | "unpaid" | "deposit" | "paid" => {
+  if (totalAmount <= 0) return "pending";
+  if (amountPaid <= 0) return "unpaid";
+  if (amountPaid >= totalAmount) return "paid";
+  return "deposit";
+};
 
 //GET ONE
 export async function GET(
@@ -19,17 +33,20 @@ export async function GET(
       booking_number,
       guest_id,
       event_type,
-      event_date,
-      event_duration,
-      banquet_package_id,
+      event_start,
+      event_end,
       number_of_guest,
       room_id,
       notes,
       status,
       booking_source,
+      payment_status,
+      payment_method,
+      amount_paid,
+      total_amount,
+      balance,
       created_at,
       guest: guest_id(*),
-      banquet_package: banquet_package_id(*),
       room: room_id(*)
     `,
     )
@@ -61,7 +78,7 @@ export async function GET(
       },
       data: booking as FunctionHallBooking,
     },
-    { status: 201 },
+    { status: 200 },
   );
 }
 
@@ -73,9 +90,109 @@ export async function PUT(
   const { id } = await context.params;
   const body = await req.json();
 
+  const { data: currentBooking, error: currentBookingError } = await supabase
+    .from("function_hall_bookings")
+    .select("id, total_amount, amount_paid")
+    .eq("id", id)
+    .single();
+
+  if (currentBookingError || !currentBooking) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Error",
+          description: "Booking not found",
+          color: "error",
+        },
+      },
+      { status: 404 },
+    );
+  }
+
+  const hasTotalAmountUpdate = Object.prototype.hasOwnProperty.call(
+    body,
+    "total_amount",
+  );
+  const hasAmountPaidUpdate = Object.prototype.hasOwnProperty.call(
+    body,
+    "amount_paid",
+  );
+  const hasPaymentMethodUpdate = Object.prototype.hasOwnProperty.call(
+    body,
+    "payment_method",
+  );
+  const shouldRecomputePayment =
+    hasTotalAmountUpdate || hasAmountPaidUpdate || hasPaymentMethodUpdate;
+  const currentTotalAmount = toNumberOr(currentBooking.total_amount, 0);
+  const currentAmountPaid = toNumberOr(currentBooking.amount_paid, 0);
+
+  const totalAmount = hasTotalAmountUpdate
+    ? toNumberOr(body.total_amount, currentTotalAmount)
+    : currentTotalAmount;
+  const amountPaid = hasAmountPaidUpdate
+    ? toNumberOr(body.amount_paid, currentAmountPaid)
+    : currentAmountPaid;
+
+  if (totalAmount < 0 || amountPaid < 0) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Invalid Payment Data",
+          description: "Amount values cannot be negative.",
+          color: "warning",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  if (hasAmountPaidUpdate && totalAmount <= 0) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Total Amount Required",
+          description:
+            "Set the total amount first before recording a payment.",
+          color: "warning",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  if (amountPaid > totalAmount && totalAmount > 0) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Invalid Payment Data",
+          description: "Amount paid cannot be greater than total amount.",
+          color: "warning",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  const paymentStatus = resolvePaymentStatus(totalAmount, amountPaid);
+  const balance = totalAmount > 0 ? Math.max(totalAmount - amountPaid, 0) : 0;
+
+  const updatePayload = shouldRecomputePayment
+    ? {
+        ...body,
+        total_amount: totalAmount,
+        amount_paid: amountPaid,
+        payment_status: paymentStatus,
+        balance,
+      }
+    : body;
+
   const { data, error } = await supabase
     .from("function_hall_bookings")
-    .update(body)
+    .update(updatePayload)
     .eq("id", id)
     .select()
     .single();

@@ -3,15 +3,16 @@ import { Minus, Plus } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 import React from "react";
 import { getAvailableRooms } from "@/app/utils/room-availability";
+import { BookingSpecialRequest } from "@/types/add-on";
 
 interface Props {
   room_types: any[];
   rooms: any[];
   selectedRoomType?: string;
   setSelectedRoomType: (id: string) => void;
-  specialRequests: { name: string; price: string; quantity: number }[];
+  specialRequests: BookingSpecialRequest[];
   setSpecialRequests: React.Dispatch<
-    React.SetStateAction<{ name: string; price: string; quantity: number }[]>
+    React.SetStateAction<BookingSpecialRequest[]>
   >;
   typesLoading?: boolean;
   roomLoading?: boolean;
@@ -202,11 +203,12 @@ export default function BookingDetailsSection({
             {specialRequests.map((request: any) => (
               <div
                 className="flex flex-col gap-2 items-center"
-                key={request.name}
+                key={request.room_type_add_on_id ?? request.add_on_id ?? request.name}
               >
                 <div className="flex items-center gap-4 ">
                   <span className="text-tiny text-default-700 dark:text-default-400">
-                    {request.name}
+                    {request.name} (remaining{" "}
+                    {request.remaining_quantity ?? request.quantity_limit ?? 0})
                   </span>
                   <Chip color="success" size="sm" variant="flat">
                     {formatPHP(Number(request.price || 0))}
@@ -220,7 +222,8 @@ export default function BookingDetailsSection({
                     onPress={() =>
                       setSpecialRequests((prev) =>
                         prev.map((req) =>
-                          req.name === request.name
+                          (req.room_type_add_on_id ?? req.name) ===
+                          (request.room_type_add_on_id ?? request.name)
                             ? {
                                 ...req,
                                 quantity: req.quantity - 1,
@@ -237,12 +240,16 @@ export default function BookingDetailsSection({
                     size="sm"
                     isIconOnly
                     isDisabled={
-                      request.quantity >= Number(request?.max_quantity)
+                      request.quantity >=
+                      Number(
+                        request.remaining_quantity ?? request.quantity_limit ?? 0,
+                      )
                     }
                     onPress={() =>
                       setSpecialRequests((prev) =>
                         prev.map((req) =>
-                          req.name === request.name
+                          (req.room_type_add_on_id ?? req.name) ===
+                          (request.room_type_add_on_id ?? request.name)
                             ? {
                                 ...req,
                                 quantity: req.quantity + 1,

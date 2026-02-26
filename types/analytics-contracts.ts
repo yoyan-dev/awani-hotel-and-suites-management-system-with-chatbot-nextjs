@@ -4,7 +4,7 @@ import { Tables } from "./supabase";
 export type Booking = Tables<"bookings">;
 export type FunctionHallBooking = Tables<"function_hall_bookings">;
 export type Room = Tables<"rooms">;
-export type FunctionRoom = Tables<"function-rooms">;
+export type FunctionRoom = Tables<"function_rooms">;
 
 export type PaymentStatus = "pending" | "partial" | "paid" | "refunded";
 
@@ -225,7 +225,8 @@ export interface FunctionRoomStatusDetail {
   max_guest: number | null;
   current_booking?: {
     guest_name: string;
-    event_date: string;
+    event_start: string;
+    event_end: string;
     number_of_guest: number;
   } | null;
   utilization_percentage?: number;

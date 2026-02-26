@@ -1,17 +1,12 @@
 import React from "react";
 import {
-  Input,
   Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
   Select,
   SelectItem,
   DateRangePicker,
   Selection,
 } from "@heroui/react";
-import { Search, ChevronDown, Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
 import { bookingStatusOptions } from "@/app/constants/booking";
 import {
   Booking,
@@ -20,7 +15,6 @@ import {
 } from "@/types/booking";
 import { CalendarDate } from "@heroui/system/dist/types";
 import ExpandedBookingTable from "../modals/expanded-table-modal";
-import { ColumnType } from "@/types/column";
 import { Room } from "@/types/room";
 import Link from "next/link";
 import { useBookings } from "@/hooks/use-bookings";
@@ -37,6 +31,13 @@ interface Props {
   bookingsCount: number;
 }
 
+const toDateString = (date: CalendarDate | null) =>
+  date
+    ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
+        date.day,
+      ).padStart(2, "0")}`
+    : null;
+
 export const TableTopContent: React.FC<Props> = ({
   bookings,
   pagination,
@@ -49,56 +50,75 @@ export const TableTopContent: React.FC<Props> = ({
   bookingsCount,
 }) => {
   const { fetchBookings } = useBookings();
+  const filterResetKey = `${query.status ?? ""}-${query.date_range?.start ?? ""}-${query.date_range?.end ?? ""}`;
+
+  const handleDateRangeChange = (range: {
+    start: CalendarDate | null;
+    end: CalendarDate | null;
+  }) => {
+    setQuery({
+      ...query,
+      page: 1,
+      date_range: {
+        start: toDateString(range.start),
+        end: toDateString(range.end),
+      },
+    });
+  };
+
+  const handleStatusChange = (status: string) =>
+    setQuery({ ...query, page: 1, status });
+
+  const clearFilters = () =>
+    setQuery({
+      ...query,
+      page: 1,
+      query: "",
+      status: undefined,
+      date_range: undefined,
+      checked_in: undefined,
+      checked_out: undefined,
+    });
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between gap-3 items-end">
-        {/* <Input
-          isClearable
-          classNames={{
-            base: "w-full sm:max-w-[44%]",
-            inputWrapper: "border-1",
-          }}
-          placeholder="Search by name..."
-          size="sm"
-          startContent={<Search className="text-default-300" />}
-          value={query.query}
-          variant="bordered"
-          onClear={() => setQuery({ ...query, query: "" })}
-          onValueChange={(value) => setQuery({ ...query, query: value })}
-        /> */}
+      <div className="flex justify-between gap-3 items-end flex-wrap">
         <DateRangePicker
+          key={`date-${filterResetKey}`}
           variant="bordered"
           size="sm"
           radius="sm"
           className="max-w-xs"
           label="Stay duration"
-          onChange={(e) => {
-            const toDateString = (date: CalendarDate | null) =>
-              date
-                ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`
-                : null;
-
-            setQuery({
-              ...query,
-              date_range: {
-                start: toDateString(e?.start ?? null),
-                end: toDateString(e?.end ?? null),
-              },
-            });
-          }}
+          onChange={(e) =>
+            handleDateRangeChange({
+              start: e?.start ?? null,
+              end: e?.end ?? null,
+            })
+          }
         />
 
         <div className="flex gap-3">
           <Select
+            key={`status-${filterResetKey}`}
             size="sm"
             radius="sm"
             items={bookingStatusOptions}
             className="min-w-32"
             placeholder="Select Status"
-            onChange={(e) => setQuery({ ...query, status: e.target.value })}
+            onChange={(e) => handleStatusChange(e.target.value)}
           >
             {(item) => <SelectItem key={item.uid}>{item.name}</SelectItem>}
           </Select>
+          <Button
+            size="sm"
+            fullWidth
+            radius="sm"
+            variant="flat"
+            onPress={clearFilters}
+          >
+            Clear Filters
+          </Button>
           <Button
             as={Link}
             href="/admin/bookings/room-bookings/add-booking"

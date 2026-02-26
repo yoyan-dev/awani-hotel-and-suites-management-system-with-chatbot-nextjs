@@ -54,7 +54,8 @@ export default function BookingActionsDropdown({
     );
   }, [booking, paymentDetail]);
 
-  return booking.status !== "checked_out" ? (
+  return booking.status !== "checked_out" ||
+    booking.payment_status !== "paid" ? (
     <>
       <ExtendModal
         booking={booking}

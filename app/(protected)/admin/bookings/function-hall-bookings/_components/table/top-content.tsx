@@ -10,7 +10,7 @@ import {
   PopoverContent,
 } from "@heroui/react";
 import { Search, Plus, Filter, RefreshCw } from "lucide-react";
-import { bookingStatusOptions } from "@/app/constants/booking";
+import { bookingStatusOptions } from "@/app/constants/function-hall-booking";
 import { CalendarDate } from "@heroui/system/dist/types";
 import Link from "next/link";
 import {
@@ -33,19 +33,52 @@ interface Props {
   bookingsCount: number;
 }
 
+const toDateString = (date: CalendarDate | null) =>
+  date
+    ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
+        date.day,
+      ).padStart(2, "0")}`
+    : null;
+
 export const TableTopContent: React.FC<Props> = ({
   query,
   setQuery,
   bookingsCount,
 }) => {
   const { fetchBookings } = useFunctionHallBookings();
+  const filterResetKey = `${query.status ?? ""}-${query.event_start ?? ""}-${query.event_end ?? ""}`;
 
-  const formatDate = (date: CalendarDate | null) =>
-    date
-      ? `${date.year}-${String(date.month).padStart(2, "0")}-${String(
-          date.day,
-        ).padStart(2, "0")}`
-      : null;
+  const handleSearchChange = (value: string) =>
+    setQuery({ ...query, query: value, page: 1 });
+
+  const handleDateRangeChange = (range: {
+    start: CalendarDate | null;
+    end: CalendarDate | null;
+  }) =>
+    setQuery({
+      ...query,
+      page: 1,
+      event_start: toDateString(range.start)
+        ? `${toDateString(range.start)}T00:00:00.000Z`
+        : undefined,
+      event_end: toDateString(range.end)
+        ? `${toDateString(range.end)}T23:59:59.999Z`
+        : undefined,
+    });
+
+  const handleStatusChange = (status: string) =>
+    setQuery({ ...query, status, page: 1 });
+
+  const clearFilters = () =>
+    setQuery({
+      page: 1,
+      query: "",
+      status: undefined,
+      event_start: undefined,
+      event_end: undefined,
+      date_range: undefined,
+      guest_id: undefined,
+    });
 
   return (
     <div className="flex flex-col gap-4">
@@ -61,8 +94,8 @@ export const TableTopContent: React.FC<Props> = ({
           startContent={<Search className="text-default-300" />}
           value={query.query || ""}
           variant="bordered"
-          onClear={() => setQuery({ ...query, query: "" })}
-          onValueChange={(value) => setQuery({ ...query, query: value })}
+          onClear={() => handleSearchChange("")}
+          onValueChange={handleSearchChange}
         />
         <div className="flex gap-4">
           <Popover placement="bottom-end">
@@ -85,16 +118,14 @@ export const TableTopContent: React.FC<Props> = ({
               <div className="space-y-1">
                 <label className="text-xs text-default-500">Date Range</label>
                 <DateRangePicker
+                  key={`date-${filterResetKey}`}
                   variant="bordered"
                   size="sm"
                   radius="sm"
                   onChange={(e) =>
-                    setQuery({
-                      ...query,
-                      date_range: {
-                        start: formatDate(e?.start ?? null),
-                        end: formatDate(e?.end ?? null),
-                      },
+                    handleDateRangeChange({
+                      start: e?.start ?? null,
+                      end: e?.end ?? null,
                     })
                   }
                 />
@@ -103,14 +134,13 @@ export const TableTopContent: React.FC<Props> = ({
               <div className="space-y-1 w-full">
                 <label className="text-xs text-default-500">Status</label>
                 <Select
+                  key={`status-${filterResetKey}`}
                   size="sm"
                   radius="sm"
                   fullWidth
                   placeholder="Select status"
                   items={bookingStatusOptions}
-                  onChange={(e) =>
-                    setQuery({ ...query, status: e.target.value })
-                  }
+                  onChange={(e) => handleStatusChange(e.target.value)}
                 >
                   {(item) => (
                     <SelectItem key={item.uid}>{item.name}</SelectItem>
@@ -118,14 +148,24 @@ export const TableTopContent: React.FC<Props> = ({
                 </Select>
               </div>
 
-              <Button
-                size="sm"
-                fullWidth
-                color="primary"
-                onPress={() => fetchBookings(query)}
-              >
-                Apply Filters
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  fullWidth
+                  variant="flat"
+                  onPress={clearFilters}
+                >
+                  Clear Filters
+                </Button>
+                <Button
+                  size="sm"
+                  fullWidth
+                  color="primary"
+                  onPress={() => fetchBookings(query)}
+                >
+                  Apply Filters
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
 

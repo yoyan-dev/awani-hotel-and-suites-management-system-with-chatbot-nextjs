@@ -10,6 +10,7 @@ import { useRooms } from "@/hooks/use-rooms";
 import { Booking } from "@/types/booking";
 import { useParams } from "next/navigation";
 import Header from "./_components/header";
+import { BookingSpecialRequest } from "@/types/add-on";
 
 export default function EditBookingPage() {
   const { id } = useParams();
@@ -32,7 +33,7 @@ export default function EditBookingPage() {
   } = useRooms();
   const [formData, setFormData] = React.useState<Booking>({} as Booking);
   const [specialRequests, setSpecialRequests] = React.useState<
-    { name: string; price: string; quantity: number; max_quantity: number }[]
+    BookingSpecialRequest[]
   >([]);
 
   React.useEffect(() => {
@@ -65,15 +66,18 @@ export default function EditBookingPage() {
     )
       return;
     const room = room_types.find((room) => room.id === formData?.room_type_id);
-    if (room?.add_ons && booking?.id) {
+    if (room?.room_type_add_ons && booking?.id) {
       setSpecialRequests(
         booking.special_requests?.length > 0
           ? booking.special_requests
-          : room.add_ons.map((item: any) => ({
-              name: item.name,
-              price: item.price,
+          : room.room_type_add_ons.map((item: any) => ({
+              room_type_add_on_id: item.id,
+              add_on_id: item.add_on_id,
+              name: item.add_on?.name,
+              price: item.add_on?.price,
               quantity: 0,
-              max_quantity: item.max_quantity,
+              quantity_limit: item.quantity_limit,
+              remaining_quantity: item.remaining_quantity ?? item.quantity_limit,
             })),
       );
     }

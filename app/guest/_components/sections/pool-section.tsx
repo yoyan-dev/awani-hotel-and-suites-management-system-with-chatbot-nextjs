@@ -56,9 +56,9 @@ export default function HotelPoolSection() {
             <li>✔ Lifeguard on duty</li>
           </ul>
 
-          <Button color="primary" className="px-6 py-2 rounded-md">
+          {/* <Button color="primary" className="px-6 py-2 rounded-md">
             Book Your Stay
-          </Button>
+          </Button> */}
         </motion.div>
       </div>
     </section>

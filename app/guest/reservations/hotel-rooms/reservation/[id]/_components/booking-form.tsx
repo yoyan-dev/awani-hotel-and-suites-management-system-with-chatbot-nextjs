@@ -23,6 +23,7 @@ import { Guest } from "@/types/guest";
 import PolicyModal from "./modals/policy-modal";
 import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
+import { BookingSpecialRequest } from "@/types/add-on";
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   query: FetchRoomTypesParams;
@@ -34,9 +35,9 @@ interface BookingFormProps {
   isLoading: boolean;
   selectedRoom: any;
   setSelectedRoom: React.Dispatch<React.SetStateAction<any>>;
-  specialRequests: { name: string; price: string; quantity: number }[];
+  specialRequests: BookingSpecialRequest[];
   setSpecialRequests: React.Dispatch<
-    React.SetStateAction<{ name: string; price: string; quantity: number }[]>
+    React.SetStateAction<BookingSpecialRequest[]>
   >;
   bookingIsLoading: boolean;
 }
@@ -222,11 +223,12 @@ export default function BookingForm({
                   {specialRequests.map((request: any) => (
                     <div
                       className="flex flex-col gap-2 items-center"
-                      key={request.name}
+                      key={request.room_type_add_on_id ?? request.add_on_id ?? request.name}
                     >
                       <div className="flex items-center gap-4 ">
                         <span className="text-tiny text-default-700 dark:text-default-400">
-                          {request.name} (max {request.max_quantity})
+                          {request.name} (remaining{" "}
+                          {request.remaining_quantity ?? request.quantity_limit ?? 0})
                         </span>
                         <Chip color="success" size="sm" variant="flat">
                           {formatPHP(Number(request.price || 0))}
@@ -240,7 +242,8 @@ export default function BookingForm({
                           onPress={() =>
                             setSpecialRequests((prev) =>
                               prev.map((req) =>
-                                req.name === request.name
+                                (req.room_type_add_on_id ?? req.name) ===
+                                (request.room_type_add_on_id ?? request.name)
                                   ? { ...req, quantity: req.quantity - 1 }
                                   : req,
                               ),
@@ -254,12 +257,18 @@ export default function BookingForm({
                           size="sm"
                           isIconOnly
                           isDisabled={
-                            request.quantity >= Number(request?.max_quantity)
+                            request.quantity >=
+                            Number(
+                              request.remaining_quantity ??
+                                request.quantity_limit ??
+                                0,
+                            )
                           }
                           onPress={() =>
                             setSpecialRequests((prev) =>
                               prev.map((req) =>
-                                req.name === request.name
+                                (req.room_type_add_on_id ?? req.name) ===
+                                (request.room_type_add_on_id ?? request.name)
                                   ? { ...req, quantity: req.quantity + 1 }
                                   : req,
                               ),

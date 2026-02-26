@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { DashboardSummaryResponse, ApiResponse } from "@/types/analytics";
-import { startOfDay, endOfDay, format, subDays } from "date-fns";
+import { startOfDay, endOfDay, subDays } from "date-fns";
+import { parseBookingBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 const generateResponse = <T>(
   success: boolean,
@@ -56,7 +57,7 @@ export async function GET(
 
     const { data: functionHallBookings, error: fhError } = await supabase
       .from("function_hall_bookings")
-      .select("id, event_date, status, amount_paid, created_at");
+      .select("id, event_start, event_end, status, amount_paid, created_at");
 
     if (fhError) {
       console.error("Supabase error:", fhError);
@@ -73,7 +74,7 @@ export async function GET(
     }
 
     const { data: functionRooms, error: frError } = await supabase
-      .from("function-rooms")
+      .from("function_rooms")
       .select("id, status");
 
     if (frError) {
@@ -149,12 +150,19 @@ export async function GET(
     const pendingFHBookings = (functionHallBookings || []).filter(
       (b) => b.status === "pending",
     ).length;
-    const upcomingEvents = (functionHallBookings || []).filter(
-      (b) =>
-        b.event_date &&
-        new Date(b.event_date) >= todayStart &&
-        b.status !== "cancelled",
-    ).length;
+    const upcomingEvents = (functionHallBookings || []).filter((b) => {
+      if (b.status === "cancelled" || b.status === "completed") return false;
+
+      const startDate = parseBookingBoundaryDateTime(b as any, "start");
+      const endDate = parseBookingBoundaryDateTime(b as any, "end") || startDate;
+
+      if (startDate || endDate) {
+        const eventEnd = endDate || startDate!;
+        return eventEnd >= today;
+      }
+
+      return false;
+    }).length;
 
     const totalRooms = (rooms || []).length;
     const availableRooms = (rooms || []).filter(

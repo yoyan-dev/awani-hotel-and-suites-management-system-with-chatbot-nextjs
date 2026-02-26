@@ -14,6 +14,7 @@ import {
   parseISO,
   isValid,
 } from "date-fns";
+import { parseBookingBoundaryDateTime } from "@/utils/function-room/event-duration-date";
 
 type FunctionHallBooking = Tables<"function_hall_bookings">;
 
@@ -105,21 +106,9 @@ export async function GET(
 
     const dateRange = calculateDateRange(params);
 
-    const startYear = dateRange.start.getFullYear();
-    const startMonth = dateRange.start.getMonth() + 1;
-    const startDay = dateRange.start.getDate();
-
-    const endYear = dateRange.end.getFullYear();
-    const endMonth = dateRange.end.getMonth() + 1;
-    const endDay = dateRange.end.getDate();
-
     baseQuery = baseQuery
-      .filter("event_duration->start->>year", "gte", startYear)
-      .filter("event_duration->start->>month", "gte", startMonth)
-      .filter("event_duration->start->>day", "gte", startDay)
-      .filter("event_duration->end->>year", "lte", endYear)
-      .filter("event_duration->end->>month", "lte", endMonth)
-      .filter("event_duration->end->>day", "lte", endDay);
+      .lte("event_start", dateRange.end.toISOString())
+      .gte("event_end", dateRange.start.toISOString());
 
     if (params.status) {
       baseQuery = baseQuery.eq("status", params.status);
@@ -228,15 +217,18 @@ export async function GET(
     const now = new Date();
     const todayStart = startOfDay(now);
     const weekStart = subDays(todayStart, 7);
-    const todayEnd = endOfDay(now);
 
-    const upcomingBookings = transformedBookings.filter(
-      (b) =>
-        b.event_date &&
-        b.event_date >= todayStart.toISOString() &&
-        b.event_date <= todayEnd.toISOString() &&
-        b.status !== "cancelled",
-    ).length;
+    const upcomingBookings = transformedBookings.filter((b) => {
+      if (b.status === "cancelled" || b.status === "completed") return false;
+
+      const startDate = parseBookingBoundaryDateTime(b as any, "start");
+      const endDate = parseBookingBoundaryDateTime(b as any, "end") || startDate;
+
+      if (!startDate && !endDate) return false;
+
+      const eventEnd = endDate || startDate!;
+      return eventEnd >= now;
+    }).length;
 
     const completedBookings = transformedBookings.filter(
       (b) => b.status === "completed",

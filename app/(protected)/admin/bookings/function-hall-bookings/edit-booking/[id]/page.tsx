@@ -7,24 +7,22 @@ import {
   SelectItem,
   Input,
   Textarea,
+  DateRangePicker,
 } from "@heroui/react";
 import { Copyright } from "lucide-react";
 import React from "react";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { useGuests } from "@/hooks/use-guests";
-import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { Guest as GuestType } from "@/types/guest";
-import { BanquetPackageFetchParams } from "@/types/banquet-package";
-import { TimeInput } from "@heroui/react";
-import { TimerIcon } from "lucide-react";
-import { Time } from "@internationalized/date";
+import { parseAbsoluteToLocal } from "@internationalized/date";
 import { useParams } from "next/navigation";
 import Header from "./_components/header";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { toEventBoundaryISO } from "@/utils/function-room/event-duration-date";
 
 interface EventDuration {
-  start: Time | null;
-  end: Time | null;
+  start: any;
+  end: any;
 }
 
 export default function EditFunctionHallBookingPage() {
@@ -37,11 +35,6 @@ export default function EditFunctionHallBookingPage() {
     updateBooking,
   } = useFunctionHallBookings();
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
-  const {
-    items: banquetPackages,
-    isLoading: packageLoading,
-    fetchBanquetPackages,
-  } = useBanquetPackages();
 
   const [selectedGuest, setSelectedGuest] = React.useState<string>();
   const [selectedPackage, setSelectedPackage] = React.useState<string>();
@@ -49,7 +42,6 @@ export default function EditFunctionHallBookingPage() {
     start: null,
     end: null,
   });
-  const [eventDate, setEventDate] = React.useState<string>("");
   const [eventType, setEventType] = React.useState<string>("");
   const [numberOfGuests, setNumberOfGuests] = React.useState<string>("");
   const [notes, setNotes] = React.useState<string>("");
@@ -59,31 +51,22 @@ export default function EditFunctionHallBookingPage() {
       fetchBooking(id as string);
     }
     fetchGuests();
-    fetchBanquetPackages({} as BanquetPackageFetchParams);
   }, [id]);
 
   // Populate form when booking data is loaded
   React.useEffect(() => {
     if (function_hall_booking?.id) {
       setSelectedGuest(function_hall_booking.guest_id);
-      setSelectedPackage(function_hall_booking.banquet_package_id);
-      setEventDate(function_hall_booking.event_date || "");
       setEventType(function_hall_booking.event_type || "");
       setNumberOfGuests(
         function_hall_booking.number_of_guest?.toString() || "",
       );
       setNotes(function_hall_booking.notes || "");
 
-      // Parse event duration if it exists
-      if (function_hall_booking.event_duration) {
-        const duration = function_hall_booking.event_duration;
+      if (function_hall_booking.event_start && function_hall_booking.event_end) {
         setEventDuration({
-          start: duration.start
-            ? new Time(duration.start.hour, duration.start.minute)
-            : null,
-          end: duration.end
-            ? new Time(duration.end.hour, duration.end.minute)
-            : null,
+          start: parseAbsoluteToLocal(function_hall_booking.event_start),
+          end: parseAbsoluteToLocal(function_hall_booking.event_end),
         });
       }
     }
@@ -117,27 +100,17 @@ export default function EditFunctionHallBookingPage() {
         return;
       }
 
+      const eventStartISO = toEventBoundaryISO(eventDuration.start, "start");
+      const eventEndISO = toEventBoundaryISO(eventDuration.end, "end");
+
       const updateData: Partial<FunctionHallBooking> = {
         id: id as string,
         guest_id: selectedGuest,
-        banquet_package_id: selectedPackage,
-        event_date: eventDate,
         event_type: eventType,
         number_of_guest: parseInt(numberOfGuests) || 0,
         notes: notes,
-        event_duration:
-          eventDuration.start && eventDuration.end
-            ? {
-                start: {
-                  hour: eventDuration.start.hour,
-                  minute: eventDuration.start.minute,
-                },
-                end: {
-                  hour: eventDuration.end.hour,
-                  minute: eventDuration.end.minute,
-                },
-              }
-            : undefined,
+        event_start: eventStartISO ?? undefined,
+        event_end: eventEndISO ?? undefined,
       };
 
       await updateBooking(updateData as FunctionHallBooking);
@@ -247,82 +220,20 @@ export default function EditFunctionHallBookingPage() {
               <SelectItem key="others">Others</SelectItem>
             </Select>
 
-            <Input
-              isRequired
-              fullWidth
+            <DateRangePicker
               variant="bordered"
-              radius="none"
-              type="date"
-              label="Event Date"
-              name="event_date"
-              labelPlacement="outside"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
+              hideTimeZone
+              label="Event duration"
+              className="pt-2"
+              value={eventDuration}
+              onChange={(value) =>
+                setEventDuration({ start: value?.start, end: value?.end })
+              }
             />
-
-            <div className="flex gap-4">
-              <TimeInput
-                label="Start Time"
-                labelPlacement="outside"
-                variant="bordered"
-                startContent={<TimerIcon size={16} />}
-                value={eventDuration.start}
-                onChange={(time) =>
-                  setEventDuration((prev: EventDuration) => ({
-                    ...prev,
-                    start: time,
-                  }))
-                }
-                className="flex-1"
-              />
-              <TimeInput
-                label="End Time"
-                labelPlacement="outside"
-                variant="bordered"
-                startContent={<TimerIcon size={16} />}
-                value={eventDuration.end}
-                onChange={(time) =>
-                  setEventDuration((prev: EventDuration) => ({
-                    ...prev,
-                    end: time,
-                  }))
-                }
-                className="flex-1"
-              />
-            </div>
           </div>
 
           {/* Package & Guests */}
           <div className="space-y-4">
-            <h2 className="w-full bg-primary px-2 py-1 text-white">
-              Package & Guests
-            </h2>
-
-            <Select
-              fullWidth
-              radius="none"
-              className="flex-1 w-full min-w-40"
-              name="banquet_package_id"
-              label="Banquet Package"
-              labelPlacement="outside"
-              placeholder="Select banquet package"
-              variant="bordered"
-              isLoading={packageLoading}
-              selectedKeys={selectedPackage ? [selectedPackage] : []}
-              onChange={(e) => setSelectedPackage(e.target.value)}
-            >
-              {banquetPackages.map((pkg) => (
-                <SelectItem key={pkg.id} textValue={pkg.name}>
-                  <div className="flex flex-col">
-                    <span className="text-small font-medium">{pkg.name}</span>
-                    <span className="text-tiny text-gray-600 dark:text-gray-300">
-                      ₱{pkg.price_per_cover} per cover
-                    </span>
-                  </div>
-                </SelectItem>
-              ))}
-            </Select>
-
             <Input
               isRequired
               fullWidth

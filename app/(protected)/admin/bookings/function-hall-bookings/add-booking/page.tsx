@@ -1,24 +1,14 @@
 "use client";
-import { Guest } from "@/types/guest";
-import {
-  Button,
-  Form,
-  addToast,
-  Select,
-  SelectItem,
-  Input,
-  Textarea,
-} from "@heroui/react";
+import { addToast } from "@heroui/react";
 import { Copyright } from "lucide-react";
 import React from "react";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 import { useGuests } from "@/hooks/use-guests";
-import { useBanquetPackages } from "@/hooks/use-banquet-packages";
 import { Guest as GuestType } from "@/types/guest";
-import { BanquetPackageFetchParams } from "@/types/banquet-package";
-import { Time } from "@internationalized/date";
 import GuestInfoSection from "./_components/guest-info-section";
 import BookingDetailsSection from "./_components/booking-details-section";
+import { addBooking as addFunctionHallBooking } from "@/features/booking/function-hall/booking-thunk";
+import { toEventBoundaryISO } from "@/utils/function-room/event-duration-date";
 
 interface EventDuration {
   start: any;
@@ -28,7 +18,6 @@ interface EventDuration {
 export default function AddFunctionHallBookingPage() {
   const {
     isLoading: bookingIsLoading,
-    error,
     addBooking,
   } = useFunctionHallBookings();
   const { guests, isLoading: guestLoading, fetchGuests } = useGuests();
@@ -73,14 +62,26 @@ export default function AddFunctionHallBookingPage() {
         return;
       }
 
+      const eventStartISO = toEventBoundaryISO(eventDuration.start, "start");
+      const eventEndISO = toEventBoundaryISO(eventDuration.end, "end");
+
+      if (!eventStartISO || !eventEndISO) {
+        addToast({
+          title: "Error",
+          description: "Invalid event date range.",
+          color: "warning",
+        });
+        return;
+      }
+
       formData.append("status", "confirmed");
       formData.append("guest_id", selectedGuest);
-      formData.append("event_duration", JSON.stringify(eventDuration));
+      formData.append("event_start", eventStartISO);
+      formData.append("event_end", eventEndISO);
       formData.append("booking_source", "walk-in");
 
-      await addBooking(formData);
-
-      if (!error) {
+      const addResult = await addBooking(formData);
+      if (addFunctionHallBooking.fulfilled.match(addResult)) {
         addToast({
           title: "Success",
           description: "Function hall booking created successfully.",

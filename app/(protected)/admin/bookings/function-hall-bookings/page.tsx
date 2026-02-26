@@ -19,7 +19,9 @@ export default function BookingList() {
     updateBooking,
   } = useFunctionHallBookings();
 
-  const [query, setQuery] = React.useState<FetchFunctionHallBookingParams>({});
+  const [query, setQuery] = React.useState<FetchFunctionHallBookingParams>({
+    page: 1,
+  });
   const [selectedKeys, setSelectedKeys] = React.useState<any>(new Set([]));
   const [visibleColumns, setVisibleColumns] = React.useState<any>(
     new Set(INITIAL_VISIBLE_COLUMNS),

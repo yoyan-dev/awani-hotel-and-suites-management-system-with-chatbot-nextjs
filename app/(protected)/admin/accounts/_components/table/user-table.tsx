@@ -9,14 +9,9 @@ import {
   Spinner,
   Selection,
 } from "@heroui/react";
-import { columns, INITIAL_VISIBLE_COLUMNS } from "@/app/constants/staff";
 import RenderCell from "./render-cell";
 import { TableTopContent } from "./top-content";
 import { TableBottomContent } from "./bottom-content";
-import { useSelector, useDispatch } from "react-redux";
-import type { RootState, AppDispatch } from "@/store/store";
-import { fetchUsers } from "@/features/users/user-thunk";
-import { Staff } from "@/types/staff";
 import { ColumnType } from "@/types/column";
 import { User } from "@/types/users";
 

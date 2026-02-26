@@ -34,9 +34,10 @@ export const RenderCell: React.FC<RenderCellProps> = ({
   switch (columnKey) {
     case "image":
       return <Image src={room_type.image} width={200} />;
-    case "add_ons":
-      return room_type.add_ons && room_type.add_ons.length > 0 ? (
-        <ViewAddOns addOns={room_type.add_ons ?? []} />
+    case "room_type_add_ons":
+      return room_type.room_type_add_ons &&
+        room_type.room_type_add_ons.length > 0 ? (
+        <ViewAddOns addOns={room_type.room_type_add_ons ?? []} />
       ) : (
         "no add ons"
       );
@@ -113,6 +114,6 @@ export const RenderCell: React.FC<RenderCellProps> = ({
         </div>
       );
     default:
-      return cellValue;
+      return Array.isArray(cellValue) ? cellValue.length : (cellValue as any);
   }
 };

@@ -25,7 +25,7 @@ export default function successMessage() {
           </p>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <Button color="primary" as={Link} href={`/`}>
+          <Button color="primary" as={Link} href={`/guest`}>
             Back to Home
           </Button>
         </div>

@@ -4,7 +4,6 @@ import { Button, Form, addToast } from "@heroui/react";
 import { Copyright } from "lucide-react";
 import React from "react";
 import BookingDetailsSection from "./_components/booking-details-section";
-import HealthDeclarationSection from "./_components/health-declaration-section";
 import GuestInfoSection from "./_components/guest-info-section";
 import { useBookings } from "@/hooks/use-bookings";
 import { useRoomTypes } from "@/hooks/use-room-types";
@@ -15,7 +14,7 @@ import { RoomType } from "@/types/room";
 import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
 import ViewSummary from "../_components/modals/payment/view-summary-modal";
-import { formatPHP } from "@/lib/format-php";
+import { BookingSpecialRequest } from "@/types/add-on";
 
 export default function AddBookingPage() {
   const {
@@ -34,7 +33,7 @@ export default function AddBookingPage() {
   const [roomType, setRoomType] = React.useState<RoomType>({});
   const [selectedRoomType, setSelectedRoomType] = React.useState<string>();
   const [specialRequests, setSpecialRequests] = React.useState<
-    { name: string; price: string; quantity: number }[]
+    BookingSpecialRequest[]
   >([]);
   const [checkInDate, setCheckInDate] = React.useState<string>("");
   const [checkOutDate, setCheckOutDate] = React.useState<string>("");
@@ -70,11 +69,15 @@ export default function AddBookingPage() {
   React.useEffect(() => {
     const room = room_types.find((room) => room.id === selectedRoomType);
     setRoomType(room || {});
-    if (room?.add_ons) {
+    if (room?.room_type_add_ons) {
       setSpecialRequests(
-        room.add_ons.map((item: any) => ({
-          name: item.name,
-          price: item.price,
+        room.room_type_add_ons.map((item: any) => ({
+          room_type_add_on_id: item.id,
+          add_on_id: item.add_on_id,
+          name: item.add_on?.name,
+          price: item.add_on?.price,
+          quantity_limit: item.quantity_limit,
+          remaining_quantity: item.remaining_quantity ?? item.quantity_limit,
           quantity: 0,
         })),
       );
@@ -84,13 +87,7 @@ export default function AddBookingPage() {
   }, [selectedRoomType]);
 
   const summary = React.useMemo(() => {
-    if (
-      specialRequests.length === 0 ||
-      !roomType ||
-      !checkInDate ||
-      !checkOutDate
-    )
-      return null;
+    if (!roomType || !checkInDate || !checkOutDate) return null;
     return generateSummary(
       {
         checked_in: checkInDate,
@@ -129,6 +126,7 @@ export default function AddBookingPage() {
       );
       console.log(formData);
       formData.append("special_requests", JSON.stringify(specialRequests));
+
       await addBooking(formData);
     } catch (e: any) {
       addToast({

@@ -6,34 +6,39 @@ import {
   ModalHeader,
   ModalBody,
   Button,
-  useDisclosure,
   Input,
   Textarea,
   ModalFooter,
 } from "@heroui/react";
-import { Copyright, Plus, Upload } from "lucide-react";
+import { Copyright, Upload } from "lucide-react";
 import AddOnsInput from "../add-ons-input";
-import { updateRoomType } from "@/features/room-types/room-types-thunk";
 import { RoomType } from "@/types/room";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 import { useRoomTypes } from "@/hooks/use-room-types";
+import { RoomTypeAddOnFormRow } from "../add-ons-input";
 
 interface UpdateModalProps {
   room: RoomType;
   isOpen: boolean;
   onClose: () => void;
 }
-interface AddOn {
-  item_id: string;
-  name: string;
-  price: number;
-  max_quantity: number;
-}
 
 const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
   const { isLoading, updateRoomType } = useRoomTypes();
   const [formData, setFormData] = useState<RoomType>(room);
-  const [addOns, setAddOns] = useState<AddOn[]>(room.add_ons ?? []);
+  const [addOns, setAddOns] = useState<RoomTypeAddOnFormRow[]>(
+    (room.room_type_add_ons ?? []).map((row) => ({
+      id: row.id,
+      inventory_id: row.inventory_id ?? row.add_on_id,
+      add_on_id: row.inventory_id ?? row.add_on_id,
+      quantity_limit: Number(row.quantity_limit ?? 0),
+      add_on: {
+        id: row.add_on?.id,
+        name: String(row.add_on?.name ?? ""),
+        price: Number(row.add_on?.price ?? 0),
+      },
+    })),
+  );
   const [preview, setPreview] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,7 +55,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
 
     await updateRoomType({
       ...formData,
-      add_ons: addOns,
+      room_type_add_ons: addOns,
       image: imageUrl,
     });
 

@@ -9,16 +9,14 @@ import {
 import { Booking } from "@/types/booking";
 
 interface StatusDistributionProps {
-  bookings: Booking[];
+  totalBookings: number;
   statusDistribution: Record<string, number>;
 }
 
 export function StatusDistribution({
-  bookings,
+  totalBookings,
   statusDistribution,
 }: StatusDistributionProps) {
-  const totalBookings = bookings.length;
-
   const getStatusColor = (
     status: string,
   ): "default" | "primary" | "secondary" | "success" | "warning" | "danger" => {

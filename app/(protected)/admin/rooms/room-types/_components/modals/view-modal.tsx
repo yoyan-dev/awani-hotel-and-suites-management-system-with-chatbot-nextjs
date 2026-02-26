@@ -73,13 +73,16 @@ const ViewModal: React.FC<ViewModalProps> = ({ room, isOpen, onClose }) => {
                         Available add ons for {room.name}
                       </p>
                       <div className="flex gap-4 text-gray-700 flex-wrap">
-                        {room.add_ons && room.add_ons.length > 0
-                          ? room.add_ons.map((item: any) => (
+                        {room.room_type_add_ons &&
+                        room.room_type_add_ons.length > 0
+                          ? room.room_type_add_ons.map((item: any) => (
                               <div
                                 className="flex items-center gap-2"
-                                key={item.name}
+                                key={item.id ?? item.add_on?.id}
                               >
-                                {item.name} - {formatPHP(Number(item.price))}
+                                {item.add_on?.name} -{" "}
+                                {formatPHP(Number(item.add_on?.price || 0))}{" "}
+                                (limit {item.quantity_limit})
                               </div>
                             ))
                           : "no add ons"}

@@ -1,6 +1,6 @@
 import React from "react";
-import { Card, CardBody, CardHeader } from "@heroui/react";
-import { Divider } from "@heroui/react";
+import { Card, CardBody, CardHeader, Divider } from "@heroui/react";
+import { formatPHP } from "@/lib/format-php";
 
 interface FunctionHallStatsProps {
   totalBookings: number;
@@ -26,17 +26,17 @@ export function FunctionHallStats({
       </CardHeader>
       <CardBody>
         <div className="grid grid-cols-2 gap-4 mt-2">
-          {/* <div className="flex flex-col">
+          <div className="flex flex-col">
             <span className="text-sm text-gray-500">Total Bookings</span>
             <span className="text-xl font-semibold">{totalBookings}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Total Revenue</span>
-            <span className="text-xl font-semibold">
-              ₱{totalRevenue.toLocaleString()}
-            </span>
-          </div> */}
+            <span className="text-xl font-semibold">{formatPHP(totalRevenue)}</span>
+          </div>
+
           <Divider className="col-span-2" />
+
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Upcoming</span>
             <span className="text-lg font-medium text-primary">

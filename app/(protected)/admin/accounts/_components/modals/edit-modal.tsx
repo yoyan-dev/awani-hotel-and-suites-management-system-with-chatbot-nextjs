@@ -59,7 +59,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
         },
         app_metadata: {
           ...user.app_metadata,
-          roles: [formData.role as "admin" | "housekeeping" | "guest"],
+          roles: [formData.role as "admin" | "housekeeping"],
         },
       };
 

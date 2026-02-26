@@ -2,10 +2,10 @@
 
 import { Room, RoomType } from "@/types/room";
 import {
-  Button,
   Popover,
   PopoverTrigger,
   PopoverContent,
+  Button,
   Listbox,
   ListboxItem,
   Divider,
@@ -52,31 +52,32 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         {/* NAVIGATION */}
         <div className="flex flex-wrap gap-2">
           {["PREV", "TODAY", "NEXT"].map((action) => (
-            <Button
+            <button
+              type="button"
               key={action}
-              size="sm"
-              radius="sm"
-              variant="bordered"
-              onPress={() => onNavigate(action as NavigateAction)}
+              className="h-8 rounded-md border border-default-200 px-3 text-sm transition-colors hover:bg-default-100"
+              onClick={() => onNavigate(action as NavigateAction)}
             >
               {action}
-            </Button>
+            </button>
           ))}
         </div>
 
         {/* VIEW + FILTER */}
         <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
           {views.map((view) => (
-            <Button
+            <button
+              type="button"
               key={view}
-              size="sm"
-              radius="sm"
-              variant={selectedView === view ? "solid" : "bordered"}
-              color={selectedView === view ? "primary" : "default"}
-              onPress={() => onView(view)}
+              className={`h-8 rounded-md border px-3 text-sm transition-colors ${
+                selectedView === view
+                  ? "border-primary bg-primary text-white"
+                  : "border-default-200 hover:bg-default-100"
+              }`}
+              onClick={() => onView(view)}
             >
               {view.charAt(0).toUpperCase() + view.slice(1)}
-            </Button>
+            </button>
           ))}
 
           {/* FILTER POPOVER */}

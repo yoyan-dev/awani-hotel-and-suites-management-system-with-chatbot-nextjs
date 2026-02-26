@@ -218,7 +218,7 @@ export default function OverviewPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <StatusDistribution
-          bookings={bookings}
+          totalBookings={bookings.length}
           statusDistribution={bookingsData.status_distribution}
         />
         <TodayActivity

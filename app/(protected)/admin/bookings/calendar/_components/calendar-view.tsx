@@ -83,7 +83,7 @@ export function CalendarView({
         roomNumber: booking.room?.room_number,
         status: booking.status,
         statusColor:
-          paymentStatusColorMap[booking.payment_status || "pending"] ||
+          paymentStatusColorMap[booking.payment_status || "pending"].code ||
           "#CCCCCC",
         start: new Date(booking.checked_in),
         end: new Date(booking.checked_out),
