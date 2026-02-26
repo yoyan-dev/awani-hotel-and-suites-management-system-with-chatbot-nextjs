@@ -30,6 +30,28 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+
+  if (
+    Number.isNaN(checkInDate.getTime()) ||
+    Number.isNaN(checkOutDate.getTime())
+  ) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Invalid request",
+          description: "checkIn and checkOut must be valid dates",
+          color: "danger",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
+  const normalizedCheckOut = checkOutDate < checkInDate ? checkIn : checkOut;
+
   /** Fetch room types + rooms */
   const { data: roomTypes, error } = await supabase
     .from("room_types")
@@ -59,12 +81,33 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
-  /** Fetch bookings ONCE (overlapping date range) */
+  const roomTypeIds = roomTypes
+    .map((roomType) => roomType.id)
+    .filter((id): id is string => Boolean(id));
+
+  if (roomTypeIds.length === 0) {
+    return NextResponse.json(
+      {
+        success: true,
+        message: {
+          title: "Success",
+          description: "Available room types fetched",
+          color: "success",
+        },
+        data: [],
+      },
+      { status: 200 },
+    );
+  }
+
+  /** Fetch overlapping bookings for filtered room types */
   const { data: bookings, error: bookingsError } = await supabase
     .from("bookings")
     .select("*")
-    .lt("checked_in", checkOut)
-    .gt("checked_out", checkIn);
+    .in("room_type_id", roomTypeIds)
+    .neq("status", "cancelled")
+    .lte("checked_in", normalizedCheckOut)
+    .gte("checked_out", checkIn);
 
   if (bookingsError) {
     return NextResponse.json(
@@ -83,7 +126,9 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   /** Attach bookings to room types */
   const roomTypesWithBookings: RoomType[] = roomTypes.map((roomType) => {
     const overlappingBookings =
-      bookings?.filter((b) => b.room_type_id === roomType.id) || [];
+      bookings?.filter(
+        (b) => b.room_type_id === roomType.id && b.status !== "cancelled",
+      ) || [];
     const totals = collectRequestedQuantities(
       overlappingBookings.flatMap((b) => b.special_requests ?? []),
     );
@@ -110,8 +155,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   /** Compute availability */
   const availableRoomTypes = filterAvailableRoomTypes(
     roomTypesWithBookings,
-    checkIn,
-    checkOut,
   );
 
   return NextResponse.json(

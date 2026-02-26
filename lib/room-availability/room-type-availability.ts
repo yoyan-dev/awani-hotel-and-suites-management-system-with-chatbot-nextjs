@@ -1,17 +1,33 @@
-import { isRoomAvailable } from "./room-availabilty";
-import { RoomType, Room } from "@/types/room";
+import { Booking } from "@/types/booking";
+import { RoomType } from "@/types/room";
 
 export function filterAvailableRoomTypes(
   roomTypes: RoomType[],
-  checkIn: string,
-  checkOut: string,
 ): RoomType[] {
   return roomTypes
     .map((roomType) => {
-      const availableRooms =
-        roomType.rooms?.filter((room: Room) =>
-          isRoomAvailable(room, checkIn, checkOut),
-        ) || [];
+      const rooms = roomType.rooms ?? [];
+      const bookings = ((roomType as any).bookings ?? []) as Booking[];
+
+      const bookedRoomIds = new Set(
+        bookings
+          .map((booking) => booking.room_id)
+          .filter((roomId): roomId is string => Boolean(roomId)),
+      );
+
+      const unassignedBookingsCount = bookings.filter(
+        (booking) => !booking.room_id,
+      ).length;
+
+      const candidateRooms = rooms.filter((room) => {
+        if (!room.id) return true;
+        return !bookedRoomIds.has(room.id);
+      });
+      const remainingSlots = Math.max(
+        0,
+        candidateRooms.length - unassignedBookingsCount,
+      );
+      const availableRooms = candidateRooms.slice(0, remainingSlots);
 
       return {
         ...roomType,
