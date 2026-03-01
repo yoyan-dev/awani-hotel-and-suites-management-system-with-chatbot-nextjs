@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Booking } from "@/types/booking";
 import { ROOM_TYPE_ADD_ONS_SELECT } from "@/lib/add-ons/selects";
 import {
   collectRequestedQuantities,
@@ -9,6 +8,7 @@ import {
 } from "@/lib/add-ons/availability";
 import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
 import { BookingSpecialRequest } from "@/types/add-on";
+import { RoomType } from "@/types/room";
 
 const BOOKING_SELECT = `
   id,
@@ -66,9 +66,18 @@ async function resolveAndValidateRequests(
   }
 
   const totals = collectRequestedQuantities(
-    (overlappingBookings ?? []).flatMap((booking) => booking.special_requests ?? []),
+    (overlappingBookings ?? []).flatMap((booking) =>
+      Array.isArray(booking.special_requests)
+        ? (booking.special_requests.filter((request) =>
+            Boolean(request && typeof request === "object"),
+          ) as unknown as BookingSpecialRequest[])
+        : [],
+    ),
   );
-  const availableAddOns = resolveRoomTypeAddOnAvailability(roomType, totals);
+  const availableAddOns = resolveRoomTypeAddOnAvailability(
+    roomType as RoomType,
+    totals,
+  );
 
   const cleaned: BookingSpecialRequest[] = [];
   for (const request of rawRequests ?? []) {
@@ -98,7 +107,8 @@ async function resolveAndValidateRequests(
   }
 
   const totalAddOns = cleaned.reduce(
-    (total, item) => total + Number(item.price ?? 0) * Number(item.quantity ?? 0),
+    (total, item) =>
+      total + Number(item.price ?? 0) * Number(item.quantity ?? 0),
     0,
   );
 
@@ -139,7 +149,7 @@ export async function GET(
         description: "",
         color: "success",
       },
-      data: booking as Booking,
+      data: booking,
     },
     { status: 201 },
   );
@@ -173,7 +183,9 @@ export async function PUT(
       );
     }
 
-    const roomTypeId = String(body.room_type_id ?? existingBooking.room_type_id);
+    const roomTypeId = String(
+      body.room_type_id ?? existingBooking.room_type_id,
+    );
     const checkedIn = String(body.checked_in ?? existingBooking.checked_in);
     const checkedOut = String(body.checked_out ?? existingBooking.checked_out);
 

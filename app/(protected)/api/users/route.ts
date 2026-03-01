@@ -131,73 +131,73 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 }
 
-export async function DELETE(
-  request: Request,
-): Promise<NextResponse<ApiResponse>> {
-  try {
-    const body = await request.json();
-    const selectedValues: string[] | "all" = body.selectedValues;
+// export async function DELETE(
+//   request: Request,
+// ): Promise<NextResponse<ApiResponse>> {
+//   try {
+//     const body = await request.json();
+//     const selectedValues: string[] | "all" = body.selectedValues;
 
-    let query = supabase.from("users").delete();
+//     let query = supabase.from("users").delete();
 
-    if (selectedValues === "all") {
-    } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: selectedValues,
-            color: "warning",
-          },
-        },
-        { status: 400 },
-      );
-    }
+//     if (selectedValues === "all") {
+//     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
+//       query = query.in("id", selectedValues);
+//     } else {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           message: {
+//             title: "Error",
+//             description: selectedValues,
+//             color: "warning",
+//           },
+//         },
+//         { status: 400 },
+//       );
+//     }
 
-    const { data, error } = await query;
+//     const { data, error } = await query;
 
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete users",
-            color: "error",
-          },
-          error: error.message,
-        },
-        { status: 500 },
-      );
-    }
+//     if (error) {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           message: {
+//             title: "Error",
+//             description: "Failed to delete users",
+//             color: "error",
+//           },
+//           error: error.message,
+//         },
+//         { status: 500 },
+//       );
+//     }
 
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description:
-          selectedValues === "all"
-            ? "All users deleted successfully"
-            : "Selected users deleted successfully",
-        color: "success",
-      },
-      data: data,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: "Something went wrong",
-          color: "error",
-        },
-        error: err.message,
-      },
-      { status: 500 },
-    );
-  }
-}
+//     return NextResponse.json({
+//       success: true,
+//       message: {
+//         title: "Success",
+//         description:
+//           selectedValues === "all"
+//             ? "All users deleted successfully"
+//             : "Selected users deleted successfully",
+//         color: "success",
+//       },
+//       data: data,
+//     });
+//   } catch (err: any) {
+//     return NextResponse.json(
+//       {
+//         success: false,
+//         message: {
+//           title: "Error",
+//           description: "Something went wrong",
+//           color: "error",
+//         },
+//         error: err.message,
+//       },
+//       { status: 500 },
+//     );
+//   }
+// }

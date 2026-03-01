@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
-import { Inventory } from "@/types/inventory";
-
-let inventory: Inventory[];
 
 export async function GET(): Promise<NextResponse<ApiResponse>> {
   const { data: item, error } = await supabase.from("inventory").select("*");
@@ -24,7 +21,6 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
   }
 
   console.log("Inventory data:", item);
-  inventory = item || [];
   return NextResponse.json(
     {
       success: true,
@@ -33,7 +29,7 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: inventory,
+      data: item || [],
     },
     { status: 201 },
   );
@@ -118,7 +114,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

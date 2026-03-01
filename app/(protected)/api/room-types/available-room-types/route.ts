@@ -125,15 +125,24 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 
   /** Attach bookings to room types */
-  const roomTypesWithBookings: RoomType[] = roomTypes.map((roomType) => {
+  const roomTypesWithBookings = roomTypes.map((roomType) => {
     const overlappingBookings =
       bookings?.filter(
         (b) => b.room_type_id === roomType.id && b.status !== "cancelled",
       ) || [];
     const totals = collectRequestedQuantities(
-      overlappingBookings.flatMap((b) => b.special_requests ?? []),
+      overlappingBookings.flatMap((b) =>
+        Array.isArray(b.special_requests)
+          ? (b.special_requests.filter((request) =>
+              Boolean(request && typeof request === "object"),
+            ) as any[])
+          : [],
+      ),
     );
-    const availableAddOns = resolveRoomTypeAddOnAvailability(roomType, totals);
+    const availableAddOns = resolveRoomTypeAddOnAvailability(
+      roomType as RoomType,
+      totals,
+    );
 
     return {
       ...roomType,
@@ -150,7 +159,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         },
       ),
       bookings: overlappingBookings,
-    };
+    } as RoomType;
   });
 
   /** Compute availability */

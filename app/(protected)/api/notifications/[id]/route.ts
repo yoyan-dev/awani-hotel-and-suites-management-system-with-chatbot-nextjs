@@ -8,12 +8,27 @@ export async function PUT(
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
+  const notificationId = Number(id);
+  if (!Number.isFinite(notificationId)) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Error",
+          description: "Invalid notification id",
+          color: "error",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
   const body = await req.json();
 
   const { data, error } = await supabase
     .from("notifications")
     .update(body)
-    .eq("id", id)
+    .eq("id", notificationId)
     .select()
     .single();
 
@@ -64,8 +79,25 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
+  const notificationId = Number(id);
+  if (!Number.isFinite(notificationId)) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: {
+          title: "Error",
+          description: "Invalid notification id",
+          color: "error",
+        },
+      },
+      { status: 400 },
+    );
+  }
 
-  const { error } = await supabase.from("notifications").delete().eq("id", id); // ✅ table changed
+  const { error } = await supabase
+    .from("notifications")
+    .delete()
+    .eq("id", notificationId);
 
   if (error) {
     console.error("Delete error:", error);

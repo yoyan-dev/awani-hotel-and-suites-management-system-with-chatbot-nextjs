@@ -6,7 +6,6 @@ import {
   updateBooking,
   deleteBooking,
   deleteSelectedBooking,
-  completeBooking,
 } from "./booking-thunk";
 import {
   FunctionHallBooking,
@@ -133,32 +132,6 @@ const FunctionHallBookingSlice = createSlice({
         state.error = undefined;
       })
       .addCase(deleteSelectedBooking.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.error.message;
-      })
-
-      // complete booking
-      .addCase(completeBooking.pending, (state) => {
-        state.isLoading = true;
-        state.error = undefined;
-      })
-      .addCase(
-        completeBooking.fulfilled,
-        (state, action: PayloadAction<FunctionHallBooking>) => {
-          state.isLoading = false;
-          state.error = undefined;
-          const index = state.function_hall_bookings.findIndex(
-            (r) => r.id === action.payload.id,
-          );
-          if (index !== -1) {
-            state.function_hall_bookings[index] = action.payload;
-          }
-          if (state.function_hall_booking.id === action.payload.id) {
-            state.function_hall_booking = action.payload;
-          }
-        },
-      )
-      .addCase(completeBooking.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message;
       });

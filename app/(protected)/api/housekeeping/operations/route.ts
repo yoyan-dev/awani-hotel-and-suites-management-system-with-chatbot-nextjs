@@ -103,8 +103,12 @@ export async function GET(
     }
 
     const allRoomIds = [
-      ...(bookings || []).map((b) => b.room_id).filter(Boolean),
-      ...(checkoutBookings || []).map((b) => b.room_id).filter(Boolean),
+      ...(bookings || [])
+        .map((b) => b.room_id)
+        .filter((id): id is string => Boolean(id)),
+      ...(checkoutBookings || [])
+        .map((b) => b.room_id)
+        .filter((id): id is string => Boolean(id)),
     ];
 
     const { data: rooms, error: roomsError } = await supabase

@@ -68,19 +68,19 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
     const formObj = Object.fromEntries(formData.entries());
     const newData = {
-      full_name: formObj.full_name,
-      email: formObj.email,
-      room_number: formObj.room_number,
-      check_in: formObj.check_in,
-      check_out: formObj.check_out,
-      comments: formObj.comments,
+      full_name: String(formObj.full_name ?? ""),
+      email: String(formObj.email ?? ""),
+      room_number: String(formObj.room_number ?? ""),
+      check_in: String(formObj.check_in ?? ""),
+      check_out: String(formObj.check_out ?? ""),
+      comments: formObj.comments ? String(formObj.comments) : null,
       rating: Number(formObj.rating),
-      recommend: formObj.recommend,
+      recommend: String(formObj.recommend ?? ""),
     };
     console.log(newData);
     const { data, error } = await supabase
       .from(dbTable)
-      .insert([newData])
+      .insert(newData)
       .select();
 
     if (error) {
@@ -136,7 +136,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

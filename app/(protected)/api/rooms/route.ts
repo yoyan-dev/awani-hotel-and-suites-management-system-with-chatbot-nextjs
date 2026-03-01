@@ -102,21 +102,9 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const roomNumber = Number(formData.get("room_number"));
     const formObj = Object.fromEntries(formData.entries());
 
-    // const beds = JSON.parse(formObj.beds as string);
-    // const facilities = JSON.parse(formObj.facilities as string);
-    // const images = formData.getAll("images") as File[];
-
-    // const imageUrls = await Promise.all(
-    //   images.map(async (file) => {
-    //     if (!file || file.size === 0) throw new Error("File missing or empty");
-
-    //     const imageUrl = await uploadRoomImage(file, Number(roomNumber));
-    //     return imageUrl;
-    //   }),
-    // );
-
     const newRoom = {
       ...formObj,
+      room_number: roomNumber,
       room_id: `RM-${roomNumber}`,
     };
 
@@ -193,7 +181,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

@@ -12,7 +12,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  let q = supabase.from("housekeeping").select("*", { count: "exact" });
+  let q = supabase.from("housekeeping" as any).select("*", { count: "exact" });
 
   if (query) {
     q = q.or(`
@@ -73,7 +73,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await req.json();
     const { data, error } = await supabase
-      .from("housekeeping")
+      .from("housekeeping" as any)
       .insert(body)
       .select();
 
@@ -140,11 +140,11 @@ export async function DELETE(
     const body = await request.json();
     const selectedValues: number[] | "all" = body.selectedValues;
 
-    let query = supabase.from("housekeeping").delete();
+    let query = supabase.from("housekeeping" as any).delete();
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

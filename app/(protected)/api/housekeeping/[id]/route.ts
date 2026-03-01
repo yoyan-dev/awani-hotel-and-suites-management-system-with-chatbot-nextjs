@@ -11,7 +11,7 @@ export async function PUT(
   const body = await req.json();
 
   const { data, error } = await supabase
-    .from("housekeeping")
+    .from("housekeeping" as any)
     .update(body)
     .eq("id", id)
     .select()
@@ -65,7 +65,10 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   const { id } = await context.params;
 
-  const { error } = await supabase.from("housekeeping").delete().eq("id", id);
+  const { error } = await supabase
+    .from("housekeeping" as any)
+    .delete()
+    .eq("id", id);
 
   if (error) {
     console.error("Delete error:", error);

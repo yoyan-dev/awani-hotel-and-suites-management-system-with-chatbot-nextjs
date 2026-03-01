@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { Database } from "@/types/supabase";
 
 export async function createClient() {
   const cookieStore = await cookies(); // ✅ synchronous
@@ -12,7 +13,7 @@ export async function createClient() {
     throw new Error("Missing Supabase env vars!");
   }
 
-  return createServerClient(supabaseUrl, supabaseKey, {
+  return createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         // ReadonlyRequestCookies doesn't have getAll() like before, we map keys

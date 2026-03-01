@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import type { Room } from "@/types/room";
 import { supabase } from "@/lib/supabase/supabase-client";
-import { uploadRoomImage } from "@/lib/upload-room-image";
 import { ApiResponse } from "@/types/response";
 
 const tableName = "room-reports";
@@ -86,22 +84,38 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const formData = await req.formData();
 
     const roomReport = {
-      room_number: formData.get("room_number"),
-      guest_name: formData.get("guest_name"),
-      report_type: formData.get("report_type"),
-      item_name: formData.get("item_name"),
-      item_category: formData.get("item_category"),
-      quantity: formData.get("quantity"),
-      damage_type: formData.get("damage_type"),
-      reported_by: formData.get("reported_by"),
+      room_number: formData.get("room_number")
+        ? String(formData.get("room_number"))
+        : null,
+      guest_name: formData.get("guest_name")
+        ? String(formData.get("guest_name"))
+        : null,
+      report_type: formData.get("report_type")
+        ? String(formData.get("report_type"))
+        : null,
+      item_name: formData.get("item_name")
+        ? String(formData.get("item_name"))
+        : null,
+      item_category: formData.get("item_category")
+        ? String(formData.get("item_category"))
+        : null,
+      quantity: formData.get("quantity")
+        ? Number(formData.get("quantity"))
+        : null,
+      damage_type: formData.get("damage_type")
+        ? String(formData.get("damage_type"))
+        : null,
+      reported_by: formData.get("reported_by")
+        ? String(formData.get("reported_by"))
+        : null,
       resolved_date: null,
       status: "pending",
-      notes: formData.get("notes"),
+      notes: formData.get("notes") ? String(formData.get("notes")) : null,
     };
 
     const { data, error } = await supabase
       .from(tableName)
-      .insert([roomReport])
+      .insert(roomReport)
       .select();
 
     console.log("data", formData);
@@ -173,7 +187,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

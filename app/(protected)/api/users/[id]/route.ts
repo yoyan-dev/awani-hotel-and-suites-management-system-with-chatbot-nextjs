@@ -11,7 +11,7 @@ export async function GET(
   const { id } = await context.params;
 
   const { data: user, error } = await supabase
-    .from("users")
+    .from("users" as any)
     .select("*")
     .eq("id", id)
     .single();
