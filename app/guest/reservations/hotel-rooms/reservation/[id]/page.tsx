@@ -6,7 +6,6 @@ import { addToast, Card, CardBody, CardHeader } from "@heroui/react";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import AvailableRooms from "./_components/available-rooms";
-import { supabase } from "@/lib/supabase/supabase-client";
 import { useGuests } from "@/hooks/use-guests";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { useBookings } from "@/hooks/use-bookings";
@@ -14,22 +13,52 @@ import { FetchRoomTypesParams } from "@/types/room";
 import { generateSummary } from "@/utils/generate-summary";
 import { Booking } from "@/types/booking";
 import { BookingSpecialRequest } from "@/types/add-on";
+import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
+import { addBooking as addHotelBooking } from "@/features/booking/hotel-rooms/booking-thunk";
+
+const guestTextFields = [
+  "full_name",
+  "contact_number",
+  "address",
+  "nationality",
+  "gender",
+  "email",
+] as const;
+
+function buildGuestFormData(source: FormData) {
+  const guestFormData = new FormData();
+  const generatedGuestId = crypto.randomUUID();
+  guestFormData.append("id", generatedGuestId);
+
+  for (const field of guestTextFields) {
+    const value = source.get(field);
+    if (typeof value === "string" && value.trim()) {
+      guestFormData.append(field, value);
+    }
+  }
+
+  const front = source.get("front");
+  if (front instanceof File && front.size > 0) {
+    guestFormData.append("front", front);
+  }
+
+  const back = source.get("back");
+  if (back instanceof File && back.size > 0) {
+    guestFormData.append("back", back);
+  }
+
+  return { guestFormData, generatedGuestId };
+}
 
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
   const [selectedRoom, setSelectedRoom] = React.useState(id || null);
-  const [guestId, setGuestId] = React.useState<string | null>(null);
+  const { addGuest } = useGuests();
   const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
     useRoomTypes();
-  const {
-    bookings,
-    isLoading: bookingIsLoading,
-    error,
-    fetchBookings,
-    addBooking,
-  } = useBookings();
+  const { isLoading: bookingIsLoading, addBooking } = useBookings();
 
   const [specialRequests, setSpecialRequests] = React.useState<
     BookingSpecialRequest[]
@@ -72,8 +101,9 @@ export default function Page() {
       !room ||
       !query.checkIn ||
       !query.checkOut
-    )
+    ) {
       return null;
+    }
     return generateSummary(
       {
         checked_in: query.checkIn,
@@ -93,29 +123,40 @@ export default function Page() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    const filtereSpecialRequest = specialRequests.filter(
+    const { guestFormData, generatedGuestId } = buildGuestFormData(formData);
+    const addGuestResult = await addGuest(guestFormData);
+    if (!addGuestThunk.fulfilled.match(addGuestResult)) {
+      addToast({
+        title: "Guest Registration Failed",
+        description:
+          "We could not save guest information. Please review your details and try again.",
+        color: "danger",
+      });
+      return;
+    }
+
+    const createdGuestId = addGuestResult.payload.id || generatedGuestId;
+    const filteredSpecialRequest = specialRequests.filter(
       (req) => req.quantity > 0,
     );
 
-    const checked_in_date = formData.get("checked_in") || "";
-    
-    formData.append("guest_id", guestId || "");
-    formData.append("total", payload?.total);
-    formData.append("total_add_ons", payload?.totalAddOnsPrice);
+    formData.append("guest_id", createdGuestId);
+    formData.append("total", String(payload?.total ?? 0));
+    formData.append("total_add_ons", String(payload?.totalAddOnsPrice ?? 0));
     formData.append(
       "special_requests",
-      JSON.stringify(filtereSpecialRequest || []),
+      JSON.stringify(filteredSpecialRequest || []),
     );
-    console.log(formData);
-    await addBooking(formData);
-    if (error === undefined) {
+
+    const addBookingResult = await addBooking(formData);
+    if (addHotelBooking.fulfilled.match(addBookingResult)) {
       addToast({
         title: "Booking Successful",
         description:
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
-      router.push("/");
+      router.push("/guest");
     }
   }
 
@@ -123,7 +164,6 @@ export default function Page() {
     <div className="min-h-screen pb-12 pt-6 md:pt-8">
       <Card className="mx-auto w-full max-w-7xl border border-default-200/70 bg-content1 shadow-sm dark:border-default-100/10">
         <CardHeader className="flex flex-col items-start gap-2 border-b border-default-200/60 bg-content2/40 px-5 py-5 sm:px-8 dark:border-default-100/10">
-          {/* Refined page header for stronger visual hierarchy */}
           <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
             Hotel Reservation
           </h1>
@@ -132,16 +172,11 @@ export default function Page() {
           </p>
         </CardHeader>
         <CardBody className="w-full gap-8 p-4 sm:p-6 lg:p-8 dark:bg-gray-900">
-          {/* Responsive two-column layout:
-              mobile/tablet: stacked
-              desktop: booking form + room summary/available rooms side panel */}
           <div className="grid w-full grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)]">
             <BookingForm
               onSubmit={(e) => handleSubmit(e, summary)}
               query={query}
               setQuery={setQuery}
-              guestId={guestId}
-              setGuestId={setGuestId}
               roomTypes={availabel_room_types}
               room={room || null}
               isLoading={isLoading}
@@ -151,9 +186,9 @@ export default function Page() {
               setSpecialRequests={setSpecialRequests}
               bookingIsLoading={bookingIsLoading}
             />
-            {room && guestId ? (
+            {room ? (
               <SelectedRoom room={room} isLoading={isLoading} />
-            ) : guestId ? (
+            ) : query.checkIn && query.checkOut ? (
               <AvailableRooms
                 rooms={availabel_room_types}
                 isLoading={isLoading}

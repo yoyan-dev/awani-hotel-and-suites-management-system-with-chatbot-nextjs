@@ -1,7 +1,7 @@
 "use client";
 
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
-import { Card, CardBody, Chip, Button, Link } from "@heroui/react";
+import { Card, CardBody, Chip, Button } from "@heroui/react";
 import { useParams } from "next/navigation";
 import React from "react";
 import Loader from "./loader";
@@ -10,6 +10,7 @@ import { FunctionHallBooking } from "@/types/function-room-booking";
 import { formateDateAndTime } from "@/app/utils/to-date-range";
 import { bookingStatusColorMap } from "@/app/constants/function-hall-booking";
 import { formatPHP } from "@/lib/format-php";
+import MarkConfirmedModal from "../_components/modals/mark-confirmed-modal";
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
@@ -21,6 +22,15 @@ export default function BookingDetailsPage() {
     function_hall_booking.balance || Math.max(totalAmount - amountPaid, 0),
   );
   const paymentStatus = function_hall_booking.payment_status || "pending";
+  const [markConfirmedOpen, setMarkConfirmedOpen] = React.useState(false);
+
+  const updateStatus = async (status: string) => {
+    await updateBooking({
+      id: function_hall_booking.id,
+      status,
+    } as FunctionHallBooking);
+    await fetchBooking(id as string);
+  };
 
   React.useEffect(() => {
     fetchBooking(id as string);
@@ -30,6 +40,13 @@ export default function BookingDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <MarkConfirmedModal
+        isOpen={markConfirmedOpen}
+        onClose={() => setMarkConfirmedOpen(false)}
+        booking={function_hall_booking}
+        onConfirmed={() => fetchBooking(id as string)}
+      />
+
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
         <div>
@@ -136,43 +153,69 @@ export default function BookingDetailsPage() {
 
       {/* Admin Actions */}
       {function_hall_booking.status !== "rejected" &&
-        function_hall_booking.status !== "cancelled" && (
+        function_hall_booking.status !== "cancelled" &&
+        function_hall_booking.status !== "completed" && (
           <Card radius="sm" className="shadow-none border border-gray-200">
             <CardBody className="flex justify-end gap-2">
               {function_hall_booking.status === "pending" ? (
-                <Button
-                  color="danger"
-                  variant="flat"
-                  onPress={() =>
-                    updateBooking({
-                      id: function_hall_booking.id,
-                      status: "rejected",
-                    } as FunctionHallBooking)
-                  }
-                >
-                  Reject Booking
-                </Button>
+                <>
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    onPress={() => updateStatus("rejected")}
+                  >
+                    Reject Booking
+                  </Button>
+                  <Button
+                    color="success"
+                    onPress={() => setMarkConfirmedOpen(true)}
+                  >
+                    Mark Confirmed
+                  </Button>
+                </>
+              ) : function_hall_booking.status === "confirmed" ? (
+                <>
+                  <Button
+                    color="warning"
+                    variant="flat"
+                    onPress={() => updateStatus("ongoing")}
+                  >
+                    Mark Ongoing
+                  </Button>
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    onPress={() => updateStatus("cancelled")}
+                  >
+                    Mark Cancelled
+                  </Button>
+                </>
+              ) : function_hall_booking.status === "ongoing" ? (
+                <>
+                  <Button
+                    color="success"
+                    variant="flat"
+                    onPress={() => updateStatus("completed")}
+                  >
+                    Mark Complete
+                  </Button>
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    onPress={() => updateStatus("cancelled")}
+                  >
+                    Mark Cancelled
+                  </Button>
+                </>
               ) : (
                 <Button
                   color="danger"
                   variant="flat"
-                  onPress={() =>
-                    updateBooking({
-                      id: function_hall_booking.id,
-                      status: "cancelled",
-                    } as FunctionHallBooking)
-                  }
+                  onPress={() => updateStatus("cancelled")}
                 >
                   Mark Cancelled
                 </Button>
               )}
-              <Button
-                color="success"
-                as={Link}
-                href={`/admin/bookings/function-hall-bookings/assign-room/${function_hall_booking.id}`}
-              >
-                {function_hall_booking.room_id ? "Change Room" : "Assign Room"}
-              </Button>
             </CardBody>
           </Card>
         )}

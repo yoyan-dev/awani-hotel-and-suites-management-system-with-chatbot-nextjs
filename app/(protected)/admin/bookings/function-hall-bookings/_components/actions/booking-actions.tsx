@@ -7,7 +7,9 @@ import {
 } from "@heroui/react";
 import {
   Eye,
-  Bed,
+  CheckCircle2,
+  CircleCheckBig,
+  Clock3,
   EllipsisVertical,
   Wallet,
   FileText,
@@ -19,6 +21,8 @@ import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
 import { FunctionHallBooking } from "@/types/function-room-booking";
 import SetTotalAmountModal from "../modals/payment/set-total-amount-modal";
+import MarkConfirmedModal from "../modals/mark-confirmed-modal";
+import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
 
 export default function BookingActionsDropdown({
   booking,
@@ -27,13 +31,17 @@ export default function BookingActionsDropdown({
   booking: FunctionHallBooking;
   disabled: boolean;
 }) {
+  const { fetchBookings, updateBooking } = useFunctionHallBookings();
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
   const [setTotalAmountOpen, setSetTotalAmountOpen] = React.useState(false);
+  const [markConfirmedOpen, setMarkConfirmedOpen] = React.useState(false);
 
   const totalAmount = Number(booking.total_amount || 0);
   const amountPaid = Number(booking.amount_paid || 0);
-  const balance = Number(booking.balance || Math.max(totalAmount - amountPaid, 0));
+  const balance = Number(
+    booking.balance || Math.max(totalAmount - amountPaid, 0),
+  );
 
   const summary = React.useMemo(
     () => ({
@@ -43,7 +51,13 @@ export default function BookingActionsDropdown({
       payment_method: booking.payment_method,
       amount_paid: amountPaid,
     }),
-    [totalAmount, balance, booking.payment_status, booking.payment_method, amountPaid],
+    [
+      totalAmount,
+      balance,
+      booking.payment_status,
+      booking.payment_method,
+      amountPaid,
+    ],
   );
 
   const canShowPaymentActions = totalAmount > 0;
@@ -52,6 +66,14 @@ export default function BookingActionsDropdown({
     (booking.payment_status || "pending") !== "paid" &&
     booking.status !== "cancelled";
 
+  const updateBookingStatus = async (status: string) => {
+    await updateBooking({
+      id: booking.id,
+      status,
+    } as FunctionHallBooking);
+    await fetchBookings({});
+  };
+
   return (
     <>
       <SetTotalAmountModal
@@ -59,6 +81,11 @@ export default function BookingActionsDropdown({
         onClose={() => setSetTotalAmountOpen(false)}
         bookingId={booking.id}
         currentTotalAmount={totalAmount}
+      />
+      <MarkConfirmedModal
+        isOpen={markConfirmedOpen}
+        onClose={() => setMarkConfirmedOpen(false)}
+        booking={booking}
       />
       <ViewSummary
         isOpen={isViewSummaryOpen}
@@ -89,17 +116,41 @@ export default function BookingActionsDropdown({
             View Details
           </DropdownItem>
 
-          <DropdownItem
-            key="assign"
-            href={`/admin/bookings/function-hall-bookings/assign-room/${booking.id}`}
-            startContent={<Bed className="w-4 h-4" />}
-          >
-            Assign Room
-          </DropdownItem>
+          {booking.status === "pending" ? (
+            <DropdownItem
+              key="mark_confirmed"
+              startContent={<CheckCircle2 className="w-4 h-4 text-success" />}
+              onPress={() => setMarkConfirmedOpen(true)}
+            >
+              Mark Confirmed
+            </DropdownItem>
+          ) : null}
+
+          {booking.status === "confirmed" ? (
+            <DropdownItem
+              key="mark_ongoing"
+              startContent={<Clock3 className="w-4 h-4 text-warning" />}
+              onPress={() => updateBookingStatus("ongoing")}
+            >
+              Mark Ongoing
+            </DropdownItem>
+          ) : null}
+
+          {booking.status === "ongoing" ? (
+            <DropdownItem
+              key="mark_completed"
+              startContent={<CircleCheckBig className="w-4 h-4 text-success" />}
+              onPress={() => updateBookingStatus("completed")}
+            >
+              Mark Complete
+            </DropdownItem>
+          ) : null}
 
           <DropdownItem
             key="set_total_amount"
-            startContent={<CircleDollarSign className="w-4 h-4 text-gray-700" />}
+            startContent={
+              <CircleDollarSign className="w-4 h-4 text-gray-700" />
+            }
             onPress={() => setSetTotalAmountOpen(true)}
           >
             Set Total Amount
@@ -129,7 +180,9 @@ export default function BookingActionsDropdown({
             <div className="border-t border-gray-200 my-1"></div>
           </DropdownItem>
 
-          {booking.status === "confirmed" || booking.status === "pending" ? (
+          {booking.status === "confirmed" ||
+          booking.status === "pending" ||
+          booking.status === "ongoing" ? (
             <DropdownItem key="cancel" color="danger">
               <MarkCancelled id={booking.id} />
             </DropdownItem>

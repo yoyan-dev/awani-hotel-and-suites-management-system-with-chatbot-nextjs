@@ -29,6 +29,7 @@ const QUICK_QUESTIONS = [
   "What amenities are included?",
   "How can I contact Front Office?",
   "Where is the hotel located?",
+  "Room availability?",
 ];
 
 export default function Chatbot() {
@@ -261,4 +262,3 @@ export default function Chatbot() {
     </>
   );
 }
-
