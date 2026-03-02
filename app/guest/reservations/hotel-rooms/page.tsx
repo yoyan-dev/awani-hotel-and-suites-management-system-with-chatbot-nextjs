@@ -2,7 +2,7 @@
 import React from "react";
 import { RoomsList } from "./_components/room-list";
 import Header from "./_components/header";
-import { FetchRoomTypesParams, RoomType } from "@/types/room";
+import { FetchRoomTypesParams } from "@/types/room";
 import { formatDate } from "@/utils/format-date";
 import { useRoomTypes } from "@/hooks/use-room-types";
 
@@ -11,7 +11,7 @@ export default function Page() {
   const today = date.toISOString().split("T")[0];
   const tomorrow = new Date(date);
   tomorrow.setDate(date.getDate() + 1);
-  const { availabel_room_types, isLoading, error, fetchAvailableRoomTypes } =
+  const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
     useRoomTypes();
   const [desiredGuest, setDesiredGuest] = React.useState<number>(1);
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
@@ -28,16 +28,17 @@ export default function Page() {
   }
 
   return (
-    <div className="m-0 md:m-4 p-4 bg-white dark:bg-gray-800 space-y-4 pb-16">
-      <Header
-        query={query}
-        setQuery={setQuery}
-        desiredGuest={desiredGuest}
-        setDesiredGuest={setDesiredGuest}
-        checkAvailability={checkAvailability}
-      />
-      <div>
-        <span className="text-sm text-gray-500 dark:text-gray-200">
+    <div className="min-h-screen py-8">
+      <section className="rounded-4xl border border-[#e3d8c8] bg-[#fffdf8] p-4 shadow-[0_30px_65px_-48px_rgba(35,29,22,0.5)] sm:p-8">
+        <Header
+          query={query}
+          setQuery={setQuery}
+          desiredGuest={desiredGuest}
+          setDesiredGuest={setDesiredGuest}
+          checkAvailability={checkAvailability}
+        />
+
+        <div className="mt-6 rounded-2xl border border-[#eadfcf] bg-[#f7f1e8] px-4 py-3 text-sm text-[#675d51]">
           Current available rooms as of{" "}
           {query.checkIn
             ? formatDate(new Date(query.checkIn))
@@ -46,9 +47,12 @@ export default function Page() {
           {query.checkOut
             ? formatDate(new Date(query.checkOut))
             : formatDate(new Date(tomorrow))}
-        </span>
-        <RoomsList rooms={availabel_room_types} typesLoading={isLoading} />
-      </div>
+        </div>
+
+        <div className="mt-6">
+          <RoomsList rooms={availabel_room_types} typesLoading={isLoading} />
+        </div>
+      </section>
     </div>
   );
 }

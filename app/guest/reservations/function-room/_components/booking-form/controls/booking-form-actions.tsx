@@ -23,20 +23,25 @@ export default function BookingFormActions({
         type="button"
         onPress={onPrevious}
         isDisabled={step === 1}
+        className="rounded-full bg-[#f2e8d9] text-[#5e5447]"
       >
         Previous
       </Button>
 
       {step < 3 ? (
-        <Button color="primary" type="button" onPress={onNext}>
+        <Button
+          type="button"
+          onPress={onNext}
+          className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
+        >
           {step === 2 ? "Preview" : "Next"}
         </Button>
       ) : (
         <Button
-          color="primary"
           type="submit"
           isLoading={bookingIsLoading}
           isDisabled={!isGuestIdVerified}
+          className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
         >
           Submit Booking
         </Button>

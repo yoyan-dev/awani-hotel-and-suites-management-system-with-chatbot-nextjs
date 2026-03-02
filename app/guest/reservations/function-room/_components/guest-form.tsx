@@ -22,26 +22,24 @@ export default function GuestForm({
   }, [isBackId, isFrontId, onIdVerificationChange]);
 
   return (
-    <div className="space-y-4 w-full">
-      <h1 className="text-xl font-semibold">Guest Information</h1>
+    <div className="w-full space-y-4">
+      <h1 className="font-serif text-2xl text-[#281f14]">Guest Information</h1>
 
-      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
+      <h3 className="text-sm font-medium text-[#675d50]">
         Personal Information
       </h3>
-      <div className="flex flex-col gap-4 md:flex-row justify-between w-full">
+      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
         <Input
           isRequired
           fullWidth
-          color="primary"
-          startContent={
-            <User className="text-default-600 dark:text-default-300 shrink-0" />
-          }
+          startContent={<User className="shrink-0 text-default-600" />}
           name="full_name"
           id="full_name"
           label="Full Name"
           labelPlacement="outside"
           placeholder="Enter your full name"
           variant="bordered"
+          radius="lg"
           className="flex-1"
         />
         <PhoneInput
@@ -53,32 +51,28 @@ export default function GuestForm({
 
       <Textarea
         isRequired
-        color="primary"
-        startContent={
-          <Home className="text-default-600 dark:text-default-300 shrink-0" />
-        }
+        startContent={<Home className="shrink-0 text-default-600" />}
         name="address"
         id="address"
         label="Home Address"
         labelPlacement="outside"
         placeholder="Enter your current home address"
         variant="bordered"
+        radius="lg"
       />
 
-      <div className="flex flex-col gap-4 md:flex-row justify-between w-full">
+      <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
         <Input
           fullWidth
           isRequired
-          color="primary"
-          startContent={
-            <Flag className="text-default-600 dark:text-default-300 shrink-0" />
-          }
+          startContent={<Flag className="shrink-0 text-default-600" />}
           name="nationality"
           id="nationality"
           label="Nationality"
           labelPlacement="outside"
           placeholder="e.g. Filipino"
           variant="bordered"
+          radius="lg"
           className="flex-1"
         />
 
@@ -86,13 +80,10 @@ export default function GuestForm({
           fullWidth
           name="gender"
           id="gender"
-          color="primary"
           label="Gender"
           labelPlacement="outside"
-          radius="sm"
-          startContent={
-            <Transgender className="text-default-600 dark:text-default-300 shrink-0" />
-          }
+          radius="lg"
+          startContent={<Transgender className="shrink-0 text-default-600" />}
           placeholder="Select gender"
           isRequired
           variant="bordered"
@@ -103,10 +94,10 @@ export default function GuestForm({
         </Select>
       </div>
 
-      <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
+      <h3 className="text-sm font-medium text-[#675d50]">
         Upload your valid ID
       </h3>
-      <p className="text-xs text-gray-500 dark:text-gray-400">
+      <p className="text-xs text-[#6a6052]">
         We respect your privacy. Your ID will be used only for identity
         verification, stored securely, and will not be shared without your
         consent.
@@ -117,10 +108,7 @@ export default function GuestForm({
 
       <Input
         isRequired
-        color="primary"
-        startContent={
-          <MailIcon className="text-default-600 dark:text-default-300 shrink-0" />
-        }
+        startContent={<MailIcon className="shrink-0 text-default-600" />}
         name="email"
         id="email"
         autoComplete="email"
@@ -128,10 +116,11 @@ export default function GuestForm({
         labelPlacement="outside"
         placeholder="Enter your email"
         variant="bordered"
+        radius="lg"
       />
 
       {!isBackId || !Boolean(isFrontId) ? (
-        <p className="text-xs text-warning">
+        <p className="text-xs text-[#9f6c1e]">
           Please upload and verify both front and back ID images to continue.
         </p>
       ) : null}

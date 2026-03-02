@@ -20,8 +20,8 @@ export default function BookingFormStepIndicator({
           key={bookingStep.id}
           className={`rounded-full px-3 py-1 font-medium ${
             step >= bookingStep.id
-              ? "bg-primary text-primary-foreground"
-              : "bg-default-100 text-default-500"
+              ? "bg-[#b08a53] text-white"
+              : "bg-[#f0e6d7] text-[#7a6e5f]"
           }`}
         >
           {bookingStep.id}. {bookingStep.label}

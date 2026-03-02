@@ -13,8 +13,8 @@ interface PreviewFieldProps {
 function PreviewField({ label, value, className }: PreviewFieldProps) {
   return (
     <div className={className}>
-      <p className="text-default-500">{label}</p>
-      <p className="font-medium">{value || "-"}</p>
+      <p className="text-[#7a6f62]">{label}</p>
+      <p className="font-medium text-[#2d2418]">{value || "-"}</p>
     </div>
   );
 }
@@ -23,9 +23,9 @@ export default function BookingFormPreviewStep({
   previewData,
 }: BookingFormPreviewStepProps) {
   return (
-    <div className="space-y-4 w-full">
-      <h1 className="text-lg font-semibold">Preview Details</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-xl border border-default-200 p-4 text-sm">
+    <div className="w-full space-y-4">
+      <h1 className="font-serif text-2xl text-[#281f14]">Preview Details</h1>
+      <div className="grid grid-cols-1 gap-3 rounded-2xl border border-[#e7dccd] bg-[#fcf8f2] p-4 text-sm md:grid-cols-2">
         <PreviewField label="Full Name" value={previewData.full_name} />
         <PreviewField
           label="Contact Number"

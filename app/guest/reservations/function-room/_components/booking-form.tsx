@@ -293,14 +293,23 @@ export default function BookingForm({
   }
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-md rounded-2xl border border-gray-100 dark:border-gray-700">
-      <CardHeader className="text-xl font-semibold">Event Booking</CardHeader>
+    <Card className="mx-auto w-full max-w-4xl rounded-3xl border border-[#e7dccd] bg-[#fffefb] shadow-[0_26px_56px_-44px_rgba(35,29,22,0.52)]">
+      <CardHeader className="border-b border-[#eadfce] bg-[#fcf7ef] px-5 py-5 sm:px-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#987345]">
+            Booking Flow
+          </p>
+          <h2 className="mt-2 font-serif text-2xl text-[#241f1a] sm:text-3xl">
+            Event Booking Details
+          </h2>
+        </div>
+      </CardHeader>
 
-      <CardBody className="dark:bg-gray-900">
+      <CardBody className="p-4 sm:p-6">
         <Form
           ref={formRef}
           onSubmit={handleFormSubmit}
-          className="space-y-6 px-4 w-full"
+          className="w-full space-y-6"
         >
           <BookingFormStepIndicator step={step} />
 

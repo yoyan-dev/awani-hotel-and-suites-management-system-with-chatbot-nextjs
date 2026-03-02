@@ -3,7 +3,7 @@ import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 
 import { siteConfig } from "@/config/site";
-import { fontSans } from "@/config/fonts";
+import { fontGuestSans, fontSans, fontSerif } from "@/config/fonts";
 
 import { ToastProvider } from "@heroui/toast";
 
@@ -39,6 +39,8 @@ export default function RootLayout({
         className={clsx(
           "min-h-screen text-foreground bg-background font-sans antialiased w-full",
           fontSans.variable,
+          fontGuestSans.variable,
+          fontSerif.variable,
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>

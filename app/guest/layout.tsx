@@ -1,61 +1,39 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import Footer from "./_components/footer";
 import Navbar from "./_components/navbar";
-import { User } from "@/types/users";
-import { supabase } from "@/lib/supabase/supabase-client";
 import Chatbot from "./_components/chatbot";
 
-export default function HousekeepingLayout({
+export default function GuestLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const enhancedChildren = React.Children.map(children, (child) =>
-  //   React.isValidElement(child)
-  //     ? React.cloneElement(child, {
-  //         user: state.user,
-  //         isLoading: state.isLoading,
-  //       })
-  //     : child
-  // );
   return (
-    <>
+    <div className="relative min-h-screen overflow-x-hidden bg-[#f6f2ea] text-[#1f1e1b] font-[family-name:var(--font-guest-sans)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top,_rgba(176,138,83,0.26),_transparent_66%)]" />
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="flex gap-4 h-screen text-surface-600 bg-gray-50 dark:bg-gray-800"
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: "easeOut" }}
       >
-        <main className="w-full min-h-screen space-y-4 pb-16">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-          >
-            <Navbar />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="dark:bg-gray-800 rounded max-h-screen overflow-y-auto"
-          >
-            {children}
-          </motion.div>
-        </main>
+        <Navbar />
       </motion.div>
-
+      <motion.main
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pb-20 sm:px-6 lg:px-10"
+      >
+        {children}
+      </motion.main>
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, ease: "easeOut", delay: 0.3 }}
+        transition={{ duration: 0.35, ease: "easeOut", delay: 0.2 }}
       >
         <Chatbot />
       </motion.div>
-    </>
+    </div>
   );
 }

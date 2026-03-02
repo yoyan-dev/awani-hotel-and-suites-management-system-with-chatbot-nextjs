@@ -1,26 +1,17 @@
 "use client";
 
 import React from "react";
-import {
-  Navbar as HeroUINavbar,
-  NavbarContent,
-  NavbarBrand,
-  NavbarMenuToggle,
-} from "@heroui/navbar";
-import { Button, Image } from "@heroui/react";
-import { Link } from "@heroui/link";
+import { Button, Image, Link, cn } from "@heroui/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, ChevronUp, Menu, X } from "lucide-react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@heroui/react";
 
-import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { siteConfig } from "@/config/site";
 
 export default function Navbar() {
   const pathname = usePathname();
-
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedDesktop, setExpandedDesktop] = React.useState<string | null>(
     null,
@@ -31,226 +22,250 @@ export default function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
 
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   React.useEffect(() => {
-    siteConfig.guestNavMenuItems.forEach((item: any) => {
-      if (item.Children?.some((c: any) => c.href === pathname)) {
-        setExpandedDesktop(item.label);
-        setExpandedMobile(item.label);
-      }
-    });
-  }, [pathname]);
-
-  React.useEffect(() => {
     setMenuOpen(false);
+    setExpandedDesktop(null);
+    setExpandedMobile(null);
   }, [pathname]);
 
   return (
-    <>
-      <HeroUINavbar
-        maxWidth="xl"
-        position="sticky"
-        isMenuOpen={menuOpen}
-        onMenuOpenChange={setMenuOpen}
-        className="top-0 z-40 bg-white dark:bg-gray-900"
+    <header className="sticky top-0 z-50 w-full px-3 pt-3 sm:px-6">
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-[1320px] items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-300 sm:px-6",
+          scrolled
+            ? "border-[#d8cbb7]/70 bg-[#f9f4eb]/90 shadow-[0_18px_45px_-28px_rgba(46,40,29,0.6)] backdrop-blur-md"
+            : "border-transparent bg-[#f9f4eb]/65 backdrop-blur-sm",
+        )}
       >
-        <NavbarContent justify="start">
-          <NavbarBrand>
-            <NextLink href="/" className="flex items-center gap-2">
-              <Image src="/awani-logo.png" alt="logo" width={45} />
-              <div className="hidden sm:block">
-                <p className="font-bold">MA. Awani</p>
-                {/* <span className="text-xs text-gray-500">Hotel and Suites</span> */}
-              </div>
-            </NextLink>
-          </NavbarBrand>
-        </NavbarContent>
-
-        {/* ───────── DESKTOP MENU ───────── */}
-        <NavbarContent className="hidden sm:flex flex-1" justify="center">
-          <div className="flex gap-8 items-center">
-            {siteConfig.guestNavMenuItems.map((item: any) => {
-              const isActive =
-                pathname === item.href ||
-                item?.Children?.some((child: any) => child.href === pathname);
-
-              return (
-                <div key={item.label} className="relative">
-                  {!item.isExpandable ? (
-                    <NextLink
-                      href={item.href}
-                      className={cn(
-                        "relative  font-medium text-gray-700 hover:text-black transition",
-                        isActive && "text-black",
-                      )}
-                    >
-                      {item.label}
-
-                      {isActive && (
-                        <motion.span
-                          layoutId="navbar-underline"
-                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
-                        />
-                      )}
-                    </NextLink>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        setExpandedDesktop((p) =>
-                          p === item.label ? null : item.label,
-                        )
-                      }
-                      className={cn(
-                        "flex items-center gap-1  font-medium text-gray-700 hover:text-black",
-                        isActive && "text-black",
-                      )}
-                    >
-                      {item.label}
-                      {expandedDesktop === item.label ? (
-                        <ChevronUp size={14} />
-                      ) : (
-                        <ChevronDown size={14} />
-                      )}
-                    </button>
-                  )}
-
-                  {/* Dropdown */}
-                  <AnimatePresence>
-                    {item.isExpandable && expandedDesktop === item.label && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 6 }}
-                        className="absolute left-0 mt-3 w-44 bg-white shadow-md rounded-sm"
-                      >
-                        {item.Children?.map((child: any) => (
-                          <NextLink
-                            key={child.href}
-                            href={child.href}
-                            className={cn(
-                              "block px-4 py-2 text-sm hover:bg-gray-100  font-medium text-gray-700 hover:text-black",
-                              isActive && "text-black",
-                            )}
-                            onClick={() =>
-                              setExpandedDesktop((p) =>
-                                p === item.label ? null : item.label,
-                              )
-                            }
-                          >
-                            {child.label}
-                          </NextLink>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+        <NextLink href="/guest" className="flex items-center gap-3">
+          <Image src="/awani-logo.png" alt="Awani Hotel" width={44} />
+          <div className="leading-tight">
+            <p className="text-xs uppercase tracking-[0.25em] text-[#7c6a52]">
+              Luxury Stay
+            </p>
+            <p className="font-serif text-lg font-semibold text-[#1f1e1b]">
+              Ma. Awani Hotel
+            </p>
           </div>
-        </NavbarContent>
+        </NextLink>
 
-        {/* ───────── CTA BUTTON ───────── */}
-        <NavbarContent justify="end" className="">
+        <nav className="hidden items-center gap-8 lg:flex">
+          {siteConfig.guestNavMenuItems.map((item: any) => {
+            const isActive =
+              pathname === item.href ||
+              item?.Children?.some((child: any) => child.href === pathname);
+
+            if (!item.isExpandable) {
+              return (
+                <NextLink
+                  key={item.label}
+                  href={item.href}
+                  className={cn(
+                    "relative text-sm font-semibold tracking-wide text-[#5d5549] transition-colors hover:text-[#1f1e1b]",
+                    isActive && "text-[#1f1e1b]",
+                  )}
+                >
+                  {item.label}
+                  {isActive ? (
+                    <span className="absolute -bottom-2 left-0 h-[2px] w-full bg-[#b08a53]" />
+                  ) : null}
+                </NextLink>
+              );
+            }
+
+            return (
+              <div key={item.label} className="relative">
+                <button
+                  className={cn(
+                    "flex items-center gap-1 text-sm font-semibold tracking-wide text-[#5d5549] transition-colors hover:text-[#1f1e1b]",
+                    isActive && "text-[#1f1e1b]",
+                  )}
+                  onClick={() =>
+                    setExpandedDesktop((prev) =>
+                      prev === item.label ? null : item.label,
+                    )
+                  }
+                  type="button"
+                >
+                  {item.label}
+                  {expandedDesktop === item.label ? (
+                    <ChevronUp size={15} />
+                  ) : (
+                    <ChevronDown size={15} />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {expandedDesktop === item.label ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 6 }}
+                      className="absolute left-0 mt-4 min-w-[220px] rounded-xl border border-[#e0d4c1] bg-[#fffdf9] p-2 shadow-[0_20px_45px_-30px_rgba(31,30,27,0.55)]"
+                    >
+                      {item.Children?.map((child: any) => (
+                        <NextLink
+                          key={child.href}
+                          href={child.href}
+                          className={cn(
+                            "block rounded-lg px-3 py-2 text-sm font-medium text-[#5f5445] transition-colors hover:bg-[#f5ede1] hover:text-[#201f1c]",
+                            pathname === child.href &&
+                              "bg-[#f5ede1] text-[#201f1c]",
+                          )}
+                        >
+                          {child.label}
+                        </NextLink>
+                      ))}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="hidden items-center gap-2 lg:flex">
           <ThemeSwitch />
           <Button
             as={Link}
             href="/guest/contact-us"
-            color="primary"
+            variant="bordered"
             radius="full"
+            className="border-[#ceb894] text-[#4a4033]"
           >
-            Contact Us
+            Contact
           </Button>
-          <div className="sm:hidden">
-            <NavbarMenuToggle />
-          </div>
-        </NavbarContent>
-      </HeroUINavbar>
-
-      {/* ───────── FULLSCREEN MOBILE MENU ───────── */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="
-              fixed inset-0 z-100
-              bg-white dark:bg-gray-900
-              px-6 pt-6
-            "
+          <Button
+            as={Link}
+            href="/guest/reservations/hotel-rooms"
+            radius="full"
+            className="bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
           >
-            {/* CLOSE */}
-            <div className="flex justify-between items-center mb-6">
-              <p className="font-bold text-lg">Menu</p>
-              <button onClick={() => setMenuOpen(false)}>
-                <X />
-              </button>
+            Book Now
+          </Button>
+        </div>
+
+        <button
+          className="inline-flex items-center justify-center rounded-full border border-[#d9ccb9] bg-[#fffaf0] p-2 text-[#4a4033] lg:hidden"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          type="button"
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {menuOpen ? (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mx-auto mt-3 w-full max-w-[1320px] rounded-2xl border border-[#dfd2bf] bg-[#fffdf9] p-4 shadow-[0_18px_40px_-28px_rgba(32,28,22,0.55)] lg:hidden"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <p className="font-serif text-lg text-[#27231f]">Navigation</p>
+              <ThemeSwitch />
             </div>
 
-            {/* MOBILE ITEMS */}
-            {siteConfig.guestNavMenuItems.map((item: any) => {
-              const isExpanded = expandedMobile === item.label;
+            <div className="space-y-2">
+              {siteConfig.guestNavMenuItems.map((item: any) => {
+                if (!item.isExpandable) {
+                  return (
+                    <NextLink
+                      key={item.label}
+                      href={item.href}
+                      className={cn(
+                        "block rounded-xl px-3 py-3 text-sm font-medium text-[#52493d] transition-colors hover:bg-[#f4ece0]",
+                        pathname === item.href && "bg-[#f4ece0] text-[#1f1e1b]",
+                      )}
+                    >
+                      {item.label}
+                    </NextLink>
+                  );
+                }
 
-              return (
-                <div key={item.label} className="mb-2">
-                  <button
-                    onClick={() =>
-                      item.isExpandable
-                        ? setExpandedMobile((p) =>
-                            p === item.label ? null : item.label,
-                          )
-                        : setMenuOpen(false)
-                    }
-                    className="flex items-center justify-between w-full py-3 text-lg"
+                const isExpanded = expandedMobile === item.label;
+
+                return (
+                  <div
+                    key={item.label}
+                    className="rounded-xl border border-[#ece0ce]"
                   >
-                    {item.label}
-                    {item.isExpandable && (
+                    <button
+                      className="flex w-full items-center justify-between px-3 py-3 text-left text-sm font-semibold text-[#3f382f]"
+                      onClick={() =>
+                        setExpandedMobile((prev) =>
+                          prev === item.label ? null : item.label,
+                        )
+                      }
+                      type="button"
+                    >
+                      {item.label}
                       <ChevronDown
+                        size={15}
                         className={cn(
                           "transition-transform",
                           isExpanded && "rotate-180",
                         )}
                       />
-                    )}
-                  </button>
+                    </button>
+                    <AnimatePresence>
+                      {isExpanded ? (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-1 border-t border-[#ece0ce] px-2 py-2"
+                        >
+                          {item.Children?.map((child: any) => (
+                            <NextLink
+                              key={child.href}
+                              href={child.href}
+                              className={cn(
+                                "block rounded-lg px-3 py-2 text-sm text-[#5b5145] transition-colors hover:bg-[#f4ece0]",
+                                pathname === child.href &&
+                                  "bg-[#f4ece0] text-[#1f1e1b]",
+                              )}
+                            >
+                              {child.label}
+                            </NextLink>
+                          ))}
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
 
-                  <AnimatePresence>
-                    {item.isExpandable && isExpanded && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="ml-4 border-l pl-4"
-                      >
-                        {item.Children?.map((child: any) => (
-                          <NextLink
-                            key={child.href}
-                            href={child.href}
-                            className="block py-2 text-gray-500"
-                            onClick={() => setMenuOpen(false)}
-                          >
-                            {child.label}
-                          </NextLink>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-
-            <div className="mt-6">
-              <ThemeSwitch />
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button
+                as={Link}
+                href="/guest/contact-us"
+                variant="bordered"
+                className="border-[#ceb894] text-[#4a4033]"
+              >
+                Contact
+              </Button>
+              <Button
+                as={Link}
+                href="/guest/reservations/hotel-rooms"
+                className="bg-[#b08a53] font-semibold text-white"
+              >
+                Book Now
+              </Button>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
-    </>
+    </header>
   );
 }

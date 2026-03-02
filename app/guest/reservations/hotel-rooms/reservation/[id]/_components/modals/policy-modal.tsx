@@ -40,23 +40,28 @@ export default function PolicyModal({ onConfirm }: PolicyModalProps) {
   return (
     <>
       <Button
-        color="primary"
         variant="flat"
         size="sm"
         onPress={() => setIsOpen(true)}
+        className="rounded-full bg-[#f2e8d9] text-[#5e5447]"
       >
         Read & Sign Policy
       </Button>
 
       <Modal isOpen={isOpen} onOpenChange={setIsOpen} size="lg">
-        <ModalContent>
-          <ModalHeader>Booking Cancellation Policy</ModalHeader>
+        <ModalContent className="rounded-3xl border border-[#e3d8c8] bg-[#fffdf8]">
+          <ModalHeader className="font-serif text-2xl text-[#281f14]">
+            Booking Cancellation Policy
+          </ModalHeader>
           <ModalBody className="space-y-4">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#665d50]">
               Please read our declaration carefully and download our Booking
               Cancellation Policy.
             </p>
-            <Button onPress={downloadPolicy} color="secondary">
+            <Button
+              onPress={downloadPolicy}
+              className="rounded-full bg-[#1f1d19] font-semibold text-white hover:bg-[#343028]"
+            >
               Download Booking Cancellation Policy
             </Button>
             <Checkbox isSelected={agreed} onValueChange={setAgreed}>
@@ -67,16 +72,22 @@ export default function PolicyModal({ onConfirm }: PolicyModalProps) {
               placeholder="Type your name here"
               value={signature}
               onChange={(e) => setSignature(e.target.value)}
+              variant="bordered"
+              radius="lg"
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onPress={() => setIsOpen(false)}>
+            <Button
+              variant="flat"
+              onPress={() => setIsOpen(false)}
+              className="rounded-full bg-[#f2e8d9] text-[#5e5447]"
+            >
               Cancel
             </Button>
             <Button
-              color="primary"
               isDisabled={!agreed || !signature}
               onPress={handleConfirm}
+              className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
             >
               Confirm
             </Button>

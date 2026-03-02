@@ -1,75 +1,62 @@
-import { Carousel } from "@/components/ui/carousel";
-import TestimonialCard from "./testimonial-card";
-import { useGuestFeedback } from "@/hooks/use-feedback";
+"use client";
+
 import { useEffect } from "react";
 
-const TESTIMONIALS = [
-  {
-    name: "Maria Santos",
-    role: "Guest",
-    comment:
-      "Awani Hotel and Suites provided an amazing experience! The staff were so friendly and helpful.",
-  },
-  {
-    name: "John Cruz",
-    role: "Event Planner",
-    comment:
-      "The banquet halls are perfect for corporate events. Highly recommended!",
-  },
-  {
-    name: "Anna Lim",
-    role: "Guest",
-    comment:
-      "I loved the comfort and cleanliness of the rooms. Will definitely come back.",
-  },
-  {
-    name: "Carlos Reyes",
-    role: "Guest",
-    comment:
-      "Exceptional service and attention to detail. Awani is truly a 5-star experience.",
-  },
-];
+import { Carousel } from "@/components/ui/carousel";
+import { useGuestFeedback } from "@/hooks/use-feedback";
+
+import TestimonialCard from "./testimonial-card";
 
 export default function TestimonialsSection() {
-  const { guest_feedbacks, isLoading, error, fetchGuestFeedbacks } =
+  const { guest_feedbacks, isLoading, fetchGuestFeedbacks } =
     useGuestFeedback();
 
   useEffect(() => {
     fetchGuestFeedbacks({});
-  }, [error]);
+  }, []);
 
-  if (isLoading) return "Loading...";
-  return (
-    <main className=" py-10 px-4">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-primary">
-            What Our Guests Say
-          </h1>
-          <p className="text-gray-500 mt-2 text-sm">
-            Hear from our satisfied guests at Awani Hotel and Suites
-          </p>
-        </header>
-
-        <div>
-          <Carousel
-            autoScroll={true}
-            itemsPerView={3}
-            hasButton={false}
-            autoScrollInterval={5000}
-          >
-            {guest_feedbacks.map((feedback) => (
-              <TestimonialCard
-                key={feedback.id}
-                name="Awani Guest"
-                role="guest"
-                rating={feedback.rating}
-                comment={feedback.comments || ""}
-              />
-            ))}
-          </Carousel>
+  if (isLoading) {
+    return (
+      <section className="py-16 sm:py-20">
+        <div className="rounded-4xl border border-[#e5d9c9] bg-[#fffdf8] p-8 text-center text-[#6a5e4f]">
+          Loading guest testimonials...
         </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-16 sm:py-20">
+      <div className="mb-10 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
+          Testimonials
+        </p>
+        <h2 className="mt-3 font-serif text-3xl text-[#201e1a] sm:text-4xl">
+          What our guests say
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-sm text-[#665c4f] sm:text-base">
+          Feedback from travelers and event guests who chose Awani Hotel &
+          Suites.
+        </p>
       </div>
-    </main>
+
+      <Carousel
+        autoScroll
+        itemsPerView={1}
+        responsive={{ sm: 1, md: 2, lg: 3 }}
+        autoScrollInterval={4600}
+        hasButton={false}
+      >
+        {guest_feedbacks.map((feedback) => (
+          <TestimonialCard
+            key={feedback.id}
+            name="Awani Guest"
+            role="Verified stay"
+            rating={feedback.rating}
+            comment={feedback.comments || ""}
+          />
+        ))}
+      </Carousel>
+    </section>
   );
 }

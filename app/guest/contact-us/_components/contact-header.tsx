@@ -13,16 +13,15 @@ export function ContactHeader({
   title,
   description,
   imageUrl,
-  eyebrow = "LET’S CONNECT",
+  eyebrow = "LET'S CONNECT",
 }: ContactHeaderProps) {
   return (
     <motion.header
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-md"
+      className="relative mt-4 overflow-hidden rounded-4xl border border-[#dfd3c1]"
     >
-      {/* Background Image */}
       <motion.div
         initial={{ scale: 1.05 }}
         animate={{ scale: 1 }}
@@ -32,29 +31,25 @@ export function ContactHeader({
         aria-hidden="true"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/58" />
 
-      {/* Content */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="relative z-10 px-6 py-24 text-center space-y-3"
+        className="relative z-10 space-y-3 px-6 py-24 text-center"
       >
-        <p className="text-xs font-medium tracking-wide uppercase text-primary">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#d8c19b]">
           {eyebrow}
         </p>
 
-        <h1 className="text-3xl md:text-4xl font-semibold text-white">
-          {title}
-        </h1>
+        <h1 className="font-serif text-4xl text-white md:text-5xl">{title}</h1>
 
-        {description && (
-          <p className="text-sm md:text-base text-gray-200 max-w-2xl mx-auto">
+        {description ? (
+          <p className="mx-auto max-w-2xl text-sm text-gray-200 md:text-base">
             {description}
           </p>
-        )}
+        ) : null}
       </motion.div>
     </motion.header>
   );

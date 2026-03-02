@@ -1,4 +1,11 @@
-import { DatePicker, Input, Select, SelectItem, Textarea, TimeInput } from "@heroui/react";
+import {
+  DatePicker,
+  Input,
+  Select,
+  SelectItem,
+  Textarea,
+  TimeInput,
+} from "@heroui/react";
 import { Time } from "@internationalized/date";
 
 const eventTypeOptions = [
@@ -33,8 +40,12 @@ export default function BookingFormEventStep({
   onEndTimeChange,
 }: BookingFormEventStepProps) {
   return (
-    <div className="space-y-4 w-full">
-      <h1 className="flex items-center gap-2">Event Details</h1>
+    <div className="w-full space-y-4">
+      <h1 className="font-serif text-2xl text-[#281f14]">Event Details</h1>
+      <p className="text-xs text-[#6c6254]">
+        Enter your event information, preferred schedule, and expected
+        attendees.
+      </p>
       <Select
         fullWidth
         isRequired
@@ -43,7 +54,8 @@ export default function BookingFormEventStep({
         labelPlacement="outside"
         placeholder="Select event type"
         variant="bordered"
-        className="pt-4"
+        radius="lg"
+        className="pt-2"
       >
         {eventTypeOptions.map((eventType) => (
           <SelectItem key={eventType.key}>{eventType.label}</SelectItem>
@@ -52,6 +64,7 @@ export default function BookingFormEventStep({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
         <DatePicker
           variant="bordered"
+          radius="lg"
           minValue={minDate}
           value={startDate}
           label="Start date"
@@ -59,6 +72,7 @@ export default function BookingFormEventStep({
         />
         <DatePicker
           variant="bordered"
+          radius="lg"
           minValue={startDate}
           value={endDate}
           label="End date"
@@ -71,6 +85,7 @@ export default function BookingFormEventStep({
           label="Start time"
           labelPlacement="outside"
           variant="bordered"
+          radius="lg"
           value={startTime}
           onChange={(value) => value && onStartTimeChange(value as Time)}
         />
@@ -79,6 +94,7 @@ export default function BookingFormEventStep({
           label="End time"
           labelPlacement="outside"
           variant="bordered"
+          radius="lg"
           value={endTime}
           onChange={(value) => value && onEndTimeChange(value as Time)}
         />
@@ -91,6 +107,7 @@ export default function BookingFormEventStep({
         label="Number of Guests"
         labelPlacement="outside"
         variant="bordered"
+        radius="lg"
         className="pt-4"
       />
       <Textarea
@@ -99,6 +116,7 @@ export default function BookingFormEventStep({
         labelPlacement="outside"
         placeholder="Stage setup, dietary needs, program flow, etc."
         variant="bordered"
+        radius="lg"
         className="pt-4"
       />
     </div>
