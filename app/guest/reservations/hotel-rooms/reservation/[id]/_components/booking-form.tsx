@@ -1,5 +1,13 @@
 import { FetchRoomTypesParams, RoomType } from "@/types/room";
-import { Button, Chip, Form, Input, Select, SelectItem } from "@heroui/react";
+import {
+  addToast,
+  Button,
+  Chip,
+  Form,
+  Input,
+  Select,
+  SelectItem,
+} from "@heroui/react";
 import { Minus, Plus } from "lucide-react";
 import React, { useState } from "react";
 import ViewModal from "./modals/view-modal";
@@ -34,6 +42,17 @@ interface BookingFormProps {
   addGuestIsLoading: boolean;
 }
 
+function formatDateLabel(value: string) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
 export default function BookingForm({
   onSubmit,
   query,
@@ -52,7 +71,20 @@ export default function BookingForm({
   const [policySignature, setPolicySignature] = useState("");
   const [isGuestIdVerified, setIsGuestIdVerified] = useState(false);
   const [numberOfGuests, setNumberOfGuests] = useState("1");
-  const [isFormComplete, setIsFormComplete] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [previewData, setPreviewData] = useState({
+    full_name: "",
+    contact_number: "",
+    address: "",
+    nationality: "",
+    gender: "",
+    email: "",
+    checked_in: "",
+    checked_out: "",
+    room_name: "",
+    company: "",
+    number_of_guests: "",
+  });
   const formRef = React.useRef<HTMLFormElement>(null);
 
   const selectedAddOns = React.useMemo(
@@ -60,32 +92,192 @@ export default function BookingForm({
     [summary],
   );
 
-  const evaluateFormCompletion = React.useCallback(() => {
+  const readField = React.useCallback((name: string) => {
     const form = formRef.current;
-    if (!form) return;
-    setIsFormComplete(form.checkValidity() && isGuestIdVerified);
-  }, [isGuestIdVerified]);
+    if (!form) return "";
+    const value = new FormData(form).get(name);
+    return typeof value === "string" ? value.trim() : "";
+  }, []);
 
-  React.useEffect(() => {
-    evaluateFormCompletion();
-  }, [
-    evaluateFormCompletion,
-    query.checkIn,
-    query.checkOut,
-    selectedRoom,
-    specialRequests,
-    numberOfGuests,
-  ]);
+  function validateGuestStep() {
+    const required: Array<{ name: string; label: string }> = [
+      { name: "full_name", label: "full name" },
+      { name: "contact_number", label: "contact number" },
+      { name: "address", label: "home address" },
+      { name: "nationality", label: "nationality" },
+      { name: "gender", label: "gender" },
+      { name: "email", label: "email" },
+    ];
+
+    for (const field of required) {
+      if (!readField(field.name)) {
+        addToast({
+          title: "Missing Information",
+          description: `Please provide your ${field.label}.`,
+          color: "warning",
+        });
+        return false;
+      }
+    }
+
+    if (!isGuestIdVerified) {
+      addToast({
+        title: "ID Verification Required",
+        description:
+          "Please upload and verify both front and back ID images to continue.",
+        color: "warning",
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  function validateBookingStep() {
+    if (!query.checkIn || !query.checkOut) {
+      addToast({
+        title: "Missing Dates",
+        description: "Please select check-in and check-out dates.",
+        color: "warning",
+      });
+      return false;
+    }
+
+    const checkedIn = new Date(String(query.checkIn));
+    const checkedOut = new Date(String(query.checkOut));
+    if (
+      Number.isNaN(checkedIn.getTime()) ||
+      Number.isNaN(checkedOut.getTime()) ||
+      checkedIn >= checkedOut
+    ) {
+      addToast({
+        title: "Invalid Date Range",
+        description: "Check-out date must be later than check-in date.",
+        color: "warning",
+      });
+      return false;
+    }
+
+    if (!selectedRoom) {
+      addToast({
+        title: "Room Required",
+        description: "Please select a room type.",
+        color: "warning",
+      });
+      return false;
+    }
+
+    const guests = Number(readField("number_of_guests"));
+    if (!Number.isFinite(guests) || guests <= 0) {
+      addToast({
+        title: "Invalid Number of Guests",
+        description: "Please enter a valid number of guests.",
+        color: "warning",
+      });
+      return false;
+    }
+
+    if (room?.max_guest && guests > Number(room.max_guest)) {
+      addToast({
+        title: "Guest Limit Exceeded",
+        description: `Maximum guests allowed for this room: ${room.max_guest}.`,
+        color: "warning",
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  function capturePreviewData() {
+    setPreviewData({
+      full_name: readField("full_name"),
+      contact_number: readField("contact_number"),
+      address: readField("address"),
+      nationality: readField("nationality"),
+      gender: readField("gender"),
+      email: readField("email"),
+      checked_in: formatDateLabel(String(query.checkIn || "")),
+      checked_out: formatDateLabel(String(query.checkOut || "")),
+      room_name: room?.name || "-",
+      company: readField("company"),
+      number_of_guests: readField("number_of_guests"),
+    });
+  }
+
+  function handleNext() {
+    if (step === 1) {
+      if (!validateGuestStep()) return;
+      setStep(2);
+      return;
+    }
+
+    if (step === 2) {
+      if (!validateBookingStep()) return;
+      capturePreviewData();
+      setStep(3);
+    }
+  }
+
+  function handlePrevious() {
+    if (step === 2) {
+      setStep(1);
+      return;
+    }
+    if (step === 3) {
+      setStep(2);
+    }
+  }
+
+  function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (step !== 3) {
+      e.preventDefault();
+      return;
+    }
+    onSubmit(e);
+  }
 
   return (
     <Form
       ref={formRef}
-      onSubmit={onSubmit}
+      onSubmit={handleFormSubmit}
       className="flex-1 px-4 w-full space-y-4"
     >
-      <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span
+          className={`rounded-full px-3 py-1 font-medium ${
+            step >= 1
+              ? "bg-primary text-primary-foreground"
+              : "bg-default-100 text-default-500"
+          }`}
+        >
+          1. Guest Info
+        </span>
+        <span
+          className={`rounded-full px-3 py-1 font-medium ${
+            step >= 2
+              ? "bg-primary text-primary-foreground"
+              : "bg-default-100 text-default-500"
+          }`}
+        >
+          2. Booking Details
+        </span>
+        <span
+          className={`rounded-full px-3 py-1 font-medium ${
+            step >= 3
+              ? "bg-primary text-primary-foreground"
+              : "bg-default-100 text-default-500"
+          }`}
+        >
+          3. Preview
+        </span>
+      </div>
 
-      <div className="space-y-4 w-full">
+      <div className={step === 1 ? "w-full" : "hidden"}>
+        <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
+      </div>
+
+      <div className={step === 2 ? "space-y-4 w-full" : "hidden"}>
         <h1>
           <Chip color="primary" className="text-sm">
             2
@@ -124,7 +316,7 @@ export default function BookingForm({
           />
         </div>
         {query.checkIn && query.checkOut && roomTypes.length <= 0 ? (
-          <div>No Available rooms on a selected date</div>
+          <div>No available rooms on selected dates.</div>
         ) : null}
         <div className="py-4">
           <Select
@@ -260,8 +452,59 @@ export default function BookingForm({
           max={room?.max_guest}
           errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
         />
+      </div>
 
-        {isFormComplete && summary ? (
+      <div className={step === 3 ? "space-y-4 w-full" : "hidden"}>
+        <h1 className="text-lg font-semibold">Preview Details</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-xl border border-default-200 p-4 text-sm">
+          <div>
+            <p className="text-default-500">Full Name</p>
+            <p className="font-medium">{previewData.full_name || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Contact Number</p>
+            <p className="font-medium">{previewData.contact_number || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Email</p>
+            <p className="font-medium">{previewData.email || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Gender</p>
+            <p className="font-medium">{previewData.gender || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Nationality</p>
+            <p className="font-medium">{previewData.nationality || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Number of Guests</p>
+            <p className="font-medium">{previewData.number_of_guests || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Check-in</p>
+            <p className="font-medium">{previewData.checked_in || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Check-out</p>
+            <p className="font-medium">{previewData.checked_out || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Room Type</p>
+            <p className="font-medium">{previewData.room_name || "-"}</p>
+          </div>
+          <div>
+            <p className="text-default-500">Company</p>
+            <p className="font-medium">{previewData.company || "-"}</p>
+          </div>
+          <div className="md:col-span-2">
+            <p className="text-default-500">Address</p>
+            <p className="font-medium">{previewData.address || "-"}</p>
+          </div>
+        </div>
+
+        {summary ? (
           <BookingSummary
             summary={summary}
             query={query}
@@ -269,20 +512,37 @@ export default function BookingForm({
             selectedAddOns={selectedAddOns}
           />
         ) : null}
+
+        <div className="space-y-4">
+          <h1 className="px-2 bg-primary text-white md:text-xl">Declaration</h1>
+          <div>
+            <p className="text-sm text-gray-600">
+              The information I have given is true, correct and complete. I
+              understand failure to answer any question may have serious
+              consequences.
+            </p>
+          </div>
+          <div className="flex justify-between">
+            <PolicyModal onConfirm={(sig) => setPolicySignature(sig)} />
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <h1 className="px-2 bg-primary text-white md:text-xl">Declaration</h1>
-        <div>
-          <p className="text-sm text-gray-600">
-            The information I have given is true, correct and complete. I
-            understand failure to answer any question may have serious
-            consequences.
-          </p>
-        </div>
-        <div className="flex justify-between">
-          <PolicyModal onConfirm={(sig) => setPolicySignature(sig)} />
+      <div className="flex justify-between w-full">
+        <Button
+          variant="flat"
+          type="button"
+          onPress={handlePrevious}
+          isDisabled={step === 1}
+        >
+          Previous
+        </Button>
 
+        {step < 3 ? (
+          <Button color="primary" type="button" onPress={handleNext}>
+            {step === 2 ? "Preview" : "Next"}
+          </Button>
+        ) : (
           <Button
             isLoading={bookingIsLoading || addGuestIsLoading}
             isDisabled={!policySignature || !isGuestIdVerified}
@@ -291,7 +551,7 @@ export default function BookingForm({
           >
             Submit
           </Button>
-        </div>
+        )}
       </div>
     </Form>
   );
