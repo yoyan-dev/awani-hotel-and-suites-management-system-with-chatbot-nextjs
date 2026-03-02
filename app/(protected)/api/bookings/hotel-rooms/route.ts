@@ -9,6 +9,8 @@ import {
 } from "@/lib/add-ons/availability";
 import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
 import { BookingSpecialRequest } from "@/types/add-on";
+import { RoomType } from "@/types/room";
+import { TablesInsert } from "@/types/supabase";
 
 async function getRoomTypeWithAvailability(
   roomTypeId: string,
@@ -44,14 +46,18 @@ async function getRoomTypeWithAvailability(
   }
 
   const totals = collectRequestedQuantities(
-    (overlappingBookings ?? []).flatMap(
-      (booking) => booking.special_requests ?? [],
+    (overlappingBookings ?? []).flatMap((booking) =>
+      Array.isArray(booking.special_requests)
+        ? (booking.special_requests.filter((request) =>
+            Boolean(request && typeof request === "object"),
+          ) as unknown as BookingSpecialRequest[])
+        : [],
     ),
   );
 
   return {
     roomType,
-    addOns: resolveRoomTypeAddOnAvailability(roomType, totals),
+    addOns: resolveRoomTypeAddOnAvailability(roomType as RoomType, totals),
   };
 }
 
@@ -251,7 +257,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     );
     const totalAddOns = computeTotalAddOns(specialRequests);
 
-    const newData = {
+    const newData: TablesInsert<"bookings"> = {
       booking_number: bookingNumber,
       guest_id: guestId,
       room_type_id: roomTypeId,
@@ -273,7 +279,8 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       amount_paid: formObj.amount_paid ? Number(formObj.amount_paid) : null,
       total: formObj.total ? String(formObj.total) : null,
       status: formObj.status ? String(formObj.status) : "pending",
-      special_requests: specialRequests,
+      special_requests:
+        specialRequests as unknown as TablesInsert<"bookings">["special_requests"],
       total_add_ons: String(totalAddOns),
     };
 
@@ -289,6 +296,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     if (checkError) throw checkError;
 
     const hasOverlap = existingBookings?.some((booking) => {
+      if (!booking.checked_in || !booking.checked_out) return false;
       const existingIn = new Date(booking.checked_in);
       const existingOut = new Date(booking.checked_out);
       return newCheckIn <= existingOut && newCheckOut >= existingIn;
@@ -311,7 +319,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
     const { data, error } = await supabase
       .from("bookings")
-      .insert([newData])
+      .insert(newData)
       .select();
 
     if (error) {
@@ -380,7 +388,7 @@ export async function DELETE(
     if (selectedValues === "all") {
       // delete all
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

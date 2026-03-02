@@ -1,6 +1,5 @@
 import {
   addBooking,
-  completeBooking,
   deleteBooking,
   fetchBooking,
   fetchBookings,
@@ -34,10 +33,5 @@ export function useFunctionHallBookings() {
     updateBooking: (payload: FunctionHallBooking) =>
       dispatch(updateBooking(payload)),
     deleteBooking: (id: string) => dispatch(deleteBooking(id)),
-    completeBooking: (
-      bookingId: string,
-      roomId: string,
-      occupancyType: string,
-    ) => dispatch(completeBooking({ bookingId, roomId, occupancyType })),
   };
 }

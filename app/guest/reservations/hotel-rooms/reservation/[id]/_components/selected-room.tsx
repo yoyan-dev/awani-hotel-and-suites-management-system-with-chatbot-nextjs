@@ -45,7 +45,7 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
           <h3 className="text-lg font-medium mb-2">Room Features</h3>
           <div className="flex gap-4 text-gray-700 flex-wrap">
             <div className="flex items-center gap-2">
-              <UserCircle size={20} /> 2 Guests
+              <UserCircle size={20} /> {room.max_guest} Guests
             </div>
             <div className="flex items-center gap-2">
               <Bed size={20} /> 1 Queen Bed

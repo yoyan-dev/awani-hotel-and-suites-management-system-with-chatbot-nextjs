@@ -170,7 +170,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

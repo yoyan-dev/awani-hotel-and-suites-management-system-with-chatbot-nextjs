@@ -45,7 +45,7 @@ export const siteConfig = {
       Children: [
         { label: "Hotel Rooms", href: "/admin/rooms/hotel-rooms" },
         { label: "Hotel Rooms Types", href: "/admin/rooms/room-types" },
-        { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
+        // { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
         {
           label: "Room Reports",
           href: "/admin/rooms/reportings",

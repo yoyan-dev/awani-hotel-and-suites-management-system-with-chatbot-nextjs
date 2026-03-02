@@ -76,18 +76,18 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     );
 
     const newData = {
-      id,
-      full_name,
-      contact_number,
-      address,
-      nationality,
-      gender,
-      email,
+      id: id ? String(id) : undefined,
+      full_name: full_name ? String(full_name) : null,
+      contact_number: contact_number ? String(contact_number) : null,
+      address: address ? String(address) : null,
+      nationality: nationality ? String(nationality) : null,
+      gender: gender ? String(gender) : null,
+      email: email ? String(email) : null,
       valid_id: { front: validIdImage.front, back: validIdImage.back },
     };
     const { data, error } = await supabase
       .from("guest")
-      .insert([newData])
+      .insert(newData)
       .select();
 
     if (error) {
@@ -158,7 +158,7 @@ export async function DELETE(
 
     if (selectedValues === "all") {
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

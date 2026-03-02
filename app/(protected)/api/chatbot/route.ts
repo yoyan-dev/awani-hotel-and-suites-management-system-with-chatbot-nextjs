@@ -235,9 +235,18 @@ async function getAvailableRoomTypes(params: {
       ) ?? [];
 
     const totals = collectRequestedQuantities(
-      overlappingBookings.flatMap((booking) => booking.special_requests ?? []),
+      overlappingBookings.flatMap((booking) =>
+        Array.isArray(booking.special_requests)
+          ? (booking.special_requests.filter((request) =>
+              Boolean(request && typeof request === "object"),
+            ) as any[])
+          : [],
+      ),
     );
-    const availableAddOns = resolveRoomTypeAddOnAvailability(roomType, totals);
+    const availableAddOns = resolveRoomTypeAddOnAvailability(
+      roomType as RoomType,
+      totals,
+    );
 
     return {
       ...roomType,

@@ -18,26 +18,31 @@ export const columns: ColumnType[] = [
 
 export const bookingStatusOptions = [
   { name: "Confirmed", uid: "confirmed" },
+  { name: "Ongoing", uid: "ongoing" },
+  { name: "Completed", uid: "completed" },
   { name: "Cancelled", uid: "cancelled" },
   { name: "Pending", uid: "pending" },
-  { name: "Checked In", uid: "checked_in" },
-  { name: "Checked Out", uid: "checked_out" },
+  { name: "Rejected", uid: "rejected" },
 ];
 
 export const bookingStatusColorMap: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
   confirmed: "bg-blue-100 text-blue-800",
-  checked_in: "bg-green-100 text-green-800",
-  checked_out: "bg-slate-100 text-slate-800",
+  ongoing: "bg-amber-100 text-amber-800",
+  completed: "bg-green-100 text-green-800",
   cancelled: "bg-red-100 text-red-800",
+  rejected: "bg-rose-100 text-rose-800",
+  default: "bg-gray-100 text-gray-700",
 };
 
 export const bookingStatusHexColorMap: Record<string, string> = {
   pending: "#facc15", // yellow
   reserved: "#a78bfa", // purple
   confirmed: "#60a5fa", // blue
-  checked_in: "#34d399", // green
+  ongoing: "#f59e0b", // amber
+  completed: "#34d399", // green
   cancelled: "#f87171", // red
+  rejected: "#f43f5e", // rose
   default: "#9ca3af", // gray
 };
 

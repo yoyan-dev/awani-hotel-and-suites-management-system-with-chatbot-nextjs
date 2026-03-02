@@ -87,7 +87,8 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     const filtered =
       (data ?? []).filter((booking) => {
         const bookingStart = parseBookingBoundaryDateOnly(booking, "start");
-        const bookingEnd = parseBookingBoundaryDateOnly(booking, "end") || bookingStart;
+        const bookingEnd =
+          parseBookingBoundaryDateOnly(booking, "end") || bookingStart;
 
         if (!bookingStart || !bookingEnd) {
           return false;
@@ -209,7 +210,10 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       );
     }
 
-    if (!Number.isFinite(newBooking.number_of_guest) || newBooking.number_of_guest <= 0) {
+    if (
+      !Number.isFinite(newBooking.number_of_guest) ||
+      newBooking.number_of_guest <= 0
+    ) {
       return NextResponse.json(
         {
           success: false,
@@ -236,7 +240,8 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
 
       const hasOverlap = existing?.some((b) => {
         const existingStart = parseBookingBoundaryDateTime(b as any, "start");
-        const existingEnd = parseBookingBoundaryDateTime(b as any, "end") || existingStart;
+        const existingEnd =
+          parseBookingBoundaryDateTime(b as any, "end") || existingStart;
         const newStart = parsedStart;
         const newEnd = parsedEnd;
 
@@ -312,7 +317,7 @@ export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
     if (selectedValues === "all") {
       // delete all
     } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues);
+      query = query.in("id", selectedValues.map(String));
     } else {
       return NextResponse.json(
         {

@@ -10,15 +10,17 @@ import {
   addBooking as addFunctionHallBooking,
 } from "@/features/booking/function-hall/booking-thunk";
 import { parseISODateTime } from "@/utils/function-room/event-duration-date";
+import { useGuests } from "@/hooks/use-guests";
+import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
+import { buildGuestFormData } from "@/app/guest/reservations/_utils/build-guest-form-data";
 
 export default function Page() {
-  const [selectedPackage, setSelectedPackage] = React.useState(null);
-  const [guestId, setGuestId] = React.useState<string | null>(null);
-  const [EventDuration, setEventDuration] = React.useState({
+  const [eventDuration, setEventDuration] = React.useState({
     start: "",
     end: "",
   });
   const [isSubmitted, setIsSubmitted] = React.useState(false);
+  const { addGuest } = useGuests();
   const {
     fetchBookings,
     isLoading: bookingIsLoading,
@@ -28,15 +30,8 @@ export default function Page() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    if (!guestId) {
-      addToast({
-        title: "Error",
-        description: "Please register or select a guest first.",
-        color: "warning",
-      });
-      return;
-    }
-    if (!EventDuration.start || !EventDuration.end) {
+
+    if (!eventDuration.start || !eventDuration.end) {
       addToast({
         title: "Error",
         description: "Please select event date and start/end time.",
@@ -45,21 +40,35 @@ export default function Page() {
       return;
     }
 
-    const eventStartISO = String(EventDuration.start);
-    const eventEndISO = String(EventDuration.end);
+    const eventStartISO = String(eventDuration.start);
+    const eventEndISO = String(eventDuration.end);
     const eventStart = parseISODateTime(eventStartISO);
     const eventEnd = parseISODateTime(eventEndISO);
 
     if (!eventStart || !eventEnd || eventStart >= eventEnd) {
       addToast({
         title: "Error",
-        description: "Invalid event duration. End time must be after start time.",
+        description:
+          "Invalid event duration. End time must be after start time.",
         color: "warning",
       });
       return;
     }
 
-    const fetchResult = await fetchBookings({ guest_id: guestId });
+    const { guestFormData, generatedGuestId } = buildGuestFormData(formData);
+    const addGuestResult = await addGuest(guestFormData);
+    if (!addGuestThunk.fulfilled.match(addGuestResult)) {
+      addToast({
+        title: "Guest Registration Failed",
+        description:
+          "We could not save guest information. Please review your details and try again.",
+        color: "danger",
+      });
+      return;
+    }
+
+    const createdGuestId = addGuestResult.payload.id || generatedGuestId;
+    const fetchResult = await fetchBookings({ guest_id: createdGuestId });
     if (fetchFunctionHallBookings.fulfilled.match(fetchResult)) {
       const hasActiveBooking = fetchResult.payload.data.some(
         (booking) =>
@@ -83,7 +92,7 @@ export default function Page() {
       return;
     }
 
-    formData.append("guest_id", guestId || "");
+    formData.append("guest_id", createdGuestId);
     formData.append("event_start", eventStartISO);
     formData.append("event_end", eventEndISO);
 
@@ -95,7 +104,6 @@ export default function Page() {
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
-      // router.push("/");
       setIsSubmitted(true);
     }
   }
@@ -106,28 +114,15 @@ export default function Page() {
         <div className="min-h-screen pb-16">
           <Card className="border-none shadow-none">
             <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
-              Hotel Reservation
+              Function Room Reservation
             </CardHeader>
-            <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
+            <CardBody className="dark:bg-gray-900 w-full flex flex-col items-start gap-8">
               <BookingForm
                 onSubmit={handleSubmit}
-                guestId={guestId}
-                setGuestId={setGuestId}
-                selectedPackage={selectedPackage}
-                setSelectedPackage={setSelectedPackage}
-                eventDuration={EventDuration}
+                eventDuration={eventDuration}
                 setEventDuration={setEventDuration}
                 bookingIsLoading={bookingIsLoading}
               />
-              {/* {room ? (
-              <SelectedRoom room={room} isLoading={isLoading} />
-            ) : (
-              <AvailableRooms
-                rooms={availabel_room_types}
-                isLoading={isLoading}
-                setSelectedRoom={setSelectedRoom}
-              />
-            )} */}
             </CardBody>
           </Card>
         </div>

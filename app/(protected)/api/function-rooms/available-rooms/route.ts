@@ -34,7 +34,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 
   const roomsWithBookings = await Promise.all(
-    rooms.map(async (room: FunctionRoom) => {
+    rooms.map(async (room) => {
       const { data: bookings, error: bookingsError } = await supabase
         .from("function_hall_bookings")
         .select("*")
@@ -54,7 +54,11 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
   const computedRooms =
     start || end
-      ? computeFunctionRoomAvailabilityByDate(roomsWithBookings, start, end)
+      ? computeFunctionRoomAvailabilityByDate(
+          roomsWithBookings as unknown as FunctionRoom[],
+          start,
+          end,
+        )
       : roomsWithBookings;
 
   return NextResponse.json(

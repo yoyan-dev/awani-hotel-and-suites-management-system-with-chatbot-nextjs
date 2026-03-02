@@ -38,6 +38,7 @@ export async function GET(
       number_of_guest,
       room_id,
       notes,
+      occupancy_type,
       status,
       booking_source,
       payment_status,

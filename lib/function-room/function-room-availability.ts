@@ -29,7 +29,13 @@ export function computeFunctionRoomAvailabilityByDate(
   return rooms.map((room) => {
     const function_hall_bookings =
       room.function_hall_bookings?.filter((b: FunctionHallBooking) => {
-        if (b.status === "cancelled") return false;
+        if (
+          b.status === "cancelled" ||
+          b.status === "completed" ||
+          b.status === "rejected"
+        ) {
+          return false;
+        }
 
         const bookingStartISO = parseBookingBoundaryDateOnly(b, "start");
         const bookingEndISO = parseBookingBoundaryDateOnly(b, "end") ?? bookingStartISO;

@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
 
       return {
         ...room,
-        cleaning_status: (room.cleaning_status as any) || "clean",
+        cleaning_status: ((room as any).cleaning_status as any) || "clean",
         current_guest: currentGuest,
       };
     });
