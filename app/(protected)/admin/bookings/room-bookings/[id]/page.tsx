@@ -241,10 +241,9 @@ export default function BookingDetailsStunning() {
                   {booking.special_requests.map((req: any) => (
                     <Chip key={req.name}>
                       {req.quantity} {req.name} -{" "}
-                      {req.price > 0 ? req.price : "free"}
-                      {req.remaining_quantity !== undefined
-                        ? ` (remaining ${req.remaining_quantity})`
-                        : ""}
+                      {req.price > 0
+                        ? formatPHP(req.price * req.quantity)
+                        : "free"}
                     </Chip>
                   ))}
                 </div>

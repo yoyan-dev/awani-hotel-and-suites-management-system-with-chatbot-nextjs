@@ -7,6 +7,7 @@ import {
   LoadingState,
   DashboardCard,
 } from "../../../components/dashboard/dashboard-layout";
+import { endOfWeek, format, startOfWeek } from "date-fns";
 import DashboardHeader from "./_components/dashboard/dashboard-header";
 import KPISection from "./_components/dashboard/KPI-section";
 import BookingStatusCard from "./_components/dashboard/booking-status-card";
@@ -25,6 +26,14 @@ type DateRange = {
   end: string;
 };
 
+function getDefaultWeekRange(): DateRange {
+  const now = new Date();
+  return {
+    start: format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+    end: format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+  };
+}
+
 export default function AdminClient() {
   const {
     bookingAnalyticsData,
@@ -37,7 +46,9 @@ export default function AdminClient() {
     roomAnalytics,
   } = useAnalytics();
 
-  const [dateRange, setDateRange] = useState<DateRange>({ start: "", end: "" });
+  const [dateRange, setDateRange] = useState<DateRange>(() =>
+    getDefaultWeekRange(),
+  );
 
   useEffect(() => {
     const loadData = async () => {
