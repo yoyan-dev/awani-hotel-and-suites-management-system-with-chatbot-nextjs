@@ -37,7 +37,7 @@ export function Carousel({
   const [emblaRef, emblaApi] = useEmblaCarousel(options);
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [slides, setSlides] = React.useState<number>(
-    React.Children.count(children)
+    React.Children.count(children),
   );
   const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -81,15 +81,15 @@ export function Carousel({
 
   const scrollPrev = React.useCallback(
     () => emblaApi?.scrollPrev(),
-    [emblaApi]
+    [emblaApi],
   );
   const scrollNext = React.useCallback(
     () => emblaApi?.scrollNext(),
-    [emblaApi]
+    [emblaApi],
   );
   const scrollTo = React.useCallback(
     (i: number) => emblaApi?.scrollTo(i),
-    [emblaApi]
+    [emblaApi],
   );
 
   // Width styles
@@ -110,11 +110,11 @@ export function Carousel({
             <div
               className="
                 shrink-0
-                w-[100%] 
-                sm:w-[var(--carousel-sm)] 
-                md:w-[var(--carousel-md)] 
-                lg:w-[var(--carousel-lg)] 
-                xl:w-[var(--carousel-xl)]
+                w-full
+                sm:w-(--carousel-sm)
+                md:w-(--carousel-md)
+                lg:w-(--carousel-lg)
+                l:w-(--carousel-xl)
               "
             >
               {child}

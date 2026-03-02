@@ -3,29 +3,34 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export default function successMessage() {
+export default function SuccessMessage() {
   return (
-    <div className="flex items-center justify-center w-full h-full ">
-      <div className="flex flex-col items-center justify-center  h-full bg-white dark:bg-gray-900 p-8 space-y-4">
+    <div className="flex min-h-[70vh] w-full items-center justify-center">
+      <div className="flex flex-col items-center justify-center space-y-5 rounded-[2rem] border border-[#e3d8c8] bg-[#fffdf8] p-8 text-center shadow-[0_30px_65px_-48px_rgba(35,29,22,0.5)] sm:p-12">
         <div className="text-center">
-          <h1 className="text-2xl font-bold flex justify-center items-center gap-2 text-success">
-            Booking Successful <Check />
+          <h1 className="flex items-center justify-center gap-2 font-serif text-3xl text-[#2d7a4e]">
+            Reservation Successful <Check />
           </h1>
-          <p className="text-gray-500 text-sm">
-            Your booking has been successfully submitted. We will contact you
-            shortly.
+          <p className="mt-3 text-sm text-[#645b4e]">
+            Your function room reservation has been submitted successfully.
             <br />
-            Thank you for choosing Awani Hotels.
+            Our events team will contact you shortly for confirmation.
+            <br />
+            Thank you for choosing Awani Hotel & Suites.
             <br />
             <br />
             Best Regards,
             <br />
-            Awani Hotels
+            Awani Hotel & Suites
             <br />
           </p>
         </div>
         <div className="flex justify-center items-center gap-2">
-          <Button color="primary" as={Link} href={`/guest`}>
+          <Button
+            as={Link}
+            href="/guest"
+            className="rounded-full bg-[#b08a53] px-7 font-semibold text-white hover:bg-[#9d7948]"
+          >
             Back to Home
           </Button>
         </div>

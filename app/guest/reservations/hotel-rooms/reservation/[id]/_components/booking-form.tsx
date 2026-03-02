@@ -241,14 +241,14 @@ export default function BookingForm({
     <Form
       ref={formRef}
       onSubmit={handleFormSubmit}
-      className="flex-1 px-4 w-full space-y-4"
+      className="flex-1 w-full space-y-6 rounded-3xl border border-[#e7dccd] bg-[#fffefb] p-4 sm:p-6"
     >
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span
           className={`rounded-full px-3 py-1 font-medium ${
             step >= 1
-              ? "bg-primary text-primary-foreground"
-              : "bg-default-100 text-default-500"
+              ? "bg-[#b08a53] text-white"
+              : "bg-[#f0e6d7] text-[#7a6e5f]"
           }`}
         >
           1. Guest Info
@@ -256,8 +256,8 @@ export default function BookingForm({
         <span
           className={`rounded-full px-3 py-1 font-medium ${
             step >= 2
-              ? "bg-primary text-primary-foreground"
-              : "bg-default-100 text-default-500"
+              ? "bg-[#b08a53] text-white"
+              : "bg-[#f0e6d7] text-[#7a6e5f]"
           }`}
         >
           2. Booking Details
@@ -265,8 +265,8 @@ export default function BookingForm({
         <span
           className={`rounded-full px-3 py-1 font-medium ${
             step >= 3
-              ? "bg-primary text-primary-foreground"
-              : "bg-default-100 text-default-500"
+              ? "bg-[#b08a53] text-white"
+              : "bg-[#f0e6d7] text-[#7a6e5f]"
           }`}
         >
           3. Preview
@@ -278,13 +278,11 @@ export default function BookingForm({
       </div>
 
       <div className={step === 2 ? "space-y-4 w-full" : "hidden"}>
-        <h1>
-          <Chip color="primary" className="text-sm">
-            2
-          </Chip>
-          -Booking Details
+        <h1 className="font-serif text-2xl text-[#271f14]">
+          <Chip className="mr-2 bg-[#b08a53] text-sm text-white">2</Chip>
+          Booking Details
         </h1>
-        <p className="text-xs text-gray-500 dark:text-gray-300 mb-3">
+        <p className="mb-3 text-xs text-[#6c6254]">
           Fill in your booking preferences below. All fields are editable.
         </p>
         {room ? (
@@ -295,22 +293,24 @@ export default function BookingForm({
         <div className="flex gap-4">
           <Input
             fullWidth
-            variant="underlined"
+            variant="bordered"
             isRequired
             type="date"
             label="checked_in Date"
             name="checked_in"
+            radius="lg"
             value={query.checkIn}
             onChange={(e) => setQuery({ ...query, checkIn: e.target.value })}
           />
 
           <Input
             fullWidth
-            variant="underlined"
+            variant="bordered"
             isRequired
             type="date"
             label="checked_out Date"
             name="checked_out"
+            radius="lg"
             value={query.checkOut}
             onChange={(e) => setQuery({ ...query, checkOut: e.target.value })}
           />
@@ -323,7 +323,7 @@ export default function BookingForm({
             isRequired
             fullWidth
             isLoading={isLoading}
-            radius="none"
+            radius="lg"
             className="flex-1 w-full min-w-40"
             name="room_type_id"
             label="Room type"
@@ -352,38 +352,42 @@ export default function BookingForm({
           variant="bordered"
           name="company"
           labelPlacement="outside"
-          radius="none"
+          radius="lg"
           label="Company (Optional)"
           placeholder="Company name"
         />
 
         {specialRequests ? (
-          <div>
+          <div className="rounded-2xl border border-[#e8ddcc] bg-[#fcf8f2] p-4">
             <label>Special requests</label>
-            <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">
+            <p className="mb-2 text-xs text-[#6b6153]">
               Select optional add-ons for this room. Use the plus/minus buttons
               to adjust the quantity.
             </p>
 
-            <div className="flex gap-4 flex-wrap py-4">
+            <div className="flex flex-wrap gap-4 py-2">
               {specialRequests.map((request: any) => (
                 <div
-                  className="flex flex-col gap-2 items-center"
+                  className="flex flex-col items-center gap-2 rounded-xl border border-[#eadfce] bg-white p-3"
                   key={
                     request.room_type_add_on_id ??
                     request.add_on_id ??
                     request.name
                   }
                 >
-                  <div className="flex items-center gap-4 ">
-                    <span className="text-tiny text-default-700 dark:text-default-400">
+                  <div className="flex items-center gap-3">
+                    <span className="text-tiny text-[#5f5548]">
                       {request.name} (remaining{" "}
                       {request.remaining_quantity ??
                         request.quantity_limit ??
                         0}
                       )
                     </span>
-                    <Chip color="success" size="sm" variant="flat">
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      className="bg-[#e6f4ea] text-[#2f7b4f]"
+                    >
                       {formatPHP(Number(request.price || 0))}
                     </Chip>
                   </div>
@@ -443,7 +447,7 @@ export default function BookingForm({
           labelPlacement="outside"
           value={numberOfGuests}
           onChange={(e) => setNumberOfGuests(e.target.value)}
-          radius="none"
+          radius="lg"
           type="number"
           placeholder="0"
           label="Number of Guests"
@@ -455,51 +459,51 @@ export default function BookingForm({
       </div>
 
       <div className={step === 3 ? "space-y-4 w-full" : "hidden"}>
-        <h1 className="text-lg font-semibold">Preview Details</h1>
+        <h1 className="font-serif text-2xl text-[#281f14]">Preview Details</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-xl border border-default-200 p-4 text-sm">
+        <div className="grid grid-cols-1 gap-3 rounded-2xl border border-[#e7dccd] bg-[#fcf8f2] p-4 text-sm md:grid-cols-2">
           <div>
-            <p className="text-default-500">Full Name</p>
+            <p className="text-[#7a6f62]">Full Name</p>
             <p className="font-medium">{previewData.full_name || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Contact Number</p>
+            <p className="text-[#7a6f62]">Contact Number</p>
             <p className="font-medium">{previewData.contact_number || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Email</p>
+            <p className="text-[#7a6f62]">Email</p>
             <p className="font-medium">{previewData.email || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Gender</p>
+            <p className="text-[#7a6f62]">Gender</p>
             <p className="font-medium">{previewData.gender || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Nationality</p>
+            <p className="text-[#7a6f62]">Nationality</p>
             <p className="font-medium">{previewData.nationality || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Number of Guests</p>
+            <p className="text-[#7a6f62]">Number of Guests</p>
             <p className="font-medium">{previewData.number_of_guests || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Check-in</p>
+            <p className="text-[#7a6f62]">Check-in</p>
             <p className="font-medium">{previewData.checked_in || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Check-out</p>
+            <p className="text-[#7a6f62]">Check-out</p>
             <p className="font-medium">{previewData.checked_out || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Room Type</p>
+            <p className="text-[#7a6f62]">Room Type</p>
             <p className="font-medium">{previewData.room_name || "-"}</p>
           </div>
           <div>
-            <p className="text-default-500">Company</p>
+            <p className="text-[#7a6f62]">Company</p>
             <p className="font-medium">{previewData.company || "-"}</p>
           </div>
           <div className="md:col-span-2">
-            <p className="text-default-500">Address</p>
+            <p className="text-[#7a6f62]">Address</p>
             <p className="font-medium">{previewData.address || "-"}</p>
           </div>
         </div>
@@ -514,9 +518,11 @@ export default function BookingForm({
         ) : null}
 
         <div className="space-y-4">
-          <h1 className="px-2 bg-primary text-white md:text-xl">Declaration</h1>
+          <h1 className="rounded-xl bg-[#1f1d19] px-4 py-2 font-serif text-lg text-white md:text-xl">
+            Declaration
+          </h1>
           <div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[#655b4e]">
               The information I have given is true, correct and complete. I
               understand failure to answer any question may have serious
               consequences.
@@ -534,12 +540,17 @@ export default function BookingForm({
           type="button"
           onPress={handlePrevious}
           isDisabled={step === 1}
+          className="rounded-full bg-[#f2e8d9] text-[#5e5447]"
         >
           Previous
         </Button>
 
         {step < 3 ? (
-          <Button color="primary" type="button" onPress={handleNext}>
+          <Button
+            type="button"
+            onPress={handleNext}
+            className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
+          >
             {step === 2 ? "Preview" : "Next"}
           </Button>
         ) : (
@@ -547,7 +558,7 @@ export default function BookingForm({
             isLoading={bookingIsLoading || addGuestIsLoading}
             isDisabled={!policySignature || !isGuestIdVerified}
             type="submit"
-            color="primary"
+            className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
           >
             Submit
           </Button>

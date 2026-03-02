@@ -1,8 +1,10 @@
 import React from "react";
+import { Image, Spinner } from "@heroui/react";
+import { Bed, Tv, UserCircle, Wifi } from "lucide-react";
+
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
-import { Image, Spinner } from "@heroui/react";
-import { UserCircle, Bed, Wifi, Tv } from "lucide-react";
+
 interface SelectedRoomProps {
   room: RoomType;
   isLoading: boolean;
@@ -11,55 +13,58 @@ interface SelectedRoomProps {
 const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
   if (isLoading || !room) {
     return (
-      <div className="items-center justify-center h-64 hidden md:flex">
+      <div className="hidden h-64 items-center justify-center rounded-3xl border border-[#e8dccb] bg-[#fffaf2] md:flex">
         <Spinner size="lg" label="Loading room details..." />
       </div>
     );
   }
+
   return (
-    <div className="flex-1 hidden md:block">
-      <div className="flex flex-col items-start gap-2">
-        <div className="flex gap-2 overflow-x-auto">
-          {room.image ? (
-            <Image src={room.image} alt="room image" width="100%" />
-          ) : null}
-        </div>
-        <div className="flex justify-between items-center flex-wrap  w-full">
-          <div className="flex gap-2">
-            <h2 className="text-2xl font-semibold capitalize">{room.name}</h2>
-            <span className="text-gray-500 dark:text-gray-300 ">
-              ({room.room_size})
-            </span>
+    <aside className="hidden space-y-5 rounded-3xl border border-[#e7dccd] bg-[#fffefb] p-5 xl:block">
+      <div className="overflow-hidden rounded-2xl">
+        {room.image ? (
+          <Image
+            src={room.image}
+            alt="room image"
+            width="100%"
+            className="h-[260px] w-full object-cover"
+          />
+        ) : null}
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-serif text-3xl capitalize text-[#241f1a]">
+              {room.name}
+            </h2>
+            <p className="text-sm text-[#766a5a]">{room.room_size}</p>
           </div>
-          <p className="text-xl font-semibold">
+          <p className="text-lg font-semibold text-[#9c7645]">
             {formatPHP(Number(room.price))}
           </p>
         </div>
-        <p className="text-gray-500 dark:text-gray-300 text-sm">
-          {room.description}
-        </p>
+        <p className="text-sm text-[#665d50]">{room.description}</p>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-2">Room Features</h3>
-          <div className="flex gap-4 text-gray-700 flex-wrap">
-            <div className="flex items-center gap-2">
-              <UserCircle size={20} /> {room.max_guest} Guests
-            </div>
-            <div className="flex items-center gap-2">
-              <Bed size={20} /> 1 Queen Bed
-            </div>
-            <div className="flex items-center gap-2">
-              <Wifi size={20} /> Free WiFi
-            </div>
-            <div className="flex items-center gap-2">
-              <Tv size={20} /> Smart TV
-            </div>
-          </div>
+      <div>
+        <h3 className="font-serif text-xl text-[#251f17]">Room Features</h3>
+        <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-[#665b4d]">
+          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
+            <UserCircle size={16} /> {room.max_guest} Guests
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
+            <Bed size={16} /> Queen Bed
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
+            <Wifi size={16} /> Free WiFi
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
+            <Tv size={16} /> Smart TV
+          </span>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 

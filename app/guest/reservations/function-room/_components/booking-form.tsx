@@ -1,17 +1,4 @@
-import {
-  addToast,
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  Textarea,
-  Form,
-  Card,
-  CardHeader,
-  CardBody,
-  DatePicker,
-  TimeInput,
-} from "@heroui/react";
+import { addToast, Card, CardBody, CardHeader, Form } from "@heroui/react";
 import React from "react";
 import GuestForm from "./guest-form";
 import {
@@ -21,6 +8,14 @@ import {
   parseDate,
 } from "@internationalized/date";
 import { parseISODateOnly } from "@/utils/function-room/event-duration-date";
+import BookingFormStepIndicator from "./booking-form/steps/booking-form-step-indicator";
+import BookingFormEventStep from "./booking-form/steps/booking-form-event-step";
+import BookingFormPreviewStep from "./booking-form/steps/booking-form-preview-step";
+import BookingFormActions from "./booking-form/controls/booking-form-actions";
+import {
+  BookingFormStep,
+  BookingPreviewData,
+} from "./booking-form/types/booking-form.types";
 
 const eventTypeLabels: Record<string, string> = {
   wedding: "Wedding",
@@ -28,6 +23,29 @@ const eventTypeLabels: Record<string, string> = {
   corporate: "Corporate Event",
   debut: "Debut",
   others: "Others",
+};
+
+const requiredGuestFields: { name: string; label: string }[] = [
+  { name: "full_name", label: "full name" },
+  { name: "contact_number", label: "contact number" },
+  { name: "address", label: "home address" },
+  { name: "nationality", label: "nationality" },
+  { name: "gender", label: "gender" },
+  { name: "email", label: "email" },
+];
+
+const initialPreviewData: BookingPreviewData = {
+  full_name: "",
+  contact_number: "",
+  email: "",
+  address: "",
+  nationality: "",
+  gender: "",
+  event_type: "",
+  number_of_guest: "",
+  notes: "",
+  event_start: "",
+  event_end: "",
 };
 
 function formatDateTimeLabel(value: string) {
@@ -78,20 +96,9 @@ export default function BookingForm({
   const [startTime, setStartTime] = React.useState(defaultStartTime);
   const [endTime, setEndTime] = React.useState(defaultEndTime);
   const [isGuestIdVerified, setIsGuestIdVerified] = React.useState(false);
-  const [step, setStep] = React.useState<1 | 2 | 3>(1);
-  const [previewData, setPreviewData] = React.useState({
-    full_name: "",
-    contact_number: "",
-    email: "",
-    address: "",
-    nationality: "",
-    gender: "",
-    event_type: "",
-    number_of_guest: "",
-    notes: "",
-    event_start: "",
-    event_end: "",
-  });
+  const [step, setStep] = React.useState<BookingFormStep>(1);
+  const [previewData, setPreviewData] =
+    React.useState<BookingPreviewData>(initialPreviewData);
 
   React.useEffect(() => {
     if (!eventDuration.start || !eventDuration.end) return;
@@ -184,16 +191,7 @@ export default function BookingForm({
   }, [eventDuration.end, eventDuration.start, readField]);
 
   function validateGuestStep() {
-    const requiredFields: { name: string; label: string }[] = [
-      { name: "full_name", label: "full name" },
-      { name: "contact_number", label: "contact number" },
-      { name: "address", label: "home address" },
-      { name: "nationality", label: "nationality" },
-      { name: "gender", label: "gender" },
-      { name: "email", label: "email" },
-    ];
-
-    for (const field of requiredFields) {
+    for (const field of requiredGuestFields) {
       if (!readField(field.name)) {
         addToast({
           title: "Missing Information",
@@ -295,194 +293,55 @@ export default function BookingForm({
   }
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-md rounded-2xl border border-gray-100 dark:border-gray-700">
-      <CardHeader className="text-xl font-semibold">Event Booking</CardHeader>
+    <Card className="mx-auto w-full max-w-4xl rounded-3xl border border-[#e7dccd] bg-[#fffefb] shadow-[0_26px_56px_-44px_rgba(35,29,22,0.52)]">
+      <CardHeader className="border-b border-[#eadfce] bg-[#fcf7ef] px-5 py-5 sm:px-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#987345]">
+            Booking Flow
+          </p>
+          <h2 className="mt-2 font-serif text-2xl text-[#241f1a] sm:text-3xl">
+            Event Booking Details
+          </h2>
+        </div>
+      </CardHeader>
 
-      <CardBody className="dark:bg-gray-900">
-        <Form ref={formRef} onSubmit={handleFormSubmit} className="space-y-6 px-4 w-full">
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span
-              className={`rounded-full px-3 py-1 font-medium ${
-                step >= 1
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-default-100 text-default-500"
-              }`}
-            >
-              1. Guest Info
-            </span>
-            <span
-              className={`rounded-full px-3 py-1 font-medium ${
-                step >= 2
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-default-100 text-default-500"
-              }`}
-            >
-              2. Event Details
-            </span>
-            <span
-              className={`rounded-full px-3 py-1 font-medium ${
-                step >= 3
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-default-100 text-default-500"
-              }`}
-            >
-              3. Preview
-            </span>
-          </div>
+      <CardBody className="p-4 sm:p-6">
+        <Form
+          ref={formRef}
+          onSubmit={handleFormSubmit}
+          className="w-full space-y-6"
+        >
+          <BookingFormStepIndicator step={step} />
 
           <div className={step === 1 ? "w-full" : "hidden"}>
             <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
           </div>
 
-          <div className={step === 2 ? "space-y-4 w-full" : "hidden"}>
-            <h1 className="flex items-center gap-2">Event Details</h1>
-            <Select
-              fullWidth
-              isRequired
-              label="Event Type"
-              name="event_type"
-              labelPlacement="outside"
-              placeholder="Select event type"
-              variant="bordered"
-              className="pt-4"
-            >
-              <SelectItem key="wedding">Wedding</SelectItem>
-              <SelectItem key="birthday">Birthday</SelectItem>
-              <SelectItem key="corporate">Corporate Event</SelectItem>
-              <SelectItem key="debut">Debut</SelectItem>
-              <SelectItem key="others">Others</SelectItem>
-            </Select>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-              <DatePicker
-                variant="bordered"
-                minValue={minDate}
-                value={startDate}
-                label="Start date"
-                onChange={(value) => value && setStartDate(value)}
-              />
-              <DatePicker
-                variant="bordered"
-                minValue={startDate}
-                value={endDate}
-                label="End date"
-                onChange={(value) => value && setEndDate(value)}
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <TimeInput
-                isRequired
-                label="Start time"
-                labelPlacement="outside"
-                variant="bordered"
-                value={startTime}
-                onChange={(value) => value && setStartTime(value as Time)}
-              />
-              <TimeInput
-                isRequired
-                label="End time"
-                labelPlacement="outside"
-                variant="bordered"
-                value={endTime}
-                onChange={(value) => value && setEndTime(value as Time)}
-              />
-            </div>
-            <Input
-              isRequired
-              type="number"
-              min={1}
-              name="number_of_guest"
-              label="Number of Guests"
-              labelPlacement="outside"
-              variant="bordered"
-              className="pt-4"
-            />
-            <Textarea
-              name="notes"
-              label="Special Requests / Notes"
-              labelPlacement="outside"
-              placeholder="Stage setup, dietary needs, program flow, etc."
-              variant="bordered"
-              className="pt-4"
+          <div className={step === 2 ? "w-full" : "hidden"}>
+            <BookingFormEventStep
+              minDate={minDate}
+              startDate={startDate}
+              endDate={endDate}
+              startTime={startTime}
+              endTime={endTime}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+              onStartTimeChange={setStartTime}
+              onEndTimeChange={setEndTime}
             />
           </div>
 
-          <div className={step === 3 ? "space-y-4 w-full" : "hidden"}>
-            <h1 className="text-lg font-semibold">Preview Details</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-xl border border-default-200 p-4 text-sm">
-              <div>
-                <p className="text-default-500">Full Name</p>
-                <p className="font-medium">{previewData.full_name || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Contact Number</p>
-                <p className="font-medium">{previewData.contact_number || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Email</p>
-                <p className="font-medium">{previewData.email || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Gender</p>
-                <p className="font-medium">{previewData.gender || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Nationality</p>
-                <p className="font-medium">{previewData.nationality || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Number of Guests</p>
-                <p className="font-medium">
-                  {previewData.number_of_guest || "-"}
-                </p>
-              </div>
-              <div className="md:col-span-2">
-                <p className="text-default-500">Address</p>
-                <p className="font-medium">{previewData.address || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Event Type</p>
-                <p className="font-medium">{previewData.event_type || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Event Start</p>
-                <p className="font-medium">{previewData.event_start || "-"}</p>
-              </div>
-              <div>
-                <p className="text-default-500">Event End</p>
-                <p className="font-medium">{previewData.event_end || "-"}</p>
-              </div>
-              <div className="md:col-span-2">
-                <p className="text-default-500">Notes</p>
-                <p className="font-medium">{previewData.notes || "-"}</p>
-              </div>
-            </div>
+          <div className={step === 3 ? "w-full" : "hidden"}>
+            <BookingFormPreviewStep previewData={previewData} />
           </div>
 
-          <div className="flex justify-between w-full">
-            <Button
-              variant="flat"
-              type="button"
-              onPress={handlePrevious}
-              isDisabled={step === 1}
-            >
-              Previous
-            </Button>
-
-            {step < 3 ? (
-              <Button color="primary" type="button" onPress={handleNext}>
-                {step === 2 ? "Preview" : "Next"}
-              </Button>
-            ) : (
-              <Button
-                color="primary"
-                type="submit"
-                isLoading={bookingIsLoading}
-                isDisabled={!isGuestIdVerified}
-              >
-                Submit Booking
-              </Button>
-            )}
-          </div>
+          <BookingFormActions
+            step={step}
+            bookingIsLoading={bookingIsLoading}
+            isGuestIdVerified={isGuestIdVerified}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+          />
         </Form>
       </CardBody>
     </Card>

@@ -1,4 +1,4 @@
-import { Quote } from "lucide-react";
+import { Quote, Star } from "lucide-react";
 
 interface Props {
   name: string;
@@ -14,27 +14,33 @@ export default function TestimonialCard({
   comment,
 }: Props) {
   return (
-    <div className="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-4 rounded-md shadow-sm flex flex-col gap-3 h-full mr-4">
-      <Quote size={20} className="text-yellow-400" />
-      <div className="flex gap-1">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <span
-            key={index}
-            className={
-              index < Number(rating)
-                ? "text-yellow-500 text-base"
-                : "text-gray-300 text-base"
-            }
-          >
-            ★
-          </span>
-        ))}
+    <article className="mr-4 flex h-full flex-col gap-4 rounded-3xl border border-[#e4d8c8] bg-[#fffdf8] p-6 shadow-[0_18px_40px_-34px_rgba(33,27,20,0.48)]">
+      <div className="flex items-center justify-between">
+        <Quote size={22} className="text-[#b08a53]" />
+        <div className="flex gap-1">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Star
+              key={index}
+              size={14}
+              fill={index < Number(rating) ? "#c28d3a" : "transparent"}
+              className={
+                index < Number(rating) ? "text-[#c28d3a]" : "text-[#d6cab8]"
+              }
+            />
+          ))}
+        </div>
       </div>
-      <p className="text-gray-700 text-sm flex-1">"{comment}"</p>
+      <p className="flex-1 text-sm leading-relaxed text-[#5e5449]">
+        "{comment}"
+      </p>
       <div>
-        <span className="text-primary font-semibold">{name}</span>
-        {role && <span className="text-gray-500 text-xs ml-2">— {role}</span>}
+        <p className="font-serif text-xl text-[#241f1a]">{name}</p>
+        {role ? (
+          <p className="text-xs uppercase tracking-[0.18em] text-[#8f7f6a]">
+            {role}
+          </p>
+        ) : null}
       </div>
-    </div>
+    </article>
   );
 }

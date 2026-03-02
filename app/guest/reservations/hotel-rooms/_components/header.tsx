@@ -1,7 +1,7 @@
-import { FetchRoomsParams, FetchRoomTypesParams } from "@/types/room";
+import { FetchRoomTypesParams } from "@/types/room";
 import { Input } from "@heroui/input";
 import { Button, DatePicker } from "@heroui/react";
-import { User } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import React from "react";
 
 export default function Header({
@@ -18,47 +18,54 @@ export default function Header({
   checkAvailability: () => void;
 }) {
   return (
-    <div>
-      <h1 className="font-semibold">
-        Rooms & Suites – Your Perfect Stay at Awani
-      </h1>
-      <p className="text-gray-500 dark:text-gray-200 text-sm">
-        Browse our selection of stylish rooms and spacious suites. Enjoy modern
-        amenities, cozy comfort, and great value for your next getaway.
-      </p>
-      <div className="pt-4">
-        <div className="flex w-full items-end flex-wrap md:flex-nowrap gap-4">
-          <DatePicker
-            label="Check in"
-            radius="none"
-            variant="bordered"
-            labelPlacement="outside"
-            value={query.checkIn}
-            onChange={(e) => setQuery({ ...query, checkIn: e })}
-          />
-          <DatePicker
-            label="Check out"
-            radius="none"
-            variant="bordered"
-            labelPlacement="outside"
-            isDisabled={!query.checkIn}
-            minValue={query.checkIn}
-            value={query.checkOut}
-            onChange={(e) => setQuery({ ...query, checkOut: e })}
-          />
-          <Input
-            type="number"
-            variant="bordered"
-            width={20}
-            startContent={<User />}
-            radius="none"
-            value={desiredGuest.toString()}
-            onChange={(e) => setDesiredGuest(Number(e.target.value))}
-          />
+    <div className="space-y-5">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
+          Reservations
+        </p>
+        <h1 className="mt-3 font-serif text-3xl text-[#211f1b] sm:text-4xl">
+          Rooms & Suites for your perfect stay
+        </h1>
+        <p className="mt-3 max-w-3xl text-sm text-[#675c4f] sm:text-base">
+          Select your preferred dates and guest count to view available rooms
+          and premium suites tailored to your travel plans.
+        </p>
+      </div>
+
+      <div className="grid gap-4 rounded-3xl border border-[#e5dacb] bg-[#fcf8f2] p-4 sm:p-6 lg:grid-cols-[1fr_1fr_0.7fr_0.8fr]">
+        <DatePicker
+          label="Check in"
+          radius="lg"
+          variant="bordered"
+          labelPlacement="outside"
+          value={query.checkIn}
+          onChange={(e) => setQuery({ ...query, checkIn: e })}
+        />
+        <DatePicker
+          label="Check out"
+          radius="lg"
+          variant="bordered"
+          labelPlacement="outside"
+          isDisabled={!query.checkIn}
+          minValue={query.checkIn}
+          value={query.checkOut}
+          onChange={(e) => setQuery({ ...query, checkOut: e })}
+        />
+        <Input
+          type="number"
+          variant="bordered"
+          label="Guests"
+          labelPlacement="outside"
+          startContent={<UsersRound size={16} />}
+          radius="lg"
+          min={1}
+          value={desiredGuest.toString()}
+          onChange={(e) => setDesiredGuest(Number(e.target.value))}
+        />
+        <div className="flex items-end">
           <Button
-            radius="none"
-            color="primary"
-            fullWidth
+            radius="full"
+            className="h-11 w-full bg-[#b08a53] text-base font-semibold text-white hover:bg-[#9d7948]"
             onPress={checkAvailability}
           >
             Check Availability

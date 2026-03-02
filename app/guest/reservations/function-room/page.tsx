@@ -13,6 +13,7 @@ import { parseISODateTime } from "@/utils/function-room/event-duration-date";
 import { useGuests } from "@/hooks/use-guests";
 import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
 import { buildGuestFormData } from "@/app/guest/reservations/_utils/build-guest-form-data";
+import Footer from "../../_components/footer";
 
 export default function Page() {
   const [eventDuration, setEventDuration] = React.useState({
@@ -111,12 +112,21 @@ export default function Page() {
   return (
     <>
       {!isSubmitted ? (
-        <div className="min-h-screen pb-16">
-          <Card className="border-none shadow-none">
-            <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
-              Function Room Reservation
+        <div className="min-h-screen py-8">
+          <Card className="mx-auto w-full max-w-[1320px] rounded-[2rem] border border-[#e3d8c8] bg-[#fffdf8] shadow-[0_30px_65px_-48px_rgba(35,29,22,0.5)]">
+            <CardHeader className="flex flex-col items-start gap-3 border-b border-[#eadfce] bg-[#f8f1e8] px-5 py-6 sm:px-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#987345]">
+                Event Reservation
+              </p>
+              <h1 className="font-serif text-3xl tracking-tight text-[#231f1a] md:text-4xl">
+                Function Room Reservation
+              </h1>
+              <p className="text-sm text-[#645b4e]">
+                Plan your event with confidence. Complete the form below and our
+                team will review your reservation request.
+              </p>
             </CardHeader>
-            <CardBody className="dark:bg-gray-900 w-full flex flex-col items-start gap-8">
+            <CardBody className="w-full gap-8 p-4 sm:p-6 lg:p-8">
               <BookingForm
                 onSubmit={handleSubmit}
                 eventDuration={eventDuration}
@@ -125,6 +135,7 @@ export default function Page() {
               />
             </CardBody>
           </Card>
+          <Footer />
         </div>
       ) : (
         <SuccessMessage />

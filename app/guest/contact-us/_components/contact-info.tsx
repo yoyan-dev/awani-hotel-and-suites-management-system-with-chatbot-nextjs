@@ -11,7 +11,7 @@ export function ContactInfo() {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="p-6 space-y-4 border border-gray-200 shadow-sm rounded-md">
+      <Card className="space-y-5 rounded-3xl border border-[#e4d8c8] bg-[#fffdf8] p-7 shadow-[0_22px_45px_-36px_rgba(31,27,20,0.48)]">
         <InfoRow
           icon={<MapPin size={18} />}
           text="Corner-East Euzkara Avenue, San Carlos City, Philippines 6127"
@@ -25,8 +25,8 @@ export function ContactInfo() {
 
 function InfoRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div className="flex gap-3 text-sm text-gray-600">
-      <span className="text-primary mt-0.5">{icon}</span>
+    <div className="flex gap-3 text-sm text-[#665c4f]">
+      <span className="mt-0.5 text-[#9a7647]">{icon}</span>
       <span>{text}</span>
     </div>
   );

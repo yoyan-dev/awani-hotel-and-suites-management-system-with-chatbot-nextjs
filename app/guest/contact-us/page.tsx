@@ -8,15 +8,15 @@ import Footer from "../_components/footer";
 
 export default function ContactPage() {
   return (
-    <section className="min-h-screen bg-gray-50 pb-16">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <section className="min-h-screen pb-16">
+      <div className="mx-auto max-w-[1280px] space-y-12">
         <ContactHeader
           title="Get in Touch"
           description="Have questions or want to book a service? Reach out using the form or contact info below."
           imageUrl="/bg.png"
         />
 
-        <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid gap-8 md:grid-cols-2">
           <ContactInfo />
           <ContactForm />
         </div>

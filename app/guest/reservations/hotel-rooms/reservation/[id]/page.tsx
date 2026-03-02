@@ -124,16 +124,19 @@ export default function Page() {
 
   return (
     <div className="min-h-screen pb-12 pt-6 md:pt-8">
-      <Card className="mx-auto w-full max-w-7xl border border-default-200/70 bg-content1 shadow-sm dark:border-default-100/10">
-        <CardHeader className="flex flex-col items-start gap-2 border-b border-default-200/60 bg-content2/40 px-5 py-5 sm:px-8 dark:border-default-100/10">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+      <Card className="mx-auto w-full max-w-[1320px] rounded-4xl border border-[#e3d8c8] bg-[#fffdf8] shadow-[0_32px_70px_-50px_rgba(31,26,19,0.54)]">
+        <CardHeader className="flex flex-col items-start gap-3 border-b border-[#eadfce] bg-[#f8f1e8] px-5 py-6 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#987345]">
+            Secure Reservation
+          </p>
+          <h1 className="font-serif text-3xl tracking-tight text-[#231f1a] md:text-4xl">
             Hotel Reservation
           </h1>
-          <p className="text-sm text-default-600 dark:text-default-300">
+          <p className="text-sm text-[#645b4e]">
             Complete your details and select your preferred room arrangement.
           </p>
         </CardHeader>
-        <CardBody className="w-full gap-8 p-4 sm:p-6 lg:p-8 dark:bg-gray-900">
+        <CardBody className="w-full gap-8 p-4 sm:p-6 lg:p-8">
           <div className="grid w-full grid-cols-1 items-start gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,1fr)]">
             <BookingForm
               onSubmit={(e) => handleSubmit(e, summary)}
