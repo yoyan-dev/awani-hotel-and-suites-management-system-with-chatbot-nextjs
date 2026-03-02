@@ -53,7 +53,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ room }) => {
               <ModalBody className="space-y-5 py-5">
                 <div className="overflow-hidden rounded-2xl border border-[#e7dccd]">
                   <Image
-                    src={room.image}
+                    src={room.image || "/bg.jpg"}
                     alt={`${room.name} image`}
                     width="100%"
                     className="h-[250px] w-full object-cover"
