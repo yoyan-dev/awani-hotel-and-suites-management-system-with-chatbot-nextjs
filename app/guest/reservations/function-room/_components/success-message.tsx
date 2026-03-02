@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-export default function successMessage() {
+export default function SuccessMessage() {
   return (
     <div className="flex items-center justify-center w-full h-full ">
       <div className="flex flex-col items-center justify-center  h-full bg-white dark:bg-gray-900 p-8 space-y-4">

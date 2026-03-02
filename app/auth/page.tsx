@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import { Input, Button, Link, Form, Image } from "@heroui/react";
-import { MailIcon, LockIcon } from "lucide-react";
+import { Image } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 
-import { useAuthGuard } from "@/lib/auth/use-auth-guard";
 import { handleResetPassword } from "@/lib/auth/handle-reset-password";
+import AuthForm from "./_components/auth-form";
 
 export default function Auth() {
   const router = useRouter();
@@ -19,8 +18,6 @@ export default function Auth() {
     error: boolean;
     message: string;
   } | null>(null);
-
-  useAuthGuard();
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -88,85 +85,20 @@ export default function Auth() {
           Welcome to Awani Hotel and Suite.
           <span className="text-gray-500"> Please login to continue.</span>
         </div>
-        <Form
+        <AuthForm
+          isForgotMode={isForgotMode}
+          isLoading={isLoading}
+          email={email}
+          password={password}
+          message={message}
+          onEmailChange={setEmail}
+          onPasswordChange={setPassword}
+          onToggleMode={() => {
+            setMessage(null);
+            setIsForgotMode((prev) => !prev);
+          }}
           onSubmit={isForgotMode ? handleForgotPassword : handleLogin}
-          className="mt-4 flex flex-col gap-4"
-        >
-          {message && (
-            <p className={message.error ? "text-warning" : "text-success"}>
-              {message.message}
-            </p>
-          )}
-          <Input
-            radius="sm"
-            isRequired
-            color="primary"
-            endContent={
-              <MailIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
-            }
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            label="Email"
-            labelPlacement="outside"
-            placeholder="Enter your email"
-            variant="bordered"
-          />
-          {!isForgotMode && (
-            <Input
-              radius="sm"
-              isRequired
-              color="primary"
-              endContent={
-                <LockIcon className="text-2xl text-default-600 dark:text-default-300 pointer-events-none shrink-0" />
-              }
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              label="Password"
-              labelPlacement="outside"
-              placeholder="Enter your password"
-              type="password"
-              variant="bordered"
-            />
-          )}
-
-          <div className="flex justify-between">
-            {!isForgotMode ? (
-              <Link
-                color="primary"
-                href="#"
-                size="sm"
-                onPress={() => {
-                  setMessage(null);
-                  setIsForgotMode(true);
-                }}
-              >
-                Forgot password?
-              </Link>
-            ) : (
-              <Link
-                color="primary"
-                href="#"
-                size="sm"
-                onPress={() => {
-                  setMessage(null);
-                  setIsForgotMode(false);
-                }}
-              >
-                Back to login
-              </Link>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            color="primary"
-            radius="sm"
-            fullWidth
-            isLoading={isLoading}
-          >
-            {isForgotMode ? "Send reset email" : "Login"}
-          </Button>
-        </Form>
+        />
       </div>
     </div>
   );
