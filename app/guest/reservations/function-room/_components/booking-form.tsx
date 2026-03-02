@@ -23,8 +23,6 @@ import { parseISODateOnly } from "@/utils/function-room/event-duration-date";
 
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  selectedPackage: any;
-  setSelectedPackage: React.Dispatch<React.SetStateAction<any>>;
   eventDuration: { start: any; end: any };
   setEventDuration: React.Dispatch<
     React.SetStateAction<{ start: any; end: any }>
@@ -34,8 +32,6 @@ interface BookingFormProps {
 
 export default function BookingForm({
   onSubmit,
-  selectedPackage,
-  setSelectedPackage,
   eventDuration,
   setEventDuration,
   bookingIsLoading,
@@ -79,7 +75,12 @@ export default function BookingForm({
       setEndDate(parseDate(endDateOnly));
       setEndTime(new Time(endParsed.getHours(), endParsed.getMinutes()));
     }
-  }, [defaultEndDate, defaultStartDate, eventDuration.end, eventDuration.start]);
+  }, [
+    defaultEndDate,
+    defaultStartDate,
+    eventDuration.end,
+    eventDuration.start,
+  ]);
 
   React.useEffect(() => {
     if (endDate.compare(startDate) < 0) {

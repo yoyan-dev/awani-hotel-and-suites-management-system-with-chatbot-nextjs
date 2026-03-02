@@ -12,43 +12,9 @@ import {
 import { parseISODateTime } from "@/utils/function-room/event-duration-date";
 import { useGuests } from "@/hooks/use-guests";
 import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
-
-const guestTextFields = [
-  "full_name",
-  "contact_number",
-  "address",
-  "nationality",
-  "gender",
-  "email",
-] as const;
-
-function buildGuestFormData(source: FormData) {
-  const guestFormData = new FormData();
-  const generatedGuestId = crypto.randomUUID();
-  guestFormData.append("id", generatedGuestId);
-
-  for (const field of guestTextFields) {
-    const value = source.get(field);
-    if (typeof value === "string" && value.trim()) {
-      guestFormData.append(field, value);
-    }
-  }
-
-  const front = source.get("front");
-  if (front instanceof File && front.size > 0) {
-    guestFormData.append("front", front);
-  }
-
-  const back = source.get("back");
-  if (back instanceof File && back.size > 0) {
-    guestFormData.append("back", back);
-  }
-
-  return { guestFormData, generatedGuestId };
-}
+import { buildGuestFormData } from "@/app/guest/reservations/_utils/build-guest-form-data";
 
 export default function Page() {
-  const [selectedPackage, setSelectedPackage] = React.useState(null);
   const [eventDuration, setEventDuration] = React.useState({
     start: "",
     end: "",
@@ -82,7 +48,8 @@ export default function Page() {
     if (!eventStart || !eventEnd || eventStart >= eventEnd) {
       addToast({
         title: "Error",
-        description: "Invalid event duration. End time must be after start time.",
+        description:
+          "Invalid event duration. End time must be after start time.",
         color: "warning",
       });
       return;
@@ -147,13 +114,11 @@ export default function Page() {
         <div className="min-h-screen pb-16">
           <Card className="border-none shadow-none">
             <CardHeader className="text-xl font-semibold text-center dark:bg-gray-900 ">
-              Hotel Reservation
+              Function Room Reservation
             </CardHeader>
-            <CardBody className="dark:bg-gray-900  w-full flex flex-col lg:flex-row items-start gap-8">
+            <CardBody className="dark:bg-gray-900 w-full flex flex-col items-start gap-8">
               <BookingForm
                 onSubmit={handleSubmit}
-                selectedPackage={selectedPackage}
-                setSelectedPackage={setSelectedPackage}
                 eventDuration={eventDuration}
                 setEventDuration={setEventDuration}
                 bookingIsLoading={bookingIsLoading}

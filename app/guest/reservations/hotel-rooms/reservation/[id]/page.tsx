@@ -15,47 +15,14 @@ import { Booking } from "@/types/booking";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { addGuest as addGuestThunk } from "@/features/guest/guest-thunk";
 import { addBooking as addHotelBooking } from "@/features/booking/hotel-rooms/booking-thunk";
-
-const guestTextFields = [
-  "full_name",
-  "contact_number",
-  "address",
-  "nationality",
-  "gender",
-  "email",
-] as const;
-
-function buildGuestFormData(source: FormData) {
-  const guestFormData = new FormData();
-  const generatedGuestId = crypto.randomUUID();
-  guestFormData.append("id", generatedGuestId);
-
-  for (const field of guestTextFields) {
-    const value = source.get(field);
-    if (typeof value === "string" && value.trim()) {
-      guestFormData.append(field, value);
-    }
-  }
-
-  const front = source.get("front");
-  if (front instanceof File && front.size > 0) {
-    guestFormData.append("front", front);
-  }
-
-  const back = source.get("back");
-  if (back instanceof File && back.size > 0) {
-    guestFormData.append("back", back);
-  }
-
-  return { guestFormData, generatedGuestId };
-}
+import { buildGuestFormData } from "@/app/guest/reservations/_utils/build-guest-form-data";
 
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
   const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
   const [selectedRoom, setSelectedRoom] = React.useState(id || null);
-  const { addGuest } = useGuests();
+  const { addGuest, isLoading: addGuestIsLoading } = useGuests();
   const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
     useRoomTypes();
   const { isLoading: bookingIsLoading, addBooking } = useBookings();
@@ -96,12 +63,7 @@ export default function Page() {
   }, [room]);
 
   const summary = React.useMemo(() => {
-    if (
-      specialRequests.length === 0 ||
-      !room ||
-      !query.checkIn ||
-      !query.checkOut
-    ) {
+    if (!room || !query.checkIn || !query.checkOut) {
       return null;
     }
     return generateSummary(
@@ -179,12 +141,14 @@ export default function Page() {
               setQuery={setQuery}
               roomTypes={availabel_room_types}
               room={room || null}
+              summary={summary}
               isLoading={isLoading}
               selectedRoom={selectedRoom}
               setSelectedRoom={setSelectedRoom}
               specialRequests={specialRequests}
               setSpecialRequests={setSpecialRequests}
               bookingIsLoading={bookingIsLoading}
+              addGuestIsLoading={addGuestIsLoading}
             />
             {room ? (
               <SelectedRoom room={room} isLoading={isLoading} />

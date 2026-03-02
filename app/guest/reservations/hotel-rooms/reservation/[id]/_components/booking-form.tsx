@@ -7,6 +7,7 @@ import PolicyModal from "./modals/policy-modal";
 import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
 import { BookingSpecialRequest } from "@/types/add-on";
+import BookingSummary from "./booking-summary";
 
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -14,6 +15,14 @@ interface BookingFormProps {
   setQuery: React.Dispatch<React.SetStateAction<FetchRoomTypesParams>>;
   roomTypes: RoomType[];
   room: RoomType | null;
+  summary: {
+    roomPrice: number;
+    totalAddOnsPrice: number;
+    nights: number;
+    totalPerNights: number;
+    total: number;
+    specialRequests: BookingSpecialRequest[];
+  } | null;
   isLoading: boolean;
   selectedRoom: any;
   setSelectedRoom: React.Dispatch<React.SetStateAction<any>>;
@@ -22,6 +31,7 @@ interface BookingFormProps {
     React.SetStateAction<BookingSpecialRequest[]>
   >;
   bookingIsLoading: boolean;
+  addGuestIsLoading: boolean;
 }
 
 export default function BookingForm({
@@ -30,18 +40,49 @@ export default function BookingForm({
   setQuery,
   roomTypes,
   room,
+  summary,
   isLoading,
   selectedRoom,
   setSelectedRoom,
   specialRequests,
   setSpecialRequests,
   bookingIsLoading,
+  addGuestIsLoading,
 }: BookingFormProps) {
   const [policySignature, setPolicySignature] = useState("");
   const [isGuestIdVerified, setIsGuestIdVerified] = useState(false);
+  const [numberOfGuests, setNumberOfGuests] = useState("1");
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  const formRef = React.useRef<HTMLFormElement>(null);
+
+  const selectedAddOns = React.useMemo(
+    () => (summary?.specialRequests ?? []).filter((item) => item.quantity > 0),
+    [summary],
+  );
+
+  const evaluateFormCompletion = React.useCallback(() => {
+    const form = formRef.current;
+    if (!form) return;
+    setIsFormComplete(form.checkValidity() && isGuestIdVerified);
+  }, [isGuestIdVerified]);
+
+  React.useEffect(() => {
+    evaluateFormCompletion();
+  }, [
+    evaluateFormCompletion,
+    query.checkIn,
+    query.checkOut,
+    selectedRoom,
+    specialRequests,
+    numberOfGuests,
+  ]);
 
   return (
-    <Form onSubmit={onSubmit} className="flex-1 px-4 w-full space-y-4">
+    <Form
+      ref={formRef}
+      onSubmit={onSubmit}
+      className="flex-1 px-4 w-full space-y-4"
+    >
       <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
 
       <div className="space-y-4 w-full">
@@ -136,12 +177,19 @@ export default function BookingForm({
               {specialRequests.map((request: any) => (
                 <div
                   className="flex flex-col gap-2 items-center"
-                  key={request.room_type_add_on_id ?? request.add_on_id ?? request.name}
+                  key={
+                    request.room_type_add_on_id ??
+                    request.add_on_id ??
+                    request.name
+                  }
                 >
                   <div className="flex items-center gap-4 ">
                     <span className="text-tiny text-default-700 dark:text-default-400">
                       {request.name} (remaining{" "}
-                      {request.remaining_quantity ?? request.quantity_limit ?? 0})
+                      {request.remaining_quantity ??
+                        request.quantity_limit ??
+                        0}
+                      )
                     </span>
                     <Chip color="success" size="sm" variant="flat">
                       {formatPHP(Number(request.price || 0))}
@@ -201,7 +249,8 @@ export default function BookingForm({
           variant="bordered"
           isRequired
           labelPlacement="outside"
-          defaultValue="1"
+          value={numberOfGuests}
+          onChange={(e) => setNumberOfGuests(e.target.value)}
           radius="none"
           type="number"
           placeholder="0"
@@ -211,6 +260,15 @@ export default function BookingForm({
           max={room?.max_guest}
           errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
         />
+
+        {isFormComplete && summary ? (
+          <BookingSummary
+            summary={summary}
+            query={query}
+            room={room}
+            selectedAddOns={selectedAddOns}
+          />
+        ) : null}
       </div>
 
       <div className="space-y-4">
@@ -226,7 +284,7 @@ export default function BookingForm({
           <PolicyModal onConfirm={(sig) => setPolicySignature(sig)} />
 
           <Button
-            isLoading={bookingIsLoading}
+            isLoading={bookingIsLoading || addGuestIsLoading}
             isDisabled={!policySignature || !isGuestIdVerified}
             type="submit"
             color="primary"
