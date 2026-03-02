@@ -13,7 +13,6 @@ import {
   QuickStats,
   FunctionHallStats,
   RoomStats,
-  FunctionRoomStats,
 } from "./_components/stats";
 import { RecentBookingsTable } from "./_components/tables";
 
@@ -126,19 +125,6 @@ export default function OverviewPage() {
     recent_bookings: [],
   };
 
-  const functionRooms = bookingOverview?.function_rooms ?? {
-    summary: {
-      total_rooms: 0,
-      available_rooms: 0,
-      half_occupied_rooms: 0,
-      full_occupied_rooms: 0,
-      utilization_rate: 0,
-      total_revenue: 0,
-    },
-    status_distribution: {},
-    recent_bookings: [],
-  };
-
   const stats = {
     totalRevenue: bookingsData.summary.total_revenue,
     totalBookings: bookingsData.summary.total_bookings,
@@ -162,8 +148,6 @@ export default function OverviewPage() {
   };
 
   const roomStats = { ...rooms.summary };
-
-  const functionRoomStats = { ...functionRooms.summary };
 
   const bookings = bookingsData.recent_bookings;
   const totalCount = bookingsData.summary.total_bookings;
@@ -235,7 +219,7 @@ export default function OverviewPage() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <FunctionHallStats {...functionHallStats} />
         <RoomStats
           summary={
@@ -249,18 +233,6 @@ export default function OverviewPage() {
               out_of_service_rooms: number;
               stock_rooms: number;
               occupancy_rate: number;
-            }
-          }
-        />
-        <FunctionRoomStats
-          summary={
-            functionRoomStats as {
-              total_rooms: number;
-              available_rooms: number;
-              half_occupied_rooms: number;
-              full_occupied_rooms: number;
-              utilization_rate: number;
-              total_revenue: number;
             }
           }
         />

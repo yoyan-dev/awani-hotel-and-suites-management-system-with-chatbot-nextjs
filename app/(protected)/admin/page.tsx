@@ -17,7 +17,6 @@ import FunctionHallEventCard from "./_components/dashboard/function-hall-event-c
 import type {
   BookingAnalyticsResponse,
   FunctionHallAnalyticsResponse,
-  FunctionRoomAnalyticsResponse,
   RoomAnalyticsResponse,
 } from "@/types/analytics";
 
@@ -31,13 +30,11 @@ export default function AdminClient() {
     bookingAnalyticsData,
     functionHallAnalyticsData,
     roomAnalyticsData,
-    functionRoomAnalyticsData,
     isLoading,
     error,
     bookingAnalytics,
     functionHallAnalytics,
     roomAnalytics,
-    functionRoomAnalytics,
   } = useAnalytics();
 
   const [dateRange, setDateRange] = useState<DateRange>({ start: "", end: "" });
@@ -48,7 +45,6 @@ export default function AdminClient() {
         bookingAnalytics(dateRange),
         functionHallAnalytics(dateRange),
         roomAnalytics({}),
-        functionRoomAnalytics({}),
       ]);
     };
 
@@ -58,14 +54,9 @@ export default function AdminClient() {
     bookingAnalytics,
     functionHallAnalytics,
     roomAnalytics,
-    functionRoomAnalytics,
   ]);
 
-  if (
-    isLoading &&
-    !bookingAnalyticsData?.summary?.total_bookings &&
-    !functionRoomAnalyticsData?.summary?.total_function_rooms
-  ) {
+  if (isLoading && !bookingAnalyticsData?.summary?.total_bookings) {
     return (
       <DashboardLayout>
         <LoadingState message="Loading analytics data..." />
