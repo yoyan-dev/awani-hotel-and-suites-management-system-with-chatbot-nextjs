@@ -8,6 +8,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
 
   const query = searchParams.get("q") || "";
+  const rating = searchParams.get("rating") || 0;
   const page = Number(searchParams.get("page") || "1");
   const limit = 10;
   const from = (page - 1) * limit;
@@ -21,9 +22,13 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     );
   }
 
+  if (rating) {
+    q = q.gte("rating", Number(rating));
+  }
+
   const { data, error, count } = await q
     .range(from, to)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching guest feedback:", error.message);

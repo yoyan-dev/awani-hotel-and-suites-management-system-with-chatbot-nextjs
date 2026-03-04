@@ -1,15 +1,53 @@
-export default function feedbackHeader() {
+import { BedDouble, Clock3, Sparkles, UtensilsCrossed } from "lucide-react";
+
+export default function FeedbackHeader() {
   return (
-    <div className="text-center mb-12">
-      <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-200">
-        Awani Hotel
+    <aside className="rounded-[2rem] border border-[#deceba] bg-[#1e1711] p-6 text-[#efe4d3] shadow-[0_24px_56px_-34px_rgba(18,12,7,0.7)] sm:p-8">
+      <p className="inline-flex items-center gap-2 rounded-full border border-[#d9bf95]/40 bg-[#b08a53]/25 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-[#f6e4c8]">
+        <Sparkles size={14} />
+        Guest Feedback
       </p>
-      <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-400 mt-2">
-        How was your stay?
+
+      <h1 className="mt-5 font-serif text-3xl leading-tight text-white sm:text-4xl">
+        Tell us how your Awani stay felt.
       </h1>
-      <p className="text-sm text-gray-500 mt-3">
-        Your feedback helps us refine our guest experience.
+      <p className="mt-4 text-sm leading-relaxed text-[#ddceb8] sm:text-base">
+        Your feedback helps us sharpen every detail, from room comfort to
+        dining service. It only takes a minute.
       </p>
-    </div>
+
+      <div className="mt-8 grid gap-3">
+        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <BedDouble size={18} className="mt-0.5 text-[#e6c89a]" />
+          <div>
+            <p className="text-sm font-semibold text-white">Stay quality</p>
+            <p className="text-xs text-[#cfc0ab]">
+              Share what worked and what we can improve in your room
+              experience.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <UtensilsCrossed size={18} className="mt-0.5 text-[#e6c89a]" />
+          <div>
+            <p className="text-sm font-semibold text-white">Service touchpoints</p>
+            <p className="text-xs text-[#cfc0ab]">
+              Let us know how our team, amenities, and dining met expectations.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+          <Clock3 size={18} className="mt-0.5 text-[#e6c89a]" />
+          <div>
+            <p className="text-sm font-semibold text-white">Quick and simple</p>
+            <p className="text-xs text-[#cfc0ab]">
+              The form is short and your response is submitted instantly.
+            </p>
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 }

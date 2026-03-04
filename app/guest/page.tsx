@@ -9,6 +9,7 @@ import AmenitiesSection from "./_components/sections/amenities-section";
 import GallerySection from "./_components/sections/gallery-section";
 import HeroBanner from "./_components/sections/hero-section";
 import LocationPreviewSection from "./_components/sections/location-preview-section";
+import RestaurantFeaturedSection from "./_components/sections/restaurant-featured-section";
 import { RoomsCarousel } from "./_components/sections/room-carousel";
 import TestimonialsSection from "./_components/sections/testimonials/testimonial-section";
 import { useRoomTypes } from "@/hooks/use-room-types";
@@ -25,6 +26,7 @@ export default function GuestHomePage() {
       <HeroBanner />
       <About />
       <AmenitiesSection />
+      <RestaurantFeaturedSection />
       <RoomsCarousel rooms={room_types} isLoading={isLoading} />
       <TestimonialsSection />
       <GallerySection />

@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export default function LocationPreviewSection() {
   return (
-    <section className="py-16 sm:py-20">
+    <section id="location" className="scroll-mt-28 py-16 sm:py-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

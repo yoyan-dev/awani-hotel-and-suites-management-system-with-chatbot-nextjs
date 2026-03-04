@@ -34,6 +34,7 @@ export interface FeedbackPagination {
 export interface FeedbackFetchParams {
   page?: number;
   query?: string;
+  rating?: number;
 }
 
 export interface GuestFeedbackState {

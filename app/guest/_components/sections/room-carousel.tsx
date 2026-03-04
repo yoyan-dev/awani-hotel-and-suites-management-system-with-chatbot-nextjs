@@ -21,7 +21,7 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
 
   if (isLoading) {
     return (
-      <section className="py-16 sm:py-20">
+      <section id="rooms" className="scroll-mt-28 py-16 sm:py-20">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((index) => (
             <SkeletonLoader key={index} />
@@ -32,7 +32,7 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
   }
 
   return (
-    <section className="py-16 sm:py-20">
+    <section id="rooms" className="scroll-mt-28 py-16 sm:py-20">
       <div className="mb-10 text-center sm:mb-12">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
           Featured Rooms

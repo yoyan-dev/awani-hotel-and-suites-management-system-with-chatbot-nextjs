@@ -16,6 +16,7 @@ export const fetchGuestFeedbacks = createAsyncThunk<
     const searchParams = new URLSearchParams();
     if (params?.page) searchParams.append("page", String(params.page));
     if (params?.query) searchParams.append("q", params.query);
+    if (params?.rating) searchParams.append("rating", String(params.rating));
 
     const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
     const data = await res.json();

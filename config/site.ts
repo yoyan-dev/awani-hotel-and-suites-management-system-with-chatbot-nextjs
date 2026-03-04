@@ -171,23 +171,38 @@ export const siteConfig = {
       href: "/guest",
       isExpandable: false,
     },
-    {
-      label: "Reservations",
-      href: "",
-      isExpandable: true,
-      Children: [
-        { label: "Book Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
-        {
-          label: "Event Reservations",
-          href: "/guest/reservations/function-room",
-        },
-      ],
-    },
     // {
-    //   label: "Menus",
-    //   href: "/guest/menus",
-    //   isExpandable: false,
+    //   label: "Sections",
+    //   href: "",
+    //   isExpandable: true,
+    //   Children: [
+    //     { label: "Hero", href: "/guest#home" },
+    //     { label: "About", href: "/guest#about" },
+    //     { label: "Amenities", href: "/guest#amenities" },
+    //     { label: "Ridgeview", href: "/guest#ridgeview" },
+    //     { label: "Rooms", href: "/guest#rooms" },
+    //     { label: "Testimonials", href: "/guest#testimonials" },
+    //     { label: "Gallery", href: "/guest#gallery" },
+    //     { label: "Location", href: "/guest#location" },
+    //   ],
     // },
+    {
+      label: "Hotel Rooms",
+      href: "/guest/reservations/hotel-rooms",
+      isExpandable: false,
+      // Children: [
+      //   { label: "Book Hotel Rooms", href: "/guest/reservations/hotel-rooms" },
+      //   {
+      //     label: "Event Reservations",
+      //     href: "/guest/reservations/function-room",
+      //   },
+      // ],
+    },
+    {
+      label: "Event Reservations",
+      href: "/guest/reservations/function-room",
+      isExpandable: false,
+    },
     // {
     //   label: "Your Stay",
     //   href: "/guest/guest-request",

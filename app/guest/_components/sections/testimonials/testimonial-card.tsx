@@ -34,7 +34,7 @@ export default function TestimonialCard({
         "{comment}"
       </p>
       <div>
-        <p className="font-serif text-xl text-[#241f1a]">{name}</p>
+        <p className="font-serif text-xl text-[#241f1a] capitalize">{name}</p>
         {role ? (
           <p className="text-xs uppercase tracking-[0.18em] text-[#8f7f6a]">
             {role}

@@ -17,7 +17,7 @@ export default function TestimonialsSection() {
 
   if (isLoading) {
     return (
-      <section className="py-16 sm:py-20">
+      <section id="testimonials" className="scroll-mt-28 py-16 sm:py-20">
         <div className="rounded-4xl border border-[#e5d9c9] bg-[#fffdf8] p-8 text-center text-[#6a5e4f]">
           Loading guest testimonials...
         </div>
@@ -26,7 +26,7 @@ export default function TestimonialsSection() {
   }
 
   return (
-    <section className="py-16 sm:py-20">
+    <section id="testimonials" className="scroll-mt-28 py-16 sm:py-20">
       <div className="mb-10 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
           Testimonials
@@ -50,8 +50,8 @@ export default function TestimonialsSection() {
         {guest_feedbacks.map((feedback) => (
           <TestimonialCard
             key={feedback.id}
-            name="Awani Guest"
-            role="Verified stay"
+            name={feedback.full_name}
+            role="Guest"
             rating={feedback.rating}
             comment={feedback.comments || ""}
           />

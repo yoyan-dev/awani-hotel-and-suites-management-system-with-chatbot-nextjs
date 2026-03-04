@@ -20,6 +20,11 @@ export default function Navbar() {
     null,
   );
   const [scrolled, setScrolled] = React.useState(false);
+  const closeMenus = React.useCallback(() => {
+    setMenuOpen(false);
+    setExpandedDesktop(null);
+    setExpandedMobile(null);
+  }, []);
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -44,7 +49,11 @@ export default function Navbar() {
             : "border-transparent bg-[#f9f4eb]/65 backdrop-blur-sm",
         )}
       >
-        <NextLink href="/guest" className="flex items-center gap-3">
+        <NextLink
+          href="/guest"
+          className="flex items-center gap-3"
+          onClick={closeMenus}
+        >
           <Image src="/awani-logo.png" alt="Awani Hotel" width={44} />
           <div className="leading-tight">
             <p className="text-xs uppercase tracking-[0.25em] text-[#7c6a52]">
@@ -67,6 +76,7 @@ export default function Navbar() {
                 <NextLink
                   key={item.label}
                   href={item.href}
+                  onClick={closeMenus}
                   className={cn(
                     "relative text-sm font-semibold tracking-wide text-[#5d5549] transition-colors hover:text-[#1f1e1b]",
                     isActive && "text-[#1f1e1b]",
@@ -114,6 +124,7 @@ export default function Navbar() {
                         <NextLink
                           key={child.href}
                           href={child.href}
+                          onClick={closeMenus}
                           className={cn(
                             "block rounded-lg px-3 py-2 text-sm font-medium text-[#5f5445] transition-colors hover:bg-[#f5ede1] hover:text-[#201f1c]",
                             pathname === child.href &&
@@ -132,10 +143,11 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <ThemeSwitch />
+          {/* <ThemeSwitch /> */}
           <Button
             as={Link}
             href="/guest/contact-us"
+            onClick={closeMenus}
             variant="bordered"
             radius="full"
             className="border-[#ceb894] text-[#4a4033]"
@@ -145,6 +157,7 @@ export default function Navbar() {
           <Button
             as={Link}
             href="/guest/reservations/hotel-rooms"
+            onClick={closeMenus}
             radius="full"
             className="bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
           >
@@ -172,7 +185,7 @@ export default function Navbar() {
           >
             <div className="mb-4 flex items-center justify-between">
               <p className="font-serif text-lg text-[#27231f]">Navigation</p>
-              <ThemeSwitch />
+              {/* <ThemeSwitch /> */}
             </div>
 
             <div className="space-y-2">
@@ -182,6 +195,7 @@ export default function Navbar() {
                     <NextLink
                       key={item.label}
                       href={item.href}
+                      onClick={closeMenus}
                       className={cn(
                         "block rounded-xl px-3 py-3 text-sm font-medium text-[#52493d] transition-colors hover:bg-[#f4ece0]",
                         pathname === item.href && "bg-[#f4ece0] text-[#1f1e1b]",
@@ -229,6 +243,7 @@ export default function Navbar() {
                             <NextLink
                               key={child.href}
                               href={child.href}
+                              onClick={closeMenus}
                               className={cn(
                                 "block rounded-lg px-3 py-2 text-sm text-[#5b5145] transition-colors hover:bg-[#f4ece0]",
                                 pathname === child.href &&
@@ -250,6 +265,7 @@ export default function Navbar() {
               <Button
                 as={Link}
                 href="/guest/contact-us"
+                onClick={closeMenus}
                 variant="bordered"
                 className="border-[#ceb894] text-[#4a4033]"
               >
@@ -258,6 +274,7 @@ export default function Navbar() {
               <Button
                 as={Link}
                 href="/guest/reservations/hotel-rooms"
+                onClick={closeMenus}
                 className="bg-[#b08a53] font-semibold text-white"
               >
                 Book Now

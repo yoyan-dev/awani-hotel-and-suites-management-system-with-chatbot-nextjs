@@ -1,10 +1,12 @@
 "use client";
+
 import React, { useState } from "react";
-import FeedbackHeader from "./_components/feedback-header";
+
 import FeedbackForm from "./_components/feedback-form";
+import FeedbackHeader from "./_components/feedback-header";
 import SuccessScreen from "./_components/success-screen";
-import { RatingScale, RecommendationValue } from "@/types/feedback";
 import { useGuestFeedback } from "@/hooks/use-feedback";
+import { RatingScale, RecommendationValue } from "@/types/feedback";
 
 export default function FeedbackPage() {
   const { isLoading, error, addGuestFeedback } = useGuestFeedback();
@@ -14,11 +16,11 @@ export default function FeedbackPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const ratingMessages: Record<RatingScale, string> = {
-    1: "We're truly sorry your experience wasn’t ideal.",
-    2: "Thank you — we’ll work on improving.",
-    3: "Glad your stay was good.",
-    4: "Wonderful! We're happy you enjoyed it.",
-    5: "Amazing! We’re thrilled you loved your stay.",
+    1: "We are sorry your experience was not ideal.",
+    2: "Thank you for sharing this. We will improve.",
+    3: "Glad your stay was good overall.",
+    4: "Wonderful. We are happy you enjoyed your visit.",
+    5: "Amazing. We are thrilled you loved your stay.",
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -28,17 +30,6 @@ export default function FeedbackPage() {
     const formData = new FormData(e.currentTarget);
     formData.append("rating", rating.toString());
     formData.append("recommend", recommend);
-    console.log({
-      full_name: formData.get("full_name"),
-      email: formData.get("email"),
-      room_number: formData.get("room_number"),
-      check_in: formData.get("check_in"),
-      check_out: formData.get("check_out"),
-      comments: formData.get("comments"),
-      rating,
-      recommend,
-      created_at: new Date().toISOString(),
-    });
 
     await addGuestFeedback(formData);
     setSubmitted(true);
@@ -47,20 +38,28 @@ export default function FeedbackPage() {
   if (submitted) return <SuccessScreen />;
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] dark:bg-gray-900 flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-2xl">
+    <div className="relative min-h-screen overflow-hidden bg-[#f4eee3] px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(176,138,83,0.22),transparent_38%),radial-gradient(circle_at_90%_85%,rgba(112,85,47,0.14),transparent_36%)]" />
+      <div className="relative mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <FeedbackHeader />
-        <FeedbackForm
-          rating={rating}
-          hovered={hovered}
-          setHovered={setHovered}
-          setRating={setRating}
-          recommend={recommend}
-          setRecommend={setRecommend}
-          handleSubmit={handleSubmit}
-          ratingMessages={ratingMessages}
-          isLoading={isLoading}
-        />
+        <div className="space-y-4">
+          {error ? (
+            <div className="rounded-2xl border border-[#dfc8b0] bg-[#fff7ef] px-4 py-3 text-sm text-[#7b4a2a]">
+              {error}
+            </div>
+          ) : null}
+          <FeedbackForm
+            rating={rating}
+            hovered={hovered}
+            setHovered={setHovered}
+            setRating={setRating}
+            recommend={recommend}
+            setRecommend={setRecommend}
+            handleSubmit={handleSubmit}
+            ratingMessages={ratingMessages}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );
