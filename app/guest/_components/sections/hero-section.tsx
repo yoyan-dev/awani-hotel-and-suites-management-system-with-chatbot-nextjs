@@ -18,7 +18,10 @@ export default function HeroBanner() {
   const isPeakSeason = useMemo(() => peakSeason(), []);
 
   return (
-    <section className="relative mt-4 overflow-hidden rounded-4xl border border-[#dfd3c1] bg-[#181512] shadow-[0_30px_90px_-55px_rgba(15,10,6,0.9)]">
+    <section
+      id="home"
+      className="relative mt-4 scroll-mt-28 overflow-hidden rounded-4xl border border-[#dfd3c1] bg-[#181512] shadow-[0_30px_90px_-55px_rgba(15,10,6,0.9)]"
+    >
       <div className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center opacity-70" />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/35" />
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 to-transparent" />

@@ -26,7 +26,7 @@ const pillars = [
 
 export default function About() {
   return (
-    <section className="py-16 sm:py-20">
+    <section id="about" className="scroll-mt-28 py-16 sm:py-20">
       <div className="grid items-center gap-8 rounded-4xl border border-[#e4d9c8] bg-[#fffdf9] p-6 shadow-[0_25px_55px_-45px_rgba(38,32,24,0.5)] sm:p-10 lg:grid-cols-[1fr_1.1fr]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

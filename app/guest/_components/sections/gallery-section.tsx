@@ -13,7 +13,7 @@ const galleryImages = [
 
 export default function GallerySection() {
   return (
-    <section className="py-16 sm:py-20">
+    <section id="gallery" className="scroll-mt-28 py-16 sm:py-20">
       <div className="mb-10 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
           Gallery

@@ -32,7 +32,7 @@ const amenities = [
 
 export default function AmenitiesSection() {
   return (
-    <section className="py-16 sm:py-20">
+    <section id="amenities" className="scroll-mt-28 py-16 sm:py-20">
       <div className="mb-10 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#9a7647]">
           Amenities

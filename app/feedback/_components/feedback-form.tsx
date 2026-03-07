@@ -1,16 +1,19 @@
 "use client";
+
 import React from "react";
 import {
+  Button,
   Card,
   CardBody,
-  Input,
-  Textarea,
-  Button,
-  RadioGroup,
-  Radio,
   Divider,
+  Input,
+  Radio,
+  RadioGroup,
+  Textarea,
 } from "@heroui/react";
 import clsx from "clsx";
+import { Star } from "lucide-react";
+
 import { RatingScale, RecommendationValue } from "@/types/feedback";
 
 interface FeedbackFormProps {
@@ -37,45 +40,62 @@ export default function FeedbackForm({
   isLoading,
 }: FeedbackFormProps) {
   return (
-    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-100 rounded-lg shadow-sm">
-      <CardBody className="p-10">
-        <form onSubmit={handleSubmit} className="space-y-10">
-          {/* Guest Info */}
+    <Card className="overflow-hidden rounded-[2rem] border border-[#e3d4c2] bg-[#fffdf9] shadow-[0_24px_60px_-40px_rgba(36,28,20,0.48)]">
+      <CardBody className="p-6 sm:p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <section className="space-y-4">
-            <Input
-              name="full_name"
-              label="Full Name"
-              variant="bordered"
-              isRequired
-            />
-            <Input
-              name="email"
-              type="email"
-              label="Email Address"
-              variant="bordered"
-              isRequired
-            />
+            <h2 className="font-serif text-2xl text-[#251f18]">Your Details</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Input
+                name="full_name"
+                label="Full Name"
+                variant="bordered"
+                isRequired
+                classNames={{
+                  inputWrapper:
+                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+                }}
+              />
+              <Input
+                name="email"
+                type="email"
+                label="Email Address"
+                variant="bordered"
+                isRequired
+                classNames={{
+                  inputWrapper:
+                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+                }}
+              />
+            </div>
           </section>
 
-          <Divider className="bg-gray-100" />
+          <Divider className="bg-[#eadfce]" />
 
-          {/* Stay Details */}
           <section className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="font-serif text-xl text-[#251f18]">Stay Details</h3>
+            <div className="grid gap-4 sm:grid-cols-3">
               <Input
                 name="room_number"
                 label="Room Number"
                 variant="bordered"
                 isRequired
+                classNames={{
+                  inputWrapper:
+                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+                }}
               />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 name="check_in"
                 type="date"
                 label="Check-in"
                 variant="bordered"
                 isRequired
+                className="sm:col-span-1"
+                classNames={{
+                  inputWrapper:
+                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+                }}
               />
               <Input
                 name="check_out"
@@ -83,73 +103,97 @@ export default function FeedbackForm({
                 label="Check-out"
                 variant="bordered"
                 isRequired
+                className="sm:col-span-1"
+                classNames={{
+                  inputWrapper:
+                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+                }}
               />
             </div>
           </section>
 
-          <Divider className="bg-gray-100" />
+          <Divider className="bg-[#eadfce]" />
 
-          {/* Rating */}
-          <section className="space-y-6">
-            <div className="text-sm font-medium text-gray-700">
-              Overall Rating
-            </div>
-            <div className="flex justify-between gap-3">
-              {[1, 2, 3, 4, 5].map((star) => {
+          <section className="space-y-5">
+            <h3 className="font-serif text-xl text-[#251f18]">Overall Rating</h3>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {[1, 2, 3, 4, 5].map((value) => {
                 const active = hovered
-                  ? star <= hovered
-                  : star <= Number(rating || 0);
+                  ? value <= hovered
+                  : value <= Number(rating || 0);
+
                 return (
                   <button
-                    key={star}
+                    key={value}
                     type="button"
-                    onMouseEnter={() => setHovered(star)}
+                    onMouseEnter={() => setHovered(value)}
                     onMouseLeave={() => setHovered(null)}
-                    onClick={() => setRating(star as RatingScale)}
+                    onClick={() => setRating(value as RatingScale)}
                     className={clsx(
-                      "flex-1 rounded-md text-2xl transition-all duration-150",
+                      "inline-flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 sm:h-12 sm:w-12",
                       active
-                        ? "text-amber-500 scale-105"
-                        : "text-gray-300 hover:text-amber-400",
+                        ? "border-[#b08a53] bg-[#b08a53] text-white shadow-[0_12px_24px_-14px_rgba(98,68,30,0.75)]"
+                        : "border-[#d9c6ab] bg-[#fff8ee] text-[#a08f78] hover:border-[#c9ad86] hover:text-[#8b6a3e]",
                     )}
-                    aria-label={`Rate ${star} star`}
+                    aria-label={`Rate ${value} star`}
                   >
-                    ★
+                    <Star
+                      size={20}
+                      className={clsx(active && "fill-current")}
+                    />
                   </button>
                 );
               })}
             </div>
-            {rating && (
-              <p className="text-sm text-gray-600">{ratingMessages[rating]}</p>
+
+            {rating ? (
+              <p className="rounded-xl border border-[#e2d4bf] bg-[#fbf4e9] px-3 py-2 text-sm text-[#6e5535]">
+                {ratingMessages[rating]}
+              </p>
+            ) : (
+              <p className="text-sm text-[#867560]">
+                Select a rating from 1 to 5.
+              </p>
             )}
           </section>
 
-          {/* Comments */}
-          <Textarea
-            name="comments"
-            label="Additional Comments"
-            minRows={4}
-            variant="bordered"
-          />
+          <section className="space-y-4">
+            <Textarea
+              name="comments"
+              label="Additional Comments"
+              minRows={4}
+              variant="bordered"
+              classNames={{
+                inputWrapper:
+                  "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+              }}
+              placeholder="Tell us anything that made your stay great or needs attention."
+            />
+          </section>
 
-          {/* Recommend */}
-          <RadioGroup
-            label="Would you recommend Awani Hotel?"
-            orientation="horizontal"
-            value={recommend}
-            onValueChange={(value) =>
-              setRecommend(value as RecommendationValue)
-            }
-          >
-            <Radio value="yes">Yes</Radio>
-            <Radio value="no">No</Radio>
-          </RadioGroup>
+          <section className="space-y-3">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#7a6444]">
+              Recommendation
+            </p>
+            <RadioGroup
+              label="Would you recommend Awani Hotel?"
+              orientation="horizontal"
+              value={recommend}
+              onValueChange={(value) =>
+                setRecommend(value as RecommendationValue)
+              }
+              classNames={{ label: "text-[#2d251c] font-medium" }}
+            >
+              <Radio value="yes">Yes</Radio>
+              <Radio value="no">No</Radio>
+            </RadioGroup>
+          </section>
 
           <Button
             isLoading={isLoading}
             type="submit"
-            color="primary"
-            className="w-full font-medium"
+            radius="full"
+            className="h-12 w-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
             isDisabled={!rating || !recommend}
           >
             Submit Feedback
