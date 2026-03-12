@@ -17,7 +17,7 @@ export default function CenterRow({
             {new Date().toLocaleDateString()}
           </div>
         </div>
-        <div className="w-full h-36 rounded-md bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 flex items-center justify-center">
+        <div className="w-full h-36 rounded-md bg-linear-to-b from-indigo-50 to-white dark:from-gray-800 flex items-center justify-center">
           <div className="text-center text-slate-500">
             Mini calendar placeholder
           </div>

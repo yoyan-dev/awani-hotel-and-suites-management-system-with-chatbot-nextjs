@@ -6,7 +6,7 @@ export default function KeyPerformanceIndicator({ stats }: { stats: any }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div className="p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-md flex items-center gap-4">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="p-3 rounded-lg bg-linear-to-br from-blue-50 to-blue-100">
           <DollarSign />
         </div>
         <div>
@@ -18,7 +18,7 @@ export default function KeyPerformanceIndicator({ stats }: { stats: any }) {
       </div>
 
       <div className="p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-md flex items-center gap-4">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100">
+        <div className="p-3 rounded-lg bg-linear-to-br from-purple-50 to-purple-100">
           <Calendar />
         </div>
         <div>
@@ -28,7 +28,7 @@ export default function KeyPerformanceIndicator({ stats }: { stats: any }) {
       </div>
 
       <div className="p-4 rounded-2xl bg-white dark:bg-gray-800 shadow-md flex items-center gap-4">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-green-50 to-green-100">
+        <div className="p-3 rounded-lg bg-linear-to-br from-green-50 to-green-100">
           <Users />
         </div>
         <div>

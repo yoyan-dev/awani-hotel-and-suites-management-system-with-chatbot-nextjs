@@ -21,7 +21,7 @@ export default function RoomDetails() {
   const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const { room_type, isLoading } = useSelector(
-    (state: RootState) => state.room_type
+    (state: RootState) => state.room_type,
   );
 
   React.useEffect(() => {
@@ -47,7 +47,7 @@ export default function RoomDetails() {
             <div className="flex-1">
               <Image
                 alt="room image"
-                src={room_type.image || "/bg.jpg"}
+                src={room_type.image || "/bg-awani.jpg"}
                 radius="lg"
                 width="100%"
                 className="object-cover w-full h-[500px] md:h-[400px]"

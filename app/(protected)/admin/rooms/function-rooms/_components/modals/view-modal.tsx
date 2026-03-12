@@ -42,7 +42,7 @@ const RoomDetails: React.FC<RoomDetailsProps> = ({ room, isOpen, onClose }) => {
               <ModalBody>
                 <div className="flex flex-col gap-6 w-full">
                   <Image
-                    src={room.image || "/bg.jpg"}
+                    src={room.image || "/bg-awani.jpg"}
                     alt={`Room image`}
                     width="100%"
                     className="object-cover w-full h-[300px] md:h-[400px]"

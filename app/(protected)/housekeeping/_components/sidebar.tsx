@@ -38,7 +38,7 @@ export default function Sidebar() {
 
         {/* <div
           className={cn(
-            "flex items-center gap-2 bg-gradient-to-r from-primary-100/60 to-primary-50/60 dark:from-gray-800 dark:to-gray-700 p-3 rounded-lg shadow-sm m-3 transition-all duration-300",
+            "flex items-center gap-2 bg-linear-to-r from-primary-100/60 to-primary-50/60 dark:from-gray-800 dark:to-gray-700 p-3 rounded-lg shadow-sm m-3 transition-all duration-300",
             collapsed && "justify-center"
           )}
         >
@@ -70,9 +70,13 @@ export default function Sidebar() {
                         signOut({ callbackUrl: "/auth" });
                       }
                     }}
-                    as={!item.isExpandable && !isLogoutItem ? NextLink : undefined}
+                    as={
+                      !item.isExpandable && !isLogoutItem ? NextLink : undefined
+                    }
                     href={
-                      !item.isExpandable && !isLogoutItem ? item.href : undefined
+                      !item.isExpandable && !isLogoutItem
+                        ? item.href
+                        : undefined
                     }
                     className={cn(
                       "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
