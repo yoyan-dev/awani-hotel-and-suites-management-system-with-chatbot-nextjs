@@ -36,14 +36,22 @@ const ViewModal: React.FC<ViewModalProps> = ({ room, isOpen, onClose }) => {
               <ModalBody>
                 <div className="pb-4 space-y-8">
                   <div className="flex flex-col items-start gap-2">
-                    <div className="flex justify-center w-full">
-                      <Image
-                        src={room.image}
-                        alt="room image"
-                        width="100%"
-                        height={300}
-                        radius="sm"
-                      />
+                    <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
+                      {(room.images && room.images.length > 0
+                        ? room.images
+                        : room.image
+                          ? [room.image]
+                          : ["/bg-awani.jpg"]
+                      ).map((src, index) => (
+                        <Image
+                          key={`${src}-${index}`}
+                          src={src}
+                          alt={`room image ${index + 1}`}
+                          width="100%"
+                          height={200}
+                          radius="sm"
+                        />
+                      ))}
                     </div>
                     <p className="text-xl font-semibold text-primary">
                       {formatPHP(Number(room.price))}

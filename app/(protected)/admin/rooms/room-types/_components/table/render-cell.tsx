@@ -32,8 +32,27 @@ export const RenderCell: React.FC<RenderCellProps> = ({
   const [deleteOpen, setDeleteOpen] = React.useState(false);
 
   switch (columnKey) {
-    case "image":
-      return <Image src={room_type.image} width={200} />;
+    case "images": {
+      const images =
+        room_type.images && room_type.images.length > 0
+          ? room_type.images
+          : room_type.image
+            ? [room_type.image]
+            : [];
+      if (images.length === 0) {
+        return "no image";
+      }
+      return (
+        <div className="relative w-28">
+          <Image src={images[0]} width={160} className="rounded-md" />
+          {images.length > 1 ? (
+            <span className="absolute right-1 top-1 rounded-full bg-black/70 px-2 py-0.5 text-[10px] text-white">
+              +{images.length - 1}
+            </span>
+          ) : null}
+        </div>
+      );
+    }
     case "room_type_add_ons":
       return room_type.room_type_add_ons &&
         room_type.room_type_add_ons.length > 0 ? (

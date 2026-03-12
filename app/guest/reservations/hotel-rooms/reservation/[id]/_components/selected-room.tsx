@@ -22,14 +22,22 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
   return (
     <aside className="hidden space-y-5 rounded-3xl border border-[#e7dccd] bg-[#fffefb] p-5 xl:block">
       <div className="overflow-hidden rounded-2xl">
-        {room.image ? (
-          <Image
-            src={room.image}
-            alt="room image"
-            width="100%"
-            className="h-[260px] w-full object-cover"
-          />
-        ) : null}
+        {(room.images && room.images.length > 0
+          ? room.images
+          : room.image
+            ? [room.image]
+            : []
+        )
+          .slice(0, 1)
+          .map((src, index) => (
+            <Image
+              key={`${src}-${index}`}
+              src={src}
+              alt="room image"
+              width="100%"
+              className="h-[260px] w-full object-cover"
+            />
+          ))}
       </div>
 
       <div className="space-y-2">

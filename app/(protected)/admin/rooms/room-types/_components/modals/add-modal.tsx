@@ -11,7 +11,7 @@ import {
   Textarea,
   ModalFooter,
 } from "@heroui/react";
-import { Copyright, Plus, Upload } from "lucide-react";
+import { Copyright, Plus, Upload, X } from "lucide-react";
 import AddOnsInput from "../add-ons-input";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { RoomTypeAddOnFormRow } from "../add-ons-input";
@@ -20,11 +20,15 @@ export default function AddModal() {
   const { isLoading, error, addRoomType } = useRoomTypes();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [addOns, setAddOns] = useState<RoomTypeAddOnFormRow[]>([]);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<Array<{ file: File; url: string }>>(
+    [],
+  );
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    formData.delete("images");
+    previews.forEach((item) => formData.append("images", item.file));
     formData.append("room_type_add_ons", JSON.stringify(addOns));
 
     await addRoomType(formData);
@@ -34,10 +38,23 @@ export default function AddModal() {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setPreviews((prev) => [
+      ...prev,
+      ...files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    ]);
+  };
+
+  const handleRemovePreview = (index: number) => {
+    setPreviews((prev) => {
+      const next = [...prev];
+      const removed = next.splice(index, 1)[0];
+      if (removed?.url) {
+        URL.revokeObjectURL(removed.url);
+      }
+      return next;
+    });
   };
 
   return (
@@ -63,7 +80,10 @@ export default function AddModal() {
                 <Form
                   className="w-full space-y-4"
                   onSubmit={onSubmit}
-                  onReset={() => setPreview(null)}
+                  onReset={() => {
+                    previews.forEach((item) => URL.revokeObjectURL(item.url));
+                    setPreviews([]);
+                  }}
                 >
                   <div className="flex flex-col md:flex-row gap-4 w-full">
                     <div className="flex-1 w-full md:border-r md:border-gray-300 md:pr-4 space-y-6">
@@ -146,18 +166,35 @@ export default function AddModal() {
 
                     <div className="flex-1 space-y-4 flex flex-col">
                       <label className="text-sm font-medium text-gray-600">
-                        Room Image
+                        Room Images
                       </label>
                       <label
-                        htmlFor="image-upload"
+                        htmlFor="images-upload"
                         className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition min-h-44"
                       >
-                        {preview ? (
-                          <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
+                        {previews.length > 0 ? (
+                          <div className="grid w-full grid-cols-2 gap-2 p-2">
+                            {previews.map((item, index) => (
+                              <div
+                                key={`${item.url}-${index}`}
+                                className="relative"
+                              >
+                                <img
+                                  src={item.url}
+                                  alt={`Preview ${index + 1}`}
+                                  className="h-28 w-full rounded-lg object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemovePreview(index)}
+                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
+                                  aria-label="Remove image"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         ) : (
                           <div className="flex flex-col items-center gap-2 text-gray-400 py-6">
                             <Upload size={32} />
@@ -169,10 +206,11 @@ export default function AddModal() {
                       </label>
                       <Input
                         isRequired
-                        id="image-upload"
+                        id="images-upload"
                         type="file"
-                        name="image"
+                        name="images"
                         accept="image/*"
+                        multiple
                         className="hidden"
                         onChange={handleFileChange}
                       />

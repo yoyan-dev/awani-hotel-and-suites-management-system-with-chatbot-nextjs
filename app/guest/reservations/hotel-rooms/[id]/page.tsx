@@ -3,9 +3,7 @@ import React from "react";
 import {
   Card,
   CardBody,
-  Chip,
   Image,
-  Divider,
   Spinner,
   Button,
   Link,
@@ -38,6 +36,13 @@ export default function RoomDetails() {
     );
   }
 
+  const roomImages =
+    room_type.images && room_type.images.length > 0
+      ? room_type.images
+      : room_type.image
+        ? [room_type.image]
+        : ["/bg-awani.jpg"];
+
   return (
     <div className="space-y-6">
       {/* Top Section */}
@@ -45,13 +50,29 @@ export default function RoomDetails() {
         <CardBody className="space-y-6">
           <div className="flex">
             <div className="flex-1">
-              <Image
-                alt="room image"
-                src={room_type.image || "/bg-awani.jpg"}
-                radius="lg"
-                width="100%"
-                className="object-cover w-full h-[500px] md:h-[400px]"
-              />
+              {roomImages.length > 1 ? (
+                <Carousel itemsPerView={1} className="max-w-full">
+                  {roomImages.map((src, index) => (
+                    <CarouselItem key={`${src}-${index}`}>
+                      <Image
+                        alt={`room image ${index + 1}`}
+                        src={src}
+                        radius="lg"
+                        width="100%"
+                        className="object-cover w-full h-[500px] md:h-[400px]"
+                      />
+                    </CarouselItem>
+                  ))}
+                </Carousel>
+              ) : (
+                <Image
+                  alt="room image"
+                  src={roomImages[0]}
+                  radius="lg"
+                  width="100%"
+                  className="object-cover w-full h-[500px] md:h-[400px]"
+                />
+              )}
             </div>
             <div className="flex-1 space-y-4 px-2">
               <div className="flex justify-between">

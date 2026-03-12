@@ -63,7 +63,7 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
                 <Image
                   removeWrapper
                   alt={room.name}
-                  src={room.image || "/bg-awani.jpg"}
+                  src={room.images?.[0] ?? room.image ?? "/bg-awani.jpg"}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
                 />
                 {isPeakSeason ? (

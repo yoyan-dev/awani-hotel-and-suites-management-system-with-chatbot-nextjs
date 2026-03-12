@@ -50,9 +50,9 @@ const AvailableRooms: React.FC<AvailableRoomProps> = ({
             >
               <CardBody>
                 <div className="flex flex-col items-start gap-4">
-                  {room.image ? (
+                  {room.images?.[0] || room.image ? (
                     <Image
-                      src={room.image}
+                      src={room.images?.[0] ?? room.image}
                       alt={room.name}
                       width={300}
                       className="h-[160px] w-full rounded-xl object-cover"

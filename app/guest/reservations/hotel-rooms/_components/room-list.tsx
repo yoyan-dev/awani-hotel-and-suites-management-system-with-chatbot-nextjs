@@ -46,7 +46,7 @@ export const RoomsList: React.FC<RoomProps> = ({ rooms, typesLoading }) => {
               alt={room.name}
               className="h-[200px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
               radius="none"
-              src={room.image || "/bg-awani.jpg"}
+              src={room.images?.[0] ?? room.image ?? "/bg-awani.jpg"}
               width="100%"
             />
           </CardBody>

@@ -51,13 +51,21 @@ const ViewModal: React.FC<ViewModalProps> = ({ room }) => {
               </ModalHeader>
 
               <ModalBody className="space-y-5 py-5">
-                <div className="overflow-hidden rounded-2xl border border-[#e7dccd]">
-                  <Image
-                    src={room.image || "/bg-awani.jpg"}
-                    alt={`${room.name} image`}
-                    width="100%"
-                    className="h-[250px] w-full object-cover"
-                  />
+                <div className="grid gap-2 overflow-hidden rounded-2xl border border-[#e7dccd] p-2 sm:grid-cols-2">
+                  {(room.images && room.images.length > 0
+                    ? room.images
+                    : room.image
+                      ? [room.image]
+                      : ["/bg-awani.jpg"]
+                  ).map((src, index) => (
+                    <Image
+                      key={`${src}-${index}`}
+                      src={src}
+                      alt={`${room.name} image ${index + 1}`}
+                      width="100%"
+                      className="h-[180px] w-full object-cover"
+                    />
+                  ))}
                 </div>
 
                 <div className="flex flex-wrap gap-2 text-sm text-[#6b6153]">

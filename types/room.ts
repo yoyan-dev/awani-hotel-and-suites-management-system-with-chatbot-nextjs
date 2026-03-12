@@ -13,6 +13,7 @@ export type RoomStatus =
 
 export interface RoomType {
   id?: string;
+  images?: string[];
   image?: string;
   name?: string;
   description?: string;

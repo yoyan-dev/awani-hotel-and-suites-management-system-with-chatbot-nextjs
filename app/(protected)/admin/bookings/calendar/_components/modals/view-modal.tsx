@@ -264,9 +264,11 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       </span>
                     </h3>
 
-                    {booking.room_type.image && (
+                    {(booking.room_type.images?.[0] || booking.room_type.image) && (
                       <Image
-                        src={booking.room_type.image}
+                        src={
+                          booking.room_type.images?.[0] ?? booking.room_type.image
+                        }
                         alt="Room image"
                         radius="sm"
                         className="w-full h-40 object-cover"
