@@ -53,6 +53,34 @@ function formatDateLabel(value: string) {
   });
 }
 
+function toDateInputValue(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseLocalDate(value: string) {
+  if (!value) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function startOfTomorrow() {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + 1);
+  return date;
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
 export default function BookingForm({
   onSubmit,
   query,
@@ -86,6 +114,15 @@ export default function BookingForm({
     number_of_guests: "",
   });
   const formRef = React.useRef<HTMLFormElement>(null);
+  const minCheckInDate = React.useMemo(
+    () => toDateInputValue(startOfTomorrow()),
+    [],
+  );
+  const minCheckOutDate = React.useMemo(() => {
+    const checkIn = parseLocalDate(String(query.checkIn || ""));
+    const minimum = checkIn ? addDays(checkIn, 1) : startOfTomorrow();
+    return toDateInputValue(minimum);
+  }, [query.checkIn]);
 
   const selectedAddOns = React.useMemo(
     () => (summary?.specialRequests ?? []).filter((item) => item.quantity > 0),
@@ -296,10 +333,11 @@ export default function BookingForm({
             variant="bordered"
             isRequired
             type="date"
-            label="checked_in Date"
+            label="checked in Date"
             name="checked_in"
             radius="lg"
             value={query.checkIn}
+            min={minCheckInDate}
             onChange={(e) => setQuery({ ...query, checkIn: e.target.value })}
           />
 
@@ -308,10 +346,12 @@ export default function BookingForm({
             variant="bordered"
             isRequired
             type="date"
-            label="checked_out Date"
+            label="checked out Date"
             name="checked_out"
             radius="lg"
+            isDisabled={!query.checkIn}
             value={query.checkOut}
+            min={minCheckOutDate}
             onChange={(e) => setQuery({ ...query, checkOut: e.target.value })}
           />
         </div>

@@ -22,9 +22,9 @@ export default function HeroBanner() {
       id="home"
       className="relative mt-4 scroll-mt-28 overflow-hidden rounded-4xl border border-[#dfd3c1] bg-[#181512] shadow-[0_30px_90px_-55px_rgba(15,10,6,0.9)]"
     >
-      <div className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center opacity-70" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/35" />
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/45 to-transparent" />
+      <div className="absolute inset-0 bg-[url('/bg-awani.jpg')] bg-cover bg-center opacity-70" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/55 to-black/35" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-black/45 to-transparent" />
 
       <div className="relative z-10 grid gap-12 px-6 py-16 sm:px-10 lg:grid-cols-[1.2fr_0.8fr] lg:px-14 lg:py-20">
         <div className="max-w-2xl space-y-7">
@@ -40,7 +40,7 @@ export default function HeroBanner() {
             transition={{ ...fadeInUp.transition, delay: 0.08 }}
           >
             <h1 className="font-serif text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
-              Hotel & Suites crafted for high-value travelers.
+              Your Hospitality Partner With Heart & Positivity
             </h1>
           </motion.div>
 
@@ -61,7 +61,7 @@ export default function HeroBanner() {
             <Button
               as={Link}
               href="/guest/reservations/hotel-rooms"
-              className="h-12 bg-[#b08a53] px-8 text-base font-semibold text-white transition-all hover:translate-y-[-1px] hover:bg-[#9a7747]"
+              className="h-12 bg-[#b08a53] px-8 text-base font-semibold text-white transition-all hover:-translate-y-px hover:bg-[#9a7747]"
               radius="full"
               endContent={<ArrowRight size={18} />}
             >

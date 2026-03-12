@@ -3,12 +3,16 @@
 import { motion } from "framer-motion";
 
 const galleryImages = [
-  "/pool.png",
-  "/banquet/image-1.jpg",
-  "/banquet/image-2.jpg",
-  "/banquet/image-4.jpg",
-  "/banquet/image-6.jpg",
+  // "/pool.png",
+  "/banquet/image-7.jpg",
   "/banquet/image-8.jpg",
+  "/banquet/image-9.png",
+  "/banquet/image-10.png",
+  "/banquet/image-11.png",
+  "/banquet/image-12.png",
+  "/banquet/image-13.png",
+  "/banquet/image-14.png",
+  "/banquet/image-15.png",
 ];
 
 export default function GallerySection() {
@@ -38,7 +42,7 @@ export default function GallerySection() {
               alt={`Awani gallery ${index + 1}`}
               className="h-48 w-full object-cover transition-transform duration-500 group-hover:scale-[1.05] sm:h-64"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-60" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/35 to-transparent opacity-40 transition-opacity duration-300 group-hover:opacity-60" />
           </motion.div>
         ))}
       </div>

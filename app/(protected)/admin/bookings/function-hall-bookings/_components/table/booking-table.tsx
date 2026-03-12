@@ -77,6 +77,7 @@ export default function FunctionHallBookingTable({
           setSelectedKeys={setSelectedKeys}
           bookingLoading={bookingLoading}
           bookingsCount={pagination.total}
+          headerColumns={headerColumns}
         />
       }
       topContentPlacement="outside"

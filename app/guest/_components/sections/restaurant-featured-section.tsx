@@ -6,19 +6,24 @@ import { Clock3, MapPin, Star, UtensilsCrossed } from "lucide-react";
 
 const featuredDishes = [
   {
-    name: "Signature Seafood Platter",
-    description: "Freshly grilled catch paired with citrus herb butter.",
-    image: "/best-seller/seafood.jpg",
+    name: "Deatons Rack of Ribs",
+    description: "Slow-cooked and tender pork back ribs, glazed with or signature smoky-sweet BBQ sauce.",
+    image: "/best-seller/back-of-ribs.jpg",
   },
   {
-    name: "Ridgeview Herb Chicken",
-    description: "Char-grilled chicken breast with roasted seasonal vegetables.",
-    image: "/best-seller/grilled-chicken.jpg",
+    name: "Deatons Back Ribs",
+    description: "Slow-cooked and tender pork back ribs, glazed with our signature smoky-sweet BBQ sauce.",
+    image: "/best-seller/deaton-back-ribs.jpg",
   },
   {
-    name: "Truffle Cream Pasta",
-    description: "Silky cream sauce, parmesan, and hand-tossed pasta ribbons.",
-    image: "/best-seller/pasta.jpg",
+    name: "Mabuhay Breakfast",
+    description: "Hearty, classic Filipino breakfast plates Silog served with your choice if savory meat, garlic rice, and a fried egg. A taste of home to start your day.",
+    image: "/best-seller/mabuhay-breakfast.jpg",
+  },
+  {
+    name: "Negrense Kansi Soup",
+    description: "A hearty and flavorful soup made from beef shanks and bone marrow, characterized by its unique sourness from Batwan fruit and a savory broth made with annatto seeds.",
+    image: "/best-seller/negrense-kansi-soup.jpg",
   },
 ];
 
@@ -37,7 +42,7 @@ export default function RestaurantFeaturedSection() {
             Featured Dining
           </p>
           <h2 className="font-serif text-3xl leading-tight text-[#231f1a] sm:text-4xl">
-            Ridgeview Restaurant
+            Ridgeview Restaurant — Serving You with Heart.
           </h2>
           <p className="text-sm leading-relaxed text-[#665b4e] sm:text-base">
             Discover elevated dining with bold local flavors and refined
@@ -90,7 +95,7 @@ export default function RestaurantFeaturedSection() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           {featuredDishes.map((dish, index) => (
             <motion.article
               key={dish.name}
@@ -106,8 +111,12 @@ export default function RestaurantFeaturedSection() {
                 className="h-40 w-full object-cover"
               />
               <div className="p-4">
-                <h3 className="font-serif text-lg text-[#29241e]">{dish.name}</h3>
-                <p className="mt-1 text-sm text-[#6a5f52]">{dish.description}</p>
+                <h3 className="font-serif text-lg text-[#29241e]">
+                  {dish.name}
+                </h3>
+                <p className="mt-1 text-sm text-[#6a5f52]">
+                  {dish.description}
+                </p>
               </div>
             </motion.article>
           ))}

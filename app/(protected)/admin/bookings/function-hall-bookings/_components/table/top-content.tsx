@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@heroui/react";
-import { Search, Plus, Filter, RefreshCw } from "lucide-react";
+import { Download, Search, Plus, Filter, RefreshCw } from "lucide-react";
 import { bookingStatusOptions } from "@/app/constants/function-hall-booking";
 import { CalendarDate } from "@heroui/system/dist/types";
 import Link from "next/link";
@@ -19,6 +19,10 @@ import {
   FunctionHallBookingPagination,
 } from "@/types/function-room-booking";
 import { useFunctionHallBookings } from "@/hooks/use-function-hall-bookings";
+import type { ColumnType } from "@/types/column";
+import { saveReportPdf } from "@/lib/pdf/report-pdf";
+import { buildFunctionHallBookingsReportOptions } from "@/lib/pdf/booking-reports";
+import { fetchAllFunctionHallBookings } from "@/lib/pdf/booking-export";
 
 interface Props {
   bookings: FunctionHallBooking[];
@@ -31,6 +35,7 @@ interface Props {
   setSelectedKeys: React.Dispatch<React.SetStateAction<any>>;
   bookingLoading: boolean;
   bookingsCount: number;
+  headerColumns: ColumnType[];
 }
 
 const toDateString = (date: CalendarDate | null) =>
@@ -41,11 +46,14 @@ const toDateString = (date: CalendarDate | null) =>
     : null;
 
 export const TableTopContent: React.FC<Props> = ({
+  bookings,
   query,
   setQuery,
   bookingsCount,
+  headerColumns,
 }) => {
   const { fetchBookings } = useFunctionHallBookings();
+  const [isExporting, setIsExporting] = React.useState(false);
   const filterResetKey = `${query.status ?? ""}-${query.event_start ?? ""}-${query.event_end ?? ""}`;
 
   const handleSearchChange = (value: string) =>
@@ -79,6 +87,23 @@ export const TableTopContent: React.FC<Props> = ({
       date_range: undefined,
       guest_id: undefined,
     });
+
+  const handleExportPdf = async () => {
+    if (isExporting || bookingsCount === 0) return;
+    setIsExporting(true);
+    try {
+      const exportBookings = await fetchAllFunctionHallBookings(query);
+      const options = buildFunctionHallBookingsReportOptions({
+        bookings: exportBookings.length ? exportBookings : bookings,
+        columns: headerColumns,
+        query,
+        title: "Function Hall Bookings Report",
+      });
+      await saveReportPdf(options);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -169,6 +194,17 @@ export const TableTopContent: React.FC<Props> = ({
             </PopoverContent>
           </Popover>
 
+          <Button
+            size="sm"
+            radius="sm"
+            variant="bordered"
+            startContent={<Download size={16} />}
+            onPress={handleExportPdf}
+            isDisabled={bookingsCount === 0 || isExporting}
+            isLoading={isExporting}
+          >
+            Export PDF
+          </Button>
           <Button
             as={Link}
             href="/admin/bookings/function-hall-bookings/add-booking"

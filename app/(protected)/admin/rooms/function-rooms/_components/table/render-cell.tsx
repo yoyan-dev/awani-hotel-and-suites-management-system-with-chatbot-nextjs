@@ -34,7 +34,7 @@ export const RenderCell: React.FC<RenderCellProps> = ({ room, columnKey }) => {
       return (
         <Image
           alt="HeroUI hero Image"
-          src={room.image || "/bg.jpg"}
+          src={room.image || "/bg-awani.jpg"}
           width={100}
         />
       );
