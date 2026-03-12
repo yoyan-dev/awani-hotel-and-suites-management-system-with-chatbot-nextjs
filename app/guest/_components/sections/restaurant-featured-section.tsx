@@ -6,23 +6,23 @@ import { Clock3, MapPin, Star, UtensilsCrossed } from "lucide-react";
 
 const featuredDishes = [
   {
-    name: "Back of Ribs",
-    description: "Tender pork ribs glazed with smoky barbecue sauce.",
+    name: "Deatons Rack of Ribs",
+    description: "Slow-cooked and tender pork back ribs, glazed with or signature smoky-sweet BBQ sauce.",
     image: "/best-seller/back-of-ribs.jpg",
   },
   {
-    name: "deaton-back-ribs",
-    description: "Juicy grilled ribs with rich smoky flavor.",
+    name: "Deatons Back Ribs",
+    description: "Slow-cooked and tender pork back ribs, glazed with our signature smoky-sweet BBQ sauce.",
     image: "/best-seller/deaton-back-ribs.jpg",
   },
   {
-    name: "mabuhay-breakfast",
-    description: "Classic Filipino breakfast with garlic rice and eggs.",
+    name: "Mabuhay Breakfast",
+    description: "Hearty, classic Filipino breakfast plates Silog served with your choice if savory meat, garlic rice, and a fried egg. A taste of home to start your day.",
     image: "/best-seller/mabuhay-breakfast.jpg",
   },
   {
-    name: "negrense-kansi-soup",
-    description: "Tangy Negrense beef soup with rich local spices.",
+    name: "Negrense Kansi Soup",
+    description: "A hearty and flavorful soup made from beef shanks and bone marrow, characterized by its unique sourness from Batwan fruit and a savory broth made with annatto seeds.",
     image: "/best-seller/negrense-kansi-soup.jpg",
   },
 ];

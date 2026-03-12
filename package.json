@@ -42,6 +42,8 @@
     "file-saver": "^2.0.5",
     "framer-motion": "12.23.25",
     "intl-messageformat": "10.7.18",
+    "jspdf": "^4.2.0",
+    "jspdf-autotable": "^5.0.7",
     "jsqr": "^1.4.0",
     "libphonenumber-js": "^1.12.36",
     "lucide-react": "^0.556.0",

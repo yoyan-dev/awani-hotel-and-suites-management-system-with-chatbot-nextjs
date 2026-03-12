@@ -6,7 +6,7 @@ import {
   DateRangePicker,
   Selection,
 } from "@heroui/react";
-import { Plus, RefreshCw } from "lucide-react";
+import { Download, Plus, RefreshCw } from "lucide-react";
 import { bookingStatusOptions } from "@/app/constants/booking";
 import {
   Booking,
@@ -18,6 +18,10 @@ import ExpandedBookingTable from "../modals/expanded-table-modal";
 import { Room } from "@/types/room";
 import Link from "next/link";
 import { useBookings } from "@/hooks/use-bookings";
+import type { ColumnType } from "@/types/column";
+import { saveReportPdf } from "@/lib/pdf/report-pdf";
+import { buildRoomBookingsReportOptions } from "@/lib/pdf/booking-reports";
+import { fetchAllRoomBookings } from "@/lib/pdf/booking-export";
 
 interface Props {
   bookings: Booking[];
@@ -29,6 +33,7 @@ interface Props {
   bookingLoading: boolean;
   handleSubmit: (booking: Booking, room: Room) => void;
   bookingsCount: number;
+  headerColumns: ColumnType[];
 }
 
 const toDateString = (date: CalendarDate | null) =>
@@ -48,8 +53,10 @@ export const TableTopContent: React.FC<Props> = ({
   bookingLoading,
   handleSubmit,
   bookingsCount,
+  headerColumns,
 }) => {
   const { fetchBookings } = useBookings();
+  const [isExporting, setIsExporting] = React.useState(false);
   const filterResetKey = `${query.status ?? ""}-${query.date_range?.start ?? ""}-${query.date_range?.end ?? ""}`;
 
   const handleDateRangeChange = (range: {
@@ -79,6 +86,23 @@ export const TableTopContent: React.FC<Props> = ({
       checked_in: undefined,
       checked_out: undefined,
     });
+
+  const handleExportPdf = async () => {
+    if (isExporting || bookingsCount === 0) return;
+    setIsExporting(true);
+    try {
+      const exportBookings = await fetchAllRoomBookings(query);
+      const options = buildRoomBookingsReportOptions({
+        bookings: exportBookings.length ? exportBookings : bookings,
+        columns: headerColumns,
+        query,
+        title: "Room Bookings Report",
+      });
+      await saveReportPdf(options);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -118,6 +142,17 @@ export const TableTopContent: React.FC<Props> = ({
             onPress={clearFilters}
           >
             Clear Filters
+          </Button>
+          <Button
+            size="sm"
+            fullWidth
+            variant="bordered"
+            startContent={<Download size={16} />}
+            onPress={handleExportPdf}
+            isDisabled={bookingsCount === 0 || isExporting}
+            isLoading={isExporting}
+          >
+            Export PDF
           </Button>
           <Button
             as={Link}

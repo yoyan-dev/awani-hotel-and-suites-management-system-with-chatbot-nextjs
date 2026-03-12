@@ -61,7 +61,7 @@ export default function HeroBanner() {
             <Button
               as={Link}
               href="/guest/reservations/hotel-rooms"
-              className="h-12 bg-[#b08a53] px-8 text-base font-semibold text-white transition-all hover:translate-y-[-1px] hover:bg-[#9a7747]"
+              className="h-12 bg-[#b08a53] px-8 text-base font-semibold text-white transition-all hover:-translate-y-px hover:bg-[#9a7747]"
               radius="full"
               endContent={<ArrowRight size={18} />}
             >

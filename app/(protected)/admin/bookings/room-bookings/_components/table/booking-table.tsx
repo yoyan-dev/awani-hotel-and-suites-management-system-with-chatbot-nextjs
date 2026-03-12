@@ -80,6 +80,7 @@ export default function BookingTable({
           bookingLoading={bookingLoading}
           handleSubmit={handleSubmit}
           bookingsCount={pagination.total}
+          headerColumns={headerColumns}
         />
       }
       topContentPlacement="outside"
