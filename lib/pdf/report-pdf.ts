@@ -1,6 +1,7 @@
 "use client";
 
 type SimpleCell = string | number | boolean | null | undefined;
+type TableCell = string | number | boolean | null;
 
 export type ReportPdfColumn =
   | string
@@ -29,11 +30,11 @@ export type ReportPdfOptions = {
 type NormalizedTable =
   | {
       head: string[][];
-      body: SimpleCell[][];
+      body: TableCell[][];
     }
   | {
       columns: Array<{ header: string; dataKey: string; width?: number }>;
-      body: Array<Record<string, SimpleCell>>;
+      body: Array<Record<string, TableCell>>;
     };
 
 function ensureClient() {
@@ -47,6 +48,10 @@ function sanitizeFileName(value: string) {
   return cleaned.length > 0 ? cleaned : "report";
 }
 
+function toTableCell(value: SimpleCell): TableCell {
+  return value === undefined ? "" : value;
+}
+
 function normalizeTable(
   columns: ReportPdfColumn[],
   rows: ReportPdfRow[],
@@ -56,7 +61,9 @@ function normalizeTable(
   if (!hasObjectColumns) {
     const headers = columns as string[];
     const body = rows.map((row) =>
-      Array.isArray(row) ? row : headers.map((header) => row[header]),
+      Array.isArray(row)
+        ? row.map((cell) => toTableCell(cell))
+        : headers.map((header) => toTableCell(row[header])),
     );
     return { head: [headers], body };
   }
@@ -65,12 +72,15 @@ function normalizeTable(
     typeof column === "string" ? { header: column, dataKey: column } : column,
   );
   const body = rows.map((row) => {
-    if (!Array.isArray(row)) {
-      return row;
+    const record: Record<string, TableCell> = {};
+    if (Array.isArray(row)) {
+      normalizedColumns.forEach((column, index) => {
+        record[column.dataKey] = toTableCell(row[index]);
+      });
+      return record;
     }
-    const record: Record<string, SimpleCell> = {};
-    normalizedColumns.forEach((column, index) => {
-      record[column.dataKey] = row[index];
+    normalizedColumns.forEach((column) => {
+      record[column.dataKey] = toTableCell(row[column.dataKey]);
     });
     return record;
   });

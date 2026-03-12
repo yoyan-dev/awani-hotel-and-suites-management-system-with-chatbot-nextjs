@@ -10,6 +10,10 @@ import type { ReportPdfOptions } from "@/lib/pdf/report-pdf";
 
 type CellValue = string | number | boolean | null | undefined;
 
+const getRecordValue = (record: object, key: string): CellValue => {
+  return (record as unknown as Record<string, CellValue>)[key];
+};
+
 const normalizeColumns = (columns: ColumnType[]) =>
   columns
     .filter((column) => column.uid !== "actions")
@@ -100,7 +104,7 @@ const getRoomBookingValue = (booking: Booking, key: string): CellValue => {
     case "status":
       return booking.status ?? "N/A";
     default:
-      return (booking as Record<string, CellValue>)[key] ?? "N/A";
+      return getRecordValue(booking, key) ?? "N/A";
   }
 };
 
@@ -136,7 +140,7 @@ const getFunctionHallBookingValue = (
     case "status":
       return booking.status ?? "N/A";
     default:
-      return (booking as Record<string, CellValue>)[key] ?? "N/A";
+      return getRecordValue(booking, key) ?? "N/A";
   }
 };
 
