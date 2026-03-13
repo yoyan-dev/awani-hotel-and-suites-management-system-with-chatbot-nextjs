@@ -42,21 +42,6 @@ interface BookingFormProps {
   addGuestIsLoading: boolean;
 }
 
-const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
-  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-};
-
-const selectClassNames = {
-  label: "text-[#6b6153] font-medium",
-  trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
-  selectorIcon: "text-[#7a6f62]",
-};
-
 function formatDateLabel(value: string) {
   if (!value) return "-";
   const date = new Date(value);
@@ -354,7 +339,6 @@ export default function BookingForm({
             value={query.checkIn}
             min={minCheckInDate}
             onChange={(e) => setQuery({ ...query, checkIn: e.target.value })}
-            classNames={inputClassNames}
           />
 
           <Input
@@ -369,7 +353,6 @@ export default function BookingForm({
             value={query.checkOut}
             min={minCheckOutDate}
             onChange={(e) => setQuery({ ...query, checkOut: e.target.value })}
-            classNames={inputClassNames}
           />
         </div>
         {query.checkIn && query.checkOut && roomTypes.length <= 0 ? (
@@ -390,7 +373,6 @@ export default function BookingForm({
             labelPlacement="outside"
             placeholder="Select Room Type"
             variant="bordered"
-            classNames={selectClassNames}
           >
             {roomTypes.map((type) => (
               <SelectItem key={type.id} textValue={type.name}>
@@ -413,7 +395,6 @@ export default function BookingForm({
           radius="lg"
           label="Company (Optional)"
           placeholder="Company name"
-          classNames={inputClassNames}
         />
 
         {specialRequests ? (
@@ -427,7 +408,7 @@ export default function BookingForm({
             <div className="flex flex-wrap gap-4 py-2">
               {specialRequests.map((request: any) => (
                 <div
-                  className="flex flex-col items-center gap-2 rounded-xl border border-[#eadfce] bg-white p-3"
+                  className="flex flex-col items-center gap-2 rounded-xl border border-[#eadfce] bg-white dark:bg-[#1b1510] p-3"
                   key={
                     request.room_type_add_on_id ??
                     request.add_on_id ??
@@ -514,7 +495,6 @@ export default function BookingForm({
           min={1}
           max={room?.max_guest}
           errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
-          classNames={inputClassNames}
         />
       </div>
 

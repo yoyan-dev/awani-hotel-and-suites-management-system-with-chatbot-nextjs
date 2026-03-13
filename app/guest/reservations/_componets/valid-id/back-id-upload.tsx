@@ -72,7 +72,7 @@ export default function BackIdUpload({
 
       <label
         htmlFor="back-id-upload"
-        className="p-2 min-h-40 border-2 border-dashed rounded-md flex justify-center items-center cursor-pointer hover:border-primary "
+        className="p-2 min-h-40 border-2 border-dashed rounded-md border-gray-300 dark:border-gray-700 flex justify-center items-center cursor-pointer hover:border-primary "
       >
         {preview ? (
           <Image
@@ -83,7 +83,7 @@ export default function BackIdUpload({
             className="object-cover"
           />
         ) : (
-          <div className="flex flex-col items-center text-gray-500">
+          <div className="flex flex-col items-center text-gray-500 dark:text-gray-300">
             <CloudDownloadIcon size={28} />
             <span className="text-xs">Click to upload back ID</span>
           </div>
@@ -100,7 +100,9 @@ export default function BackIdUpload({
         onChange={(e) => e.target.files && handleFile(e.target.files[0])}
       />
 
-      {status && <p className="text-sm text-gray-600">{status}</p>}
+      {status && (
+        <p className="text-sm text-gray-600 dark:text-gray-300">{status}</p>
+      )}
     </div>
   );
 }

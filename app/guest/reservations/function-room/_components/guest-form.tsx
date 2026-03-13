@@ -8,21 +8,6 @@ import BackIdUpload from "@/app/guest/reservations/_componets/valid-id/back-id-u
 import FrontIDUpload from "@/app/guest/reservations/_componets/valid-id/front-id-upload";
 import PhoneInput from "@/components/input/phone-input";
 
-const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
-  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-};
-
-const selectClassNames = {
-  label: "text-[#6b6153] font-medium",
-  trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
-  selectorIcon: "text-[#7a6f62]",
-};
-
 export default function GuestForm({
   onIdVerificationChange,
 }: {
@@ -56,15 +41,12 @@ export default function GuestForm({
           variant="bordered"
           radius="lg"
           className="flex-1"
-          classNames={inputClassNames}
         />
         <PhoneInput
           value={phone}
           onChange={setPhone}
           placeholder="Enter guest contact number"
           labelClassName="text-[#6b6153] font-medium"
-          inputClassNames={inputClassNames}
-          selectClassNames={selectClassNames}
         />
       </div>
 
@@ -78,7 +60,6 @@ export default function GuestForm({
         placeholder="Enter your current home address"
         variant="bordered"
         radius="lg"
-        classNames={inputClassNames}
       />
 
       <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
@@ -88,14 +69,13 @@ export default function GuestForm({
           startContent={<Flag className="shrink-0 text-default-600" />}
           name="nationality"
           id="nationality"
-        label="Nationality"
-        labelPlacement="outside"
-        placeholder="e.g. Filipino"
-        variant="bordered"
-        radius="lg"
-        className="flex-1"
-        classNames={inputClassNames}
-      />
+          label="Nationality"
+          labelPlacement="outside"
+          placeholder="e.g. Filipino"
+          variant="bordered"
+          radius="lg"
+          className="flex-1"
+        />
 
         <Select
           fullWidth
@@ -109,7 +89,6 @@ export default function GuestForm({
           isRequired
           variant="bordered"
           className="flex-1"
-          classNames={selectClassNames}
         >
           <SelectItem key="male">Male</SelectItem>
           <SelectItem key="female">Female</SelectItem>
@@ -139,7 +118,6 @@ export default function GuestForm({
         placeholder="Enter your email"
         variant="bordered"
         radius="lg"
-        classNames={inputClassNames}
       />
 
       {!isBackId || !Boolean(isFrontId) ? (

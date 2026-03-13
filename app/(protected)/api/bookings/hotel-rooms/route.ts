@@ -275,7 +275,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         : null,
       booking_source: formObj.booking_source
         ? String(formObj.booking_source)
-        : null,
+        : "online",
       amount_paid: formObj.amount_paid ? Number(formObj.amount_paid) : null,
       total: formObj.total ? String(formObj.total) : null,
       status: formObj.status ? String(formObj.status) : "pending",

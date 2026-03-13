@@ -16,39 +16,12 @@ const eventTypeOptions = [
   { key: "others", label: "Others" },
 ];
 
-const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
-  input: "!text-[#1f1e1b] placeholder:text-[#8a7f71]",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
-};
-
-const selectClassNames = {
-  label: "text-[#6b6153] font-medium",
-  trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53] text-black",
-  value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
-  selectorIcon: "text-[#7a6f62]",
-};
-
-const datePickerClassNames = {
-  base: "text-[#1f1e1b]",
-  label: "text-[#6b6153] font-medium",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  input: "!text-[#1f1e1b]",
-  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
-  selectorIcon: "!text-[#7a6f62]",
-  selectorButton: "!text-[#7a6f62]",
-};
-
 interface BookingFormEventStepProps {
   minDate: any;
   startDate: any;
   endDate: any;
-  startTime: Time;
-  endTime: Time;
+  startTime: Time | null;
+  endTime: Time | null;
   onStartDateChange: (value: any) => void;
   onEndDateChange: (value: any) => void;
   onStartTimeChange: (value: Time) => void;
@@ -83,7 +56,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-2"
-        classNames={selectClassNames}
       >
         {eventTypeOptions.map((eventType) => (
           <SelectItem key={eventType.key}>{eventType.label}</SelectItem>
@@ -93,20 +65,32 @@ export default function BookingFormEventStep({
         <DatePicker
           variant="bordered"
           radius="lg"
-          minValue={minDate}
-          value={startDate}
           label="Start date"
-          onChange={(value) => value && onStartDateChange(value)}
-          classNames={datePickerClassNames}
+          name="start_date"
+          minValue={minDate}
+          value={startDate ?? undefined}
+          isRequired
+          onChange={(value) => {
+            if (!value) return;
+            if (!startDate || value.toString() !== startDate.toString()) {
+              onStartDateChange(value);
+            }
+          }}
         />
         <DatePicker
           variant="bordered"
           radius="lg"
-          minValue={startDate}
-          value={endDate}
           label="End date"
-          onChange={(value) => value && onEndDateChange(value)}
-          classNames={datePickerClassNames}
+          name="end_date"
+          minValue={startDate ?? minDate}
+          value={endDate ?? undefined}
+          isRequired
+          onChange={(value) => {
+            if (!value) return;
+            if (!endDate || value.toString() !== endDate.toString()) {
+              onEndDateChange(value);
+            }
+          }}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,9 +100,19 @@ export default function BookingFormEventStep({
           labelPlacement="outside"
           variant="bordered"
           radius="lg"
-          value={startTime}
-          onChange={(value) => value && onStartTimeChange(value as Time)}
-          classNames={inputClassNames}
+          name="start_time"
+          value={startTime ?? undefined}
+          onChange={(value) => {
+            if (!value) return;
+            const next = value as Time;
+            if (
+              !startTime ||
+              next.hour !== startTime.hour ||
+              next.minute !== startTime.minute
+            ) {
+              onStartTimeChange(next);
+            }
+          }}
         />
         <TimeInput
           isRequired
@@ -126,9 +120,19 @@ export default function BookingFormEventStep({
           labelPlacement="outside"
           variant="bordered"
           radius="lg"
-          value={endTime}
-          onChange={(value) => value && onEndTimeChange(value as Time)}
-          classNames={inputClassNames}
+          name="end_time"
+          value={endTime ?? undefined}
+          onChange={(value) => {
+            if (!value) return;
+            const next = value as Time;
+            if (
+              !endTime ||
+              next.hour !== endTime.hour ||
+              next.minute !== endTime.minute
+            ) {
+              onEndTimeChange(next);
+            }
+          }}
         />
       </div>
       <Input
@@ -141,7 +145,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
-        classNames={inputClassNames}
       />
       <Textarea
         name="notes"
@@ -151,7 +154,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
-        classNames={inputClassNames}
       />
     </div>
   );

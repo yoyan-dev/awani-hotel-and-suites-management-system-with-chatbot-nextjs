@@ -45,9 +45,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
   onChange,
   label = "Phone Number",
   placeholder = "",
-  labelClassName = "text-sm font-medium text-[#6b6153]",
-  inputClassNames,
-  selectClassNames,
 }) => {
   const [country, setCountry] = React.useState<string>("PH");
   const [number, setNumber] = React.useState<string>(value || "");
@@ -93,7 +90,7 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 
   return (
     <div>
-      <label className={labelClassName}>{label}</label>
+      <label>{label}</label>
       <div className="flex items-start w-full">
         <Select
           variant="bordered"
@@ -103,7 +100,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           defaultSelectedKeys={["PH"]}
           radius="none"
           isRequired
-          classNames={selectClassNames}
         >
           {COUNTRY_CODES.map((country) => (
             <SelectItem key={country.value} textValue={country.dialCode}>
@@ -123,7 +119,6 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
           placeholder={placeholder}
           labelPlacement="outside"
           radius="none"
-          classNames={inputClassNames}
         />
       </div>
     </div>
