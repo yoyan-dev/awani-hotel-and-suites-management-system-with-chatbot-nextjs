@@ -427,7 +427,7 @@ export default function BookingForm({
             <div className="flex flex-wrap gap-4 py-2">
               {specialRequests.map((request: any) => (
                 <div
-                  className="flex flex-col items-center gap-2 rounded-xl border border-[#eadfce] bg-white p-3"
+                  className="flex flex-col items-center gap-2 rounded-xl border border-[#eadfce] bg-white dark:bg-[#1b1510] p-3"
                   key={
                     request.room_type_add_on_id ??
                     request.add_on_id ??

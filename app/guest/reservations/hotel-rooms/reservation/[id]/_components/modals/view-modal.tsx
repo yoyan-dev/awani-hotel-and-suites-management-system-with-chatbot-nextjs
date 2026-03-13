@@ -95,7 +95,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ room }) => {
                     room.room_type_add_ons.length > 0 ? (
                       room.room_type_add_ons.map((item: any) => (
                         <div
-                          className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#eadfce] bg-white px-3 py-2"
+                          className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#eadfce] bg-white dark:bg-[#1b1510] px-3 py-2"
                           key={item.id ?? item.add_on?.id}
                         >
                           <span>{item.add_on?.name}</span>

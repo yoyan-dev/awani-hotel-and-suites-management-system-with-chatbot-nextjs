@@ -45,8 +45,8 @@ export default function Navbar() {
         className={cn(
           "mx-auto flex w-full max-w-[1320px] items-center justify-between rounded-2xl border px-4 py-3 transition-all duration-300 sm:px-6",
           scrolled
-            ? "border-[#d8cbb7]/70 bg-[#f9f4eb]/90 shadow-[0_18px_45px_-28px_rgba(46,40,29,0.6)] backdrop-blur-md"
-            : "border-transparent bg-[#f9f4eb]/65 backdrop-blur-sm",
+            ? "border-[#d8cbb7]/70 bg-[#f9f4eb]/90 shadow-[0_18px_45px_-28px_rgba(46,40,29,0.6)] backdrop-blur-md dark:border-[#3a3127]/70 dark:bg-[#1b1510]/90"
+            : "border-transparent bg-[#f9f4eb]/65 backdrop-blur-sm dark:border-transparent dark:bg-[#1b1510]/60",
         )}
       >
         <NextLink
@@ -143,7 +143,7 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          {/* <ThemeSwitch /> */}
+          <ThemeSwitch className="text-[#5d5549] dark:text-[#d2b789]" />
           <Button
             as={Link}
             href="/guest/contact-us"
@@ -185,7 +185,7 @@ export default function Navbar() {
           >
             <div className="mb-4 flex items-center justify-between">
               <p className="font-serif text-lg text-[#27231f]">Navigation</p>
-              {/* <ThemeSwitch /> */}
+              <ThemeSwitch className="text-[#5d5549] dark:text-[#d2b789]" />
             </div>
 
             <div className="space-y-2">

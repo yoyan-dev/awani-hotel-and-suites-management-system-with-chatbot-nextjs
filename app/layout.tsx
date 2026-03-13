@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "@/styles/guest-theme.css";
 import { Metadata, Viewport } from "next";
 import clsx from "clsx";
 

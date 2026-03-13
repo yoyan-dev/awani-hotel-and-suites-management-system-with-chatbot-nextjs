@@ -34,7 +34,7 @@ export default function FrontIDUpload({
       <span>Front ID</span>
       <label
         htmlFor={`image-upload-front`}
-        className="p-2 w-full min-h-40 sm:h-32 rounded-md border-2 border-dashed border-gray-300 flex justify-center items-center cursor-pointer hover:border-primary transition"
+        className="p-2 w-full min-h-40 sm:h-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 flex justify-center items-center cursor-pointer hover:border-primary transition"
       >
         {preview ? (
           <Image
@@ -45,8 +45,11 @@ export default function FrontIDUpload({
           />
         ) : (
           <div className="flex flex-col items-center">
-            <CloudDownloadIcon size={28} className="text-gray-400" />
-            <span className="text-xs text-gray-500">
+            <CloudDownloadIcon
+              size={28}
+              className="text-gray-400 dark:text-gray-300"
+            />
+            <span className="text-xs text-gray-500 dark:text-gray-300">
               Click or drag to upload photo
             </span>
           </div>
@@ -64,18 +67,20 @@ export default function FrontIDUpload({
 
       {loading && (
         <div className="w-full mt-2">
-          <div className="h-4 w-full bg-gray-200 rounded">
+          <div className="h-4 w-full bg-gray-200 dark:bg-gray-800 rounded">
             <div
               className="h-4 bg-green-500 rounded"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-xs mt-1">Analyzing ID... {progress}%</p>
+          <p className="text-xs mt-1 dark:text-gray-300">
+            Analyzing ID... {progress}%
+          </p>
         </div>
       )}
 
       {result && (
-        <p className="text-sm mt-2 text-gray-600">
+        <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">
           {isID !== null
             ? isID
               ? "Front ID Verified✅"

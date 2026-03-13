@@ -48,7 +48,7 @@ export default function BookingSummary({
         </div>
 
         {selectedAddOns.length > 0 ? (
-          <div className="space-y-2 rounded-xl border border-[#e9ddcc] bg-white p-3">
+          <div className="space-y-2 rounded-xl border border-[#e9ddcc] bg-white dark:bg-[#1b1510] p-3">
             <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#7a6f61]">
               Selected Add-ons
             </p>

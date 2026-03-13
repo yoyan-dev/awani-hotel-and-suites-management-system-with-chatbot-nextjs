@@ -27,7 +27,7 @@ const inputClassNames = {
 const selectClassNames = {
   label: "text-[#6b6153] font-medium",
   trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53] text-black",
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
   value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
   selectorIcon: "text-[#7a6f62]",
 };

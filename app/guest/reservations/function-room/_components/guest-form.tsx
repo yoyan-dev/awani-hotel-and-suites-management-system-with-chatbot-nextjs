@@ -9,14 +9,14 @@ import FrontIDUpload from "@/app/guest/reservations/_componets/valid-id/front-id
 import PhoneInput from "@/components/input/phone-input";
 
 const inputClassNames = {
-  label: "text-black font-medium",
+  label: "text-[#1f1e1b] font-medium",
   input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
   inputWrapper:
     "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
 };
 
 const selectClassNames = {
-  label: "text-black font-medium",
+  label: "text-[#1f1e1b] font-medium",
   trigger:
     "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
   value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
