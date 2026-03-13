@@ -16,33 +16,6 @@ const eventTypeOptions = [
   { key: "others", label: "Others" },
 ];
 
-const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
-  input: "!text-[#1f1e1b] placeholder:text-[#8a7f71]",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
-};
-
-const selectClassNames = {
-  label: "text-[#6b6153] font-medium",
-  trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
-  selectorIcon: "text-[#7a6f62]",
-};
-
-const datePickerClassNames = {
-  base: "text-[#1f1e1b]",
-  label: "text-[#6b6153] font-medium",
-  inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
-  input: "!text-[#1f1e1b]",
-  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
-  selectorIcon: "!text-[#7a6f62]",
-  selectorButton: "!text-[#7a6f62]",
-};
-
 interface BookingFormEventStepProps {
   minDate: any;
   startDate: any;
@@ -83,7 +56,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-2"
-        classNames={selectClassNames}
       >
         {eventTypeOptions.map((eventType) => (
           <SelectItem key={eventType.key}>{eventType.label}</SelectItem>
@@ -95,7 +67,6 @@ export default function BookingFormEventStep({
           radius="lg"
           label="Start date"
           name="start_date"
-          classNames={datePickerClassNames}
           minValue={minDate}
           value={startDate ?? undefined}
           isRequired
@@ -111,7 +82,6 @@ export default function BookingFormEventStep({
           radius="lg"
           label="End date"
           name="end_date"
-          classNames={datePickerClassNames}
           minValue={startDate ?? minDate}
           value={endDate ?? undefined}
           isRequired
@@ -131,7 +101,6 @@ export default function BookingFormEventStep({
           variant="bordered"
           radius="lg"
           name="start_time"
-          classNames={inputClassNames}
           value={startTime ?? undefined}
           onChange={(value) => {
             if (!value) return;
@@ -152,7 +121,6 @@ export default function BookingFormEventStep({
           variant="bordered"
           radius="lg"
           name="end_time"
-          classNames={inputClassNames}
           value={endTime ?? undefined}
           onChange={(value) => {
             if (!value) return;
@@ -177,7 +145,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
-        classNames={inputClassNames}
       />
       <Textarea
         name="notes"
@@ -187,7 +154,6 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
-        classNames={inputClassNames}
       />
     </div>
   );
