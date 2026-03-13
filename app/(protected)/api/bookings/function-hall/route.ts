@@ -15,7 +15,6 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
   const query = searchParams.get("query")?.trim() || "";
   const guest_id = searchParams.get("guest_id") || "";
-  const room_id = searchParams.get("room_id") || "";
   const status = searchParams.get("status") || "";
   const start = searchParams.get("start");
   const end = searchParams.get("end");
@@ -26,20 +25,23 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const to = from + limit - 1;
   const hasDateRangeFilter = Boolean(start && end);
 
+  const sanitizeBooking = (booking: any) => {
+    const { room_id, ...rest } = booking ?? {};
+    return rest;
+  };
+
   let q = supabase
     .from("function_hall_bookings")
     .select(
       `
       *,
-      guest: guest_id(*),
-      room: room_id(*)
+      guest: guest_id(*)
     `,
       { count: "exact" },
     )
     .order("created_at", { ascending: false });
 
   if (guest_id) q = q.eq("guest_id", guest_id);
-  if (room_id) q = q.eq("room_id", room_id);
   if (status) q = q.eq("status", status);
   if (query) {
     q = q.or(
@@ -105,7 +107,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
           description: "",
           color: "success",
         },
-        data: filtered.slice(from, to + 1),
+        data: filtered.slice(from, to + 1).map(sanitizeBooking),
         pagination: {
           page,
           limit,
@@ -125,7 +127,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data: data ?? [],
+      data: (data ?? []).map(sanitizeBooking),
       pagination: {
         page,
         limit,
