@@ -10,8 +10,8 @@ export default function GuestLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#f6f2ea] text-[#1f1e1b] font-[family-name:var(--font-guest-sans)]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top,_rgba(176,138,83,0.26),_transparent_66%)]" />
+    <div className="relative min-h-screen overflow-x-hidden bg-[#f6f2ea] text-[#1f1e1b] font-(family-name:--font-guest-sans)">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_top,rgba(176,138,83,0.26),transparent_66%)]" />
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}

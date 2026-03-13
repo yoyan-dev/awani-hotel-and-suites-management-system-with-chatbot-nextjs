@@ -15,21 +15,36 @@ export default function ContactSection() {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <form className="flex flex-col gap-4 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-900 p-6 rounded-md shadow-sm">
-            <InputField label="Name" placeholder="Your full name" required />
+          <form
+            action="mailto:awanihotel2019@yahoo.com"
+            method="post"
+            encType="text/plain"
+            className="flex flex-col gap-4 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-900 p-6 rounded-md shadow-sm"
+          >
+            <InputField
+              label="Name"
+              name="name"
+              placeholder="Your full name"
+              required
+              autoComplete="name"
+            />
             <InputField
               label="Email"
+              name="email"
               placeholder="you@example.com"
               type="email"
               required
+              autoComplete="email"
             />
             <InputField
               label="Subject"
+              name="subject"
               placeholder="Subject of your message"
               required
             />
             <TextAreaField
               label="Message"
+              name="message"
               placeholder="Write your message here"
               required
             />

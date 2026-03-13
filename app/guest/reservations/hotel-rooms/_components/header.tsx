@@ -4,6 +4,24 @@ import { Button, DatePicker } from "@heroui/react";
 import { UsersRound } from "lucide-react";
 import React from "react";
 
+const inputClassNames = {
+  label: "text-[#6b6153] font-medium",
+  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
+  inputWrapper:
+    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+};
+
+const datePickerClassNames = {
+  base: "text-[#1f1e1b]",
+  label: "text-[#6b6153] font-medium",
+  inputWrapper:
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
+  input: "!text-[#1f1e1b]",
+  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
+  selectorIcon: "!text-[#7a6f62]",
+  selectorButton: "!text-[#7a6f62]",
+};
+
 export default function Header({
   query,
   setQuery,
@@ -40,6 +58,7 @@ export default function Header({
           labelPlacement="outside"
           value={query.checkIn}
           onChange={(e) => setQuery({ ...query, checkIn: e })}
+          classNames={datePickerClassNames}
         />
         <DatePicker
           label="Check out"
@@ -50,6 +69,7 @@ export default function Header({
           minValue={query.checkIn}
           value={query.checkOut}
           onChange={(e) => setQuery({ ...query, checkOut: e })}
+          classNames={datePickerClassNames}
         />
         <Input
           type="number"
@@ -61,6 +81,7 @@ export default function Header({
           min={1}
           value={desiredGuest.toString()}
           onChange={(e) => setDesiredGuest(Number(e.target.value))}
+          classNames={inputClassNames}
         />
         <div className="flex items-end">
           <Button

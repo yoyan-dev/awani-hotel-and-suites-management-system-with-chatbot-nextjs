@@ -47,7 +47,7 @@ export default function FeedbackForm({
   isLoading,
 }: FeedbackFormProps) {
   return (
-    <Card className="overflow-hidden rounded-[2rem] border border-[#e3d4c2] bg-[#fffdf9] shadow-[0_24px_60px_-40px_rgba(36,28,20,0.48)]">
+    <Card className="overflow-hidden rounded-4xl border border-[#e3d4c2] bg-[#fffdf9] shadow-[0_24px_60px_-40px_rgba(36,28,20,0.48)]">
       <CardBody className="p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           <section className="space-y-4">
