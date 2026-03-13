@@ -81,53 +81,72 @@ export default function BookingForm({
     () => todayDate(getLocalTimeZone()).add({ days: 5 }),
     [],
   );
-  const defaultStartDate = React.useMemo(
-    () => parseDate(minDate.toString()),
-    [minDate],
-  );
-  const defaultEndDate = React.useMemo(
-    () => parseDate(minDate.toString()),
-    [minDate],
-  );
-  const defaultStartTime = React.useMemo(() => new Time(9, 0), []);
-  const defaultEndTime = React.useMemo(() => new Time(17, 0), []);
-  const [startDate, setStartDate] = React.useState(defaultStartDate);
-  const [endDate, setEndDate] = React.useState(defaultEndDate);
-  const [startTime, setStartTime] = React.useState(defaultStartTime);
-  const [endTime, setEndTime] = React.useState(defaultEndTime);
+  const [startDate, setStartDate] = React.useState<any>(null);
+  const [endDate, setEndDate] = React.useState<any>(null);
+  const [startTime, setStartTime] = React.useState<Time | null>(null);
+  const [endTime, setEndTime] = React.useState<Time | null>(null);
+  const hasUserEditedScheduleRef = React.useRef(false);
+  const skipSubmitRef = React.useRef(false);
   const [isGuestIdVerified, setIsGuestIdVerified] = React.useState(false);
   const [step, setStep] = React.useState<BookingFormStep>(1);
   const [previewData, setPreviewData] =
     React.useState<BookingPreviewData>(initialPreviewData);
 
   React.useEffect(() => {
+    if (hasUserEditedScheduleRef.current) return;
     if (!eventDuration.start || !eventDuration.end) return;
 
     const startParsed = new Date(String(eventDuration.start));
     const endParsed = new Date(String(eventDuration.end));
 
     if (!Number.isNaN(startParsed.getTime())) {
-      const startDateOnly =
-        parseISODateOnly(eventDuration.start) ?? defaultStartDate.toString();
-      setStartDate(parseDate(startDateOnly));
-      setStartTime(new Time(startParsed.getHours(), startParsed.getMinutes()));
+      const startDateOnly = parseISODateOnly(eventDuration.start);
+      if (startDateOnly) {
+        const nextStartDate = parseDate(startDateOnly);
+        if (!startDate || nextStartDate.toString() !== startDate.toString()) {
+          setStartDate(nextStartDate);
+        }
+      }
+      if (
+        !startTime ||
+        startParsed.getHours() !== startTime.hour ||
+        startParsed.getMinutes() !== startTime.minute
+      ) {
+        setStartTime(
+          new Time(startParsed.getHours(), startParsed.getMinutes()),
+        );
+      }
     }
 
     if (!Number.isNaN(endParsed.getTime())) {
-      const endDateOnly =
-        parseISODateOnly(eventDuration.end) ?? defaultEndDate.toString();
-      setEndDate(parseDate(endDateOnly));
-      setEndTime(new Time(endParsed.getHours(), endParsed.getMinutes()));
+      const endDateOnly = parseISODateOnly(eventDuration.end);
+      if (endDateOnly) {
+        const nextEndDate = parseDate(endDateOnly);
+        if (!endDate || nextEndDate.toString() !== endDate.toString()) {
+          setEndDate(nextEndDate);
+        }
+      }
+      if (
+        !endTime ||
+        endParsed.getHours() !== endTime.hour ||
+        endParsed.getMinutes() !== endTime.minute
+      ) {
+        setEndTime(new Time(endParsed.getHours(), endParsed.getMinutes()));
+      }
     }
   }, [
-    defaultEndDate,
-    defaultStartDate,
     eventDuration.end,
     eventDuration.start,
+    endDate,
+    endTime?.hour,
+    endTime?.minute,
+    startDate,
+    startTime?.hour,
+    startTime?.minute,
   ]);
 
   React.useEffect(() => {
-    if (endDate.compare(startDate) < 0) {
+    if (startDate && endDate && endDate.compare(startDate) < 0) {
       setEndDate(startDate);
     }
   }, [endDate, startDate]);
@@ -135,7 +154,12 @@ export default function BookingForm({
   React.useEffect(() => {
     const startDatePart = startDate?.toString();
     const endDatePart = endDate?.toString();
-    if (!startDatePart || !endDatePart) return;
+    if (!startDatePart || !endDatePart || !startTime || !endTime) {
+      setEventDuration((prev) =>
+        prev.start || prev.end ? { start: "", end: "" } : prev,
+      );
+      return;
+    }
 
     const startDateTime = new Date(
       `${startDatePart}T${String(startTime.hour).padStart(2, "0")}:${String(
@@ -158,12 +182,12 @@ export default function BookingForm({
     );
   }, [
     endDate,
-    endTime.hour,
-    endTime.minute,
+    endTime?.hour,
+    endTime?.minute,
     setEventDuration,
     startDate,
-    startTime.hour,
-    startTime.minute,
+    startTime?.hour,
+    startTime?.minute,
   ]);
 
   const readField = React.useCallback((name: string) => {
@@ -270,6 +294,7 @@ export default function BookingForm({
     if (step === 2) {
       if (!validateEventStep()) return;
       capturePreviewData();
+      skipSubmitRef.current = true;
       setStep(3);
     }
   }
@@ -285,6 +310,11 @@ export default function BookingForm({
   }
 
   function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (skipSubmitRef.current) {
+      skipSubmitRef.current = false;
+      e.preventDefault();
+      return;
+    }
     if (step !== 3) {
       e.preventDefault();
       return;
@@ -324,10 +354,22 @@ export default function BookingForm({
               endDate={endDate}
               startTime={startTime}
               endTime={endTime}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-              onStartTimeChange={setStartTime}
-              onEndTimeChange={setEndTime}
+              onStartDateChange={(value) => {
+                hasUserEditedScheduleRef.current = true;
+                setStartDate(value);
+              }}
+              onEndDateChange={(value) => {
+                hasUserEditedScheduleRef.current = true;
+                setEndDate(value);
+              }}
+              onStartTimeChange={(value) => {
+                hasUserEditedScheduleRef.current = true;
+                setStartTime(value);
+              }}
+              onEndTimeChange={(value) => {
+                hasUserEditedScheduleRef.current = true;
+                setEndTime(value);
+              }}
             />
           </div>
 

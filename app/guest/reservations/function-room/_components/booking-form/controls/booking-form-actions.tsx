@@ -40,7 +40,7 @@ export default function BookingFormActions({
         <Button
           type="submit"
           isLoading={bookingIsLoading}
-          isDisabled={!isGuestIdVerified}
+          isDisabled={!isGuestIdVerified || bookingIsLoading}
           className="rounded-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
         >
           Submit Booking

@@ -75,7 +75,7 @@ export default function FrontIDUpload({
       )}
 
       {result && (
-        <p className="text-sm mt-2">
+        <p className="text-sm mt-2 text-gray-600">
           {isID !== null
             ? isID
               ? "Front ID Verified✅"

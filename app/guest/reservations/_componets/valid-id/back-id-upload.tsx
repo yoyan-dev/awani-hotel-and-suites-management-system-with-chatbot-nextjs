@@ -72,7 +72,7 @@ export default function BackIdUpload({
 
       <label
         htmlFor="back-id-upload"
-        className="p-2 min-h-40 border-2 border-dashed rounded-md flex justify-center items-center cursor-pointer hover:border-primary "
+        className="p-2 min-h-40 border-2 border-dashed rounded-md border-gray-300 flex justify-center items-center cursor-pointer hover:border-primary "
       >
         {preview ? (
           <Image

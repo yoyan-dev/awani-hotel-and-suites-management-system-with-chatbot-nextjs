@@ -47,8 +47,8 @@ interface BookingFormEventStepProps {
   minDate: any;
   startDate: any;
   endDate: any;
-  startTime: Time;
-  endTime: Time;
+  startTime: Time | null;
+  endTime: Time | null;
   onStartDateChange: (value: any) => void;
   onEndDateChange: (value: any) => void;
   onStartTimeChange: (value: Time) => void;
@@ -93,20 +93,34 @@ export default function BookingFormEventStep({
         <DatePicker
           variant="bordered"
           radius="lg"
-          minValue={minDate}
-          value={startDate}
           label="Start date"
-          onChange={(value) => value && onStartDateChange(value)}
+          name="start_date"
           classNames={datePickerClassNames}
+          minValue={minDate}
+          value={startDate ?? undefined}
+          isRequired
+          onChange={(value) => {
+            if (!value) return;
+            if (!startDate || value.toString() !== startDate.toString()) {
+              onStartDateChange(value);
+            }
+          }}
         />
         <DatePicker
           variant="bordered"
           radius="lg"
-          minValue={startDate}
-          value={endDate}
           label="End date"
-          onChange={(value) => value && onEndDateChange(value)}
+          name="end_date"
           classNames={datePickerClassNames}
+          minValue={startDate ?? minDate}
+          value={endDate ?? undefined}
+          isRequired
+          onChange={(value) => {
+            if (!value) return;
+            if (!endDate || value.toString() !== endDate.toString()) {
+              onEndDateChange(value);
+            }
+          }}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,9 +130,20 @@ export default function BookingFormEventStep({
           labelPlacement="outside"
           variant="bordered"
           radius="lg"
-          value={startTime}
-          onChange={(value) => value && onStartTimeChange(value as Time)}
+          name="start_time"
           classNames={inputClassNames}
+          value={startTime ?? undefined}
+          onChange={(value) => {
+            if (!value) return;
+            const next = value as Time;
+            if (
+              !startTime ||
+              next.hour !== startTime.hour ||
+              next.minute !== startTime.minute
+            ) {
+              onStartTimeChange(next);
+            }
+          }}
         />
         <TimeInput
           isRequired
@@ -126,9 +151,20 @@ export default function BookingFormEventStep({
           labelPlacement="outside"
           variant="bordered"
           radius="lg"
-          value={endTime}
-          onChange={(value) => value && onEndTimeChange(value as Time)}
+          name="end_time"
           classNames={inputClassNames}
+          value={endTime ?? undefined}
+          onChange={(value) => {
+            if (!value) return;
+            const next = value as Time;
+            if (
+              !endTime ||
+              next.hour !== endTime.hour ||
+              next.minute !== endTime.minute
+            ) {
+              onEndTimeChange(next);
+            }
+          }}
         />
       </div>
       <Input

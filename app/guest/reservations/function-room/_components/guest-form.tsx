@@ -9,14 +9,14 @@ import FrontIDUpload from "@/app/guest/reservations/_componets/valid-id/front-id
 import PhoneInput from "@/components/input/phone-input";
 
 const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
+  label: "text-black font-medium",
   input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
   inputWrapper:
     "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
 };
 
 const selectClassNames = {
-  label: "text-[#6b6153] font-medium",
+  label: "text-black font-medium",
   trigger:
     "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
   value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
@@ -88,14 +88,14 @@ export default function GuestForm({
           startContent={<Flag className="shrink-0 text-default-600" />}
           name="nationality"
           id="nationality"
-        label="Nationality"
-        labelPlacement="outside"
-        placeholder="e.g. Filipino"
-        variant="bordered"
-        radius="lg"
-        className="flex-1"
-        classNames={inputClassNames}
-      />
+          label="Nationality"
+          labelPlacement="outside"
+          placeholder="e.g. Filipino"
+          variant="bordered"
+          radius="lg"
+          className="flex-1"
+          classNames={inputClassNames}
+        />
 
         <Select
           fullWidth
