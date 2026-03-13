@@ -23,6 +23,7 @@ create table if not exists public.room_types (
   name text null,
   description text null,
   image text null,
+  images jsonb null,
   room_size text null,
   max_guest integer null,
   price numeric(12,2) null,

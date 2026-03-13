@@ -53,7 +53,11 @@ export default function BookingHero({
       <div className="md:flex">
         <div className="md:w-1/2">
           <Image
-            src={booking.room_type?.image || "/placeholder-room.jpg"}
+            src={
+              booking.room_type?.images?.[0] ??
+              booking.room_type?.image ??
+              "/placeholder-room.jpg"
+            }
             alt={booking.room_type?.name || "Room"}
             className="w-full h-56 md:h-full object-cover"
             radius="none"

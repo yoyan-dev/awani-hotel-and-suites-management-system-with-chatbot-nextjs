@@ -4,6 +4,7 @@ import { Bed, Tv, UserCircle, Wifi } from "lucide-react";
 
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
+import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
 
 interface SelectedRoomProps {
   room: RoomType;
@@ -22,14 +23,22 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
   return (
     <aside className="hidden space-y-5 rounded-3xl border border-[#e7dccd] bg-[#fffefb] p-5 xl:block">
       <div className="overflow-hidden rounded-2xl">
-        {room.image ? (
-          <Image
-            src={room.image}
-            alt="room image"
-            width="100%"
-            className="h-[260px] w-full object-cover"
-          />
-        ) : null}
+        {(room.images && room.images.length > 0
+          ? room.images
+          : room.image
+            ? [room.image]
+            : []
+        )
+          .slice(0, 1)
+          .map((src, index) => (
+            <Image
+              key={`${src}-${index}`}
+              src={src}
+              alt="room image"
+              width="100%"
+              className="h-[260px] w-full object-cover"
+            />
+          ))}
       </div>
 
       <div className="space-y-2">
@@ -45,6 +54,7 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
           </p>
         </div>
         <p className="text-sm text-[#665d50]">{room.description}</p>
+        <ViewModal room={room} />
       </div>
 
       <div>

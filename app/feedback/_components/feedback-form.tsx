@@ -28,6 +28,13 @@ interface FeedbackFormProps {
   isLoading: boolean;
 }
 
+const inputClassNames = {
+  label: "text-[#6b6153] font-medium",
+  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
+  inputWrapper:
+    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+};
+
 export default function FeedbackForm({
   rating,
   hovered,
@@ -51,10 +58,7 @@ export default function FeedbackForm({
                 label="Full Name"
                 variant="bordered"
                 isRequired
-                classNames={{
-                  inputWrapper:
-                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-                }}
+                classNames={inputClassNames}
               />
               <Input
                 name="email"
@@ -62,10 +66,7 @@ export default function FeedbackForm({
                 label="Email Address"
                 variant="bordered"
                 isRequired
-                classNames={{
-                  inputWrapper:
-                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-                }}
+                classNames={inputClassNames}
               />
             </div>
           </section>
@@ -80,10 +81,7 @@ export default function FeedbackForm({
                 label="Room Number"
                 variant="bordered"
                 isRequired
-                classNames={{
-                  inputWrapper:
-                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-                }}
+                classNames={inputClassNames}
               />
               <Input
                 name="check_in"
@@ -92,10 +90,7 @@ export default function FeedbackForm({
                 variant="bordered"
                 isRequired
                 className="sm:col-span-1"
-                classNames={{
-                  inputWrapper:
-                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-                }}
+                classNames={inputClassNames}
               />
               <Input
                 name="check_out"
@@ -104,10 +99,7 @@ export default function FeedbackForm({
                 variant="bordered"
                 isRequired
                 className="sm:col-span-1"
-                classNames={{
-                  inputWrapper:
-                    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-                }}
+                classNames={inputClassNames}
               />
             </div>
           </section>
@@ -115,7 +107,9 @@ export default function FeedbackForm({
           <Divider className="bg-[#eadfce]" />
 
           <section className="space-y-5">
-            <h3 className="font-serif text-xl text-[#251f18]">Overall Rating</h3>
+            <h3 className="font-serif text-xl text-[#251f18]">
+              Overall Rating
+            </h3>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {[1, 2, 3, 4, 5].map((value) => {
                 const active = hovered
@@ -163,10 +157,7 @@ export default function FeedbackForm({
               label="Additional Comments"
               minRows={4}
               variant="bordered"
-              classNames={{
-                inputWrapper:
-                  "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
-              }}
+              classNames={inputClassNames}
               placeholder="Tell us anything that made your stay great or needs attention."
             />
           </section>

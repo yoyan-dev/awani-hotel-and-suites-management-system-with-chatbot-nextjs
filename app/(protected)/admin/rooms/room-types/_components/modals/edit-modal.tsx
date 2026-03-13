@@ -10,7 +10,7 @@ import {
   Textarea,
   ModalFooter,
 } from "@heroui/react";
-import { Copyright, Upload } from "lucide-react";
+import { Copyright, Upload, X } from "lucide-react";
 import AddOnsInput from "../add-ons-input";
 import { RoomType } from "@/types/room";
 import { uploadRoomImage } from "@/lib/upload-room-image";
@@ -39,34 +39,83 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
       },
     })),
   );
-  const [preview, setPreview] = useState<string | null>(null);
+  const [previews, setPreviews] = useState<Array<{ file: File; url: string }>>(
+    [],
+  );
+  const [removedImages, setRemovedImages] = useState<Set<string>>(new Set());
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const data = new FormData(e.currentTarget);
-    const file = data.get("image") as File;
+    data.delete("images");
+    const files = previews.map((item) => item.file);
 
-    let imageUrl = formData.image;
+    const existingImages =
+      formData.images && formData.images.length > 0
+        ? formData.images
+        : formData.image
+          ? [formData.image]
+          : [];
+    const keptImages = existingImages.filter(
+      (src) => !removedImages.has(src),
+    );
 
-    if (file && file.size > 0) {
-      imageUrl = await uploadRoomImage(file, "type-image");
+    let images = existingImages;
+
+    if (files.length > 0) {
+      const uploadedImages = await Promise.all(
+        files.map((file) => uploadRoomImage(file, "type-image")),
+      );
+      images = [...keptImages, ...uploadedImages];
+    } else {
+      images = keptImages;
     }
 
     await updateRoomType({
       ...formData,
       room_type_add_ons: addOns,
-      image: imageUrl,
+      images,
+      image: images[0] ?? formData.image,
     });
 
     onClose();
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setPreviews((prev) => [
+      ...prev,
+      ...files.map((file) => ({ file, url: URL.createObjectURL(file) })),
+    ]);
+  };
+
+  const existingImages =
+    formData.images && formData.images.length > 0
+      ? formData.images
+      : formData.image
+        ? [formData.image]
+        : [];
+
+  const displayImages = [
+    ...existingImages.filter((src) => !removedImages.has(src)),
+    ...previews.map((item) => item.url),
+  ];
+
+  const handleRemoveExisting = (src: string) => {
+    setRemovedImages((prev) => new Set(prev).add(src));
+  };
+
+  const handleRemovePreview = (index: number) => {
+    setPreviews((prev) => {
+      const next = [...prev];
+      const removed = next.splice(index, 1)[0];
+      if (removed?.url) {
+        URL.revokeObjectURL(removed.url);
+      }
+      return next;
+    });
   };
 
   return (
@@ -89,7 +138,11 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                 <Form
                   className="w-full space-y-4"
                   onSubmit={onSubmit}
-                  onReset={() => setPreview(null)}
+                  onReset={() => {
+                    previews.forEach((item) => URL.revokeObjectURL(item.url));
+                    setPreviews([]);
+                    setRemovedImages(new Set());
+                  }}
                 >
                   <div className="flex flex-col md:flex-row gap-4 w-full">
                     <div className="flex-1 w-full md:border-r md:border-gray-300 md:pr-4 space-y-6">
@@ -206,24 +259,57 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
 
                     <div className="flex-1 space-y-4 flex flex-col">
                       <label className="text-sm font-medium text-gray-600">
-                        Room Image
+                        Room Images
                       </label>
                       <label
-                        htmlFor="image-upload"
+                        htmlFor="images-upload"
                         className="flex flex-col items-center justify-center w-full border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-blue-500 transition min-h-44"
                       >
-                        {preview ? (
-                          <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                        ) : formData.image ? (
-                          <img
-                            src={formData.image}
-                            alt="Preview"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
+                        {displayImages.length > 0 ? (
+                          <div className="grid w-full grid-cols-2 gap-2 p-2">
+                            {existingImages
+                              .filter((src) => !removedImages.has(src))
+                              .map((src, index) => (
+                                <div
+                                  key={`${src}-${index}`}
+                                  className="relative"
+                                >
+                                  <img
+                                    src={src}
+                                    alt={`Preview ${index + 1}`}
+                                    className="h-28 w-full rounded-lg object-cover"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveExisting(src)}
+                                    className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
+                                    aria-label="Remove image"
+                                  >
+                                    <X size={12} />
+                                  </button>
+                                </div>
+                              ))}
+                            {previews.map((item, index) => (
+                              <div
+                                key={`${item.url}-${index}`}
+                                className="relative"
+                              >
+                                <img
+                                  src={item.url}
+                                  alt={`Preview ${index + 1}`}
+                                  className="h-28 w-full rounded-lg object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemovePreview(index)}
+                                  className="absolute right-2 top-2 rounded-full bg-black/70 p-1 text-white"
+                                  aria-label="Remove image"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         ) : (
                           <div className="flex flex-col items-center gap-2 text-gray-400 py-6">
                             <Upload size={32} />
@@ -234,10 +320,11 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                         )}
                       </label>
                       <Input
-                        id="image-upload"
+                        id="images-upload"
                         type="file"
-                        name="image"
+                        name="images"
                         accept="image/*"
+                        multiple
                         className="hidden"
                         onChange={handleFileChange}
                       />

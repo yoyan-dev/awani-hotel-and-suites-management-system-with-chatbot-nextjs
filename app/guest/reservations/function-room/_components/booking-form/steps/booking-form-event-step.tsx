@@ -16,6 +16,21 @@ const eventTypeOptions = [
   { key: "others", label: "Others" },
 ];
 
+const inputClassNames = {
+  label: "text-[#6b6153] font-medium",
+  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
+  inputWrapper:
+    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+};
+
+const selectClassNames = {
+  label: "text-[#6b6153] font-medium",
+  trigger:
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
+  value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
+  selectorIcon: "text-[#7a6f62]",
+};
+
 interface BookingFormEventStepProps {
   minDate: any;
   startDate: any;
@@ -56,6 +71,7 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-2"
+        classNames={selectClassNames}
       >
         {eventTypeOptions.map((eventType) => (
           <SelectItem key={eventType.key}>{eventType.label}</SelectItem>
@@ -69,6 +85,7 @@ export default function BookingFormEventStep({
           value={startDate}
           label="Start date"
           onChange={(value) => value && onStartDateChange(value)}
+          classNames={inputClassNames}
         />
         <DatePicker
           variant="bordered"
@@ -77,6 +94,7 @@ export default function BookingFormEventStep({
           value={endDate}
           label="End date"
           onChange={(value) => value && onEndDateChange(value)}
+          classNames={inputClassNames}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,6 +106,7 @@ export default function BookingFormEventStep({
           radius="lg"
           value={startTime}
           onChange={(value) => value && onStartTimeChange(value as Time)}
+          classNames={inputClassNames}
         />
         <TimeInput
           isRequired
@@ -97,6 +116,7 @@ export default function BookingFormEventStep({
           radius="lg"
           value={endTime}
           onChange={(value) => value && onEndTimeChange(value as Time)}
+          classNames={inputClassNames}
         />
       </div>
       <Input
@@ -109,6 +129,7 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
+        classNames={inputClassNames}
       />
       <Textarea
         name="notes"
@@ -118,6 +139,7 @@ export default function BookingFormEventStep({
         variant="bordered"
         radius="lg"
         className="pt-4"
+        classNames={inputClassNames}
       />
     </div>
   );

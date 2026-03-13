@@ -112,24 +112,44 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const formData = await req.formData();
     const formObj = Object.fromEntries(formData.entries());
-    const image = formData.get("image") as File;
+    const images = formData
+      .getAll("images")
+      .filter((file): file is File => file instanceof File);
+    const legacyImage = formData.get("image") as File;
     const roomTypeAddOns = JSON.parse(
       String(formObj.room_type_add_ons ?? "[]"),
     ) as RoomTypeAddOnPayload[];
 
+    const uploads =
+      images.length > 0
+        ? images
+        : legacyImage && legacyImage.size > 0
+          ? [legacyImage]
+          : [];
+
+    const imageUrls = await Promise.all(
+      uploads.map((file) => uploadRoomImage(file, "type-image")),
+    );
+
     const newData = {
       ...formObj,
-      image:
-        image && image.size > 0
-          ? await uploadRoomImage(image, "type-image")
-          : "",
+      images: imageUrls,
+      image: imageUrls[0] ?? "",
     };
 
     delete (newData as Record<string, unknown>).room_type_add_ons;
+    delete (newData as Record<string, unknown>).images;
+    delete (newData as Record<string, unknown>).image;
 
     const { data, error } = await supabase
       .from("room_types")
-      .insert([newData])
+      .insert([
+        {
+          ...newData,
+          images: imageUrls,
+          image: imageUrls[0] ?? "",
+        },
+      ])
       .select("id")
       .single();
 

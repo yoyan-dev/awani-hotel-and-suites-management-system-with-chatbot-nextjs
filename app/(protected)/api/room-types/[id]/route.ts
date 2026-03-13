@@ -108,6 +108,9 @@ export async function PUT(
 
   const updateBody = { ...body };
   delete updateBody.room_type_add_ons;
+  if (Array.isArray(updateBody.images)) {
+    updateBody.image = updateBody.images[0] ?? updateBody.image ?? "";
+  }
 
   const { error } = await supabase.from("room_types").update(updateBody).eq("id", id);
 

@@ -434,6 +434,7 @@ export type Database = {
           description: string | null;
           id: string;
           image: string | null;
+          images: Json[] | null;
           max_guest: number | null;
           name: string | null;
           peak_season_price: number | null;
@@ -446,6 +447,7 @@ export type Database = {
           description?: string | null;
           id?: string;
           image?: string | null;
+          images?: Json[] | null;
           max_guest?: number | null;
           name?: string | null;
           peak_season_price?: number | null;
@@ -458,6 +460,7 @@ export type Database = {
           description?: string | null;
           id?: string;
           image?: string | null;
+          images?: Json[] | null;
           max_guest?: number | null;
           name?: string | null;
           peak_season_price?: number | null;
