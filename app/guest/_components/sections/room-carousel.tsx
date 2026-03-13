@@ -8,6 +8,7 @@ import { Carousel, CarouselItem } from "@/components/ui/carousel";
 import { formatPHP } from "@/lib/format-php";
 import { peakSeason } from "@/lib/peak-season-dates";
 import { RoomType } from "@/types/room";
+import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
 
 import SkeletonLoader from "../skeleton-loader";
 
@@ -56,7 +57,7 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
         {rooms.map((room) => (
           <CarouselItem key={room.id}>
             <Card
-              className="group h-full overflow-hidden rounded-3xl border border-[#e4d8c8] bg-[#fffdf8] p-0 shadow-[0_20px_55px_-40px_rgba(36,30,23,0.55)] transition-all duration-300 hover:translate-y-[-4px] hover:shadow-[0_28px_70px_-40px_rgba(36,30,23,0.62)]"
+              className="group h-full overflow-hidden rounded-3xl border border-[#e4d8c8] bg-[#fffdf8] p-0 shadow-[0_20px_55px_-40px_rgba(36,30,23,0.55)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_70px_-40px_rgba(36,30,23,0.62)]"
               radius="none"
             >
               <div className="relative h-60 overflow-hidden">
@@ -92,24 +93,29 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
                   </p>
                 </div>
 
-                <div className="mt-3 flex items-center justify-between">
-                  {!isPeakSeason ? (
-                    <p className="text-lg font-semibold text-[#9c7645]">
-                      {formatPHP(Number(room.price))}
-                      <span className="ml-1 text-sm font-normal text-[#7b6f61]">
-                        / night
-                      </span>
-                    </p>
-                  ) : (
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-sm text-[#9f9587] line-through">
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <div className="flex flex-col">
+                    {!isPeakSeason ? (
+                      <p className="text-lg font-semibold text-[#9c7645]">
                         {formatPHP(Number(room.price))}
-                      </span>
-                      <span className="text-lg font-semibold text-[#9f4f2a]">
-                        {formatPHP(Number(room.peak_season_price))}
-                      </span>
-                    </div>
-                  )}
+                        <span className="ml-1 text-sm font-normal text-[#7b6f61]">
+                          / night
+                        </span>
+                      </p>
+                    ) : (
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-sm text-[#9f9587] line-through">
+                          {formatPHP(Number(room.price))}
+                        </span>
+                        <span className="text-lg font-semibold text-[#9f4f2a]">
+                          {formatPHP(Number(room.peak_season_price))}
+                        </span>
+                      </div>
+                    )}
+                    {/* <div className="mt-2">
+                      <ViewModal room={room} />
+                    </div> */}
+                  </div>
 
                   <Button
                     as={Link}

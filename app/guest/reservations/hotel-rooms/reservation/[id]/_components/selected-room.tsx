@@ -4,6 +4,7 @@ import { Bed, Tv, UserCircle, Wifi } from "lucide-react";
 
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
+import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
 
 interface SelectedRoomProps {
   room: RoomType;
@@ -53,6 +54,7 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
           </p>
         </div>
         <p className="text-sm text-[#665d50]">{room.description}</p>
+        <ViewModal room={room} />
       </div>
 
       <div>

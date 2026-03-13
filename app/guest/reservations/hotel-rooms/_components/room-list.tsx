@@ -1,3 +1,5 @@
+"use client";
+
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
 import { Button, Card, CardBody, CardFooter, Image, Link } from "@heroui/react";
@@ -5,6 +7,7 @@ import { Ruler, UsersRound } from "lucide-react";
 import React from "react";
 
 import SkeletonLoader from "@/app/guest/_components/skeleton-loader";
+import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
 
 interface RoomProps {
   rooms: RoomType[];
@@ -81,6 +84,8 @@ export const RoomsList: React.FC<RoomProps> = ({ rooms, typesLoading }) => {
                   {room.max_guest} guests
                 </span>
               </div>
+
+              <ViewModal room={room} />
 
               <Button
                 as={Link}
