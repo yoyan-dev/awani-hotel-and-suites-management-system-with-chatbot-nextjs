@@ -18,17 +18,29 @@ const eventTypeOptions = [
 
 const inputClassNames = {
   label: "text-[#6b6153] font-medium",
-  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
+  input: "!text-[#1f1e1b] placeholder:text-[#8a7f71]",
   inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
+  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
 };
 
 const selectClassNames = {
   label: "text-[#6b6153] font-medium",
   trigger:
-    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53] text-black",
   value: "text-[#1f1e1b] data-[placeholder=true]:text-[#8a7f71]",
   selectorIcon: "text-[#7a6f62]",
+};
+
+const datePickerClassNames = {
+  base: "text-[#1f1e1b]",
+  label: "text-[#6b6153] font-medium",
+  inputWrapper:
+    "border-[#dac7af] bg-[#fffaf3] text-[#1f1e1b] group-data-[focus=true]:border-[#b08a53]",
+  input: "!text-[#1f1e1b]",
+  segment: "!text-[#1f1e1b] data-[placeholder=true]:!text-[#8a7f71]",
+  selectorIcon: "!text-[#7a6f62]",
+  selectorButton: "!text-[#7a6f62]",
 };
 
 interface BookingFormEventStepProps {
@@ -85,7 +97,7 @@ export default function BookingFormEventStep({
           value={startDate}
           label="Start date"
           onChange={(value) => value && onStartDateChange(value)}
-          classNames={inputClassNames}
+          classNames={datePickerClassNames}
         />
         <DatePicker
           variant="bordered"
@@ -94,7 +106,7 @@ export default function BookingFormEventStep({
           value={endDate}
           label="End date"
           onChange={(value) => value && onEndDateChange(value)}
-          classNames={inputClassNames}
+          classNames={datePickerClassNames}
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

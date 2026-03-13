@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 
 const galleryImages = [
   // "/pool.png",
-  "/banquet/image-7.jpg",
-  "/banquet/image-8.jpg",
-  "/banquet/image-9.png",
+  // "/banquet/image-7.jpg",
+  // "/banquet/image-5.jpg",
+  // "/banquet/image-9.png",
   "/banquet/image-10.png",
   "/banquet/image-11.png",
   "/banquet/image-12.png",

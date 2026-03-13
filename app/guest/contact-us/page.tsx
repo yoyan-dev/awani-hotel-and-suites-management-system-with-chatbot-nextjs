@@ -9,7 +9,7 @@ import Footer from "../_components/footer";
 export default function ContactPage() {
   return (
     <section className="min-h-screen pb-16">
-      <div className="mx-auto max-w-[1280px] space-y-12">
+      <div className="mx-auto max-w-7xl space-y-12">
         <ContactHeader
           title="Get in Touch"
           description="Have questions or want to book a service? Reach out using the form or contact info below."
