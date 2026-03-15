@@ -78,7 +78,7 @@ export default function RestaurantFeaturedSection() {
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button
+            {/* <Button
               as={Link}
               href="/guest/contact-us"
               radius="full"
@@ -86,7 +86,7 @@ export default function RestaurantFeaturedSection() {
               startContent={<UtensilsCrossed size={16} />}
             >
               Reserve a Table
-            </Button>
+            </Button> */}
             <Button
               as={Link}
               href="/guest/reservations/hotel-rooms"

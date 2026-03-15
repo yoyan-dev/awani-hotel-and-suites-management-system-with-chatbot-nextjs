@@ -38,13 +38,13 @@ export default function FeedbackPage() {
   if (submitted) return <SuccessScreen />;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f4eee3] px-4 py-12 sm:px-6 sm:py-16 lg:px-10">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(176,138,83,0.22),transparent_38%),radial-gradient(circle_at_90%_85%,rgba(112,85,47,0.14),transparent_36%)]" />
+    <div className="relative min-h-screen overflow-hidden bg-[#f4eee3] px-4 py-12 sm:px-6 sm:py-16 lg:px-10 dark:bg-[#0f0c08]">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(176,138,83,0.22),transparent_38%),radial-gradient(circle_at_90%_85%,rgba(112,85,47,0.14),transparent_36%)] dark:bg-[radial-gradient(circle_at_15%_20%,rgba(176,138,83,0.14),transparent_38%),radial-gradient(circle_at_90%_85%,rgba(112,85,47,0.08),transparent_36%)]" />
       <div className="relative mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <FeedbackHeader />
         <div className="space-y-4">
           {error ? (
-            <div className="rounded-2xl border border-[#dfc8b0] bg-[#fff7ef] px-4 py-3 text-sm text-[#7b4a2a]">
+            <div className="rounded-2xl border border-[#dfc8b0] bg-[#fff7ef] px-4 py-3 text-sm text-[#7b4a2a] dark:border-[#4a3421] dark:bg-[#20160f] dark:text-[#e7c49a]">
               {error}
             </div>
           ) : null}

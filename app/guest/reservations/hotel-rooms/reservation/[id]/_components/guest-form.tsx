@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import FrontIDUpload from "../../../../_componets/valid-id/front-id-upload";
 import BackIDUpload from "../../../../_componets/valid-id/back-id-upload";
 import PhoneInput from "@/components/input/phone-input";
+import { ID_TYPE_OPTIONS, IdType } from "@/utils/id-identifier/id-types";
 
 export default function GuestForm({
   onIdVerificationChange,
@@ -16,6 +17,7 @@ export default function GuestForm({
   const [isBackId, setIsBackId] = useState(false);
   const [isFrontId, setIsFrontId] = useState<boolean | null>(false);
   const [phone, setPhone] = React.useState("");
+  const [idType, setIdType] = React.useState<IdType>("philsys");
 
   useEffect(() => {
     onIdVerificationChange?.(isBackId && Boolean(isFrontId));
@@ -104,8 +106,26 @@ export default function GuestForm({
         consent.
       </p>
 
-      <FrontIDUpload setIsFrontId={setIsFrontId} />
-      <BackIDUpload setIsBackId={setIsBackId} />
+      <Select
+        fullWidth
+        name="id_type"
+        id="id_type"
+        label="Valid ID Type"
+        labelPlacement="outside"
+        radius="lg"
+        variant="bordered"
+        placeholder="Select ID type"
+        selectedKeys={idType ? [idType] : []}
+        onChange={(e) => setIdType(e.target.value as IdType)}
+        isRequired
+      >
+        {ID_TYPE_OPTIONS.map((option) => (
+          <SelectItem key={option.value}>{option.label}</SelectItem>
+        ))}
+      </Select>
+
+      <FrontIDUpload setIsFrontId={setIsFrontId} idType={idType} />
+      <BackIDUpload setIsBackId={setIsBackId} idType={idType} />
 
       <Input
         isRequired

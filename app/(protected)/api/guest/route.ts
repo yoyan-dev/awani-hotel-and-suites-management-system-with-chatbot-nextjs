@@ -51,6 +51,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       nationality,
       gender,
       email,
+      id_type,
     } = Object.fromEntries(formData.entries());
 
     const frontImageFile = (formData.get("front") as File) || null;
@@ -83,7 +84,11 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       nationality: nationality ? String(nationality) : null,
       gender: gender ? String(gender) : null,
       email: email ? String(email) : null,
-      valid_id: { front: validIdImage.front, back: validIdImage.back },
+      valid_id: {
+        front: validIdImage.front,
+        back: validIdImage.back,
+        type: id_type ? String(id_type) : null,
+      },
     };
     const { data, error } = await supabase
       .from("guest")

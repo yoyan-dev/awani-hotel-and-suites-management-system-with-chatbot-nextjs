@@ -9,6 +9,8 @@ import {
   parseISODateTime,
   parseISODateOnly,
 } from "@/utils/function-room/event-duration-date";
+import { sendEmail } from "@/lib/email/resend";
+import { buildFunctionRoomReceiptEmail } from "@/lib/email/receipt-templates";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
   const { searchParams } = new URL(req.url);
@@ -279,6 +281,35 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       .single();
 
     if (error) throw error;
+
+    const guestInfo = await supabase
+      .from("guest")
+      .select("full_name, email")
+      .eq("id", newBooking.guest_id)
+      .single();
+
+    if (!guestInfo.error && guestInfo.data?.email) {
+      try {
+        const emailContent = buildFunctionRoomReceiptEmail({
+          bookingNumber,
+          guestName: guestInfo.data.full_name,
+          eventType: newBooking.event_type,
+          eventStart: eventStart,
+          eventEnd: eventEnd,
+          numberOfGuests: newBooking.number_of_guest,
+          notes: newBooking.notes,
+        });
+
+        await sendEmail({
+          to: guestInfo.data.email,
+          subject: emailContent.subject,
+          html: emailContent.html,
+          text: emailContent.text,
+        });
+      } catch (emailError) {
+        console.error("Failed to send function hall receipt:", emailError);
+      }
+    }
 
     return NextResponse.json(
       {

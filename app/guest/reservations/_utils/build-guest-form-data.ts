@@ -5,6 +5,7 @@ const guestTextFields = [
   "nationality",
   "gender",
   "email",
+  "id_type",
 ] as const;
 
 export function buildGuestFormData(source: FormData) {

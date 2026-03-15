@@ -11,6 +11,8 @@ import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { RoomType } from "@/types/room";
 import { TablesInsert } from "@/types/supabase";
+import { sendEmail } from "@/lib/email/resend";
+import { buildHotelReceiptEmail } from "@/lib/email/receipt-templates";
 
 async function getRoomTypeWithAvailability(
   roomTypeId: string,
@@ -245,7 +247,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       String(formObj.special_requests ?? "[]"),
     ) as BookingSpecialRequest[];
 
-    const { addOns } = await getRoomTypeWithAvailability(
+    const { addOns, roomType } = await getRoomTypeWithAvailability(
       roomTypeId,
       checkedIn,
       checkedOut,
@@ -347,6 +349,37 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         },
         { status: 500 },
       );
+    }
+
+    const guestInfo = await supabase
+      .from("guest")
+      .select("full_name, email")
+      .eq("id", guestId)
+      .single();
+
+    if (!guestInfo.error && guestInfo.data?.email) {
+      try {
+        const emailContent = buildHotelReceiptEmail({
+          bookingNumber,
+          guestName: guestInfo.data.full_name,
+          roomTypeName: (roomType as RoomType)?.name ?? "Room",
+          checkIn: checkedIn,
+          checkOut: checkedOut,
+          numberOfGuests: newData.number_of_guests,
+          total: newData.total,
+          totalAddOns,
+          specialRequests,
+        });
+
+        await sendEmail({
+          to: guestInfo.data.email,
+          subject: emailContent.subject,
+          html: emailContent.html,
+          text: emailContent.text,
+        });
+      } catch (emailError) {
+        console.error("Failed to send hotel booking receipt:", emailError);
+      }
     }
 
     return NextResponse.json(

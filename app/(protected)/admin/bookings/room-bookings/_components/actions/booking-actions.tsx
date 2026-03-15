@@ -17,6 +17,7 @@ import {
   FileText,
   EllipsisVertical,
   Wallet,
+  Undo2,
 } from "lucide-react";
 
 import { canBookingAction } from "@/utils/booking/can-booking-action";
@@ -27,6 +28,7 @@ import MarkCancelled from "./mark-cancelled";
 import ExtendModal from "../modals/extend-modal";
 import ViewSummary from "../modals/payment/view-summary-modal";
 import AddPaymentModal from "../modals/payment/add-payment-modal";
+import UndoCheckInModal from "../modals/undo-check-in-modal";
 import { generateSummary } from "@/utils/generate-summary";
 
 export default function BookingActionsDropdown({
@@ -37,6 +39,7 @@ export default function BookingActionsDropdown({
   const [extendOpen, setExtendOpen] = React.useState(false);
   const [isViewSummaryOpen, setIsViewSummaryOpen] = React.useState(false);
   const [addPaymentOpen, setAddPaymentOpen] = React.useState(false);
+  const [undoCheckInOpen, setUndoCheckInOpen] = React.useState(false);
 
   const [paymentDetail, setPaymentDetail] = React.useState({
     method: "pending",
@@ -76,6 +79,12 @@ export default function BookingActionsDropdown({
         setPaymentDetail={setPaymentDetail}
         summary={summary}
         id={booking.id}
+      />
+
+      <UndoCheckInModal
+        isOpen={undoCheckInOpen}
+        onClose={() => setUndoCheckInOpen(false)}
+        booking={booking}
       />
 
       <Dropdown>
@@ -134,6 +143,16 @@ export default function BookingActionsDropdown({
           {canBookingAction(booking.status, "checked_out") ? (
             <DropdownItem key="checkout">
               <CheckOutButton booking={booking} />
+            </DropdownItem>
+          ) : null}
+
+          {canBookingAction(booking.status, "undo_check_in") ? (
+            <DropdownItem
+              key="undo_check_in"
+              startContent={<Undo2 className="w-4 h-4 text-warning" />}
+              onPress={() => setUndoCheckInOpen(true)}
+            >
+              Undo check-in
             </DropdownItem>
           ) : null}
 
