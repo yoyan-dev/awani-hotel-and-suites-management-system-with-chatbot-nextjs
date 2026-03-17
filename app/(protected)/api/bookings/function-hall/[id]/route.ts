@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { ApiResponse } from "@/types/response";
 import { FunctionHallBooking } from "@/types/function-room-booking";
+import { sendEmail } from "@/lib/email/emailjs";
+import { buildFunctionRoomBookingUpdateEmail } from "@/lib/email/receipt-templates";
 
 const toNumberOr = (value: unknown, fallback: number): number => {
   const parsed = Number(value);
@@ -16,6 +18,10 @@ const resolvePaymentStatus = (
   if (amountPaid <= 0) return "unpaid";
   if (amountPaid >= totalAmount) return "paid";
   return "deposit";
+};
+
+const buildFunctionHallUpdateIntro = () => {
+  return "Your function hall reservation has been confirmed. Please review the latest summary below.";
 };
 
 //GET ONE
@@ -93,7 +99,7 @@ export async function PUT(
 
   const { data: currentBooking, error: currentBookingError } = await supabase
     .from("function_hall_bookings")
-    .select("id, total_amount, amount_paid")
+    .select("id, booking_number, guest_id, event_type, event_start, event_end, number_of_guest, notes, status, payment_status, payment_method, amount_paid, total_amount, balance")
     .eq("id", id)
     .single();
 
@@ -226,6 +232,43 @@ export async function PUT(
       },
       { status: 404 },
     );
+  }
+
+  const statusChanged = (currentBooking.status ?? null) !== (data.status ?? null);
+
+  if (statusChanged && data.status === "confirmed") {
+    const guestInfo = await supabase
+      .from("guest")
+      .select("full_name, email")
+      .eq("id", String(data.guest_id ?? currentBooking.guest_id ?? ""))
+      .single();
+
+    if (!guestInfo.error && guestInfo.data?.email) {
+      try {
+        const emailContent = buildFunctionRoomBookingUpdateEmail({
+          bookingNumber: String(
+            data.booking_number ?? currentBooking.booking_number ?? "",
+          ),
+          guestName: guestInfo.data.full_name,
+          eventType: String(data.event_type ?? currentBooking.event_type ?? "Event"),
+          eventStart: String(data.event_start ?? currentBooking.event_start ?? ""),
+          eventEnd: String(data.event_end ?? currentBooking.event_end ?? ""),
+          numberOfGuests: data.number_of_guest,
+          notes: data.notes ? String(data.notes) : null,
+          status: String(data.status ?? ""),
+          intro: buildFunctionHallUpdateIntro(),
+        });
+
+        await sendEmail({
+          to: guestInfo.data.email,
+          subject: emailContent.subject,
+          html: emailContent.html,
+          text: emailContent.text,
+        });
+      } catch (emailError) {
+        console.error("Failed to send function hall booking update email:", emailError);
+      }
+    }
   }
 
   return NextResponse.json({

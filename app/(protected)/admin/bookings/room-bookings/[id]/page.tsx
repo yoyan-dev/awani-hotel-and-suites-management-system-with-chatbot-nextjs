@@ -13,6 +13,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { formatPHP } from "@/lib/format-php";
 import { getNights } from "@/utils/pricing";
+import { formatBookingGuestSummary } from "@/lib/booking/guest-breakdown";
 
 export default function BookingDetailsPage() {
   const { id } = useParams();
@@ -85,7 +86,7 @@ export default function BookingDetailsPage() {
       ["Room Number", booking.room?.room_number || "-"],
       ["Check-in", formatDate(booking.checked_in)],
       ["Check-out", formatDate(booking.checked_out)],
-      ["Guests", String(booking.number_of_guests || "-")],
+      ["Guests", formatBookingGuestSummary(booking)],
       [
         "Nights",
         String(getNights(booking.checked_in, booking.checked_out) || 0),

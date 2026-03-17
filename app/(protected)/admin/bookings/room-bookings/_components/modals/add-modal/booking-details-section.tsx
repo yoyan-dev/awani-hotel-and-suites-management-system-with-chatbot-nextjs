@@ -4,10 +4,13 @@ import { formatPHP } from "@/lib/format-php";
 import React from "react";
 import { getAvailableRooms } from "@/app/utils/room-availability";
 import { BookingSpecialRequest } from "@/types/add-on";
+import GuestBreakdownFields from "@/components/booking/guest-breakdown-fields";
+import { createGuestBreakdown } from "@/lib/booking/guest-breakdown";
 
 interface Props {
   room_types: any[];
   rooms: any[];
+  maxGuests?: number | string | null;
   selectedRoomType?: string;
   setSelectedRoomType: (id: string) => void;
   specialRequests: BookingSpecialRequest[];
@@ -28,6 +31,7 @@ function formatDateISO(d: Date) {
 export default function BookingDetailsSection({
   room_types,
   rooms,
+  maxGuests,
   selectedRoomType,
   setSelectedRoomType,
   specialRequests,
@@ -37,6 +41,9 @@ export default function BookingDetailsSection({
 }: Props) {
   const [checkInDate, setCheckInDate] = React.useState<string>("");
   const [checkOutDate, setCheckOutDate] = React.useState<string>("");
+  const [guestBreakdown, setGuestBreakdown] = React.useState(() =>
+    createGuestBreakdown({ adult: 1 }),
+  );
 
   const today = React.useMemo(() => formatDateISO(new Date()), []);
   const minCheckout = React.useMemo(() => {
@@ -268,14 +275,13 @@ export default function BookingDetailsSection({
         </div>
       ) : null}
 
-      <Input
-        isRequired
-        variant="bordered"
-        label="Number of Guests"
-        placeholder="Enter number of guest"
-        labelPlacement="outside"
-        name="number_of_guests"
+      <GuestBreakdownFields
+        value={guestBreakdown}
+        onChange={setGuestBreakdown}
+        maxGuests={maxGuests}
         radius="none"
+        variant="bordered"
+        helperText="Specify categories like adult, child, infant, senior, PWD, or other."
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { BookingSpecialRequest } from "./add-on";
+import type { GuestBreakdown } from "@/lib/booking/guest-breakdown";
 
 export type BookingStatus =
   | "pending"
@@ -20,7 +21,8 @@ export interface Booking {
   special_requests: BookingSpecialRequest[];
   places_last_visited?: string;
   purpose?: string;
-  number_of_guests?: number;
+  number_of_guests?: number | string | null;
+  guest_breakdown?: GuestBreakdown | null;
   recent_sickness?: string[];
   total_add_ons: string;
   total: string;

@@ -9,6 +9,13 @@ import {
 import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { RoomType } from "@/types/room";
+import { sendEmail } from "@/lib/email/emailjs";
+import { buildHotelBookingUpdateEmail } from "@/lib/email/receipt-templates";
+import {
+  createGuestBreakdown,
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 const BOOKING_SELECT = `
   id,
@@ -22,6 +29,7 @@ const BOOKING_SELECT = `
   total,
   company,
   special_requests,
+  guest_breakdown,
   number_of_guests,
   recent_sickness,
   payment_status,
@@ -115,6 +123,15 @@ async function resolveAndValidateRequests(
   return { cleaned, totalAddOns };
 }
 
+const toFiniteNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+const buildHotelUpdateIntro = () => {
+  return "Your hotel room booking has been confirmed. Please review the latest booking summary below.";
+};
+
 export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
@@ -165,7 +182,9 @@ export async function PUT(
 
     const { data: existingBooking, error: existingError } = await supabase
       .from("bookings")
-      .select("id, room_type_id, checked_in, checked_out, special_requests")
+      .select(
+        "id, booking_number, guest_id, room_type_id, checked_in, checked_out, special_requests, guest_breakdown, number_of_guests, status, payment_status, payment_method, amount_paid, total",
+      )
       .eq("id", id)
       .single();
 
@@ -192,6 +211,17 @@ export async function PUT(
     const rawRequests = (body.special_requests ??
       existingBooking.special_requests ??
       []) as BookingSpecialRequest[];
+    const guestBreakdown =
+      body.guest_breakdown !== undefined
+        ? parseGuestBreakdown(body.guest_breakdown)
+        : body.number_of_guests !== undefined
+          ? createGuestBreakdown({
+              adult: Number(body.number_of_guests ?? 0),
+            })
+          : parseGuestBreakdown(existingBooking.guest_breakdown);
+    const totalGuests = guestBreakdown
+      ? getGuestBreakdownTotal(guestBreakdown)
+      : Number(body.number_of_guests ?? existingBooking.number_of_guests ?? 0);
 
     const { cleaned, totalAddOns } = await resolveAndValidateRequests(
       roomTypeId,
@@ -201,9 +231,60 @@ export async function PUT(
       id,
     );
 
+    if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Guest Count",
+            description:
+              "Please provide at least one guest category for this booking.",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    const { data: roomType, error: roomTypeError } = await supabase
+      .from("room_types")
+      .select("max_guest, name")
+      .eq("id", roomTypeId)
+      .single();
+
+    if (roomTypeError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Error",
+            description: roomTypeError.message,
+            color: "danger",
+          },
+        },
+        { status: 500 },
+      );
+    }
+
+    if (roomType?.max_guest && totalGuests > Number(roomType.max_guest)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Guest Limit Exceeded",
+            description: `Maximum guests allowed for this room is ${roomType.max_guest}.`,
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
     const payload = {
       ...body,
       special_requests: cleaned,
+      guest_breakdown: guestBreakdown,
+      number_of_guests: String(totalGuests),
       total_add_ons: totalAddOns,
     };
 
@@ -227,6 +308,54 @@ export async function PUT(
         },
         { status: 500 },
       );
+    }
+
+    const statusChanged = (existingBooking.status ?? null) !== (data.status ?? null);
+
+    if (statusChanged && data.status === "confirmed") {
+      const guestInfo = await supabase
+        .from("guest")
+        .select("full_name, email")
+        .eq("id", String(data.guest_id ?? existingBooking.guest_id ?? ""))
+        .single();
+
+      if (!guestInfo.error && guestInfo.data?.email) {
+        try {
+          const roomInfo = data.room_id
+            ? await supabase
+                .from("rooms")
+                .select("room_number")
+                .eq("id", String(data.room_id))
+                .single()
+            : { data: null, error: null };
+
+          const emailContent = buildHotelBookingUpdateEmail({
+            bookingNumber: String(
+              data.booking_number ?? existingBooking.booking_number ?? "",
+            ),
+            guestName: guestInfo.data.full_name,
+            roomTypeName: (roomType as { name?: string | null })?.name ?? "Room",
+            roomNumber: roomInfo.data?.room_number ?? "-",
+            checkIn: String(data.checked_in ?? checkedIn),
+            checkOut: String(data.checked_out ?? checkedOut),
+            numberOfGuests: data.number_of_guests,
+            total: data.total,
+            totalAddOns: data.total_add_ons,
+            specialRequests: cleaned,
+            status: String(data.status ?? ""),
+            intro: buildHotelUpdateIntro(),
+          });
+
+          await sendEmail({
+            to: guestInfo.data.email,
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+          });
+        } catch (emailError) {
+          console.error("Failed to send hotel booking update email:", emailError);
+        }
+      }
     }
 
     return NextResponse.json({

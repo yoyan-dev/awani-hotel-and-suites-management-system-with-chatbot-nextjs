@@ -9,7 +9,7 @@ import {
   parseISODateTime,
   parseISODateOnly,
 } from "@/utils/function-room/event-duration-date";
-import { sendEmail } from "@/lib/email/resend";
+import { sendEmail } from "@/lib/email/emailjs";
 import { buildFunctionRoomReceiptEmail } from "@/lib/email/receipt-templates";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
@@ -288,7 +288,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       .eq("id", newBooking.guest_id)
       .single();
 
-    if (!guestInfo.error && guestInfo.data?.email) {
+    let emailWarning: string | null = null;
+
+    if (guestInfo.error) {
+      emailWarning = "Guest email could not be loaded.";
+    } else if (!guestInfo.data?.email) {
+      emailWarning = "Guest has no email address on file.";
+    } else {
       try {
         const emailContent = buildFunctionRoomReceiptEmail({
           bookingNumber,
@@ -308,17 +314,27 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         });
       } catch (emailError) {
         console.error("Failed to send function hall receipt:", emailError);
+        emailWarning =
+          emailError instanceof Error
+            ? emailError.message
+            : "Failed to send function hall receipt.";
       }
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: {
-          title: "Success",
-          description: "Reservation successfully added.",
-          color: "success",
-        },
+        message: emailWarning
+          ? {
+              title: "Booked With Email Warning",
+              description: `Reservation successfully added, but the receipt email could not be sent: ${emailWarning}`,
+              color: "warning",
+            }
+          : {
+              title: "Success",
+              description: "Reservation successfully added.",
+              color: "success",
+            },
         data,
       },
       { status: 201 },
@@ -338,8 +354,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   }
 }
 
-/* DELETE — BULK DELETE*/
-
+/* DELETE - BULK DELETE*/
 export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await req.json();

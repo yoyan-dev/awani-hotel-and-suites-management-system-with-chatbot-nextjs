@@ -19,6 +19,13 @@ import { useBookings } from "@/hooks/use-bookings";
 import { formatPHP } from "@/lib/format-php";
 import { Booking } from "@/types/booking";
 import { generateSummary } from "@/utils/generate-summary";
+import GuestBreakdownFields from "@/components/booking/guest-breakdown-fields";
+import {
+  createGuestBreakdown,
+  formatBookingGuestSummary,
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 interface ViewModalProps {
   data: any;
@@ -31,6 +38,9 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
     useBookings();
   const [formData, setFormData] = React.useState<Booking>({} as Booking);
   const [editBookingDetails, setEditBookingDetails] = React.useState(false);
+  const [guestBreakdown, setGuestBreakdown] = React.useState(() =>
+    createGuestBreakdown({ adult: 1 }),
+  );
 
   React.useEffect(() => {
     if (data?.id) {
@@ -39,7 +49,19 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
   }, [data?.id]);
 
   React.useEffect(() => {
-    setFormData(booking);
+    const parsedBreakdown = parseGuestBreakdown(booking.guest_breakdown);
+    const normalizedBreakdown =
+      parsedBreakdown ||
+      createGuestBreakdown({
+        adult: Number(booking.number_of_guests ?? 1),
+      });
+
+    setGuestBreakdown(normalizedBreakdown);
+    setFormData({
+      ...booking,
+      guest_breakdown: normalizedBreakdown,
+      number_of_guests: getGuestBreakdownTotal(normalizedBreakdown),
+    });
   }, [booking]);
 
   const summary = React.useMemo(() => {
@@ -154,7 +176,10 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                               id: booking.id,
                               checked_in: formData.checked_in,
                               checked_out: formData.checked_out,
-                              number_of_guests: formData.number_of_guests,
+                              number_of_guests: getGuestBreakdownTotal(
+                                guestBreakdown,
+                              ),
+                              guest_breakdown: guestBreakdown,
                               total: String(summary?.total || booking.total),
                               total_add_ons: String(
                                 summary?.totalAddOnsPrice ||
@@ -228,19 +253,23 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                     <div>
                       <p className="text-xs text-gray-400">Guests</p>
                       {editBookingDetails ? (
-                        <Input
-                          type="number"
-                          value={formData.number_of_guests?.toString()}
-                          isDisabled={booking.status === "checked_in"}
-                          onChange={(e) =>
+                        <GuestBreakdownFields
+                          value={guestBreakdown}
+                          onChange={(nextBreakdown) => {
+                            setGuestBreakdown(nextBreakdown);
                             setFormData({
                               ...booking,
-                              number_of_guests: Number(e.target.value),
-                            })
-                          }
+                              guest_breakdown: nextBreakdown,
+                              number_of_guests: getGuestBreakdownTotal(
+                                nextBreakdown,
+                              ),
+                            });
+                          }}
+                          maxGuests={booking.room_type?.max_guest}
+                          isDisabled={booking.status === "checked_in"}
                         />
                       ) : (
-                        <p>{booking.number_of_guests || 1}</p>
+                        <p>{formatBookingGuestSummary(booking)}</p>
                       )}
                     </div>
                     <div>

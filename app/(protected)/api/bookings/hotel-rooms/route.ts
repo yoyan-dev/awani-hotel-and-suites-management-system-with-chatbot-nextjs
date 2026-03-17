@@ -11,8 +11,12 @@ import { findRequestedAddOn } from "@/lib/add-ons/room-type-add-ons";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { RoomType } from "@/types/room";
 import { TablesInsert } from "@/types/supabase";
-import { sendEmail } from "@/lib/email/resend";
+import { sendEmail } from "@/lib/email/emailjs";
 import { buildHotelReceiptEmail } from "@/lib/email/receipt-templates";
+import {
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 async function getRoomTypeWithAvailability(
   roomTypeId: string,
@@ -122,6 +126,7 @@ const BOOKING_SELECT = `
   places_last_visited,
   purpose,
   number_of_guests,
+  guest_breakdown,
   recent_sickness,
   payment_status,
   payment_method,
@@ -246,6 +251,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
     const requestedSpecialRequests = JSON.parse(
       String(formObj.special_requests ?? "[]"),
     ) as BookingSpecialRequest[];
+    const guestBreakdown = parseGuestBreakdown(formObj.guest_breakdown);
 
     const { addOns, roomType } = await getRoomTypeWithAvailability(
       roomTypeId,
@@ -258,6 +264,38 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       addOns,
     );
     const totalAddOns = computeTotalAddOns(specialRequests);
+    const totalGuests = guestBreakdown
+      ? getGuestBreakdownTotal(guestBreakdown)
+      : Number(formObj.number_of_guests ?? 0);
+
+    if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Invalid Guest Count",
+            description:
+              "Please provide at least one guest category for this booking.",
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
+
+    if (roomType.max_guest && totalGuests > Number(roomType.max_guest)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: {
+            title: "Guest Limit Exceeded",
+            description: `Maximum guests allowed for this room is ${roomType.max_guest}.`,
+            color: "warning",
+          },
+        },
+        { status: 400 },
+      );
+    }
 
     const newData: TablesInsert<"bookings"> = {
       booking_number: bookingNumber,
@@ -266,9 +304,10 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       room_id: formObj.room_id ? String(formObj.room_id) : null,
       checked_in: checkedIn,
       checked_out: checkedOut,
-      number_of_guests: formObj.number_of_guests
-        ? String(formObj.number_of_guests)
-        : null,
+      number_of_guests: String(totalGuests),
+      guest_breakdown:
+        (guestBreakdown as unknown as TablesInsert<"bookings">["guest_breakdown"]) ??
+        null,
       payment_status: formObj.payment_status
         ? String(formObj.payment_status)
         : null,
@@ -357,7 +396,13 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       .eq("id", guestId)
       .single();
 
-    if (!guestInfo.error && guestInfo.data?.email) {
+    let emailWarning: string | null = null;
+
+    if (guestInfo.error) {
+      emailWarning = "Guest email could not be loaded.";
+    } else if (!guestInfo.data?.email) {
+      emailWarning = "Guest has no email address on file.";
+    } else {
       try {
         const emailContent = buildHotelReceiptEmail({
           bookingNumber,
@@ -379,17 +424,27 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
         });
       } catch (emailError) {
         console.error("Failed to send hotel booking receipt:", emailError);
+        emailWarning =
+          emailError instanceof Error
+            ? emailError.message
+            : "Failed to send hotel booking receipt.";
       }
     }
 
     return NextResponse.json(
       {
         success: true,
-        message: {
-          title: "Success",
-          description: "Reservation successfully added.",
-          color: "success",
-        },
+        message: emailWarning
+          ? {
+              title: "Booked With Email Warning",
+              description: `Reservation successfully added, but the receipt email could not be sent: ${emailWarning}`,
+              color: "warning",
+            }
+          : {
+              title: "Success",
+              description: "Reservation successfully added.",
+              color: "success",
+            },
         data: data[0],
       },
       { status: 201 },

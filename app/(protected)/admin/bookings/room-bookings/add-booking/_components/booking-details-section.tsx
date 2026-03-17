@@ -4,6 +4,8 @@ import { formatPHP } from "@/lib/format-php";
 import React from "react";
 import { RoomType } from "@/types/room";
 import { BookingSpecialRequest } from "@/types/add-on";
+import GuestBreakdownFields from "@/components/booking/guest-breakdown-fields";
+import { createGuestBreakdown } from "@/lib/booking/guest-breakdown";
 
 interface Props {
   room_types: any[];
@@ -47,7 +49,9 @@ export default function BookingDetailsSection({
   roomLoading,
 }: Props) {
   const today = React.useMemo(() => formatDateISO(new Date()), []);
-  const [guestCount, setGuestCount] = React.useState(1);
+  const [guestBreakdown, setGuestBreakdown] = React.useState(() =>
+    createGuestBreakdown({ adult: 1 }),
+  );
   const minCheckout = React.useMemo(() => {
     if (!checkInDate) {
       const tomorrow = new Date();
@@ -277,18 +281,13 @@ export default function BookingDetailsSection({
         </div>
       ) : null}
 
-      <Input
-        isRequired
-        variant="bordered"
-        label={`Number of Guests (max: ${roomType?.max_guest || 0})`}
-        placeholder="Enter number of guest"
-        labelPlacement="outside"
-        name="number_of_guests"
+      <GuestBreakdownFields
+        value={guestBreakdown}
+        onChange={setGuestBreakdown}
+        maxGuests={roomType?.max_guest}
         radius="none"
-        value={guestCount.toString()}
-        onChange={(e) => setGuestCount(Number(e.target.value))}
-        isInvalid={guestCount > (roomType?.max_guest || 0)}
-        errorMessage="Number of guests exceeds the maximum allowed"
+        variant="bordered"
+        helperText="Specify categories like adult, child, infant, senior, PWD, or other."
       />
     </div>
   );

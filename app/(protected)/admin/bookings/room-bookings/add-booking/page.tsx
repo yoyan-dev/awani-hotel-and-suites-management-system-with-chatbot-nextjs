@@ -17,6 +17,10 @@ import { Booking } from "@/types/booking";
 import ViewSummary from "../_components/modals/payment/view-summary-modal";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { useRouter } from "next/navigation";
+import {
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 export default function AddBookingPage() {
   const router = useRouter();
@@ -101,6 +105,30 @@ export default function AddBookingPage() {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
+      const guestBreakdown = parseGuestBreakdown(formData.get("guest_breakdown"));
+      const totalGuests = guestBreakdown
+        ? getGuestBreakdownTotal(guestBreakdown)
+        : Number(formData.get("number_of_guests") ?? 0);
+
+      if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+        addToast({
+          title: "Invalid Guest Count",
+          description:
+            "Please provide at least one guest category for this booking.",
+          color: "warning",
+        });
+        return;
+      }
+
+      if (roomType?.max_guest && totalGuests > Number(roomType.max_guest)) {
+        addToast({
+          title: "Guest Limit Exceeded",
+          description: `Maximum guests allowed for this room is ${roomType.max_guest}.`,
+          color: "warning",
+        });
+        return;
+      }
+
       const guestId = crypto.randomUUID();
       const guestFormData = new FormData();
       guestFormData.append("id", guestId);

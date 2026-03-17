@@ -65,6 +65,7 @@ export const siteConfig = {
           label: "Function Room Reservation",
           href: "/admin/bookings/function-hall-bookings",
         },
+
       ],
     },
     {

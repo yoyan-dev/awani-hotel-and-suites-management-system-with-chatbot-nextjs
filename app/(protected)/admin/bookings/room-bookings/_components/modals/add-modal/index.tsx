@@ -24,6 +24,10 @@ import { FetchBookingParams } from "@/types/booking";
 import { useGuests } from "@/hooks/use-guests";
 import PaymentSection from "./payment-section";
 import { BookingSpecialRequest } from "@/types/add-on";
+import {
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 export default function AddModal({ query }: { query: FetchBookingParams }) {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
@@ -64,6 +68,10 @@ export default function AddModal({ query }: { query: FetchBookingParams }) {
       ({ full_name: "", contact_number: "", address: "" } as Guest),
     [selectedGuest]
   );
+  const selectedRoomTypeRecord = React.useMemo(
+    () => room_types.find((roomType) => roomType.id === selectedRoomType),
+    [room_types, selectedRoomType],
+  );
 
   React.useEffect(() => {
     const room = room_types.find((room) => room.id === selectedRoomType);
@@ -91,6 +99,33 @@ export default function AddModal({ query }: { query: FetchBookingParams }) {
       addToast({
         title: "Error",
         description: "Please select or register guest.",
+        color: "warning",
+      });
+      return;
+    }
+
+    const guestBreakdown = parseGuestBreakdown(formData.get("guest_breakdown"));
+    const totalGuests = guestBreakdown
+      ? getGuestBreakdownTotal(guestBreakdown)
+      : Number(formData.get("number_of_guests") ?? 0);
+
+    if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+      addToast({
+        title: "Invalid Guest Count",
+        description:
+          "Please provide at least one guest category for this booking.",
+        color: "warning",
+      });
+      return;
+    }
+
+    if (
+      selectedRoomTypeRecord?.max_guest &&
+      totalGuests > Number(selectedRoomTypeRecord.max_guest)
+    ) {
+      addToast({
+        title: "Guest Limit Exceeded",
+        description: `Maximum guests allowed for this room is ${selectedRoomTypeRecord.max_guest}.`,
         color: "warning",
       });
       return;
@@ -138,6 +173,7 @@ export default function AddModal({ query }: { query: FetchBookingParams }) {
                     <BookingDetailsSection
                       room_types={room_types}
                       rooms={rooms}
+                      maxGuests={selectedRoomTypeRecord?.max_guest}
                       selectedRoomType={selectedRoomType}
                       setSelectedRoomType={setSelectedRoomType}
                       specialRequests={specialRequests}

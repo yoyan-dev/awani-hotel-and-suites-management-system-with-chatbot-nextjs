@@ -4,6 +4,12 @@ import { formatPHP } from "@/lib/format-php";
 import React from "react";
 import { Booking } from "@/types/booking";
 import { BookingSpecialRequest } from "@/types/add-on";
+import GuestBreakdownFields from "@/components/booking/guest-breakdown-fields";
+import {
+  createGuestBreakdown,
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 interface Props {
   formData: Booking;
@@ -41,6 +47,11 @@ export default function BookingDetailsSection({
   const [checkOutDate, setCheckOutDate] = React.useState<string>(
     formData.checked_out,
   );
+  const [guestBreakdown, setGuestBreakdown] = React.useState(() =>
+    createGuestBreakdown({
+      adult: Number(formData.number_of_guests ?? 1),
+    }),
+  );
 
   const today = React.useMemo(() => formatDateISO(new Date()), []);
   const minCheckout = React.useMemo(() => {
@@ -71,6 +82,21 @@ export default function BookingDetailsSection({
       setCheckOutDate(minCheckout);
     }
   }, [checkInDate, minCheckout, checkOutDate]);
+
+  React.useEffect(() => {
+    const parsedBreakdown = parseGuestBreakdown(formData.guest_breakdown);
+    if (parsedBreakdown) {
+      setGuestBreakdown(parsedBreakdown);
+      return;
+    }
+
+    const totalGuests = Number(formData.number_of_guests ?? 0);
+    setGuestBreakdown(
+      createGuestBreakdown({
+        adult: Number.isFinite(totalGuests) && totalGuests > 0 ? totalGuests : 1,
+      }),
+    );
+  }, [formData.guest_breakdown, formData.number_of_guests]);
 
   return (
     <div className="space-y-4 w-full">
@@ -282,19 +308,22 @@ export default function BookingDetailsSection({
           </div>
         )}
       </div>
-      <Input
-        isRequired
-        variant="bordered"
-        type="nmber"
-        value={formData.number_of_guests?.toString()}
-        onChange={(e) =>
-          setFormData({ ...formData, number_of_guests: Number(e.target.value) })
+      <GuestBreakdownFields
+        value={guestBreakdown}
+        onChange={(nextBreakdown) => {
+          setGuestBreakdown(nextBreakdown);
+          setFormData({
+            ...formData,
+            guest_breakdown: nextBreakdown,
+            number_of_guests: getGuestBreakdownTotal(nextBreakdown),
+          });
+        }}
+        maxGuests={
+          room_types.find((type) => type.id === formData.room_type_id)?.max_guest
         }
-        label="Number of Guests"
-        placeholder="Enter number of guest"
-        labelPlacement="outside"
-        name="number_of_guests"
         radius="none"
+        variant="bordered"
+        helperText="Specify categories like adult, child, infant, senior, PWD, or other."
       />
     </div>
   );

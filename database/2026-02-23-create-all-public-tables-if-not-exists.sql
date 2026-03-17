@@ -74,6 +74,7 @@ create table if not exists public.bookings (
   checked_in timestamptz null,
   checked_out timestamptz null,
   number_of_guests numeric(10,2) null,
+  guest_breakdown jsonb null,
   company text null,
   places_last_visited text null,
   purpose text null,

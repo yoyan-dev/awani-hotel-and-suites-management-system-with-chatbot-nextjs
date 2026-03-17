@@ -11,6 +11,10 @@ import { Booking } from "@/types/booking";
 import { useParams } from "next/navigation";
 import Header from "./_components/header";
 import { BookingSpecialRequest } from "@/types/add-on";
+import {
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
 
 export default function EditBookingPage() {
   const { id } = useParams();
@@ -86,6 +90,27 @@ export default function EditBookingPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
+      const guestBreakdown = parseGuestBreakdown(formData.guest_breakdown);
+      const totalGuests = guestBreakdown
+        ? getGuestBreakdownTotal(guestBreakdown)
+        : Number(formData.number_of_guests ?? 0);
+      const selectedRoomType = room_types.find(
+        (roomType) => roomType.id === formData.room_type_id,
+      );
+
+      if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+        throw new Error("Please provide at least one guest category.");
+      }
+
+      if (
+        selectedRoomType?.max_guest &&
+        totalGuests > Number(selectedRoomType.max_guest)
+      ) {
+        throw new Error(
+          `Maximum guests allowed for this room is ${selectedRoomType.max_guest}.`,
+        );
+      }
+
       await updateBooking({
         id: booking.id,
         room_type_id: formData.room_type_id,
@@ -93,10 +118,11 @@ export default function EditBookingPage() {
         checked_out: formData.checked_out,
         room_id: formData.room_id,
         special_requests: specialRequests,
-        number_of_guests: formData.number_of_guests,
+        number_of_guests: totalGuests,
+        guest_breakdown: guestBreakdown,
         status: formData.room_id ? "confirmed" : "pending",
       } as Booking);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to update booking", err);
     }
   }

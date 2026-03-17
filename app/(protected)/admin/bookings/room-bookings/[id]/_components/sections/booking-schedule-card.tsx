@@ -4,6 +4,7 @@ import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
 import { CalendarDays, MessageCircle, Users } from "lucide-react";
 import { formatPHP } from "@/lib/format-php";
 import { Booking } from "@/types/booking";
+import { formatBookingGuestSummary } from "@/lib/booking/guest-breakdown";
 
 function formatDate(dateValue?: string) {
   if (!dateValue) return "-";
@@ -44,7 +45,9 @@ export default function BookingScheduleCard({ booking }: { booking: Booking }) {
           <Users className="w-5 h-5 text-default-500" />
           <div>
             <div className="text-xs text-gray-500">Guests</div>
-            <div className="font-medium">{booking.number_of_guests}</div>
+            <div className="font-medium">
+              {formatBookingGuestSummary(booking)}
+            </div>
           </div>
         </div>
 

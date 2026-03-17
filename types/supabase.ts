@@ -45,6 +45,7 @@ export type Database = {
           checked_out: string | null;
           company: string | null;
           created_at: string | null;
+          guest_breakdown: Json | null;
           guest_id: string | null;
           id: string;
           number_of_guests: string | null;
@@ -68,6 +69,7 @@ export type Database = {
           checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
+          guest_breakdown?: Json | null;
           guest_id?: string | null;
           id?: string;
           number_of_guests?: string | null;
@@ -91,6 +93,7 @@ export type Database = {
           checked_out?: string | null;
           company?: string | null;
           created_at?: string | null;
+          guest_breakdown?: Json | null;
           guest_id?: string | null;
           id?: string;
           number_of_guests?: string | null;
