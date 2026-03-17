@@ -7,6 +7,7 @@ import { BookingSpecialRequest } from "@/types/add-on";
 import GuestBreakdownFields from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/guest-breakdown-fields";
 import {
   createGuestBreakdown,
+  type GuestBreakdown,
   getGuestBreakdownTotal,
   parseGuestBreakdown,
 } from "@/lib/booking/guest-breakdown";
@@ -318,7 +319,7 @@ export default function BookingDetailsSection({
       </div>
       <GuestBreakdownFields
         value={guestBreakdown}
-        onChange={(nextBreakdown) => {
+        onChange={(nextBreakdown: GuestBreakdown) => {
           setGuestBreakdown(nextBreakdown);
           setFormData({
             ...formData,

@@ -5,6 +5,7 @@ type HotelReceiptInput = {
   bookingNumber: string;
   guestName?: string | null;
   roomTypeName?: string | null;
+  roomNumber?: number | string | null;
   checkIn: string;
   checkOut: string;
   numberOfGuests?: number | string | null;
@@ -396,3 +397,4 @@ export function buildFunctionRoomBookingUpdateEmail(
     text,
   };
 }
+

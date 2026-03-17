@@ -33,13 +33,13 @@ export default function BookingDetailsPage() {
     const margin = 40;
     let y = margin;
     const safeDateTime = (value?: string | null) =>
-      value ? formateDateAndTime(value) : "-";
+      value ? formateDateAndTime(value) ?? "-" : "-";
     const formatMoneyForPdf = (value: number) =>
       `PHP ${Number(value || 0)
         .toFixed(2)
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
     const formatDateTime = (value?: string | null) =>
-      value ? formateDateAndTime(value) : "-";
+      value ? formateDateAndTime(value) ?? "-" : "-";
     const formatValue = (value?: string | number | null) =>
       value === undefined || value === null || String(value).trim() === ""
         ? "-"
@@ -83,7 +83,12 @@ export default function BookingDetailsPage() {
       ["Booking Number", formatValue(function_hall_booking.booking_number)],
       ["Status", formatValue(function_hall_booking.status)],
       ["Booking Source", formatValue(function_hall_booking.booking_source)],
-      ["Created At", formatDateTime(function_hall_booking.created_at)],
+      [
+        "Created At",
+        function_hall_booking.created_at
+          ? formatDateTime(function_hall_booking.created_at)
+          : "",
+      ],
     ]);
 
     addSection("Guest Information", [
@@ -116,7 +121,9 @@ export default function BookingDetailsPage() {
       ["Payment Status", paymentStatus],
     ]);
 
-    doc.save(`function-hall-booking-${function_hall_booking.booking_number || "details"}.pdf`);
+    doc.save(
+      `function-hall-booking-${function_hall_booking.booking_number || "details"}.pdf`,
+    );
   };
 
   const updateStatus = async (status: string) => {
@@ -261,8 +268,8 @@ export default function BookingDetailsPage() {
         {function_hall_booking.status !== "rejected" &&
           function_hall_booking.status !== "cancelled" &&
           function_hall_booking.status !== "completed" && (
-          <Card radius="sm" className="shadow-none border border-gray-200">
-            <CardBody className="flex justify-end gap-2">
+            <Card radius="sm" className="shadow-none border border-gray-200">
+              <CardBody className="flex justify-end gap-2">
                 {function_hall_booking.status === "pending" ? (
                   <>
                     <Button

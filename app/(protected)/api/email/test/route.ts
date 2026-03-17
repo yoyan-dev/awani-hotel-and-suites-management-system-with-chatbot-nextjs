@@ -15,7 +15,6 @@ type EmailTestPayload = {
   guestName?: string;
   bookingNumber?: string;
 };
-n;
 function escapeHtml(value: string) {
   return value
     .replace(/&/g, "&amp;")

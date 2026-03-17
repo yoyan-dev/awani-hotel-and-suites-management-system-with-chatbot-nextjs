@@ -23,6 +23,7 @@ import GuestBreakdownFields from "@/app/guest/reservations/hotel-rooms/reservati
 import {
   createGuestBreakdown,
   formatBookingGuestSummary,
+  type GuestBreakdown,
   getGuestBreakdownTotal,
   parseGuestBreakdown,
 } from "@/lib/booking/guest-breakdown";
@@ -254,7 +255,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                       {editBookingDetails ? (
                         <GuestBreakdownFields
                           value={guestBreakdown}
-                          onChange={(nextBreakdown) => {
+                          onChange={(nextBreakdown: GuestBreakdown) => {
                             setGuestBreakdown(nextBreakdown);
                             setFormData({
                               ...booking,
