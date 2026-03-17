@@ -5,12 +5,18 @@ import {
   deleteNotification,
   deleteSelectedNotifications,
   fetchNotifications,
+  fetchNotificationsPage,
   UpdateNotification,
 } from "./notification-thunk";
 
 const initialState: NotificationState = {
   notifications: [],
   isLoading: false,
+  isLoadingMore: false,
+  page: 1,
+  limit: 20,
+  total: 0,
+  hasMore: false,
   error: undefined,
 };
 
@@ -20,6 +26,14 @@ const notificationsSlice = createSlice({
   reducers: {
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
+    },
+    markNotificationsRead: (state, action: PayloadAction<number[]>) => {
+      const ids = new Set(action.payload);
+      state.notifications = state.notifications.map((notification) =>
+        ids.has(notification.id)
+          ? { ...notification, is_read: true }
+          : notification,
+      );
     },
   },
   extraReducers: (builder) => {
@@ -39,6 +53,34 @@ const notificationsSlice = createSlice({
       )
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.error.message;
+      })
+      // GET paginated notifications
+      .addCase(fetchNotificationsPage.pending, (state, action) => {
+        const append = Boolean(action.meta.arg.append);
+        if (append) {
+          state.isLoadingMore = true;
+        } else {
+          state.isLoading = true;
+        }
+        state.error = undefined;
+      })
+      .addCase(fetchNotificationsPage.fulfilled, (state, action) => {
+        const { items, total, page, limit, append } = action.payload;
+        state.isLoading = false;
+        state.isLoadingMore = false;
+        state.total = total;
+        state.page = page;
+        state.limit = limit;
+        state.hasMore = page * limit < total;
+        state.notifications = append
+          ? [...state.notifications, ...items]
+          : items;
+        state.error = undefined;
+      })
+      .addCase(fetchNotificationsPage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isLoadingMore = false;
         state.error = action.error.message;
       })
 
@@ -114,4 +156,5 @@ const notificationsSlice = createSlice({
 });
 
 export const { setLoading } = notificationsSlice.actions;
+export const { markNotificationsRead } = notificationsSlice.actions;
 export default notificationsSlice.reducer;

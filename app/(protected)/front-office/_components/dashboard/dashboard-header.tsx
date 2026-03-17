@@ -4,7 +4,9 @@ export default function DashboardHeader({ dateRange, setDateRange }: any) {
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Front Desk Dashboard
+        </h1>
         <p className="text-gray-500">Overview of your hotel operations</p>
       </div>
 

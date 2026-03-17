@@ -11,6 +11,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
       100,
     );
     const userId = searchParams.get("userId");
+    const queryText = (searchParams.get("q") ?? "").trim();
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -23,6 +24,18 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
 
     if (userId) {
       query = query.eq("user_id", userId);
+    }
+    if (queryText) {
+      const escaped = queryText.replace(/,/g, "");
+      query = query.or(
+        [
+          `email.ilike.%${escaped}%`,
+          `role.ilike.%${escaped}%`,
+          `event_type.ilike.%${escaped}%`,
+          `device_name.ilike.%${escaped}%`,
+          `user_id.ilike.%${escaped}%`,
+        ].join(","),
+      );
     }
 
     const { data, error, count } = await query;

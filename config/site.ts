@@ -26,6 +26,12 @@ export const siteConfig = {
       isExpandable: false,
       icon: ChartPie,
     },
+    {
+      label: "Inventory",
+      href: "/admin/inventory",
+      isExpandable: false,
+      icon: ShoppingCart,
+    },
     // {
     //   label: "Banquet Packages",
     //   href: "/admin/banquet/packages",
@@ -36,37 +42,6 @@ export const siteConfig = {
     //     { label: "Banquet Packages", href: "/admin/banquet/packages" },
     //   ],
     // },
-    {
-      label: "Room Management",
-      href: "/admin/rooms",
-      isExpandable: true,
-      isExpand: false,
-      icon: Bed,
-      Children: [
-        { label: "Hotel Rooms", href: "/admin/rooms/hotel-rooms" },
-        { label: "Hotel Rooms Types", href: "/admin/rooms/room-types" },
-        // { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
-        {
-          label: "Room Reports",
-          href: "/admin/rooms/reportings",
-        },
-      ],
-    },
-    {
-      label: "Bookings",
-      href: "/admin/bookings",
-      isExpandable: true,
-      icon: Notebook,
-      Children: [
-        { label: "Overview", href: "/admin/bookings/overview" },
-        { label: "Calendar", href: "/admin/bookings/calendar" },
-        { label: "Room Bookings", href: "/admin/bookings/room-bookings" },
-        {
-          label: "Function Room Reservation",
-          href: "/admin/bookings/function-hall-bookings",
-        },
-      ],
-    },
     {
       label: "Guest Feedbacks",
       href: "/admin/feedback",

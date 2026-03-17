@@ -4,13 +4,23 @@ import { ApiResponse } from "@/types/response";
 
 const tableName = "notifications";
 
-// GET all notifications
-export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const { data, error } = await supabase
+// GET notifications (paginated)
+export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
+  const { searchParams } = new URL(req.url);
+  const page = Math.max(Number(searchParams.get("page") ?? 1), 1);
+  const limit = Math.min(
+    Math.max(Number(searchParams.get("limit") ?? 20), 1),
+    100,
+  );
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { data, error, count } = await supabase
     .from("notifications")
-    .select("*")
-    .eq("is_read", false)
-    .order("created_at", { ascending: false });
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (error) {
     console.error("Error fetching notifications:", error.message);
@@ -35,7 +45,12 @@ export async function GET(): Promise<NextResponse<ApiResponse>> {
         description: "",
         color: "success",
       },
-      data,
+      data: {
+        items: data ?? [],
+        total: count ?? 0,
+        page,
+        limit,
+      },
     },
     { status: 200 },
   );

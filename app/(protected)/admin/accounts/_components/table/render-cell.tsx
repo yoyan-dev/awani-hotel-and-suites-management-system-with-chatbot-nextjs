@@ -33,6 +33,7 @@ type AuthLog = {
   role: string | null;
   event_type: "login" | "logout";
   event_at: string;
+  device_name?: string | null;
 };
 
 interface RenderCellProps {
@@ -40,7 +41,7 @@ interface RenderCellProps {
   columnKey: string;
 }
 
-type RoleType = "admin" | "housekeeping" | "guest" | "front_office";
+type RoleType = "admin" | "housekeeping" | "front_office";
 
 const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
   const cellValue = user[columnKey as keyof User];
@@ -245,6 +246,9 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
                                   {new Date(log.event_at).toLocaleString(
                                     "en-US",
                                   )}
+                                </div>
+                                <div className="text-xs text-default-400">
+                                  {log.device_name ?? "Unknown Device"}
                                 </div>
                               </div>
                               <div className="text-right text-xs text-default-500">

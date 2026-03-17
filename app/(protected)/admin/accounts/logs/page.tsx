@@ -18,8 +18,9 @@ import {
   ModalFooter,
   Button,
   Divider,
+  Input,
 } from "@heroui/react";
-import { Eye } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 
 type AuthLog = {
   id: string;
@@ -30,6 +31,7 @@ type AuthLog = {
   event_at: string;
   ip_address?: string | null;
   user_agent?: string | null;
+  device_name?: string | null;
 };
 
 type ApiResponse = {
@@ -47,6 +49,7 @@ const columns = [
   { name: "Email", uid: "email" },
   { name: "Role", uid: "role" },
   { name: "Event", uid: "event_type" },
+  { name: "Device", uid: "device_name" },
   { name: "User ID", uid: "user_id" },
   { name: "Actions", uid: "actions" },
 ];
@@ -58,6 +61,7 @@ export default function AuthLogsPage() {
   const [total, setTotal] = React.useState(0);
   const [selectedLog, setSelectedLog] = React.useState<AuthLog | null>(null);
   const [isViewOpen, setIsViewOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
   const limit = 20;
 
   const pages = Math.max(Math.ceil(total / limit), 1);
@@ -68,7 +72,14 @@ export default function AuthLogsPage() {
     async function loadLogs() {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/auth-logs?page=${page}&limit=${limit}`);
+        const params = new URLSearchParams({
+          page: String(page),
+          limit: String(limit),
+        });
+        if (query.trim()) {
+          params.set("q", query.trim());
+        }
+        const res = await fetch(`/api/auth-logs?${params.toString()}`);
         const json = (await res.json()) as ApiResponse;
         if (!isMounted) return;
         if (json.success && json.data) {
@@ -92,7 +103,7 @@ export default function AuthLogsPage() {
     return () => {
       isMounted = false;
     };
-  }, [page]);
+  }, [page, query]);
 
   return (
     <div className="p-2 bg-white dark:bg-gray-900 rounded space-y-4">
@@ -101,6 +112,28 @@ export default function AuthLogsPage() {
         <p className="text-gray-600">
           Monitor user logins and logouts across the system.
         </p>
+      </div>
+      <div className="flex justify-between gap-3 items-end">
+        <Input
+          isClearable
+          classNames={{
+            base: "w-full sm:max-w-[44%]",
+            inputWrapper: "border-1",
+          }}
+          placeholder="Search email, role, device, or user id..."
+          size="sm"
+          startContent={<Search className="text-default-300" />}
+          value={query}
+          variant="bordered"
+          onClear={() => {
+            setQuery("");
+            setPage(1);
+          }}
+          onValueChange={(value) => {
+            setQuery(value);
+            setPage(1);
+          }}
+        />
       </div>
       <Table
         isHeaderSticky
@@ -229,6 +262,10 @@ export default function AuthLogsPage() {
                       <span className="font-mono break-all">
                         {selectedLog.user_id ?? "Not set"}
                       </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-default-500">Device</span>
+                      <span>{selectedLog.device_name ?? "Not set"}</span>
                     </div>
                     <Divider />
                     <div className="flex justify-between gap-4">

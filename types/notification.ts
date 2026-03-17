@@ -10,5 +10,10 @@ export interface Notification {
 export interface NotificationState {
   notifications: Notification[];
   isLoading: boolean;
+  isLoadingMore: boolean;
+  page: number;
+  limit: number;
+  total: number;
+  hasMore: boolean;
   error?: string;
 }

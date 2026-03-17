@@ -4,6 +4,50 @@ import { addToast } from "@heroui/react";
 
 const apiUrl = "/api/notifications";
 
+type NotificationPageResponse = {
+  items: Notification[];
+  total: number;
+  page: number;
+  limit: number;
+  append: boolean;
+};
+
+export const fetchNotificationsPage = createAsyncThunk<
+  NotificationPageResponse,
+  { page: number; limit: number; append?: boolean }
+>("notifications/fetchNotificationsPage", async (args, { rejectWithValue }) => {
+  try {
+    const params = new URLSearchParams({
+      page: String(args.page),
+      limit: String(args.limit),
+    });
+    const res = await fetch(`${apiUrl}?${params.toString()}`);
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      addToast(data.message);
+      return rejectWithValue(
+        data.message?.description ?? "Failed to fetch notifications",
+      );
+    }
+
+    return {
+      items: data.data?.items ?? [],
+      total: data.data?.total ?? 0,
+      page: data.data?.page ?? args.page,
+      limit: data.data?.limit ?? args.limit,
+      append: Boolean(args.append),
+    };
+  } catch (error: any) {
+    addToast({
+      title: "Error",
+      description: error.message,
+      color: "danger",
+    });
+    return rejectWithValue(error.message);
+  }
+});
+
 // FETCH ALL
 export const fetchNotifications = createAsyncThunk<Notification[]>(
   "notifications/fetchNotifications",
@@ -18,7 +62,7 @@ export const fetchNotifications = createAsyncThunk<Notification[]>(
           data.message?.description ?? "Failed to fetch notifications",
         );
       }
-      return data.data;
+      return data.data?.items ?? [];
     } catch (error: any) {
       addToast({
         title: "Error",
@@ -103,7 +147,6 @@ export const UpdateNotification = createAsyncThunk<
       });
 
       const data = await res.json();
-      addToast(data.message);
 
       if (!res.ok || !data.success) {
         return rejectWithValue(
@@ -113,11 +156,6 @@ export const UpdateNotification = createAsyncThunk<
 
       return data.data;
     } catch (err: any) {
-      addToast({
-        title: "Error",
-        description: err.message,
-        color: "danger",
-      });
       return rejectWithValue(err.message);
     }
   },

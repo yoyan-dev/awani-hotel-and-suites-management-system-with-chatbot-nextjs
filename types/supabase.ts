@@ -536,6 +536,7 @@ export type Database = {
           event_at: string;
           ip_address: string | null;
           user_agent: string | null;
+          device_name: string | null;
         };
         Insert: {
           id?: string;
@@ -546,6 +547,7 @@ export type Database = {
           event_at?: string;
           ip_address?: string | null;
           user_agent?: string | null;
+          device_name?: string | null;
         };
         Update: {
           id?: string;
@@ -556,6 +558,7 @@ export type Database = {
           event_at?: string;
           ip_address?: string | null;
           user_agent?: string | null;
+          device_name?: string | null;
         };
         Relationships: [
           {
