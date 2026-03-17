@@ -526,6 +526,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      auth_activity_logs: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          email: string | null;
+          role: string | null;
+          event_type: string;
+          event_at: string;
+          ip_address: string | null;
+          user_agent: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          email?: string | null;
+          role?: string | null;
+          event_type: string;
+          event_at?: string;
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          email?: string | null;
+          role?: string | null;
+          event_type?: string;
+          event_at?: string;
+          ip_address?: string | null;
+          user_agent?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "auth_activity_logs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       rooms: {
         Row: {
           area: string | null;

@@ -11,6 +11,7 @@ export async function proxy(request: NextRequest) {
   const roles = Array.isArray(token?.roles) ? token.roles : [];
   const isAuthPage = pathname.startsWith("/auth");
   const isAdminPage = pathname.startsWith("/admin");
+  const isFrontOfficePage = pathname.startsWith("/front-office");
   const isHousekeepingPage = pathname.startsWith("/housekeeping");
 
   if (pathname === "/") {
@@ -22,6 +23,10 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin", request.url));
     }
 
+    if (roles.includes("front_office")) {
+      return NextResponse.redirect(new URL("/front-office", request.url));
+    }
+
     if (roles.includes("housekeeping")) {
       return NextResponse.redirect(new URL("/housekeeping", request.url));
     }
@@ -29,13 +34,17 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/guest", request.url));
   }
 
-  if ((isAdminPage || isHousekeepingPage) && !token) {
+  if ((isAdminPage || isFrontOfficePage || isHousekeepingPage) && !token) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   if (isAuthPage && token) {
     if (roles.includes("admin")) {
       return NextResponse.redirect(new URL("/admin", request.url));
+    }
+
+    if (roles.includes("front_office")) {
+      return NextResponse.redirect(new URL("/front-office", request.url));
     }
 
     if (roles.includes("housekeeping")) {
@@ -49,6 +58,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
+  if (isFrontOfficePage && !roles.includes("front_office")) {
+    return NextResponse.redirect(new URL("/auth", request.url));
+  }
+
   if (isHousekeepingPage && !roles.includes("housekeeping")) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
@@ -57,5 +70,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/admin/:path*", "/housekeeping/:path*", "/auth/:path*"],
+  matcher: [
+    "/",
+    "/admin/:path*",
+    "/front-office/:path*",
+    "/housekeeping/:path*",
+    "/auth/:path*",
+  ],
 };

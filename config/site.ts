@@ -19,7 +19,7 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "Awani Hotel Management System",
   description: "Make beautiful websites regardless of your design experience.",
-  navItems: [
+  navAdminItems: [
     {
       label: "Dashboard",
       href: "/admin",
@@ -65,7 +65,6 @@ export const siteConfig = {
           label: "Function Room Reservation",
           href: "/admin/bookings/function-hall-bookings",
         },
-
       ],
     },
     {
@@ -99,34 +98,77 @@ export const siteConfig = {
       icon: LogOut,
     },
   ],
-  navMenuItems: [
+  navFrontOfficeItems: [
     {
       label: "Dashboard",
       href: "/admin",
+      isExpandable: false,
+      icon: ChartPie,
     },
+    // {
+    //   label: "Banquet Packages",
+    //   href: "/admin/banquet/packages",
+    //   isExpandable: false,
+    //   icon: ChefHatIcon,
+    //   Children: [
+    //     { label: "Banquet Menu", href: "/admin/banquet/menus" },
+    //     { label: "Banquet Packages", href: "/admin/banquet/packages" },
+    //   ],
+    // },
     {
-      label: "Rooms",
-      href: "/admin/room",
-    },
-    {
-      label: "Inventory",
-      href: "/admin/inventory",
+      label: "Room Management",
+      href: "/admin/rooms",
+      isExpandable: true,
+      isExpand: false,
+      icon: Bed,
+      Children: [
+        { label: "Hotel Rooms", href: "/admin/rooms/hotel-rooms" },
+        { label: "Hotel Rooms Types", href: "/admin/rooms/room-types" },
+        // { label: "Function Rooms", href: "/admin/rooms/function-rooms" },
+        {
+          label: "Room Reports",
+          href: "/admin/rooms/reportings",
+        },
+      ],
     },
     {
       label: "Bookings",
-      href: "/admin/booking",
+      href: "/admin/bookings",
+      isExpandable: true,
+      icon: Notebook,
+      Children: [
+        { label: "Overview", href: "/admin/bookings/overview" },
+        { label: "Calendar", href: "/admin/bookings/calendar" },
+        { label: "Room Bookings", href: "/admin/bookings/room-bookings" },
+        {
+          label: "Function Room Reservation",
+          href: "/admin/bookings/function-hall-bookings",
+        },
+      ],
     },
     {
-      label: "Housekeeping",
-      href: "/admin/housekeeping",
+      label: "Guest Feedbacks",
+      href: "/admin/feedback",
+      isExpandable: false,
+      icon: MessageSquare,
     },
-    {
-      label: "Account Management",
-      href: "/admin/accounts",
-    },
+    // {
+    //   label: "Guest",
+    //   href: "/admin/guest",
+    //   isExpandable: false,
+    //   icon: Users,
+    // },
     {
       label: "Settings",
       href: "/admin/settings",
+      isExpandable: false,
+      icon: Settings,
+    },
+    {
+      label: "Log out",
+      href: "/api/auth/signout",
+      isExpandable: false,
+      icon: LogOut,
     },
   ],
   housekeepingNavMenuItems: [

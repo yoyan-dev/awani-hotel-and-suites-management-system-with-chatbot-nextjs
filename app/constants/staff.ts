@@ -15,6 +15,7 @@ export const columns: ColumnType[] = [
 export const rolesOptions = [
   { name: "Admin", uid: "admin" },
   { name: "Housekeeping", uid: "housekeeping" },
+  { name: "Front Office", uid: "front_office" },
 ];
 
 export const statusColorMap: Record<string, "success" | "danger" | "warning"> =

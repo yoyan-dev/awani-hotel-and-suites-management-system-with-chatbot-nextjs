@@ -59,7 +59,7 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
         },
         app_metadata: {
           ...user.app_metadata,
-          roles: [formData.role as "admin" | "housekeeping"],
+          roles: [formData.role],
         },
       };
 
@@ -121,9 +121,10 @@ const EditModal: React.FC<EditModalProps> = ({ user, isOpen, onClose }) => {
                     }}
                     placeholder="Select role"
                   >
-                    <SelectItem key="admin">Admin</SelectItem>
-                    <SelectItem key="housekeeping">Housekeeping</SelectItem>
-                  </Select>
+                  <SelectItem key="admin">Admin</SelectItem>
+                  <SelectItem key="front_office">Front Office</SelectItem>
+                  <SelectItem key="housekeeping">Housekeeping</SelectItem>
+                </Select>
                   {/* <Input
                     fullWidth
                     label="Phone"

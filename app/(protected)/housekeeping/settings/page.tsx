@@ -1,2 +1,1 @@
-export { default } from "../../admin/settings/page";
-
+export { default } from "../../front-office/settings/page";

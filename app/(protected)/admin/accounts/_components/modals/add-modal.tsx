@@ -88,7 +88,11 @@ export default function AddModal() {
                     defaultSelectedKeys={["housekeeping"]}
                     isRequired
                   >
-                    {["admin", "housekeeping", "front_office"].map((role) => (
+                    {[
+                      "admin",
+                      "front_office",
+                      "housekeeping",
+                    ].map((role) => (
                       <SelectItem className="capitalize" key={role}>
                         {role}
                       </SelectItem>

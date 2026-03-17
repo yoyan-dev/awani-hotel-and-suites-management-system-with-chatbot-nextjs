@@ -18,6 +18,7 @@ export interface FunctionHallBooking {
   amount_paid?: number;
   total_amount?: number;
   balance?: number;
+  created_at?: string;
   room?: any;
 }
 

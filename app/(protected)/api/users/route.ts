@@ -82,7 +82,7 @@ export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
       email_confirm: true,
       user_metadata: userData,
       app_metadata: {
-        roles: (roles as string)?.split(",") ?? ["guest"],
+        roles: (roles as string)?.split(",") ?? ["housekeeping"],
         department: (formObj.department as string) ?? "General",
         permissions: ["create", "update"],
       },

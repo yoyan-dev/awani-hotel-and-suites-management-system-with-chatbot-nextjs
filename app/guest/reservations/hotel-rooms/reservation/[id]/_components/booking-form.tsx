@@ -16,7 +16,7 @@ import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
 import { BookingSpecialRequest } from "@/types/add-on";
 import BookingSummary from "./booking-summary";
-import GuestBreakdownFields from "@/components/booking/guest-breakdown-fields";
+import GuestBreakdownFields from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/guest-breakdown-fields";
 import {
   createGuestBreakdown,
   formatGuestBreakdown,

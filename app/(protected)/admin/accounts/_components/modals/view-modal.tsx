@@ -38,7 +38,9 @@ const ViewModal: React.FC<ViewModalProps> = ({ user, isOpen, onClose }) => {
       ? "primary"
       : role === "housekeeping"
         ? "warning"
-        : "default";
+        : role === "front_office"
+          ? "success"
+          : "default";
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "Not set";

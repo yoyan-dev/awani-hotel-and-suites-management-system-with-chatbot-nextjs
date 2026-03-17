@@ -29,6 +29,8 @@ const BOOKING_SELECT = `
   total,
   company,
   special_requests,
+  places_last_visited,
+  purpose,
   guest_breakdown,
   number_of_guests,
   recent_sickness,
@@ -310,7 +312,8 @@ export async function PUT(
       );
     }
 
-    const statusChanged = (existingBooking.status ?? null) !== (data.status ?? null);
+    const statusChanged =
+      (existingBooking.status ?? null) !== (data.status ?? null);
 
     if (statusChanged && data.status === "confirmed") {
       const guestInfo = await supabase
@@ -334,7 +337,8 @@ export async function PUT(
               data.booking_number ?? existingBooking.booking_number ?? "",
             ),
             guestName: guestInfo.data.full_name,
-            roomTypeName: (roomType as { name?: string | null })?.name ?? "Room",
+            roomTypeName:
+              (roomType as { name?: string | null })?.name ?? "Room",
             roomNumber: roomInfo.data?.room_number ?? "-",
             checkIn: String(data.checked_in ?? checkedIn),
             checkOut: String(data.checked_out ?? checkedOut),
@@ -353,7 +357,10 @@ export async function PUT(
             text: emailContent.text,
           });
         } catch (emailError) {
-          console.error("Failed to send hotel booking update email:", emailError);
+          console.error(
+            "Failed to send hotel booking update email:",
+            emailError,
+          );
         }
       }
     }
