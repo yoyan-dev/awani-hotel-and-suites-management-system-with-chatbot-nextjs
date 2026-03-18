@@ -4,8 +4,8 @@ import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/react";
 import { Flag, Home, MailIcon, Transgender, User } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import FrontIDUpload from "../../../../_componets/valid-id/front-id-upload";
-import BackIDUpload from "../../../../_componets/valid-id/back-id-upload";
+import FrontIDUpload from "../../../../_components/valid-id/front-id-upload";
+import BackIDUpload from "../../../../_components/valid-id/back-id-upload";
 import PhoneInput from "@/components/input/phone-input";
 
 export default function GuestForm({

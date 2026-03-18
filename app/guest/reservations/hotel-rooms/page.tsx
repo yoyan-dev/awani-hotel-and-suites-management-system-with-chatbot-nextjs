@@ -1,31 +1,21 @@
 "use client";
-import React from "react";
 import { RoomsList } from "./_components/room-list";
 import Header from "./_components/header";
-import { FetchRoomTypesParams } from "@/types/room";
 import { formatDate } from "@/utils/format-date";
-import { useRoomTypes } from "@/hooks/use-room-types";
+import { useGuestHotelRoomsPage } from "@/hooks/guest/use-guest-hotel-rooms-page";
 
 export default function Page() {
-  const date = new Date();
-  const today = date.toISOString().split("T")[0];
-  const tomorrow = new Date(date);
-  tomorrow.setDate(date.getDate() + 1);
-  const { availabel_room_types, isLoading, fetchAvailableRoomTypes } =
-    useRoomTypes();
-  const [desiredGuest, setDesiredGuest] = React.useState<number>(1);
-  const [query, setQuery] = React.useState<FetchRoomTypesParams>({});
-
-  React.useEffect(() => {
-    fetchAvailableRoomTypes({
-      checkIn: today,
-      checkOut: tomorrow.toISOString().split("T")[0],
-    });
-  }, []);
-
-  function checkAvailability() {
-    fetchAvailableRoomTypes({ ...query, maxGuest: desiredGuest });
-  }
+  const {
+    rooms,
+    isLoading,
+    desiredGuest,
+    setDesiredGuest,
+    query,
+    setQuery,
+    today,
+    tomorrow,
+    checkAvailability,
+  } = useGuestHotelRoomsPage();
 
   return (
     <div className="min-h-screen py-8">
@@ -50,7 +40,7 @@ export default function Page() {
         </div>
 
         <div className="mt-6">
-          <RoomsList rooms={availabel_room_types} typesLoading={isLoading} />
+          <RoomsList rooms={rooms} typesLoading={isLoading} />
         </div>
       </section>
     </div>

@@ -1,41 +1,17 @@
 "use client";
 
 import RoomStatusCard from "./_components/room-status-card";
-import { useRooms } from "@/hooks/use-rooms";
-import React from "react";
 import Loader from "./_components/loader";
 import { Input } from "@heroui/input";
 import { Search } from "lucide-react";
-import { Button, Pagination, Select, SelectItem } from "@heroui/react";
+import { Pagination, Select, SelectItem } from "@heroui/react";
 import { statusOptions } from "@/app/constants/rooms";
-import { FetchRoomsParams } from "@/types/room";
 import RoomStats from "./_components/room-stats";
+import { useHousekeepingRoomsPage } from "@/hooks/housekeeping/use-housekeeping-rooms-page";
 
 export default function HousekeepingRoomsPage() {
-  const {
-    rooms,
-    isLoading,
-    pagination,
-    analytics,
-    fetchRooms,
-    fetchAnalytics,
-  } = useRooms();
-  const [query, setQuery] = React.useState<FetchRoomsParams>({});
-  const handleUpdateStatus = (
-    roomId?: string,
-    status?: string,
-    remarks?: string,
-  ) => {
-    console.log("Update room:", roomId, status);
-  };
-
-  React.useEffect(() => {
-    fetchRooms(query);
-  }, [query]);
-
-  React.useEffect(() => {
-    fetchAnalytics();
-  }, []);
+  const { rooms, isLoading, pagination, analytics, query, setQuery, handleUpdateStatus } =
+    useHousekeepingRoomsPage();
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-800 pb-10 px-4">

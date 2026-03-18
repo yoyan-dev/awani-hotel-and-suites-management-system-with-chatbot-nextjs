@@ -1,27 +1,15 @@
 "use client";
 
-import React from "react";
-import { RoomReportFetchParams } from "@/types/room-report";
-import { useRoomReports } from "@/hooks/use-room-reports";
 import { Pagination } from "@heroui/react";
 import Loader from "../rooms/_components/loader";
 import Header from "@/components/room-reportings/header";
 import RoomReportsFilter from "@/components/room-reportings/room-report-filter";
 import RoomReportCard from "@/components/room-reportings/room-report-card";
+import { useHousekeepingReportingsPage } from "@/hooks/housekeeping/use-housekeeping-reportings-page";
 
 export default function HousekeepingRoomsReportPage() {
-  const {
-    room_reports = [],
-    isLoading,
-    pagination,
-    fetchRoomReports,
-  } = useRoomReports();
-
-  const [query, setQuery] = React.useState<RoomReportFetchParams>({ page: 1 });
-
-  React.useEffect(() => {
-    fetchRoomReports(query);
-  }, [query]);
+  const { roomReports, isLoading, pagination, query, setQuery } =
+    useHousekeepingReportingsPage();
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 px-6 py-8">
@@ -38,13 +26,13 @@ export default function HousekeepingRoomsReportPage() {
               <Loader key={i} />
             ))}
           </div>
-        ) : room_reports.length === 0 ? (
+        ) : roomReports.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-gray-400 py-12">
             No reports found
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-            {room_reports.map((report) => (
+            {roomReports.map((report) => (
               <RoomReportCard key={report.id} report={report} />
             ))}
           </div>

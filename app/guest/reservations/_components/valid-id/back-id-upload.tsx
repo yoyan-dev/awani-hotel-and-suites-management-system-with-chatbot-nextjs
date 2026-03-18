@@ -20,7 +20,7 @@ export default function BackIdUpload({
   }, []);
 
   async function handleFile(file: File) {
-    setStatus("Analyzing back ID… ⏳");
+    setStatus("Analyzing back ID...");
 
     try {
       const previewUrl = URL.createObjectURL(file);
@@ -44,15 +44,12 @@ export default function BackIdUpload({
 
         const result = await analyzeBackId(canvas);
 
-        console.log("OCR TEXT:", result.text);
-        console.log("MATCHED:", result.keywords);
-
         if (result.isBack) {
-          setStatus(`Back ID verified ✅ `);
+          setStatus("Back ID verified");
           setIsBackId(true);
         } else {
           setStatus(
-            `Not a back ID ❌ (Please upload a Back ID or try a clearer/different photo)`,
+            "Not a back ID (Please upload a Back ID or try a clearer/different photo)",
           );
           setIsBackId(false);
         }

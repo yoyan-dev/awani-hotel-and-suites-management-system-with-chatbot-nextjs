@@ -13,8 +13,6 @@ export default function FrontIDUpload({
 }) {
   const [preview, setPreview] = useState<string | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-
-  // Hooks
   const { progress, result, isID, loading, analyze: analyzeOCR } = useOCR();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -24,16 +22,15 @@ export default function FrontIDUpload({
     analyzeOCR(file);
   }
 
-  (useEffect(() => {
+  useEffect(() => {
     setIsFrontId(isID);
-  }),
-    [isID]);
+  }, [isID, setIsFrontId]);
 
   return (
     <div className="w-full">
       <span>Front ID</span>
       <label
-        htmlFor={`image-upload-front`}
+        htmlFor="image-upload-front"
         className="p-2 w-full min-h-40 sm:h-32 rounded-md border-2 border-dashed border-gray-300 dark:border-gray-700 flex justify-center items-center cursor-pointer hover:border-primary transition"
       >
         {preview ? (
@@ -57,7 +54,7 @@ export default function FrontIDUpload({
       </label>
 
       <input
-        id={`image-upload-front`}
+        id="image-upload-front"
         type="file"
         accept="image/*"
         className="hidden"
@@ -83,8 +80,8 @@ export default function FrontIDUpload({
         <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">
           {isID !== null
             ? isID
-              ? "Front ID Verified✅"
-              : "Not a Front ID ❌ (Please upload a Front ID or try a clearer/different photo)"
+              ? "Front ID Verified"
+              : "Not a Front ID (Please upload a Front ID or try a clearer/different photo)"
             : ""}
         </p>
       )}
