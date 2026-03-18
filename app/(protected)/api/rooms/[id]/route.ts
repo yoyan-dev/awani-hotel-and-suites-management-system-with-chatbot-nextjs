@@ -1,151 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Room } from "@/types/room";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  deleteRoomById,
+  getRoomById,
+  updateRoomById,
+} from "@/services/api/rooms";
 import { ApiResponse } from "@/types/response";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
-//Get room
 export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
+    const data = await getRoomById(id);
 
-  const { data: room, error } = await supabase
-    .from("rooms")
-    .select(
-      `
-    id,
-    room_id,
-    room_number,
-    room_type_id,
-    room_type:room_type_id (*),
-    area,
-    description,
-    status,
-    remarks
-  `,
-    )
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error("Error fetching room:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+    return apiSuccess(data, apiMessage("success", "", "success"), 201);
+  } catch (error) {
+    console.error("Error fetching room:", error);
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: room,
-    },
-    { status: 201 },
-  );
 }
 
-// UPDATE
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
-  const body = await req.json();
+  try {
+    const { id } = await context.params;
+    const data = await updateRoomById(
+      id,
+      (await req.json()) as Record<string, unknown>,
+    );
 
-  const { data, error } = await supabase
-    .from("rooms")
-    .update(body)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) {
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Room updated successfully", "success"),
+    );
+  } catch (error) {
     console.error("Update error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "error",
-        },
-        error: error.message,
-      },
-      { status: 500 },
-    );
+    return apiErrorResponse(error);
   }
-
-  if (!data) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: "Room not found",
-          color: "error",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    message: {
-      title: "Success",
-      description: "Room updated successfully",
-      color: "success",
-    },
-    data: data,
-  });
 }
 
-// DELETE
 export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
+    await deleteRoomById(id);
 
-  const { error } = await supabase.from("rooms").delete().eq("id", id);
-
-  if (error) {
-    console.error("Delete error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "error",
-        },
-      },
-      { status: 404 },
+    return apiSuccess(
+      null,
+      apiMessage("Success", "Room deleted successfully", "success"),
     );
+  } catch (error) {
+    console.error("Delete error:", error);
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "Success",
-        description: "Room deleted successfully",
-        color: "success",
-      },
-    },
-    { status: 200 },
-  );
 }

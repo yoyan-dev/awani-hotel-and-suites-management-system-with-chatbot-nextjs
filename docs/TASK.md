@@ -152,3 +152,54 @@ The project should maintain:
 - modular architecture
 - small readable files
 - clear separation of concerns
+
+# Refactor the API structure only.
+
+This project is maintained by one developer, so keep the architecture simple, practical, and easy to maintain.
+
+Goals:
+
+- make the API structure uniform
+- keep files small as much as possible
+- keep logic modular
+- avoid crowded route handlers
+- improve readability and maintainability
+- do not change existing behavior or flow
+
+API structure rules:
+
+- use `app/api/{feature}/route.ts`
+- use `app/api/{feature}/[id]/route.ts` for single-resource routes
+- keep route handlers very small
+- route handlers should only:
+  - parse request
+  - validate input
+  - call service
+  - return response
+
+Do not put heavy business logic inside route handlers.
+
+Use root folders for API logic:
+
+- services/
+- validations/
+- lib/
+- types/
+
+Folder responsibilities:
+
+- services/ = business logic and reusable API logic
+- validations/ = request validation
+- lib/ = db access, response helpers, error helpers
+- types/ = shared interfaces and types
+
+Refactor rules:
+
+- make files smaller as much as possible
+- split files with multiple responsibilities
+- maintain consistent structure across all API features
+- preserve existing behavior exactly
+- do not over-engineer for a single developer workflow
+
+Final goal:
+A simple, clean, modular, and uniform API structure that is easy for one developer to manage.
