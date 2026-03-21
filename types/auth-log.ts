@@ -1,3 +1,5 @@
+import { ApiResponse } from "@/types/response";
+
 export type AuthLog = {
   id: string;
   user_id: string | null;
@@ -10,12 +12,26 @@ export type AuthLog = {
   device_name?: string | null;
 };
 
-export type AuthLogApiResponse = {
-  success: boolean;
-  data?: {
-    items: AuthLog[];
-    total: number;
-    page: number;
-    limit: number;
-  };
-};
+export interface AuthLogPagination {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+}
+
+export interface AuthLogFetchParams {
+  page?: number;
+  query?: string;
+  userId?: string;
+}
+
+export interface AuthLogState {
+  logs: AuthLog[];
+  pagination: AuthLogPagination;
+  isLoading: boolean;
+  error: string | undefined;
+}
+
+export interface AuthLogApiResponse extends ApiResponse<AuthLog[]> {
+  pagination?: AuthLogPagination;
+}

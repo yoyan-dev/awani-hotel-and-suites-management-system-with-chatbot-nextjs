@@ -36,6 +36,14 @@ type AuthLog = {
   device_name?: string | null;
 };
 
+type AuthLogResponse = {
+  success?: boolean;
+  data?: AuthLog[];
+  pagination?: {
+    total?: number;
+  };
+};
+
 interface RenderCellProps {
   user: User;
   columnKey: string;
@@ -66,11 +74,11 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
         const res = await fetch(
           `/api/auth-logs?userId=${user.id}&page=${logsPage}&limit=${logsLimit}`,
         );
-        const json = await res.json();
+        const json = (await res.json()) as AuthLogResponse;
         if (!isMounted) return;
-        if (json?.success && json?.data) {
-          setLogs(json.data.items ?? []);
-          setLogsTotal(json.data.total ?? 0);
+        if (json?.success) {
+          setLogs(json.data ?? []);
+          setLogsTotal(json.pagination?.total ?? 0);
         } else {
           setLogs([]);
           setLogsTotal(0);
@@ -303,3 +311,4 @@ const RenderCell: React.FC<RenderCellProps> = ({ user, columnKey }) => {
 };
 
 export default RenderCell;
+
