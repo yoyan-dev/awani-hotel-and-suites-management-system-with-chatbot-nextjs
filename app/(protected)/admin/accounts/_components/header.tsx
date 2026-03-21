@@ -1,4 +1,6 @@
 import React from "react";
+import Link from "next/link";
+import { Button } from "@heroui/react";
 
 export default function Header() {
   return (
@@ -10,6 +12,9 @@ export default function Header() {
           management system.
         </p>
       </div>
+      <Button as={Link} href="/admin/accounts/logs" color="primary" size="sm">
+        View Login Logs
+      </Button>
     </div>
   );
 }

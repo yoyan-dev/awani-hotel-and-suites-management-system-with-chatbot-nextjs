@@ -1,142 +1,53 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  createNotification,
+  deleteAllNotifications,
+  listNotifications,
+} from "@/services/api/notifications";
 import { ApiResponse } from "@/types/response";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
-const tableName = "notifications";
+export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = Math.max(Number(searchParams.get("page") ?? 1), 1);
+    const limit = Math.min(Math.max(Number(searchParams.get("limit") ?? 20), 1), 100);
+    const data = await listNotifications(page, limit);
 
-// GET all notifications
-export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const { data, error } = await supabase
-    .from("notifications")
-    .select("*")
-    .eq("is_read", false)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching notifications:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+    return apiSuccess(data, apiMessage("Success", "", "success"), 200);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "Success",
-        description: "",
-        color: "success",
-      },
-      data,
-    },
-    { status: 200 },
-  );
 }
 
-// POST a new notification
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    const body = await req.json();
-    const newNotif = { ...body, is_read: false };
-
-    const { data, error } = await supabase
-      .from(tableName)
-      .insert([newNotif])
-      .select();
-
-    if (error) {
-      console.error("Supabase insert error:", error);
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Notification added successfully",
-          color: "success",
-        },
-        data: data[0],
-      },
-      { status: 201 },
+    const data = await createNotification(
+      (await req.json()) as Record<string, unknown>,
     );
-  } catch (err: any) {
-    console.error("Unexpected error:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
+
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Notification added successfully", "success"),
+      201,
     );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return apiErrorResponse(error);
   }
 }
 
-// DELETE notifications (selected or all)
 export async function DELETE(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    let query = supabase.from(tableName).delete();
-    const { data, error } = await query;
+    const data = await deleteAllNotifications();
 
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete notifications",
-            color: "danger",
-          },
-          error: error.message,
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description: "All notifications deleted successfully",
-        color: "success",
-      },
+    return apiSuccess(
       data,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-        error: err.message,
-      },
-      { status: 500 },
+      apiMessage("Success", "All notifications deleted successfully", "success"),
     );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }

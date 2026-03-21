@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import {
   Card,
   CardBody,
@@ -8,39 +7,19 @@ import {
   Button,
   Link,
 } from "@heroui/react";
-import { useParams } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
 import { formatPHP } from "@/lib/format-php";
-import { fetchRoomType } from "@/features/room-types/room-types-thunk";
+import { useGuestRoomDetailsPage } from "@/hooks/guest/use-guest-room-details-page";
 
 export default function RoomDetails() {
-  const { id } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const { room_type, isLoading } = useSelector(
-    (state: RootState) => state.room_type,
-  );
+  const { roomType, isLoading, roomImages } = useGuestRoomDetailsPage();
 
-  React.useEffect(() => {
-    if (id) {
-      dispatch(fetchRoomType(id as string));
-    }
-  }, [dispatch, id]);
-
-  if (isLoading || !room_type) {
+  if (isLoading || !roomType) {
     return (
       <div className="flex items-center justify-center h-64">
         <Spinner size="lg" label="Loading room details..." />
       </div>
     );
   }
-
-  const roomImages =
-    room_type.images && room_type.images.length > 0
-      ? room_type.images
-      : room_type.image
-        ? [room_type.image]
-        : ["/bg-awani.jpg"];
 
   return (
     <div className="space-y-6">
@@ -66,22 +45,22 @@ export default function RoomDetails() {
               <div className="flex justify-between">
                 <div>
                   <h1 className="text-xl font-bold capitalize">
-                    {room_type.name}{" "}
+                    {roomType.name}{" "}
                     <span className="text-gray-600 dark:text-gray-300 text-sm">
-                      {room_type.room_size}
+                      {roomType.room_size}
                     </span>
                   </h1>
                   <span className="text-gray-600 dark:text-gray-300 text-sm">
-                    {room_type.description}
+                    {roomType.description}
                   </span>
                 </div>
-                <span>{formatPHP(Number(room_type.price))}/night</span>
+                <span>{formatPHP(Number(roomType.price))}/night</span>
               </div>
               <div className="flex justify-end">
                 <Button
                   color="primary"
                   as={Link}
-                  href={`/guest/reservations/hotel-rooms/reservation/${room_type.id}`}
+                  href={`/guest/reservations/hotel-rooms/reservation/${roomType.id}`}
                 >
                   Book Now
                 </Button>

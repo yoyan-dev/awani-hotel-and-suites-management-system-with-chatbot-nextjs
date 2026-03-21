@@ -19,7 +19,61 @@ export type SiteConfig = typeof siteConfig;
 export const siteConfig = {
   name: "Awani Hotel Management System",
   description: "Make beautiful websites regardless of your design experience.",
-  navItems: [
+  navAdminItems: [
+    {
+      label: "Dashboard",
+      href: "/admin",
+      isExpandable: false,
+      icon: ChartPie,
+    },
+    {
+      label: "Inventory",
+      href: "/admin/inventory",
+      isExpandable: false,
+      icon: ShoppingCart,
+    },
+    // {
+    //   label: "Banquet Packages",
+    //   href: "/admin/banquet/packages",
+    //   isExpandable: false,
+    //   icon: ChefHatIcon,
+    //   Children: [
+    //     { label: "Banquet Menu", href: "/admin/banquet/menus" },
+    //     { label: "Banquet Packages", href: "/admin/banquet/packages" },
+    //   ],
+    // },
+    {
+      label: "Guest Feedbacks",
+      href: "/admin/feedback",
+      isExpandable: false,
+      icon: MessageSquare,
+    },
+    // {
+    //   label: "Guest",
+    //   href: "/admin/guest",
+    //   isExpandable: false,
+    //   icon: Users,
+    // },
+    {
+      label: "Account Management",
+      href: "/admin/accounts",
+      isExpandable: false,
+      icon: ShieldUser,
+    },
+    {
+      label: "Settings",
+      href: "/admin/settings",
+      isExpandable: false,
+      icon: Settings,
+    },
+    {
+      label: "Log out",
+      href: "/api/auth/signout",
+      isExpandable: false,
+      icon: LogOut,
+    },
+  ],
+  navFrontOfficeItems: [
     {
       label: "Dashboard",
       href: "/admin",
@@ -80,12 +134,6 @@ export const siteConfig = {
     //   icon: Users,
     // },
     {
-      label: "Account Management",
-      href: "/admin/accounts",
-      isExpandable: false,
-      icon: ShieldUser,
-    },
-    {
       label: "Settings",
       href: "/admin/settings",
       isExpandable: false,
@@ -96,36 +144,6 @@ export const siteConfig = {
       href: "/api/auth/signout",
       isExpandable: false,
       icon: LogOut,
-    },
-  ],
-  navMenuItems: [
-    {
-      label: "Dashboard",
-      href: "/admin",
-    },
-    {
-      label: "Rooms",
-      href: "/admin/room",
-    },
-    {
-      label: "Inventory",
-      href: "/admin/inventory",
-    },
-    {
-      label: "Bookings",
-      href: "/admin/booking",
-    },
-    {
-      label: "Housekeeping",
-      href: "/admin/housekeeping",
-    },
-    {
-      label: "Account Management",
-      href: "/admin/accounts",
-    },
-    {
-      label: "Settings",
-      href: "/admin/settings",
     },
   ],
   housekeepingNavMenuItems: [

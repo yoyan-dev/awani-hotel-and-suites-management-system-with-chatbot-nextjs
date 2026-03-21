@@ -6,6 +6,7 @@ export type BookingAction =
   | "assign"
   | "checked_in"
   | "checked_out"
+  | "undo_check_in"
   | "extend"
   | "summary"
   | "add_payment"

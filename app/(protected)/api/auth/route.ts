@@ -1,162 +1,63 @@
 import { NextResponse } from "next/server";
-
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  getCurrentAuthUser,
+  signOutCurrentAuthUser,
+  signUpAuthUser,
+  updateCurrentAuthUser,
+} from "@/services/api/auth";
 import { ApiResponse } from "@/types/response";
-import { createClient } from "@/lib/supabase/server";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
-/**
- * GET current logged-in user
- */
 export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 }
+  try {
+    const data = await getCurrentAuthUser();
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Fetched current user", "success"),
+      200,
     );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "Success",
-        description: "Fetched current user",
-        color: "success",
-      },
-      data: user,
-    },
-    { status: 200 }
-  );
 }
 
-/**
- * CREATE user account
- */
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
-  const supabase = await createClient();
   try {
-    const { email, password, ...metadata } = await req.json();
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata, // profile metadata
-      },
-    });
-
-    if (error) throw error;
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Account created successfully.",
-          color: "success",
-        },
-        data,
-      },
-      { status: 201 }
+    const data = await signUpAuthUser((await req.json()) as Record<string, any>);
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Account created successfully.", "success"),
+      201,
     );
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }
 
-/**
- * UPDATE current user (email / password / metadata)
- */
 export async function PUT(req: Request): Promise<NextResponse<ApiResponse>> {
-  const supabase = await createClient();
   try {
-    const body = await req.json();
-
-    const { data, error } = await supabase.auth.updateUser(body);
-
-    if (error) throw error;
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Account updated successfully.",
-          color: "success",
-        },
-        data,
-      },
-      { status: 200 }
+    const data = await updateCurrentAuthUser(
+      (await req.json()) as Record<string, unknown>,
     );
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 }
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Account updated successfully.", "success"),
+      200,
     );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }
 
-/**
- * DELETE current user session (sign out)
- *
- * Note: supabase client-side lang ang may signOut().
- * Kung admin-level delete user account, dapat Supabase Admin API key ang gamit mo.
- */
 export async function DELETE(): Promise<NextResponse<ApiResponse>> {
-  const supabase = await createClient();
   try {
-    // Sign out current session
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description: "Signed out successfully.",
-        color: "success",
-      },
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 }
+    await signOutCurrentAuthUser();
+    return apiSuccess(
+      null,
+      apiMessage("Success", "Signed out successfully.", "success"),
     );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }

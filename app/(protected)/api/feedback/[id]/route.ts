@@ -1,97 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  deleteFeedbackById,
+  updateFeedbackById,
+} from "@/services/api/feedback-item";
 import { ApiResponse } from "@/types/response";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
-const dbTable = "feedback";
-// UPDATE
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
-  const body = await req.json();
+  try {
+    const { id } = await context.params;
+    const data = await updateFeedbackById(
+      id,
+      (await req.json()) as Record<string, unknown>,
+    );
 
-  const { data, error } = await supabase
-    .from(dbTable)
-    .update(body)
-    .eq("id", id)
-    .select()
-    .single();
-
-  if (error) {
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Guest feedback updated successfully", "success"),
+    );
+  } catch (error) {
     console.error("Update error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "error",
-        },
-        error: error.message,
-      },
-      { status: 500 },
-    );
+    return apiErrorResponse(error);
   }
-
-  if (!data) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: "Guest Feedback not found",
-          color: "error",
-        },
-      },
-      { status: 404 },
-    );
-  }
-
-  return NextResponse.json({
-    success: true,
-    message: {
-      title: "Success",
-      description: "Guest Feedback updated successfully",
-      color: "success",
-    },
-    data: data,
-  });
 }
 
-// DELETE
 export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
+    await deleteFeedbackById(id);
 
-  const { error } = await supabase.from(dbTable).delete().eq("id", id);
-
-  if (error) {
-    console.error("Delete error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "error",
-        },
-      },
-      { status: 404 },
+    return apiSuccess(
+      null,
+      apiMessage("Success", "Guest feedback deleted successfully", "success"),
+      200,
     );
+  } catch (error) {
+    console.error("Delete error:", error);
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "Success",
-        description: "Guest feedback deleted successfully",
-        color: "success",
-      },
-    },
-    { status: 200 },
-  );
 }

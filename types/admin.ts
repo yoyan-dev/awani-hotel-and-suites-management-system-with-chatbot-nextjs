@@ -15,7 +15,7 @@ export type AppMetadata = {
     | ["admin", "editor"]
     | ["front_office", "editor"]
     | ["housekeeping", "editor"]
-    | ["guest"];
+    | [];
   department?: string;
   permissions?: string[];
   provider?: string;

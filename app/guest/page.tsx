@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
-
 import Footer from "./_components/footer";
 import About from "./_components/sections/about-section";
 import AmenitiesSection from "./_components/sections/amenities-section";
@@ -12,14 +10,10 @@ import LocationPreviewSection from "./_components/sections/location-preview-sect
 import RestaurantFeaturedSection from "./_components/sections/restaurant-featured-section";
 import { RoomsCarousel } from "./_components/sections/room-carousel";
 import TestimonialsSection from "./_components/sections/testimonials/testimonial-section";
-import { useRoomTypes } from "@/hooks/use-room-types";
+import { useGuestHomePage } from "@/hooks/guest/use-guest-home-page";
 
 export default function GuestHomePage() {
-  const { room_types, isLoading, fetchRoomTypes } = useRoomTypes();
-
-  React.useEffect(() => {
-    fetchRoomTypes({});
-  }, []);
+  const { roomTypes, isLoading } = useGuestHomePage();
 
   return (
     <div className="min-h-screen">
@@ -27,7 +21,7 @@ export default function GuestHomePage() {
       <About />
       <AmenitiesSection />
       <RestaurantFeaturedSection />
-      <RoomsCarousel rooms={room_types} isLoading={isLoading} />
+      <RoomsCarousel rooms={roomTypes} isLoading={isLoading} />
       <TestimonialsSection />
       <GallerySection />
       <LocationPreviewSection />

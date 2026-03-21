@@ -1,76 +1,20 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import { listAvailableFunctionRooms } from "@/services/api/availability";
 import { ApiResponse } from "@/types/response";
-import { FunctionRoom } from "@/types/function-room";
-import { computeFunctionRoomAvailabilityByDate } from "@/lib/function-room/function-room-availability";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
-  const { searchParams } = new URL(req.url);
+  try {
+    const { searchParams } = new URL(req.url);
+    const data = await listAvailableFunctionRooms({
+      status: searchParams.get("status") || "",
+      start: searchParams.get("start") || "",
+      end: searchParams.get("end") || "",
+    });
 
-  const status = searchParams.get("status") || "";
-  const start = searchParams.get("start") || "";
-  const end = searchParams.get("end") || "";
-
-  let roomQuery = supabase.from("function_rooms").select("*");
-
-  if (status) {
-    roomQuery = roomQuery.eq("status", status);
+    return apiSuccess(data, apiMessage("Success", "", "success"), 200);
+  } catch (error) {
+    return apiErrorResponse(error);
   }
-
-  const { data: rooms, error } = await roomQuery;
-
-  if (error || !rooms) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Database Error",
-          description: error?.message ?? "Unknown error",
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
-  }
-
-  const roomsWithBookings = await Promise.all(
-    rooms.map(async (room) => {
-      const { data: bookings, error: bookingsError } = await supabase
-        .from("function_hall_bookings")
-        .select("*")
-        .eq("room_id", room.id);
-
-      if (bookingsError) {
-        console.error(
-          `Error fetching bookings for room ${room.id}:`,
-          bookingsError,
-        );
-        return { ...room, function_hall_bookings: [] };
-      }
-
-      return { ...room, function_hall_bookings: bookings || [] };
-    }),
-  );
-
-  const computedRooms =
-    start || end
-      ? computeFunctionRoomAvailabilityByDate(
-          roomsWithBookings as unknown as FunctionRoom[],
-          start,
-          end,
-        )
-      : roomsWithBookings;
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "Success",
-        description: "",
-        color: "success",
-      },
-      data: computedRooms,
-    },
-    { status: 200 },
-  );
 }

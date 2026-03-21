@@ -1,135 +1,56 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  createHousekeepingTask,
+  deleteHousekeepingTasks,
+  listHousekeepingTasks,
+} from "@/services/api/housekeeping";
 import { ApiResponse } from "@/types/response";
+import {
+  apiBulkDeleteSuccess,
+  apiMessage,
+  apiSuccess,
+} from "@/utils/api/responses";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
-  const { searchParams } = new URL(req.url);
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = Number(searchParams.get("page") || "1");
+    const limit = 10;
+    const result = await listHousekeepingTasks({
+      query: searchParams.get("q") || "",
+      status: searchParams.get("status") || "",
+      page,
+      limit,
+    });
 
-  const query = searchParams.get("q") || "";
-  const status = searchParams.get("status") || "";
-  const page = Number(searchParams.get("page") || "1");
-  const limit = 10;
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-
-  let q = supabase.from("housekeeping" as any).select("*", { count: "exact" });
-
-  if (query) {
-    q = q.or(`
-    message.ilike.%${query}%,
-    guest_name.ilike.%${query}%,
-    task_type.ilike.%${query}%
-  `);
+    return apiSuccess(result.data, apiMessage("success", "", "success"), 201, {
+      pagination: result.pagination,
+    });
+  } catch (error) {
+    console.error("Error fetching housekeeping tasks:", error);
+    return apiErrorResponse(error);
   }
-
-  if (status) {
-    q = q.eq("status", status);
-  }
-
-  const {
-    data: housekeepingTask,
-    error,
-    count,
-  } = await q.order("scheduled_time", { ascending: false }).range(from, to);
-
-  if (error) {
-    console.error("Error fetching housekeeping tasks:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
-  }
-
-  console.log("housekeeping tasks:", housekeepingTask);
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: housekeepingTask,
-      pagination: {
-        page,
-        limit,
-        total: count ?? 0,
-        total_pages: Math.ceil((count ?? 0) / limit),
-      },
-    },
-    { status: 201 },
-  );
 }
 
-// CREATE
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    const body = await req.json();
-    const { data, error } = await supabase
-      .from("housekeeping" as any)
-      .insert(body)
-      .select();
-
-    if (error) {
-      console.error("Supabase insert error:", error);
-      if (error.code === "23505") {
-        return NextResponse.json(
-          {
-            success: false,
-            message: {
-              title: "Error",
-              description: "Housekeeping task already exists.",
-              color: "danger",
-            },
-          },
-          { status: 400 },
-        );
-      }
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Housekeeping tasks successfully added.",
-          color: "success",
-        },
-        data: data[0],
-      },
-      { status: 201 },
+    const data = await createHousekeepingTask(
+      (await req.json()) as Record<string, unknown>,
     );
-  } catch (err: any) {
-    console.error("Unexpected error:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
+
+    return apiSuccess(
+      data,
+      apiMessage(
+        "Success",
+        "Housekeeping tasks successfully added.",
+        "success",
+      ),
+      201,
     );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return apiErrorResponse(error);
   }
 }
 
@@ -138,68 +59,11 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
-    const selectedValues: number[] | "all" = body.selectedValues;
+    const selectedValues = body.selectedValues as number[] | "all";
+    const data = await deleteHousekeepingTasks(selectedValues);
 
-    let query = supabase.from("housekeeping" as any).delete();
-
-    if (selectedValues === "all") {
-    } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues.map(String));
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: selectedValues,
-            color: "warning",
-          },
-        },
-        { status: 400 },
-      );
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete items.",
-            color: "error",
-          },
-          error: error.message,
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description:
-          selectedValues === "all"
-            ? "All items deleted successfully"
-            : "Selected items deleted successfully",
-        color: "success",
-      },
-      data,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "error",
-        },
-        error: err.message,
-      },
-      { status: 500 },
-    );
+    return apiBulkDeleteSuccess(selectedValues, data);
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }

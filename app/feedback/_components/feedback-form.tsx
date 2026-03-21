@@ -29,10 +29,11 @@ interface FeedbackFormProps {
 }
 
 const inputClassNames = {
-  label: "text-[#6b6153] font-medium",
-  input: "text-[#1f1e1b] placeholder:text-[#8a7f71]",
+  label: "text-[#6b6153] font-medium dark:text-[#cbb89e]",
+  input:
+    "text-[#1f1e1b] placeholder:text-[#8a7f71] dark:text-[#efe4d3] dark:placeholder:text-[#8e7b61]",
   inputWrapper:
-    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53]",
+    "border-[#dac7af] bg-[#fffaf3] group-data-[focus=true]:border-[#b08a53] dark:border-[#3a2f25] dark:bg-[#1b1510] dark:group-data-[focus=true]:border-[#d3a96e]",
 };
 
 export default function FeedbackForm({
@@ -47,11 +48,13 @@ export default function FeedbackForm({
   isLoading,
 }: FeedbackFormProps) {
   return (
-    <Card className="overflow-hidden rounded-4xl border border-[#e3d4c2] bg-[#fffdf9] shadow-[0_24px_60px_-40px_rgba(36,28,20,0.48)]">
+    <Card className="overflow-hidden rounded-4xl border border-[#e3d4c2] bg-[#fffdf9] shadow-[0_24px_60px_-40px_rgba(36,28,20,0.48)] dark:border-[#2f2419] dark:bg-[#15110c]">
       <CardBody className="p-6 sm:p-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           <section className="space-y-4">
-            <h2 className="font-serif text-2xl text-[#251f18]">Your Details</h2>
+            <h2 className="font-serif text-2xl text-[#251f18] dark:text-[#efe4d3]">
+              Your Details
+            </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 name="full_name"
@@ -71,10 +74,12 @@ export default function FeedbackForm({
             </div>
           </section>
 
-          <Divider className="bg-[#eadfce]" />
+          <Divider className="bg-[#eadfce] dark:bg-[#2a2218]" />
 
           <section className="space-y-4">
-            <h3 className="font-serif text-xl text-[#251f18]">Stay Details</h3>
+            <h3 className="font-serif text-xl text-[#251f18] dark:text-[#efe4d3]">
+              Stay Details
+            </h3>
             <div className="grid gap-4 sm:grid-cols-3">
               <Input
                 name="room_number"
@@ -104,10 +109,10 @@ export default function FeedbackForm({
             </div>
           </section>
 
-          <Divider className="bg-[#eadfce]" />
+          <Divider className="bg-[#eadfce] dark:bg-[#2a2218]" />
 
           <section className="space-y-5">
-            <h3 className="font-serif text-xl text-[#251f18]">
+            <h3 className="font-serif text-xl text-[#251f18] dark:text-[#efe4d3]">
               Overall Rating
             </h3>
             <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -127,7 +132,7 @@ export default function FeedbackForm({
                       "inline-flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 sm:h-12 sm:w-12",
                       active
                         ? "border-[#b08a53] bg-[#b08a53] text-white shadow-[0_12px_24px_-14px_rgba(98,68,30,0.75)]"
-                        : "border-[#d9c6ab] bg-[#fff8ee] text-[#a08f78] hover:border-[#c9ad86] hover:text-[#8b6a3e]",
+                        : "border-[#d9c6ab] bg-[#fff8ee] text-[#a08f78] hover:border-[#c9ad86] hover:text-[#8b6a3e] dark:border-[#3a2d20] dark:bg-[#1c150f] dark:text-[#b9a48a] dark:hover:border-[#8a6b3d] dark:hover:text-[#e0c8a5]",
                     )}
                     aria-label={`Rate ${value} star`}
                   >
@@ -141,11 +146,11 @@ export default function FeedbackForm({
             </div>
 
             {rating ? (
-              <p className="rounded-xl border border-[#e2d4bf] bg-[#fbf4e9] px-3 py-2 text-sm text-[#6e5535]">
+              <p className="rounded-xl border border-[#e2d4bf] bg-[#fbf4e9] px-3 py-2 text-sm text-[#6e5535] dark:border-[#3a2d20] dark:bg-[#1c150f] dark:text-[#e0c8a5]">
                 {ratingMessages[rating]}
               </p>
             ) : (
-              <p className="text-sm text-[#867560]">
+              <p className="text-sm text-[#867560] dark:text-[#b9a48a]">
                 Select a rating from 1 to 5.
               </p>
             )}
@@ -163,7 +168,7 @@ export default function FeedbackForm({
           </section>
 
           <section className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#7a6444]">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#7a6444] dark:text-[#bfa67f]">
               Recommendation
             </p>
             <RadioGroup
@@ -173,7 +178,9 @@ export default function FeedbackForm({
               onValueChange={(value) =>
                 setRecommend(value as RecommendationValue)
               }
-              classNames={{ label: "text-[#2d251c] font-medium" }}
+              classNames={{
+                label: "text-[#2d251c] font-medium dark:text-[#efe4d3]",
+              }}
             >
               <Radio value="yes">Yes</Radio>
               <Radio value="no">No</Radio>
@@ -184,7 +191,7 @@ export default function FeedbackForm({
             isLoading={isLoading}
             type="submit"
             radius="full"
-            className="h-12 w-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948]"
+            className="h-12 w-full bg-[#b08a53] font-semibold text-white hover:bg-[#9d7948] dark:bg-[#c29a60] dark:hover:bg-[#b48953]"
             isDisabled={!rating || !recommend}
           >
             Submit Feedback

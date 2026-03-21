@@ -90,7 +90,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
       </NavbarContent>
 
       <NavbarMenu>
-        {siteConfig.navItems.map((item: any) => {
+        {siteConfig.navAdminItems.map((item: any) => {
           const isActive = pathname === item.href;
           const isExpanded = expandedItem === item.label;
           const isLogoutItem = item.href === "/api/auth/signout";

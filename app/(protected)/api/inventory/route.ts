@@ -1,105 +1,39 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  createInventoryItem,
+  deleteInventoryItems,
+  listInventoryItems,
+} from "@/services/api/inventory";
 import { ApiResponse } from "@/types/response";
+import {
+  apiBulkDeleteSuccess,
+  apiMessage,
+  apiSuccess,
+} from "@/utils/api/responses";
 
 export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const { data: item, error } = await supabase.from("inventory").select("*");
-
-  if (error) {
-    console.error("Error fetching inventory:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+  try {
+    const data = await listInventoryItems();
+    return apiSuccess(data, apiMessage("success", "", "success"), 201);
+  } catch (error) {
+    console.error("Error fetching inventory:", error);
+    return apiErrorResponse(error);
   }
-
-  console.log("Inventory data:", item);
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: item || [],
-    },
-    { status: 201 },
-  );
 }
 
-// CREATE
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    const formData = await req.formData();
+    const data = await createInventoryItem(await req.formData());
 
-    const formObj = Object.fromEntries(formData.entries());
-    const newData = { ...formObj };
-    const { data, error } = await supabase
-      .from("inventory")
-      .insert([newData])
-      .select();
-
-    if (error) {
-      console.error("Supabase insert error:", error);
-      if (error.code === "23505") {
-        return NextResponse.json(
-          {
-            success: false,
-            message: {
-              title: "Error",
-              description: "Item already exists.",
-              color: "danger",
-            },
-          },
-          { status: 400 },
-        );
-      }
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Item successfully added.",
-          color: "success",
-        },
-        data: data[0],
-      },
-      { status: 201 },
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Item successfully added.", "success"),
+      201,
     );
-  } catch (err: any) {
-    console.error("Unexpected error:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return apiErrorResponse(error);
   }
 }
 
@@ -108,68 +42,11 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
-    const selectedValues: number[] | "all" = body.selectedValues;
+    const selectedValues = body.selectedValues as number[] | "all";
+    const data = await deleteInventoryItems(selectedValues);
 
-    let query = supabase.from("inventory").delete();
-
-    if (selectedValues === "all") {
-    } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues.map(String));
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: selectedValues,
-            color: "warning",
-          },
-        },
-        { status: 400 },
-      );
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete items.",
-            color: "error",
-          },
-          error: error.message,
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description:
-          selectedValues === "all"
-            ? "All items deleted successfully"
-            : "Selected items deleted successfully",
-        color: "success",
-      },
-      data,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "error",
-        },
-        error: err.message,
-      },
-      { status: 500 },
-    );
+    return apiBulkDeleteSuccess(selectedValues, data);
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }

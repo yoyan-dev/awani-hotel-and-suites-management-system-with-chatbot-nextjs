@@ -1,2 +1,1 @@
-export { default } from "../../../admin/settings/_components/account-avatar";
-
+export { default } from "../../../front-office/settings/_components/account-avatar";

@@ -1,132 +1,50 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  createFeedback,
+  deleteFeedback,
+  listFeedback,
+} from "@/services/api/feedback";
 import { ApiResponse } from "@/types/response";
-
-const dbTable = "feedback";
+import {
+  apiBulkDeleteSuccess,
+  apiMessage,
+  apiSuccess,
+} from "@/utils/api/responses";
 
 export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
-  const { searchParams } = new URL(req.url);
+  try {
+    const { searchParams } = new URL(req.url);
+    const page = Number(searchParams.get("page") || "1");
+    const limit = 10;
+    const result = await listFeedback({
+      query: searchParams.get("q") || "",
+      rating: searchParams.get("rating") || "0",
+      page,
+      limit,
+    });
 
-  const query = searchParams.get("q") || "";
-  const rating = searchParams.get("rating") || 0;
-  const page = Number(searchParams.get("page") || "1");
-  const limit = 10;
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-
-  let q = supabase.from(dbTable).select(`*`, { count: "exact" });
-
-  if (query) {
-    q = q.or(
-      `full_name.ilike.%${query}%,email.ilike.%${query}%,room_number.ilike.%${query}%,recommend.ilike.%${query}%,comments.ilike.%${query}%`,
-    );
+    return apiSuccess(result.data, apiMessage("success", "", "success"), 201, {
+      pagination: result.pagination,
+    });
+  } catch (error) {
+    console.error("Error fetching guest feedback:", error);
+    return apiErrorResponse(error);
   }
-
-  if (rating) {
-    q = q.gte("rating", Number(rating));
-  }
-
-  const { data, error, count } = await q
-    .range(from, to)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching guest feedback:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
-  }
-
-  console.log("guest feedback data:", data);
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: data || [],
-      pagination: {
-        page,
-        limit,
-        total: count ?? 0,
-        total_pages: Math.ceil((count ?? 0) / limit),
-      },
-    },
-    { status: 201 },
-  );
 }
 
-// CREATE
 export async function POST(req: Request): Promise<NextResponse<ApiResponse>> {
   try {
-    const formData = await req.formData();
+    const data = await createFeedback(await req.formData());
 
-    const formObj = Object.fromEntries(formData.entries());
-    const newData = {
-      full_name: String(formObj.full_name ?? ""),
-      email: String(formObj.email ?? ""),
-      room_number: String(formObj.room_number ?? ""),
-      check_in: String(formObj.check_in ?? ""),
-      check_out: String(formObj.check_out ?? ""),
-      comments: formObj.comments ? String(formObj.comments) : null,
-      rating: Number(formObj.rating),
-      recommend: String(formObj.recommend ?? ""),
-    };
-    console.log(newData);
-    const { data, error } = await supabase
-      .from(dbTable)
-      .insert(newData)
-      .select();
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Feedback successfully submitted.",
-          color: "success",
-        },
-        data: data[0],
-      },
-      { status: 201 },
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Feedback successfully submitted.", "success"),
+      201,
     );
-  } catch (err: any) {
-    console.error("Unexpected error:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return apiErrorResponse(error);
   }
 }
 
@@ -135,68 +53,11 @@ export async function DELETE(
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const body = await request.json();
-    const selectedValues: number[] | "all" = body.selectedValues;
+    const selectedValues = body.selectedValues as number[] | "all";
+    const data = await deleteFeedback(selectedValues);
 
-    let query = supabase.from(dbTable).delete();
-
-    if (selectedValues === "all") {
-    } else if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-      query = query.in("id", selectedValues.map(String));
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: selectedValues,
-            color: "warning",
-          },
-        },
-        { status: 400 },
-      );
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: "Failed to delete guest feedback.",
-            color: "error",
-          },
-          error: error.message,
-        },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description:
-          selectedValues === "all"
-            ? "All items deleted successfully"
-            : "Selected items deleted successfully",
-        color: "success",
-      },
-      data,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "error",
-        },
-        error: err.message,
-      },
-      { status: 500 },
-    );
+    return apiBulkDeleteSuccess(selectedValues, data);
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }

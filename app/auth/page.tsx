@@ -19,6 +19,35 @@ export default function Auth() {
     message: string;
   } | null>(null);
 
+  const getDeviceName = React.useCallback(() => {
+    if (typeof navigator === "undefined") return "Unknown Device";
+    const ua = navigator.userAgent.toLowerCase();
+
+    const os = ua.includes("windows")
+      ? "Windows"
+      : ua.includes("mac os") || ua.includes("macintosh")
+        ? "macOS"
+        : ua.includes("android")
+          ? "Android"
+          : ua.includes("iphone") || ua.includes("ipad")
+            ? "iOS"
+            : ua.includes("linux")
+              ? "Linux"
+              : "Unknown OS";
+
+    const browser = ua.includes("edg")
+      ? "Edge"
+      : ua.includes("chrome")
+        ? "Chrome"
+        : ua.includes("firefox")
+          ? "Firefox"
+          : ua.includes("safari")
+            ? "Safari"
+            : "Browser";
+
+    return `${os} - ${browser}`;
+  }, []);
+
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
@@ -40,7 +69,23 @@ export default function Auth() {
         ? session.user.roles
         : [];
 
+      if (session?.user?.id) {
+        try {
+          await fetch("/api/auth-logs/device", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              userId: session.user.id,
+              deviceName: getDeviceName(),
+            }),
+          });
+        } catch (error) {
+          console.error("Failed to capture device info:", error);
+        }
+      }
+
       if (roles.includes("admin")) router.push("/admin");
+      else if (roles.includes("front_office")) router.push("/front-office");
       else if (roles.includes("housekeeping")) router.push("/housekeeping");
       else router.push("/guest");
 

@@ -15,7 +15,14 @@ export const BOOKING_ACTIONS_BY_STATUS: BookingActionRules = {
 
   reserved: ["view", "assign", "checked_in", "summary"],
 
-  checked_in: ["view", "checked_out", "extend", "add_payment", "summary"],
+  checked_in: [
+    "view",
+    "checked_out",
+    "undo_check_in",
+    "extend",
+    "add_payment",
+    "summary",
+  ],
 
   checked_out: ["view", "summary", "add_payment"],
 

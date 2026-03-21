@@ -16,6 +16,12 @@ import { formatPHP } from "@/lib/format-php";
 import GuestForm from "./guest-form";
 import { BookingSpecialRequest } from "@/types/add-on";
 import BookingSummary from "./booking-summary";
+import GuestBreakdownFields from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/guest-breakdown-fields";
+import {
+  createGuestBreakdown,
+  formatGuestBreakdown,
+  getGuestBreakdownTotal,
+} from "@/lib/booking/guest-breakdown";
 
 interface BookingFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -98,7 +104,9 @@ export default function BookingForm({
 }: BookingFormProps) {
   const [policySignature, setPolicySignature] = useState("");
   const [isGuestIdVerified, setIsGuestIdVerified] = useState(false);
-  const [numberOfGuests, setNumberOfGuests] = useState("1");
+  const [guestBreakdown, setGuestBreakdown] = useState(() =>
+    createGuestBreakdown({ adult: 1 }),
+  );
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [previewData, setPreviewData] = useState({
     full_name: "",
@@ -112,6 +120,7 @@ export default function BookingForm({
     room_name: "",
     company: "",
     number_of_guests: "",
+    guest_breakdown: "",
   });
   const formRef = React.useRef<HTMLFormElement>(null);
   const minCheckInDate = React.useMemo(
@@ -127,6 +136,10 @@ export default function BookingForm({
   const selectedAddOns = React.useMemo(
     () => (summary?.specialRequests ?? []).filter((item) => item.quantity > 0),
     [summary],
+  );
+  const totalGuests = React.useMemo(
+    () => getGuestBreakdownTotal(guestBreakdown),
+    [guestBreakdown],
   );
 
   const readField = React.useCallback((name: string) => {
@@ -204,11 +217,11 @@ export default function BookingForm({
       return false;
     }
 
-    const guests = Number(readField("number_of_guests"));
+    const guests = totalGuests;
     if (!Number.isFinite(guests) || guests <= 0) {
       addToast({
         title: "Invalid Number of Guests",
-        description: "Please enter a valid number of guests.",
+        description: "Please provide at least one guest category.",
         color: "warning",
       });
       return false;
@@ -238,7 +251,8 @@ export default function BookingForm({
       checked_out: formatDateLabel(String(query.checkOut || "")),
       room_name: room?.name || "-",
       company: readField("company"),
-      number_of_guests: readField("number_of_guests"),
+      number_of_guests: String(totalGuests || ""),
+      guest_breakdown: formatGuestBreakdown(guestBreakdown),
     });
   }
 
@@ -481,20 +495,13 @@ export default function BookingForm({
           </div>
         ) : null}
 
-        <Input
-          variant="bordered"
-          isRequired
-          labelPlacement="outside"
-          value={numberOfGuests}
-          onChange={(e) => setNumberOfGuests(e.target.value)}
+        <GuestBreakdownFields
+          value={guestBreakdown}
+          onChange={setGuestBreakdown}
+          maxGuests={room?.max_guest}
           radius="lg"
-          type="number"
-          placeholder="0"
-          label="Number of Guests"
-          name="number_of_guests"
-          min={1}
-          max={room?.max_guest}
-          errorMessage={`Maximum guests allowed: ${room?.max_guest}`}
+          variant="bordered"
+          helperText="Specify guest like adult, child, infant, senior, PWD, or other."
         />
       </div>
 
@@ -523,8 +530,14 @@ export default function BookingForm({
             <p className="font-medium">{previewData.nationality || "-"}</p>
           </div>
           <div>
-            <p className="text-[#7a6f62]">Number of Guests</p>
-            <p className="font-medium">{previewData.number_of_guests || "-"}</p>
+            <p className="text-[#7a6f62]">Guests</p>
+            <p className="font-medium">
+              {previewData.number_of_guests
+                ? previewData.guest_breakdown
+                  ? `${previewData.number_of_guests} (${previewData.guest_breakdown})`
+                  : previewData.number_of_guests
+                : "-"}
+            </p>
           </div>
           <div>
             <p className="text-[#7a6f62]">Check-in</p>

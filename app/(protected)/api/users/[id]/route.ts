@@ -1,149 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import {
+  deleteUserById,
+  getUserRecordById,
+  updateUserById,
+} from "@/services/api/users-item";
 import { ApiResponse } from "@/types/response";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
-//Get [id]
 export async function GET(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
-  const { id } = await context.params;
+  try {
+    const { id } = await context.params;
+    const data = await getUserRecordById(id);
 
-  const { data: user, error } = await supabase
-    .from("users" as any)
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) {
-    console.error("Error fetching user:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+    return apiSuccess(data, apiMessage("success", "", "success"), 200);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return apiErrorResponse(error);
   }
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: user,
-    },
-    { status: 200 },
-  );
 }
 
-// UPDATE
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const { id } = await context.params;
-    const body = await req.json();
-
-    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(id, body);
-
-    if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: error.message,
-            color: "danger",
-          },
-        },
-        { status: 400 },
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: {
-        title: "Success",
-        description: "Account updated successfully",
-        color: "success",
-      },
-      data: data.user,
-    });
-  } catch (err: any) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: err.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
+    const data = await updateUserById(
+      id,
+      (await req.json()) as Record<string, unknown>,
     );
+
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Account updated successfully", "success"),
+    );
+  } catch (error) {
+    return apiErrorResponse(error);
   }
 }
 
-// DELETE
 export async function DELETE(
   _req: NextRequest,
   context: { params: Promise<{ id: string }> },
 ): Promise<NextResponse<ApiResponse>> {
   try {
     const { id } = await context.params;
+    const data = await deleteUserById(id);
 
-    // Delete user from Supabase Auth
-    const { data, error } = await supabaseAdmin.auth.admin.deleteUser(id);
-
-    if (error) {
-      console.error("Delete error:", error);
-      return NextResponse.json(
-        {
-          success: false,
-          message: {
-            title: "Error",
-            description: `DB Error: ${error.message}`,
-            color: "error",
-          },
-        },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: {
-          title: "Success",
-          description: "Account deleted successfully",
-          color: "success",
-        },
-        data: data,
-      },
-      { status: 200 },
+    return apiSuccess(
+      data,
+      apiMessage("Success", "Account deleted successfully", "success"),
+      200,
     );
-  } catch (err: any) {
-    console.error("Unexpected error:", err);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: `Api Error: ${err.message}`,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return apiErrorResponse(error);
   }
 }

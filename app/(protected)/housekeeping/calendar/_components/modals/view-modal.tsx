@@ -15,6 +15,7 @@ import { Copyright } from "lucide-react";
 
 import { useBookings } from "@/hooks/use-bookings";
 import { formatPHP } from "@/lib/format-php";
+import { formatBookingGuestSummary } from "@/lib/booking/guest-breakdown";
 
 interface ViewModalProps {
   data: any;
@@ -121,7 +122,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ data, isOpen, onClose }) => {
                     <div>
                       <p className="text-xs text-gray-400">Guests</p>
 
-                      <p>{booking.number_of_guests || 1}</p>
+                      <p>{formatBookingGuestSummary(booking)}</p>
                     </div>
                     <div>
                       <p className="text-xs text-gray-400">Purpose</p>

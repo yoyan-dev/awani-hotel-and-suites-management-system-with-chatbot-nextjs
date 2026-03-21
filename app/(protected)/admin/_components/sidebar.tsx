@@ -58,7 +58,7 @@ export default function AdminSidebar() {
         </div>
 
         <nav className="flex-1 px-2 mt-4 overflow-y-auto scrollbar-hide">
-          {siteConfig.navItems.map((item: any) => {
+          {siteConfig.navAdminItems.map((item: any) => {
             const isActive = pathname === item.href;
             const isExpanded = expandedItem === item.label;
             const isLogoutItem = item.href === "/api/auth/signout";

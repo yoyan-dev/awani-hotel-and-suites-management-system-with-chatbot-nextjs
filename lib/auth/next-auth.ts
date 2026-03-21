@@ -2,6 +2,25 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { supabase } from "@/lib/supabase/supabase-client";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+
+async function logAuthEvent(params: {
+  userId?: string | null;
+  email?: string | null;
+  role?: string | null;
+  eventType: "login" | "logout";
+}) {
+  try {
+    await supabaseAdmin.from("auth_activity_logs").insert({
+      user_id: params.userId ?? null,
+      email: params.email ?? null,
+      role: params.role ?? null,
+      event_type: params.eventType,
+    });
+  } catch (error) {
+    console.error("Failed to log auth activity:", error);
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -90,6 +109,38 @@ export const authOptions: NextAuthOptions = {
       }
 
       return session;
+    },
+  },
+  events: {
+    async signIn({ user }) {
+      const roles = Array.isArray((user as { roles?: string[] })?.roles)
+        ? (user as { roles?: string[] }).roles
+        : [];
+      await logAuthEvent({
+        userId: (user as { id?: string })?.id ?? null,
+        email: (user as { email?: string })?.email ?? null,
+        role: roles?.[0] ?? null,
+        eventType: "login",
+      });
+    },
+    async signOut({ token, session }) {
+      const sessionUser = session?.user as {
+        id?: string;
+        email?: string | null;
+        roles?: string[];
+      } | null;
+      const roles = Array.isArray(sessionUser?.roles)
+        ? sessionUser?.roles
+        : Array.isArray((token as { roles?: string[] })?.roles)
+          ? (token as { roles?: string[] }).roles
+          : [];
+      await logAuthEvent({
+        userId: sessionUser?.id ?? (token?.id as string | undefined) ?? null,
+        email:
+          sessionUser?.email ?? (token?.email as string | undefined) ?? null,
+        role: roles?.[0] ?? null,
+        eventType: "logout",
+      });
     },
   },
 };

@@ -9,11 +9,7 @@ export type UserMetadata = {
 };
 
 export type AppMetadata = {
-  roles?:
-    | ["admin", "editor"]
-    | ["housekeeping", "editor"]
-    | ["admin"]
-    | ["housekeeping"];
+  roles?: Array<"admin" | "housekeeping" | "front_office" | string>;
   department?: string;
   permissions?: string[];
   provider?: string;

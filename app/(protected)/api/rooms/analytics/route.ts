@@ -1,51 +1,15 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/supabase-client";
+import { apiErrorResponse } from "@/lib/api/error-response";
+import { getRoomStatusAnalytics } from "@/services/api/rooms-analytics";
 import { ApiResponse } from "@/types/response";
+import { apiMessage, apiSuccess } from "@/utils/api/responses";
 
 export async function GET(): Promise<NextResponse<ApiResponse>> {
-  const { data, error } = await supabase.from("rooms").select("status");
-
-  if (error) {
-    console.error("Error fetching rooms:", error.message);
-    return NextResponse.json(
-      {
-        success: false,
-        message: {
-          title: "Error",
-          description: error.message,
-          color: "danger",
-        },
-      },
-      { status: 500 },
-    );
+  try {
+    const data = await getRoomStatusAnalytics();
+    return apiSuccess(data, apiMessage("success", "", "success"), 200);
+  } catch (error) {
+    console.error("Error fetching rooms:", error);
+    return apiErrorResponse(error);
   }
-
-  const statusCounts = data?.reduce(
-    (acc, room) => {
-      const s = room.status;
-      if (s) {
-        acc[s] = (acc[s] || 0) + 1;
-      }
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-
-  const status = Object.entries(statusCounts).map(([name, count]) => ({
-    name,
-    count,
-  }));
-
-  return NextResponse.json(
-    {
-      success: true,
-      message: {
-        title: "success",
-        description: "",
-        color: "success",
-      },
-      data: status || [],
-    },
-    { status: 200 },
-  );
 }

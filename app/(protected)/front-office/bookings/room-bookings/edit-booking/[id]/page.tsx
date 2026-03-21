@@ -1,0 +1,169 @@
+"use client";
+import { Button, Form } from "@heroui/react";
+import { Copyright } from "lucide-react";
+import React from "react";
+import BookingDetailsSection from "./_components/booking-details-section";
+import GuestInfoSection from "./_components/guest-info-section";
+import { useBookings } from "@/hooks/use-bookings";
+import { useRoomTypes } from "@/hooks/use-room-types";
+import { useRooms } from "@/hooks/use-rooms";
+import { Booking } from "@/types/booking";
+import { useParams } from "next/navigation";
+import Header from "./_components/header";
+import { BookingSpecialRequest } from "@/types/add-on";
+import {
+  getGuestBreakdownTotal,
+  parseGuestBreakdown,
+} from "@/lib/booking/guest-breakdown";
+
+export default function EditBookingPage() {
+  const { id } = useParams();
+  const {
+    room_types,
+    isLoading: typesLoading,
+    fetchRoomTypes,
+  } = useRoomTypes();
+  const {
+    booking,
+    isLoading: bookingIsLoading,
+    error: bookingError,
+    fetchBooking,
+    updateBooking,
+  } = useBookings();
+  const {
+    available_rooms,
+    isLoading: roomLoading,
+    fetchAvailableRooms,
+  } = useRooms();
+  const [formData, setFormData] = React.useState<Booking>({} as Booking);
+  const [specialRequests, setSpecialRequests] = React.useState<
+    BookingSpecialRequest[]
+  >([]);
+
+  React.useEffect(() => {
+    if (id) {
+      fetchBooking(id as string);
+      fetchRoomTypes({});
+    }
+  }, [id]);
+
+  React.useEffect(() => {
+    setSpecialRequests(booking.special_requests || []);
+    setFormData(booking);
+  }, [booking]);
+
+  React.useEffect(() => {
+    if (formData?.room_type_id) {
+      fetchAvailableRooms({
+        roomTypeID: formData?.room_type_id,
+        checkIn: formData.checked_in,
+        checkOut: formData.checked_out,
+        isStatusSelected: true,
+      });
+    }
+  }, [formData?.room_type_id, formData?.checked_in, formData?.checked_out]);
+
+  React.useEffect(() => {
+    if (
+      formData?.room_type_id === booking.room_type_id &&
+      booking.special_requests?.length > 0
+    )
+      return;
+    const room = room_types.find((room) => room.id === formData?.room_type_id);
+    if (room?.room_type_add_ons && booking?.id) {
+      setSpecialRequests(
+        booking.special_requests?.length > 0
+          ? booking.special_requests
+          : room.room_type_add_ons.map((item: any) => ({
+              room_type_add_on_id: item.id,
+              add_on_id: item.add_on_id,
+              name: item.add_on?.name,
+              price: item.add_on?.price,
+              quantity: 0,
+              quantity_limit: item.quantity_limit,
+              remaining_quantity: item.remaining_quantity ?? item.quantity_limit,
+            })),
+      );
+    }
+  }, [formData?.room_type_id, booking]);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    try {
+      const guestBreakdown = parseGuestBreakdown(formData.guest_breakdown);
+      const totalGuests = guestBreakdown
+        ? getGuestBreakdownTotal(guestBreakdown)
+        : Number(formData.number_of_guests ?? 0);
+      const selectedRoomType = room_types.find(
+        (roomType) => roomType.id === formData.room_type_id,
+      );
+
+      if (!Number.isFinite(totalGuests) || totalGuests <= 0) {
+        throw new Error("Please provide at least one guest category.");
+      }
+
+      if (
+        selectedRoomType?.max_guest &&
+        totalGuests > Number(selectedRoomType.max_guest)
+      ) {
+        throw new Error(
+          `Maximum guests allowed for this room is ${selectedRoomType.max_guest}.`,
+        );
+      }
+
+      await updateBooking({
+        id: booking.id,
+        room_type_id: formData.room_type_id,
+        checked_in: formData.checked_in,
+        checked_out: formData.checked_out,
+        room_id: formData.room_id,
+        special_requests: specialRequests,
+        number_of_guests: totalGuests,
+        guest_breakdown: guestBreakdown,
+        status: formData.room_id ? "confirmed" : "pending",
+      } as Booking);
+    } catch (err: any) {
+      console.error("Failed to update booking", err);
+    }
+  }
+
+  return (
+    <>
+      {bookingIsLoading && formData.id ? (
+        <div>Loading...</div>
+      ) : (
+        <>
+          <Header />
+          <div className="flex-1 px-4 w-full space-y-4 py-4">
+            <GuestInfoSection guest={booking.user} />
+            <Form onSubmit={handleSubmit}>
+              <BookingDetailsSection
+                formData={formData}
+                setFormData={setFormData}
+                room_types={room_types}
+                rooms={available_rooms}
+                specialRequests={specialRequests}
+                setSpecialRequests={setSpecialRequests}
+                typesLoading={typesLoading}
+                roomLoading={roomLoading}
+              />
+              <div className="flex gap-4 justify-end w-full pb-4">
+                <Button
+                  type="submit"
+                  color="primary"
+                  radius="none"
+                  isLoading={bookingIsLoading}
+                >
+                  Submit
+                </Button>
+              </div>
+            </Form>
+          </div>
+          <div className="gap-1 w-full bg-primary flex justify-center items-center text-white text-sm font-thin py-2">
+            <Copyright size={10} /> Alright reserved Ma. Awani.
+          </div>
+        </>
+      )}
+    </>
+  );
+}
