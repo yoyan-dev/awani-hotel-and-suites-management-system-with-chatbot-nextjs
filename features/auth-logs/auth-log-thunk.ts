@@ -23,12 +23,12 @@ export const fetchAuthLogs = createAsyncThunk<
     const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
     const data = ((await res.json()) as AuthLogApiResponse) ?? {};
 
-    if (!res.ok || !data.success) {
-      if (data.message) addToast(data.message);
-      return rejectWithValue(
-        data.message?.description ?? "Failed to fetch auth logs",
-      );
-    }
+    // if (!res.ok || !data.success) {
+    //   if (data.message) addToast(data.message);
+    //   return rejectWithValue(
+    //     data.message?.description ?? "Failed to fetch auth logs",
+    //   );
+    // }
 
     return {
       data: data.data ?? [],
