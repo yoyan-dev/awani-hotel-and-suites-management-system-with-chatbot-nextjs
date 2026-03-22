@@ -105,7 +105,9 @@ export default function AddBookingPage() {
     e.preventDefault();
     try {
       const formData = new FormData(e.currentTarget);
-      const guestBreakdown = parseGuestBreakdown(formData.get("guest_breakdown"));
+      const guestBreakdown = parseGuestBreakdown(
+        formData.get("guest_breakdown"),
+      );
       const totalGuests = guestBreakdown
         ? getGuestBreakdownTotal(guestBreakdown)
         : Number(formData.get("number_of_guests") ?? 0);
@@ -179,7 +181,7 @@ export default function AddBookingPage() {
         });
         return;
       }
-      router.push("/admin/bookings/room-bookings");
+      router.push("/front-office/bookings/room-bookings");
     } catch (e: any) {
       addToast({
         title: "Error!",

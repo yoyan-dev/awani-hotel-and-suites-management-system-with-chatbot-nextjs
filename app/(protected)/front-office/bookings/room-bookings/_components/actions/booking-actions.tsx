@@ -99,7 +99,7 @@ export default function BookingActionsDropdown({
             <DropdownItem
               key="view"
               startContent={<Eye className="w-4 h-4" />}
-              href={`/admin/bookings/room-bookings/${booking.id}`}
+              href={`/front-office/bookings/room-bookings/${booking.id}`}
             >
               View Details
             </DropdownItem>
@@ -109,7 +109,7 @@ export default function BookingActionsDropdown({
             <DropdownItem
               key="edit"
               startContent={<Pencil className="w-4 h-4" />}
-              href={`/admin/bookings/room-bookings/edit-booking/${booking.id}`}
+              href={`/front-office/bookings/room-bookings/edit-booking/${booking.id}`}
             >
               Edit Booking
             </DropdownItem>
@@ -119,7 +119,7 @@ export default function BookingActionsDropdown({
             !booking.room_id ? (
               <DropdownItem
                 key="assign"
-                href={`/admin/bookings/room-bookings/assign-room/${booking.id}`}
+                href={`/front-office/bookings/room-bookings/assign-room/${booking.id}`}
                 startContent={<Bed className="w-4 h-4" />}
               >
                 Assign Room

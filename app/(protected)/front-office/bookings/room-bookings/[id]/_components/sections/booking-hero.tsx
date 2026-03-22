@@ -20,7 +20,7 @@ function RoomAssignmentActions({ booking }: { booking: Booking }) {
         <span>#{booking.room?.room_number}</span>
         <Link
           className="px-2 py-1 bg-primary text-white rounded-sm"
-          href={`/admin/bookings/room-bookings/${booking.id}`}
+          href={`/front-office/bookings/room-bookings/${booking.id}`}
         >
           Transfer room
         </Link>
