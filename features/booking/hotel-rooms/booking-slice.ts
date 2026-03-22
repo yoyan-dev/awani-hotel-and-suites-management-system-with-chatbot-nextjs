@@ -98,6 +98,11 @@ const bookingSlice = createSlice({
         (state, action: PayloadAction<Booking>) => {
           state.isLoading = false;
           state.error = undefined;
+          state.booking =
+            state.booking.id === action.payload.id ? action.payload : state.booking;
+          state.bookings = state.bookings.map((booking) =>
+            booking.id === action.payload.id ? action.payload : booking,
+          );
         }
       )
       .addCase(updateBooking.rejected, (state, action) => {

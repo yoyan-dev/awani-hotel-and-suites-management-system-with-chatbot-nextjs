@@ -20,8 +20,8 @@ export default function BookingDetailsPage() {
     return <div className="p-6">Loading...</div>;
   }
 
-  const handleDownloadPdf = () => {
-    downloadRoomBookingPdf({
+  const handleDownloadPdf = async () => {
+    await downloadRoomBookingPdf({
       booking,
       totalAmount,
     });

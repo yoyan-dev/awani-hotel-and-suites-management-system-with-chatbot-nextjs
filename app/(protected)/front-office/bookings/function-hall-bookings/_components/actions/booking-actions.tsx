@@ -110,7 +110,7 @@ export default function BookingActionsDropdown({
           <DropdownItem
             key="view"
             startContent={<Eye className="w-4 h-4" />}
-            href={`/admin/bookings/function-hall-bookings/${booking.id}`}
+            href={`/front-office/bookings/function-hall-bookings/${booking.id}`}
             color="primary"
           >
             View Details

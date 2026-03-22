@@ -74,7 +74,7 @@ export function BookingFilters({
       </Button>
       <Button
         as={Link}
-        href="/admin/bookings/room-bookings/add-booking"
+        href="/front-office/bookings/room-bookings/add-booking"
         color="primary"
         size="sm"
         startContent={<Plus className="w-4 h-4" />}

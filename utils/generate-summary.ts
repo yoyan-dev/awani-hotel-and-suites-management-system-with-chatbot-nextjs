@@ -2,10 +2,29 @@ import { Booking } from "@/types/booking";
 import { BookingSpecialRequest } from "@/types/add-on";
 import { calculateBookingPrice, getNights } from "./pricing";
 
+export type SummaryRequest = {
+  name: string;
+  price: string | number;
+  quantity: number;
+};
+
+export type BookingPaymentSummary = {
+  specialRequests: SummaryRequest[];
+  roomPrice: number;
+  totalAddOnsPrice: number;
+  nights: number;
+  totalPerNights: number;
+  total: number;
+  paymentMethod?: string | null;
+  amountPaid: number;
+  balance: number;
+  status: string;
+};
+
 export function generateSummary(
   booking: Booking,
   specialRequests: BookingSpecialRequest[],
-) {
+): BookingPaymentSummary {
   const amountPaid = booking.amount_paid ?? 0;
   const roomPrice = Number(booking.room_type?.price ?? 0);
 

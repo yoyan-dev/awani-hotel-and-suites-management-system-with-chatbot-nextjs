@@ -207,7 +207,7 @@ export const TableTopContent: React.FC<Props> = ({
           </Button>
           <Button
             as={Link}
-            href="/admin/bookings/function-hall-bookings/add-booking"
+            href="/front-office/bookings/function-hall-bookings/add-booking"
             color="primary"
             size="sm"
             startContent={<Plus size={16} />}

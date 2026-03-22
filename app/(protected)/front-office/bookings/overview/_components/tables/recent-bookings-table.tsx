@@ -49,7 +49,7 @@ export function RecentBookingsTable({
           action={
             <Button
               as={Link}
-              href="/admin/bookings/room-bookings/add-booking"
+              href="/front-office/bookings/room-bookings/add-booking"
               color="primary"
               size="sm"
             >
@@ -120,7 +120,7 @@ export function RecentBookingsTable({
         <div className="mt-4 text-center">
           <Button
             as={Link}
-            href="/admin/bookings/room-bookings"
+            href="/front-office/bookings/room-bookings"
             variant="flat"
             size="sm"
           >

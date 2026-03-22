@@ -12,7 +12,7 @@ export default function Header() {
       >
         <BreadcrumbItem
           startContent={<Bed size={14} />}
-          href="/admin/bookings/room-bookings"
+          href="/front-office/bookings/room-bookings"
         >
           Room Bookings
         </BreadcrumbItem>
