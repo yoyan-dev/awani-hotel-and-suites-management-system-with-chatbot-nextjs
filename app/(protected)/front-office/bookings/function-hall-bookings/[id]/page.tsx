@@ -28,10 +28,10 @@ export default function BookingDetailsPage() {
     updateStatus,
   } = useFunctionHallBookingDetails(bookingId);
 
-  const handleDownloadPdf = () => {
+  const handleDownloadPdf = async () => {
     if (!booking) return;
 
-    downloadFunctionHallBookingPdf({
+    await downloadFunctionHallBookingPdf({
       booking,
       totalAmount,
       amountPaid,
