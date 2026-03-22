@@ -1,7 +1,7 @@
+import React from "react";
 import {
   Button,
   Chip,
-  Pagination,
   Spinner,
   Table,
   TableBody,
@@ -11,27 +11,31 @@ import {
   TableRow,
 } from "@heroui/react";
 import { Eye } from "lucide-react";
-import { AuthLog } from "@/types/auth-log";
+import {
+  AuthLog,
+  AuthLogFetchParams,
+  AuthLogPagination,
+} from "@/types/auth-log";
+import AuthLogsTableTopContent from "./top-content";
+import AuthLogsTableBottomContent from "./bottom-content";
 
 interface AuthLogsTableProps {
   columns: { name: string; uid: string }[];
   logs: AuthLog[];
+  pagination: AuthLogPagination;
   isLoading: boolean;
-  total: number;
-  page: number;
-  setPage: (page: number) => void;
-  pages: number;
+  query: AuthLogFetchParams;
+  setQuery: React.Dispatch<React.SetStateAction<AuthLogFetchParams>>;
   onView: (log: AuthLog) => void;
 }
 
 export default function AuthLogsTable({
   columns,
   logs,
+  pagination,
   isLoading,
-  total,
-  page,
-  setPage,
-  pages,
+  query,
+  setQuery,
   onView,
 }: AuthLogsTableProps) {
   return (
@@ -40,12 +44,23 @@ export default function AuthLogsTable({
       classNames={{ wrapper: ["shadow-none", "dark:bg-gray-900", "p-0"] }}
       aria-label="Auth Logs Table"
       bottomContent={
-        <div className="flex w-full items-center justify-between py-2">
-          <span className="text-default-600 text-small">Total {total} events</span>
-          <Pagination page={page} total={pages} onChange={setPage} size="sm" />
-        </div>
+        (pagination.total_pages || 0) > 0 ? (
+          <AuthLogsTableBottomContent
+            pagination={pagination}
+            query={query}
+            setQuery={setQuery}
+          />
+        ) : null
       }
       bottomContentPlacement="outside"
+      topContent={
+        <AuthLogsTableTopContent
+          query={query}
+          total={pagination.total}
+          setQuery={setQuery}
+        />
+      }
+      topContentPlacement="outside"
     >
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
@@ -57,7 +72,14 @@ export default function AuthLogsTable({
         items={logs}
       >
         {(item) => (
-          <TableRow key={item.id}>
+          <TableRow
+            key={item.id}
+            className={
+              logs.indexOf(item) % 2 === 0
+                ? "bg-white dark:bg-gray-800"
+                : "bg-gray-100 dark:bg-gray-900"
+            }
+          >
             {(columnKey) => (
               <TableCell className="capitalize">
                 {columnKey === "event_at" ? (
@@ -76,6 +98,7 @@ export default function AuthLogsTable({
                     isIconOnly
                     size="sm"
                     color="primary"
+                    aria-label={`View log details for ${item.email ?? item.user_id ?? "this activity"}`}
                     onPress={() => onView(item)}
                   >
                     <Eye size={16} />

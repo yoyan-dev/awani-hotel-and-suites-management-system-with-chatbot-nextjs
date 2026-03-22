@@ -2,18 +2,15 @@
 
 import { useAdminAuthLogsPage } from "@/hooks/admin/use-admin-auth-logs-page";
 import Header from "./_components/header";
-import AuthLogsTable from "./_components/auth-logs-table";
-import AuthLogDetailsModal from "./_components/auth-log-details-modal";
+import AuthLogsTable from "./_components/table/auth-logs-table";
+import AuthLogDetailsModal from "./_components/modals/auth-log-details-modal";
 
 export default function AuthLogsPage() {
   const {
     columns,
     logs,
+    pagination,
     isLoading,
-    page,
-    setPage,
-    total,
-    pages,
     selectedLog,
     setSelectedLog,
     isViewOpen,
@@ -24,15 +21,14 @@ export default function AuthLogsPage() {
 
   return (
     <div className="p-2 bg-white dark:bg-gray-900 rounded space-y-4">
-      <Header query={query} setQuery={setQuery} setPage={setPage} />
+      <Header />
       <AuthLogsTable
         columns={columns}
         logs={logs}
+        pagination={pagination}
         isLoading={isLoading}
-        total={total}
-        page={page}
-        setPage={setPage}
-        pages={pages}
+        query={query}
+        setQuery={setQuery}
         onView={(log) => {
           setSelectedLog(log);
           setIsViewOpen(true);

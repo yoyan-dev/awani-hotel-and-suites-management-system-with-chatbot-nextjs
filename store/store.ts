@@ -14,6 +14,7 @@ import analyticsReducer from "@/features/analytics/analytics-slice";
 import roomReportReducer from "@/features/room-reports/room-report-slice";
 import notificationReducer from "@/features/notifications/notification-slice";
 import feedbackReducer from "@/features/feedback/feedback-slice";
+import authLogReducer from "@/features/auth-logs/auth-log-slice";
 
 export const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ export const store = configureStore({
     room_reports: roomReportReducer,
     notifications: notificationReducer,
     feedback: feedbackReducer,
+    auth_logs: authLogReducer,
   },
 });
 
