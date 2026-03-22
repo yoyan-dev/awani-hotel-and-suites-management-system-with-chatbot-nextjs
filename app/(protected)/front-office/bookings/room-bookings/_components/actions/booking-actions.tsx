@@ -42,20 +42,20 @@ export default function BookingActionsDropdown({
   const [undoCheckInOpen, setUndoCheckInOpen] = React.useState(false);
 
   const [paymentDetail, setPaymentDetail] = React.useState({
-    method: "pending",
+    method: booking.payment_method || "cash",
     amountPaid: 0,
   });
 
   const summary = React.useMemo(() => {
-    return generateSummary(
-      {
-        ...booking,
-        payment_method: paymentDetail.method,
-        amount_paid: paymentDetail.amountPaid,
-      },
-      booking.special_requests,
-    );
-  }, [booking, paymentDetail]);
+    return generateSummary(booking, booking.special_requests);
+  }, [booking]);
+
+  React.useEffect(() => {
+    setPaymentDetail({
+      method: booking.payment_method || "cash",
+      amountPaid: 0,
+    });
+  }, [booking.id, booking.payment_method]);
 
   return booking.status !== "checked_out" ||
     booking.payment_status !== "paid" ? (
