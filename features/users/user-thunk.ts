@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { User, UserFormData } from "@/types/users";
 import { addToast } from "@heroui/react";
@@ -8,7 +9,7 @@ export const fetchUsers = createAsyncThunk<User[]>(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await apiFetch(apiUrl);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -28,7 +29,7 @@ export const fetchUser = createAsyncThunk<User, string>(
   "users/fetchUser",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -53,7 +54,7 @@ export const addUser = createAsyncThunk<User, FormData>(
   "users/addUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -82,7 +83,7 @@ export const updateUser = createAsyncThunk<User, User, { rejectValue: string }>(
   "users/updateUser",
   async (user, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${user.id}`, {
+      const res = await apiFetch(`${apiUrl}/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(user),
@@ -116,7 +117,7 @@ export const updateUserProfile = createAsyncThunk<
   { rejectValue: string }
 >("users/updateUserProfile", async (user, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${apiUrl}/update-profile`, {
+    const res = await apiFetch(`${apiUrl}/update-profile`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
@@ -147,7 +148,7 @@ export const deleteUser = createAsyncThunk<string, string>(
   "users/deleteUser",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -181,7 +182,7 @@ export const deleteSelectedUser = createAsyncThunk<
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch(apiUrl, {
+    const res = await apiFetch(apiUrl, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -201,4 +202,5 @@ export const deleteSelectedUser = createAsyncThunk<
     return thunkAPI.rejectWithValue(err.message);
   }
 });
+
 

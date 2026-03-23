@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Inventory } from "@/types/inventory";
 import { addToast } from "@heroui/react";
@@ -8,7 +9,7 @@ export const fetchInventory = createAsyncThunk<Inventory[]>(
   "inventory/fetchInventory",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await apiFetch(apiUrl);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -28,7 +29,7 @@ export const fetchInventoryItem = createAsyncThunk<Inventory, string>(
   "inventory/fetchInventoryItem",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -53,7 +54,7 @@ export const addItem = createAsyncThunk<Inventory, FormData>(
   "inventory/addItem",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -84,7 +85,7 @@ export const UpdateItem = createAsyncThunk<
   { rejectValue: string }
 >("inventory/UpdateItem", async (inventory, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${apiUrl}/${inventory.id}`, {
+    const res = await apiFetch(`${apiUrl}/${inventory.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(inventory),
@@ -115,7 +116,7 @@ export const deleteItem = createAsyncThunk<string, string>(
   "inventory/deleteItem",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -149,7 +150,7 @@ export const deleteSelectedItems = createAsyncThunk<
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch(apiUrl, {
+    const res = await apiFetch(apiUrl, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -169,3 +170,4 @@ export const deleteSelectedItems = createAsyncThunk<
     return thunkAPI.rejectWithValue(err.message);
   }
 });
+

@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import { User } from "@/types/users";
@@ -8,7 +9,7 @@ export const getCurrentUser = createAsyncThunk<User>(
   "auth/getCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await apiFetch(apiUrl);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -25,7 +26,7 @@ export const createAccount = createAsyncThunk<User, FormData>(
   "auth/createAccount",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -54,7 +55,7 @@ export const updateAccount = createAsyncThunk<
   { rejectValue: string }
 >("auth/updateAccount", async (booking, { rejectWithValue }) => {
   try {
-    const res = await fetch(apiUrl, {
+    const res = await apiFetch(apiUrl, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(booking),
@@ -83,7 +84,7 @@ export const updateAccount = createAsyncThunk<
 //   "auth/deleteBooking",
 //   async (id, { rejectWithValue }) => {
 //     try {
-//       const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+//       const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
 //       const data = await res.json();
 
 //       addToast(data.message);
@@ -104,3 +105,4 @@ export const updateAccount = createAsyncThunk<
 //     }
 //   }
 // );
+

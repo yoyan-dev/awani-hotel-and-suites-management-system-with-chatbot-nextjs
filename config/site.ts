@@ -137,6 +137,12 @@ export const siteConfig = {
     //   icon: Users,
     // },
     {
+      label: "Account Management",
+      href: "/front-office/accounts",
+      isExpandable: false,
+      icon: ShieldUser,
+    },
+    {
       label: "Settings",
       href: "/front-office/settings",
       isExpandable: false,

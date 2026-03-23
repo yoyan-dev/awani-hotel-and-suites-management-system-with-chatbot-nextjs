@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -52,7 +53,7 @@ export const bookingAnalytics = createAsyncThunk<
       searchParams.append("limit", params.limit.toString());
     }
 
-    const res = await fetch(`${apiUrl}/bookings?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/bookings?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -101,7 +102,7 @@ export const functionHallAnalytics = createAsyncThunk<
       searchParams.append("limit", params.limit.toString());
     }
 
-    const res = await fetch(
+    const res = await apiFetch(
       `${apiUrl}/function-hall-bookings?${searchParams.toString()}`,
     );
     const response = await res.json();
@@ -146,7 +147,7 @@ export const roomAnalytics = createAsyncThunk<
       searchParams.append("limit", params.limit.toString());
     }
 
-    const res = await fetch(`${apiUrl}/rooms?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/rooms?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -186,7 +187,7 @@ export const functionRoomAnalytics = createAsyncThunk<
       searchParams.append("limit", params.limit.toString());
     }
 
-    const res = await fetch(
+    const res = await apiFetch(
       `${apiUrl}/function-rooms?${searchParams.toString()}`,
     );
     const response = await res.json();
@@ -225,7 +226,7 @@ export const getDashboardSummary = createAsyncThunk<
       searchParams.append("end", params.end);
     }
 
-    const res = await fetch(`${apiUrl}/dashboard?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/dashboard?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -289,7 +290,7 @@ export const fetchPaginatedBookings = createAsyncThunk<
       searchParams.append("sort_order", params.sort_order);
     }
 
-    const res = await fetch(`${apiUrl}/bookings?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/bookings?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -342,7 +343,7 @@ export const fetchPaginatedFunctionHallBookings = createAsyncThunk<
         searchParams.append("sort_order", params.sort_order);
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${apiUrl}/function-hall-bookings?${searchParams.toString()}`,
       );
       const response = await res.json();
@@ -394,7 +395,7 @@ export const fetchPaginatedRooms = createAsyncThunk<
       searchParams.append("sort_order", params.sort_order);
     }
 
-    const res = await fetch(`${apiUrl}/rooms?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/rooms?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -441,7 +442,7 @@ export const fetchPaginatedFunctionRooms = createAsyncThunk<
         searchParams.append("sort_order", params.sort_order);
       }
 
-      const res = await fetch(
+      const res = await apiFetch(
         `${apiUrl}/function-rooms?${searchParams.toString()}`,
       );
       const response = await res.json();
@@ -500,7 +501,7 @@ export const fetchBookingOverview = createAsyncThunk<
       searchParams.append("sort_order", params.sort_order);
     }
 
-    const res = await fetch(`${apiUrl}/overview?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/overview?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -521,3 +522,4 @@ export const fetchBookingOverview = createAsyncThunk<
     return rejectWithValue("Failed to fetch booking overview");
   }
 });
+
