@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -27,7 +28,7 @@ export const fetchBookings = createAsyncThunk<
       }
       if (params?.status) searchParams.append("status", params.status);
 
-      const res = await fetch(`${apiUrl}?${searchParams}`);
+      const res = await apiFetch(`${apiUrl}?${searchParams}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -50,7 +51,7 @@ export const fetchBooking = createAsyncThunk<FunctionHallBooking, string>(
   "function-hall-booking/fetchBooking",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -75,7 +76,7 @@ export const addBooking = createAsyncThunk<FunctionHallBooking, FormData>(
   "function-hall-booking/addBooking",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -108,7 +109,7 @@ export const updateBooking = createAsyncThunk<
   "function-hall-booking/updateBooking",
   async (booking, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${booking.id}`, {
+      const res = await apiFetch(`${apiUrl}/${booking.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(booking),
@@ -140,7 +141,7 @@ export const deleteBooking = createAsyncThunk<string, string>(
   "function-hall-booking/deleteBooking",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -176,7 +177,7 @@ export const deleteSelectedBooking = createAsyncThunk<
           ? { selectedValues: "all" }
           : { selectedValues: Array.from(selectedValues) };
 
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -197,3 +198,4 @@ export const deleteSelectedBooking = createAsyncThunk<
     }
   },
 );
+

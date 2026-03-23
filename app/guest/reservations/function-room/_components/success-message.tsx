@@ -16,6 +16,9 @@ export default function SuccessMessage() {
             <br />
             Our events team will contact you shortly for confirmation.
             <br />
+            Kindly note that this serves as a pencil booking only and is subject
+            to confirmation.
+            <br />
             Thank you for choosing Awani Hotel & Suites.
             <br />
             <br />

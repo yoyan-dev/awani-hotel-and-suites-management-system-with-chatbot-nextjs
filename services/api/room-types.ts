@@ -1,5 +1,6 @@
 import { ROOM_TYPE_ADD_ONS_SELECT } from "@/lib/add-ons/selects";
 import { ApiRouteError } from "@/lib/api/route-error";
+import { normalizeRoomTypeAmenityName } from "@/lib/room-types/amenities";
 import { supabase } from "@/lib/supabase/supabase-client";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 
@@ -8,6 +9,14 @@ export type RoomTypeAddOnPayload = {
   inventory_id?: string;
   add_on_id?: string;
   quantity_limit: number;
+};
+
+export type RoomTypeAmenityPayload = {
+  name?: string;
+  amenity?: {
+    id?: string;
+    name?: string | null;
+  } | null;
 };
 
 type ListRoomTypesParams = {
@@ -75,6 +84,82 @@ export async function upsertRoomTypeAddOns(
   }
 }
 
+function extractRoomTypeAmenityNames(payload: RoomTypeAmenityPayload[]) {
+  const deduped = new Map<string, string>();
+
+  for (const item of payload) {
+    const normalized = normalizeRoomTypeAmenityName(
+      String(item.name ?? item.amenity?.name ?? ""),
+    );
+
+    if (!normalized) continue;
+
+    const key = normalized.toLowerCase();
+    if (!deduped.has(key)) {
+      deduped.set(key, normalized);
+    }
+  }
+
+  return Array.from(deduped.values());
+}
+
+export async function replaceRoomTypeAmenities(
+  roomTypeId: string,
+  payload: RoomTypeAmenityPayload[],
+) {
+  const amenityNames = extractRoomTypeAmenityNames(payload);
+
+  const { error: deleteError } = await supabase
+    .from("room_type_amenities")
+    .delete()
+    .eq("room_type_id", roomTypeId);
+
+  if (deleteError) {
+    throw new ApiRouteError(deleteError.message);
+  }
+
+  if (amenityNames.length === 0) {
+    return;
+  }
+
+  const { error: upsertAmenityError } = await supabase
+    .from("amenities")
+    .upsert(amenityNames.map((name) => ({ name })), { onConflict: "name" });
+
+  if (upsertAmenityError) {
+    throw new ApiRouteError(upsertAmenityError.message);
+  }
+
+  const { data: amenities, error: selectAmenitiesError } = await supabase
+    .from("amenities")
+    .select("id, name")
+    .in("name", amenityNames);
+
+  if (selectAmenitiesError) {
+    throw new ApiRouteError(selectAmenitiesError.message);
+  }
+
+  const links = (amenities ?? [])
+    .map((item) => item.id)
+    .filter((id): id is string => Boolean(id))
+    .map((amenityId) => ({
+      room_type_id: roomTypeId,
+      amenity_id: amenityId,
+    }));
+
+  if (links.length === 0) {
+    return;
+  }
+
+  const { error: insertLinkError } = await supabase
+    .from("room_type_amenities")
+    .insert(links);
+
+  if (insertLinkError) {
+    throw new ApiRouteError(insertLinkError.message);
+  }
+}
+
 export async function listRoomTypes({
   query = "",
   maxGuest = "",
@@ -107,6 +192,9 @@ export async function createRoomType(formData: FormData) {
   const roomTypeAddOns = JSON.parse(
     String(formObj.room_type_add_ons ?? "[]"),
   ) as RoomTypeAddOnPayload[];
+  const roomTypeAmenities = JSON.parse(
+    String(formObj.amenities ?? "[]"),
+  ) as RoomTypeAmenityPayload[];
 
   const uploads =
     images.length > 0
@@ -126,6 +214,7 @@ export async function createRoomType(formData: FormData) {
   };
 
   delete (newData as Record<string, unknown>).room_type_add_ons;
+  delete (newData as Record<string, unknown>).amenities;
   delete (newData as Record<string, unknown>).images;
   delete (newData as Record<string, unknown>).image;
 
@@ -153,6 +242,10 @@ export async function createRoomType(formData: FormData) {
     await upsertRoomTypeAddOns(data.id, roomTypeAddOns);
   }
 
+  if (roomTypeAmenities.length) {
+    await replaceRoomTypeAmenities(data.id, roomTypeAmenities);
+  }
+
   return getRoomTypeById(data.id);
 }
 
@@ -176,15 +269,21 @@ export async function updateRoomTypeById(
 ) {
   const hasRoomTypeAddOns = Array.isArray(body.room_type_add_ons);
   const roomTypeAddOns = (body.room_type_add_ons ?? []) as RoomTypeAddOnPayload[];
+  const hasAmenities = Array.isArray(body.amenities);
+  const roomTypeAmenities = (body.amenities ?? []) as RoomTypeAmenityPayload[];
   const updateBody = { ...body };
 
   delete updateBody.room_type_add_ons;
+  delete updateBody.amenities;
 
   if (Array.isArray(updateBody.images)) {
     updateBody.image = updateBody.images[0] ?? updateBody.image ?? "";
   }
 
-  const { error } = await supabase.from("room_types").update(updateBody).eq("id", id);
+  const { error } = await supabase
+    .from("room_types")
+    .update(updateBody)
+    .eq("id", id);
 
   if (error) {
     throw new ApiRouteError(error.message, {
@@ -195,6 +294,10 @@ export async function updateRoomTypeById(
 
   if (hasRoomTypeAddOns) {
     await upsertRoomTypeAddOns(id, roomTypeAddOns);
+  }
+
+  if (hasAmenities) {
+    await replaceRoomTypeAmenities(id, roomTypeAmenities);
   }
 
   const data = await getRoomTypeById(id);
@@ -210,6 +313,26 @@ export async function updateRoomTypeById(
 }
 
 export async function deleteRoomTypeById(id: string) {
+  const { data: amenityLinks, error: amenityLinkError } = await supabase
+    .from("room_type_amenities")
+    .select("id")
+    .eq("room_type_id", id);
+
+  if (amenityLinkError) {
+    throw new ApiRouteError(amenityLinkError.message, { color: "error" });
+  }
+
+  if ((amenityLinks ?? []).length > 0) {
+    const { error } = await supabase
+      .from("room_type_amenities")
+      .delete()
+      .eq("room_type_id", id);
+
+    if (error) {
+      throw new ApiRouteError(error.message, { color: "error" });
+    }
+  }
+
   const { data: links, error: linkError } = await supabase
     .from("room_type_add_ons")
     .select("id")

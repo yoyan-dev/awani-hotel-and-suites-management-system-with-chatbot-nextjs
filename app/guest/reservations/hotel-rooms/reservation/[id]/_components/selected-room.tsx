@@ -1,10 +1,11 @@
 import React from "react";
 import { Image, Spinner } from "@heroui/react";
-import { Bed, Tv, UserCircle, Wifi } from "lucide-react";
+import { Ruler, UserCircle } from "lucide-react";
 
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
 import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 interface SelectedRoomProps {
   room: RoomType;
@@ -64,14 +65,11 @@ const SelectedRoom: React.FC<SelectedRoomProps> = ({ room, isLoading }) => {
             <UserCircle size={16} /> {room.max_guest} Guests
           </span>
           <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
-            <Bed size={16} /> Queen Bed
+            <Ruler size={16} /> {room.room_size}
           </span>
-          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
-            <Wifi size={16} /> Free WiFi
-          </span>
-          <span className="inline-flex items-center gap-2 rounded-xl bg-[#f2e8d9] px-3 py-2">
-            <Tv size={16} /> Smart TV
-          </span>
+        </div>
+        <div className="mt-3">
+          <RoomTypeAmenities amenities={room.amenities} maxItems={6} />
         </div>
       </div>
     </aside>

@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Notification } from "@/types/notification";
 import { addToast } from "@heroui/react";
@@ -21,7 +22,7 @@ export const fetchNotificationsPage = createAsyncThunk<
       page: String(args.page),
       limit: String(args.limit),
     });
-    const res = await fetch(`${apiUrl}?${params.toString()}`);
+    const res = await apiFetch(`${apiUrl}?${params.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -53,7 +54,7 @@ export const fetchNotifications = createAsyncThunk<Notification[]>(
   "notifications/fetchNotifications",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await apiFetch(apiUrl);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -79,7 +80,7 @@ export const fetchNotification = createAsyncThunk<Notification, string>(
   "notifications/fetchNotification",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -105,7 +106,7 @@ export const addNotification = createAsyncThunk<Notification, Notification>(
   "notifications/addNotification",
   async (notification, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(notification),
@@ -140,7 +141,7 @@ export const UpdateNotification = createAsyncThunk<
   "notifications/UpdateNotification",
   async (notification, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${notification.id}`, {
+      const res = await apiFetch(`${apiUrl}/${notification.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(notification),
@@ -166,7 +167,7 @@ export const deleteNotification = createAsyncThunk<string, string>(
   "notifications/deleteNotification",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
       addToast(data.message);
 
@@ -193,7 +194,7 @@ export const deleteSelectedNotifications = createAsyncThunk<Notification[]>(
   "notifications/fetchNotifications",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -214,3 +215,4 @@ export const deleteSelectedNotifications = createAsyncThunk<Notification[]>(
     }
   },
 );
+

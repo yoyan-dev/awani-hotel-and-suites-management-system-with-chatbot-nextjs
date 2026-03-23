@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -23,7 +24,7 @@ export const fetchRoomReports = createAsyncThunk<
       searchParams.append("report_type", params.report_type);
     if (params?.status) searchParams.append("status", params.status);
 
-    const res = await fetch(`${path}?${searchParams.toString()}`);
+    const res = await apiFetch(`${path}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -44,7 +45,7 @@ export const fetchRoomReport = createAsyncThunk<RoomReport, string>(
   "roomReports/fetchRoomReport",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${path}/${id}`);
+      const res = await apiFetch(`${path}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -69,7 +70,7 @@ export const addRoomReport = createAsyncThunk<RoomReport, FormData>(
   "roomReports/addRoomReport",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(path, {
+      const res = await apiFetch(path, {
         method: "POST",
         body: formData,
       });
@@ -100,7 +101,7 @@ export const updateRoomReport = createAsyncThunk<
   { rejectValue: string }
 >("roomReports/updateRoomReport", async (room, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${path}/${room.id}`, {
+    const res = await apiFetch(`${path}/${room.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(room),
@@ -131,7 +132,7 @@ export const deleteRoomReport = createAsyncThunk<string, string>(
   "roomReports/deleteRoomReport",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${path}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${path}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -165,7 +166,7 @@ export const deleteRoomReports = createAsyncThunk<
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch(path, {
+    const res = await apiFetch(path, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -185,3 +186,4 @@ export const deleteRoomReports = createAsyncThunk<
     return thunkAPI.rejectWithValue(err.message);
   }
 });
+

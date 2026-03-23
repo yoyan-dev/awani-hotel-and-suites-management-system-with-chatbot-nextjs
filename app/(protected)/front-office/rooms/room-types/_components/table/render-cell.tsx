@@ -16,6 +16,7 @@ import { RoomType } from "@/types/room";
 import { formatPHP } from "@/lib/format-php";
 import ViewAddOns from "../popover/view-add-ons";
 import ViewModal from "../modals/view-modal";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 interface RenderCellProps {
   room_type: RoomType;
@@ -59,6 +60,14 @@ export const RenderCell: React.FC<RenderCellProps> = ({
         <ViewAddOns addOns={room_type.room_type_add_ons ?? []} />
       ) : (
         "no add ons"
+      );
+    case "amenities":
+      return (
+        <RoomTypeAmenities
+          amenities={room_type.amenities}
+          maxItems={2}
+          emptyLabel="no amenities"
+        />
       );
     case "price":
       return formatPHP(Number(room_type.price));

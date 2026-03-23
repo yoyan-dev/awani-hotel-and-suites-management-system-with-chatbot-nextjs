@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -20,7 +21,7 @@ export const fetchAuthLogs = createAsyncThunk<
     if (params?.query) searchParams.append("q", params.query);
     if (params?.userId) searchParams.append("userId", params.userId);
 
-    const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}?${searchParams.toString()}`);
     const data = ((await res.json()) as AuthLogApiResponse) ?? {};
 
     // if (!res.ok || !data.success) {
@@ -48,3 +49,4 @@ export const fetchAuthLogs = createAsyncThunk<
     return rejectWithValue(error.message);
   }
 });
+

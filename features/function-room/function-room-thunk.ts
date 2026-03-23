@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -18,7 +19,7 @@ export const fetchFunctionRooms = createAsyncThunk<
     if (params?.query) searchParams.append("q", params.query);
     if (params?.status) searchParams.append("status", params.status);
 
-    const res = await fetch(`${path}?${searchParams.toString()}`);
+    const res = await apiFetch(`${path}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -39,7 +40,7 @@ export const fetchFunctionRoom = createAsyncThunk<FunctionRoom, string>(
   "room/fetchFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${path}/${id}`);
+      const res = await apiFetch(`${path}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -84,7 +85,7 @@ export const fetchAvailableFunctionRooms = createAsyncThunk<
       searchParams.append("end", serializedEnd);
     }
 
-    const res = await fetch(
+    const res = await apiFetch(
       `${path}/available-rooms?${searchParams.toString()}`,
     );
     const data = await res.json();
@@ -104,7 +105,7 @@ export const addFunctionRoom = createAsyncThunk<FunctionRoom, FormData>(
   "room/addFunctionRoom",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(path, {
+      const res = await apiFetch(path, {
         method: "POST",
         body: formData,
       });
@@ -135,7 +136,7 @@ export const updateFunctionRoom = createAsyncThunk<
   { rejectValue: string }
 >("room/updateFunctionRoom", async (room, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${path}/${room.id}`, {
+    const res = await apiFetch(`${path}/${room.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(room),
@@ -166,7 +167,7 @@ export const deleteFunctionRoom = createAsyncThunk<string, string>(
   "room/deleteFunctionRoom",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${path}/${id}`, {
+      const res = await apiFetch(`${path}/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -204,7 +205,7 @@ export const deleteFunctionRooms = createAsyncThunk<
           ? { selectedValues: "all" }
           : { selectedValues: Array.from(selectedValues) };
 
-      const res = await fetch(path, {
+      const res = await apiFetch(path, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -225,3 +226,4 @@ export const deleteFunctionRooms = createAsyncThunk<
     }
   },
 );
+

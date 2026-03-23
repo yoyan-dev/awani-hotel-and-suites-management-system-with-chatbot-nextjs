@@ -391,6 +391,24 @@ export type Database = {
         };
         Relationships: [];
       };
+      amenities: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [];
+      };
       room_type_add_ons: {
         Row: {
           created_at: string;
@@ -423,6 +441,42 @@ export type Database = {
           },
           {
             foreignKeyName: "room_type_add_ons_room_type_id_fkey";
+            columns: ["room_type_id"];
+            isOneToOne: false;
+            referencedRelation: "room_types";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      room_type_amenities: {
+        Row: {
+          amenity_id: string | null;
+          created_at: string;
+          id: string;
+          room_type_id: string | null;
+        };
+        Insert: {
+          amenity_id?: string | null;
+          created_at?: string;
+          id?: string;
+          room_type_id?: string | null;
+        };
+        Update: {
+          amenity_id?: string | null;
+          created_at?: string;
+          id?: string;
+          room_type_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "room_type_amenities_amenity_id_fkey";
+            columns: ["amenity_id"];
+            isOneToOne: false;
+            referencedRelation: "amenities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "room_type_amenities_room_type_id_fkey";
             columns: ["room_type_id"];
             isOneToOne: false;
             referencedRelation: "room_types";

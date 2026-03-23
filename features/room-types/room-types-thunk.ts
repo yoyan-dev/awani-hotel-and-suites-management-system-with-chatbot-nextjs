@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { FetchRoomTypesParams, RoomType } from "@/types/room";
 import { addToast } from "@heroui/react";
@@ -13,7 +14,7 @@ export const fetchRoomTypes = createAsyncThunk<
     if (params?.query) searchParams.append("q", params.query);
     if (params?.maxGuest)
       searchParams.append("maxGuest", params.maxGuest.toString());
-    const res = await fetch(`${apiUrl}?${searchParams}`);
+    const res = await apiFetch(`${apiUrl}?${searchParams}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -32,7 +33,7 @@ export const fetchRoomType = createAsyncThunk<RoomType, string>(
   "roomTypes/fetchRoomType",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -63,7 +64,7 @@ export const fetchAvailableRoomTypes = createAsyncThunk<
     if (params?.checkOut) searchParams.append("checkOut", params.checkOut);
     if (params?.maxGuest)
       searchParams.append("maxGuest", params.maxGuest.toString());
-    const res = await fetch(`${apiUrl}/available-room-types?${searchParams}`);
+    const res = await apiFetch(`${apiUrl}/available-room-types?${searchParams}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -82,7 +83,7 @@ export const addRoomType = createAsyncThunk<RoomType, FormData>(
   "roomTypes/addRoomType",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -113,7 +114,7 @@ export const updateRoomType = createAsyncThunk<
   { rejectValue: string }
 >("roomTypes/updateRoomType", async (inventory, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${apiUrl}/${inventory.id}`, {
+    const res = await apiFetch(`${apiUrl}/${inventory.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(inventory),
@@ -144,7 +145,7 @@ export const deleteRoomType = createAsyncThunk<string, string>(
   "roomTypes/deleteRoomType",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -165,3 +166,4 @@ export const deleteRoomType = createAsyncThunk<string, string>(
     }
   },
 );
+

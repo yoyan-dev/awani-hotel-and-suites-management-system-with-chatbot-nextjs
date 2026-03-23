@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   RoomListParams,
@@ -31,7 +32,7 @@ export const fetchRoomList = createAsyncThunk<
     if (params?.sort_order)
       searchParams.append("sort_order", params.sort_order);
 
-    const res = await fetch(`${apiUrl}/rooms?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/rooms?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -61,7 +62,7 @@ export const fetchTodayOperations = createAsyncThunk<
     const searchParams = new URLSearchParams();
     if (params?.date) searchParams.append("date", params.date);
 
-    const res = await fetch(`${apiUrl}/operations?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}/operations?${searchParams.toString()}`);
     const response = await res.json();
 
     if (!res.ok) {
@@ -91,7 +92,7 @@ export const updateRoomStatus = createAsyncThunk<
   "housekeeping/updateRoomStatus",
   async ({ room_id, payload }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/rooms/${room_id}`, {
+      const res = await apiFetch(`${apiUrl}/rooms/${room_id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -123,3 +124,4 @@ export const updateRoomStatus = createAsyncThunk<
     }
   },
 );
+

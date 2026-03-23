@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { addToast } from "@heroui/react";
 import {
@@ -18,7 +19,7 @@ export const fetchGuestFeedbacks = createAsyncThunk<
     if (params?.query) searchParams.append("q", params.query);
     if (params?.rating) searchParams.append("rating", String(params.rating));
 
-    const res = await fetch(`${apiUrl}?${searchParams.toString()}`);
+    const res = await apiFetch(`${apiUrl}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -40,7 +41,7 @@ export const fetchGuestFeedback = createAsyncThunk<FeedbackPayload, string>(
   "inventory/fetchGuestFeedback",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -65,7 +66,7 @@ export const addGuestFeedback = createAsyncThunk<FeedbackPayload, FormData>(
   "inventory/addGuestFeedback",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -98,7 +99,7 @@ export const updateGuestFeedback = createAsyncThunk<
   "inventory/updateGuestFeedback",
   async (guest_request, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${guest_request.id}`, {
+      const res = await apiFetch(`${apiUrl}/${guest_request.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(guest_request),
@@ -130,7 +131,7 @@ export const deleteGuestFeedback = createAsyncThunk<string, string>(
   "inventory/deleteGuestFeedback",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -166,7 +167,7 @@ export const deleteSelectedGuestFeedback = createAsyncThunk<
           ? { selectedValues: "all" }
           : { selectedValues: Array.from(selectedValues) };
 
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -187,3 +188,4 @@ export const deleteSelectedGuestFeedback = createAsyncThunk<
     }
   },
 );
+

@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api/client";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { Guest } from "@/types/guest";
 import { addToast } from "@heroui/react";
@@ -8,7 +9,7 @@ export const fetchGuests = createAsyncThunk<Guest[]>(
   "guest/fetchGuests",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl);
+      const res = await apiFetch(apiUrl);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -28,7 +29,7 @@ export const fetchGuest = createAsyncThunk<Guest, string>(
   "guest/fetchGuest",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`);
+      const res = await apiFetch(`${apiUrl}/${id}`);
       const data = await res.json();
 
       if (!res.ok || !data.success) {
@@ -53,7 +54,7 @@ export const addGuest = createAsyncThunk<Guest, FormData>(
   "guest/addGuest",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await fetch(apiUrl, {
+      const res = await apiFetch(apiUrl, {
         method: "POST",
         body: formData,
       });
@@ -84,7 +85,7 @@ export const updateGuest = createAsyncThunk<
   { rejectValue: string }
 >("guest/updateGuest", async (guest, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${apiUrl}/${guest.id}`, {
+    const res = await apiFetch(`${apiUrl}/${guest.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(guest),
@@ -115,7 +116,7 @@ export const deleteGuest = createAsyncThunk<string, string>(
   "guest/deleteGuest",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+      const res = await apiFetch(`${apiUrl}/${id}`, { method: "DELETE" });
       const data = await res.json();
 
       addToast(data.message);
@@ -149,7 +150,7 @@ export const deleteSelectedGuest = createAsyncThunk<
         ? { selectedValues: "all" }
         : { selectedValues: Array.from(selectedValues) };
 
-    const res = await fetch(apiUrl, {
+    const res = await apiFetch(apiUrl, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -169,3 +170,4 @@ export const deleteSelectedGuest = createAsyncThunk<
     return thunkAPI.rejectWithValue(err.message);
   }
 });
+
