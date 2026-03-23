@@ -12,9 +12,9 @@ export default function SuccessMessage() {
             Reservation Successful <Check />
           </h1>
           <p className="mt-3 text-sm text-[#645b4e]">
-            Your function room reservation has been submitted successfully.
+            Your room reservation has been submitted successfully.
             <br />
-            Our events team will contact you shortly for confirmation.
+            Our front desk will contact you shortly for confirmation.
             <br />
             Thank you for choosing Awani Hotel & Suites.
             <br />

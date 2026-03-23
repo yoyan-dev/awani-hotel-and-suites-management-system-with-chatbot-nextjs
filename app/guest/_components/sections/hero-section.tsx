@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Link } from "@heroui/react";
+import { Button, Image, Link } from "@heroui/react";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useMemo } from "react";
@@ -78,31 +78,38 @@ export default function HeroBanner() {
             </Button>
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 26 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.65, ease: "easeOut" }}
-          className="grid gap-4 self-end sm:grid-cols-2"
-        >
-          <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#d9c5a2]">
-              Guest Rating
-            </p>
-            <p className="mt-2 font-serif text-4xl text-white">4.9/5</p>
-            <p className="text-sm text-[#f1e7d9]">
-              Trusted by returning guests
-            </p>
+        <div>
+          <div className="p-4 flex flex-col items-center justify-center">
+            <Image src="/feedback-form.png" alt="feedback form" width={200} />
+            <span className="text-lg text-[#d9c5a2] text-center">
+              Feedback Form
+            </span>
           </div>
-          <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
-            <p className="text-xs uppercase tracking-[0.2em] text-[#d9c5a2]">
-              Premium Rooms
-            </p>
-            <p className="mt-2 font-serif text-4xl text-white">20+</p>
-            <p className="text-sm text-[#f1e7d9]">Elegantly curated suites</p>
-          </div>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 26 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.65, ease: "easeOut" }}
+            className="grid gap-4 self-end sm:grid-cols-2"
+          >
+            <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#d9c5a2]">
+                Guest Rating
+              </p>
+              <p className="mt-2 font-serif text-4xl text-white">4.9/5</p>
+              <p className="text-sm text-[#f1e7d9]">
+                Trusted by returning guests
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-md">
+              <p className="text-xs uppercase tracking-[0.2em] text-[#d9c5a2]">
+                Premium Rooms
+              </p>
+              <p className="mt-2 font-serif text-4xl text-white">20+</p>
+              <p className="text-sm text-[#f1e7d9]">Elegantly curated suites</p>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
