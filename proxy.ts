@@ -87,7 +87,7 @@ export async function proxy(request: NextRequest) {
   ) {
     return NextResponse.json(
       {
-        message: "Invalid or missing bearer token.",
+        message: "You don't have permission to access this page.",
       },
       { status: 401 },
     );

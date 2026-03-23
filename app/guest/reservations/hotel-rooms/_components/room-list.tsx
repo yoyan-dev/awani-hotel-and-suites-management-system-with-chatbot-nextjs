@@ -8,6 +8,7 @@ import React from "react";
 
 import SkeletonLoader from "@/app/guest/_components/skeleton-loader";
 import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 interface RoomProps {
   rooms: RoomType[];
@@ -73,6 +74,12 @@ export const RoomsList: React.FC<RoomProps> = ({ rooms, typesLoading }) => {
               <p className="line-clamp-2 text-sm text-[#665d50]">
                 {room.description}
               </p>
+
+              <RoomTypeAmenities
+                amenities={room.amenities}
+                maxItems={3}
+                chipClassName="rounded-full bg-[#f1e6d5] px-3 py-1 text-[11px] text-[#6a5f50]"
+              />
 
               <div className="flex flex-wrap items-center gap-3 text-sm text-[#6a5f50]">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f1e6d5] px-3 py-1">

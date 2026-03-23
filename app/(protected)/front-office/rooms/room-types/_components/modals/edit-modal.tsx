@@ -16,6 +16,8 @@ import { RoomType } from "@/types/room";
 import { uploadRoomImage } from "@/lib/upload-room-image";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { RoomTypeAddOnFormRow } from "../add-ons-input";
+import AmenitiesInput, { RoomTypeAmenityFormRow } from "../amenities-input";
+import { getRoomTypeAmenityNames } from "@/lib/room-types/amenities";
 
 interface UpdateModalProps {
   room: RoomType;
@@ -38,6 +40,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
         price: Number(row.add_on?.price ?? 0),
       },
     })),
+  );
+  const [amenities, setAmenities] = useState<RoomTypeAmenityFormRow[]>(
+    getRoomTypeAmenityNames(room.amenities).map((name) => ({ name })),
   );
   const [previews, setPreviews] = useState<Array<{ file: File; url: string }>>(
     [],
@@ -75,6 +80,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
     await updateRoomType({
       ...formData,
       room_type_add_ons: addOns,
+      amenities,
       images,
       image: images[0] ?? formData.image,
     });
@@ -209,6 +215,10 @@ const UpdateModal: React.FC<UpdateModalProps> = ({ room, isOpen, onClose }) => {
                             description: e.target.value,
                           })
                         }
+                      />
+                      <AmenitiesInput
+                        amenities={amenities}
+                        setAmenities={setAmenities}
                       />
                       <Input
                         className="flex-1"

@@ -12,6 +12,7 @@ import {
 import { RoomType } from "@/types/room";
 import { formatPHP } from "@/lib/format-php";
 import { Ruler, UsersRound } from "lucide-react";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 interface ViewModalProps {
   room: RoomType;
@@ -82,6 +83,16 @@ const ViewModal: React.FC<ViewModalProps> = ({ room }) => {
                 <p className="text-sm leading-relaxed text-[#665d50]">
                   {room.description}
                 </p>
+
+                <div className="rounded-2xl border border-[#e8ddcc] bg-[#fcf8f2] p-4">
+                  <h4 className="font-serif text-xl text-[#271f14]">
+                    Room Amenities
+                  </h4>
+                  <p className="mb-3 text-xs text-[#7a6f62]">
+                    Included amenities for {room.name}
+                  </p>
+                  <RoomTypeAmenities amenities={room.amenities} />
+                </div>
 
                 <div className="rounded-2xl border border-[#e8ddcc] bg-[#fcf8f2] p-4">
                   <h4 className="font-serif text-xl text-[#271f14]">

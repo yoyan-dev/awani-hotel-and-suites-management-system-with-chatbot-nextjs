@@ -13,6 +13,7 @@ import {
 } from "@heroui/react";
 import { Copyright, Plus, Upload, X } from "lucide-react";
 import AddOnsInput from "../add-ons-input";
+import AmenitiesInput, { RoomTypeAmenityFormRow } from "../amenities-input";
 import { useRoomTypes } from "@/hooks/use-room-types";
 import { RoomTypeAddOnFormRow } from "../add-ons-input";
 
@@ -20,6 +21,7 @@ export default function AddModal() {
   const { isLoading, error, addRoomType } = useRoomTypes();
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [addOns, setAddOns] = useState<RoomTypeAddOnFormRow[]>([]);
+  const [amenities, setAmenities] = useState<RoomTypeAmenityFormRow[]>([]);
   const [previews, setPreviews] = useState<Array<{ file: File; url: string }>>(
     [],
   );
@@ -30,6 +32,7 @@ export default function AddModal() {
     formData.delete("images");
     previews.forEach((item) => formData.append("images", item.file));
     formData.append("room_type_add_ons", JSON.stringify(addOns));
+    formData.append("amenities", JSON.stringify(amenities));
 
     await addRoomType(formData);
     if (!error) {
@@ -129,6 +132,10 @@ export default function AddModal() {
                         labelPlacement="outside"
                         variant="bordered"
                         radius="none"
+                      />
+                      <AmenitiesInput
+                        amenities={amenities}
+                        setAmenities={setAmenities}
                       />
                       <Input
                         isRequired

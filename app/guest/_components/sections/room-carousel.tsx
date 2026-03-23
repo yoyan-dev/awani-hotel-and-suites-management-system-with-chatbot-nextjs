@@ -9,6 +9,7 @@ import { formatPHP } from "@/lib/format-php";
 import { peakSeason } from "@/lib/peak-season-dates";
 import { RoomType } from "@/types/room";
 import ViewModal from "@/app/guest/reservations/hotel-rooms/reservation/[id]/_components/modals/view-modal";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 import SkeletonLoader from "../skeleton-loader";
 
@@ -87,6 +88,11 @@ export const RoomsCarousel: React.FC<RoomProps> = ({ rooms, isLoading }) => {
                   <p className="line-clamp-2 text-sm text-[#6d6255]">
                     {room.description}
                   </p>
+                  <RoomTypeAmenities
+                    amenities={room.amenities}
+                    maxItems={3}
+                    chipClassName="rounded-full bg-[#f1e6d5] px-3 py-1 text-[11px] text-[#6a5f50]"
+                  />
                   <p className="inline-flex items-center gap-2 text-sm text-[#6b5f50]">
                     <UsersRound size={15} />
                     Up to {room.max_guest} guests

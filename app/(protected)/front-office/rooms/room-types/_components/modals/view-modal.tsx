@@ -11,6 +11,7 @@ import {
 import { RoomType } from "@/types/room";
 import { formatPHP } from "@/lib/format-php";
 import { Copyright } from "lucide-react";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 interface ViewModalProps {
   room: RoomType;
   isOpen: boolean;
@@ -75,6 +76,14 @@ const ViewModal: React.FC<ViewModalProps> = ({ room, isOpen, onClose }) => {
                   </div>
 
                   <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Amenities</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-300 mb-3">
+                        Included guest-facing amenities for {room.name}
+                      </p>
+                      <RoomTypeAmenities amenities={room.amenities} />
+                    </div>
+
                     <div>
                       <h3 className="text-lg font-medium mb-2">Room Add Ons</h3>
                       <p className="text-sm text-gray-500 dark:text-gray-300">

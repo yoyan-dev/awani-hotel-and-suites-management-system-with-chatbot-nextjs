@@ -5,6 +5,7 @@ import { Button, Card, CardBody, Image, Skeleton } from "@heroui/react";
 
 import { formatPHP } from "@/lib/format-php";
 import { RoomType } from "@/types/room";
+import RoomTypeAmenities from "@/components/room-type-amenities";
 
 import ViewModal from "./modals/view-modal";
 
@@ -74,6 +75,12 @@ const AvailableRooms: React.FC<AvailableRoomProps> = ({
                     </div>
 
                     <p className="text-sm text-[#655b4d]">{room.description}</p>
+
+                    <RoomTypeAmenities
+                      amenities={room.amenities}
+                      maxItems={3}
+                      chipClassName="rounded-full bg-[#f1e6d5] px-3 py-1 text-[11px] text-[#6a5f50]"
+                    />
 
                     <div className="flex flex-wrap gap-3">
                       <Button

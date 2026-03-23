@@ -14,5 +14,14 @@ export const ROOM_TYPE_ADD_ONS_SELECT = `
       status,
       description
     )
+  ),
+  amenities:room_type_amenities (
+    id,
+    room_type_id,
+    amenity_id,
+    amenity:amenity_id (
+      id,
+      name
+    )
   )
 `;

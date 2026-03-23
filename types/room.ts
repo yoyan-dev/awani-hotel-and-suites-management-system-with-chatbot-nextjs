@@ -17,12 +17,26 @@ export interface RoomType {
   image?: string;
   name?: string;
   description?: string;
+  amenities?: RoomTypeAmenity[];
   room_type_add_ons?: RoomTypeAddOn[];
   room_size?: string;
   max_guest?: number;
   price?: number;
   peak_season_price?: number;
   rooms?: Room[];
+}
+
+export interface Amenity {
+  id?: string;
+  name?: string;
+}
+
+export interface RoomTypeAmenity {
+  id?: string;
+  room_type_id?: string;
+  amenity_id?: string;
+  name?: string;
+  amenity?: Amenity | null;
 }
 
 export interface RoomTypeState {
