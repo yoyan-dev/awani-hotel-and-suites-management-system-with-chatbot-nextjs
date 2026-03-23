@@ -48,15 +48,20 @@ export default function PolicyModal({ onConfirm }: PolicyModalProps) {
         Read & Sign Policy
       </Button>
 
-      <Modal isOpen={isOpen} onOpenChange={setIsOpen} size="lg">
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        size="lg"
+        className="dark:bg-[#2c2721]"
+      >
         <ModalContent className="rounded-3xl border border-[#e3d8c8] bg-[#fffdf8]">
-          <ModalHeader className="font-serif text-2xl text-[#281f14]">
+          <ModalHeader className="font-serif text-2xl text-[#281f14] dark:text-primary">
             Booking Cancellation Policy
           </ModalHeader>
           <ModalBody className="space-y-4">
-            <p className="text-sm text-[#665d50]">
-              Please read our declaration carefully and download our Booking
-              Cancellation Policy.
+            <p className="text-sm text-[#665d50] dark:text-[#75716b]">
+              Please read our declaration carefully and download and sign our
+              Booking Cancellation Policy.
             </p>
             <Button
               onPress={downloadPolicy}

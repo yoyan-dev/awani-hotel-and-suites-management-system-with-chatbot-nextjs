@@ -26,6 +26,7 @@ export function useGuestHotelRoomReservationPage() {
   const [specialRequests, setSpecialRequests] = React.useState<
     BookingSpecialRequest[]
   >([]);
+  const [isSubmitted, setIsSubmitted] = React.useState(false);
 
   React.useEffect(() => {
     if (query.checkIn && query.checkOut) {
@@ -114,7 +115,7 @@ export function useGuestHotelRoomReservationPage() {
           "Your reservation has been submitted successfully. Our team will review your request and contact you shortly for confirmation. Thank you for choosing our hotel!",
         color: "success",
       });
-      router.push("/guest");
+      setIsSubmitted(true);
     }
   }
 
@@ -132,5 +133,6 @@ export function useGuestHotelRoomReservationPage() {
     summary,
     bookingIsLoading,
     handleSubmit,
+    isSubmitted,
   };
 }
