@@ -13,6 +13,8 @@ import {
   Chip,
 } from "@heroui/react";
 import { MessageCircle, Send, X, HelpCircle } from "lucide-react";
+import { CHATBOT_QUICK_QUESTION_LABELS } from "@/lib/chatbot/quick-replies";
+import { apiFetch } from "@/lib/api/client";
 
 const CHATBOT_MEMORY_ITEMS = 20;
 
@@ -21,16 +23,7 @@ type ChatMessage = {
   text: string;
 };
 
-const QUICK_QUESTIONS = [
-  "What are your room types?",
-  "How do I make a reservation?",
-  "What are the check-in times?",
-  "Do you have function halls?",
-  "What amenities are included?",
-  "How can I contact Front Office?",
-  "Where is the hotel located?",
-  "Room availability?",
-];
+const QUICK_QUESTIONS = CHATBOT_QUICK_QUESTION_LABELS;
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +54,7 @@ export default function Chatbot() {
     setMessage("");
 
     try {
-      const res = await fetch("/api/chatbot", {
+      const res = await apiFetch("/api/chatbot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -141,10 +134,7 @@ export default function Chatbot() {
               />
               <div>
                 <h3 className="font-medium text-base">Awani Assistant</h3>
-                <p className="text-xs text-white/80">
-                  Hotel & Booking Help - Remembers last {CHATBOT_MEMORY_ITEMS}{" "}
-                  messages
-                </p>
+                <p className="text-xs text-white/80">Hotel & Booking Help</p>
               </div>
             </div>
             <Button
@@ -181,7 +171,7 @@ export default function Chatbot() {
                     />
                   )}
                   <div
-                    className={`rounded-2xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap break-words leading-relaxed ${
+                    className={`rounded-2xl px-4 py-2 max-w-[80%] text-sm whitespace-pre-wrap wrap-break-word leading-relaxed ${
                       msg.from === "user"
                         ? "bg-primary text-white"
                         : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700"
