@@ -4,6 +4,14 @@ import { supabase } from "@/lib/supabase/supabase-client";
 import { uploadValidIDImage } from "@/lib/upload-valid-id";
 import { Json } from "@/types/supabase";
 
+type DiditVerificationMetadata = {
+  mode?: string;
+  front?: string | null;
+  back?: string | null;
+  request_id?: string | null;
+  [key: string]: unknown;
+};
+
 export async function listGuests() {
   const { data, error } = await supabase.from("guest").select("*");
 
@@ -43,11 +51,18 @@ export async function createGuest(formData: FormData) {
     }
 
     const verification = await assertDiditApproved(guestId);
+    const metadata = (verification.metadata ?? {}) as DiditVerificationMetadata;
     validId = {
       provider: "didit",
+      mode: metadata.mode ?? "session",
       session_id: verification.session_id,
+      request_id: metadata.request_id ?? verification.session_id,
       status: verification.status,
       verified_at: verification.verified_at,
+      front: metadata.front ?? null,
+      back: metadata.back ?? null,
+      decision: verification.decision as Json,
+      metadata: metadata as Json,
       type: id_type ? String(id_type) : null,
     };
   } else {

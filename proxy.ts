@@ -23,6 +23,8 @@ const PUBLIC_API_EXACT_RULES: Array<{
   { pathname: "/api/function-rooms/available-rooms", methods: ["GET"] },
   { pathname: "/api/bookings/hotel-rooms", methods: ["POST"] },
   { pathname: "/api/bookings/function-hall", methods: ["POST"] },
+  { pathname: "/api/didit/session", methods: ["POST"] },
+  { pathname: "/api/didit/status", methods: ["GET"] },
 ];
 
 const PUBLIC_API_PREFIX_RULES: Array<{

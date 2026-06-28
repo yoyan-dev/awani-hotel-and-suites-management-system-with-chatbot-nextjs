@@ -57,6 +57,7 @@ export default function FrontIDUpload({
         id="image-upload-front"
         type="file"
         accept="image/*"
+        capture="environment"
         className="hidden"
         name="front"
         onChange={handleChange}

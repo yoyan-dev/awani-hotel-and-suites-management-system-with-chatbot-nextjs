@@ -15,6 +15,11 @@ export default function GuestForm({
   onIdVerificationChange?: (isVerified: boolean) => void;
 }) {
   const [phone, setPhone] = React.useState("");
+  const [isDiditVerified, setIsDiditVerified] = React.useState(false);
+
+  React.useEffect(() => {
+    onIdVerificationChange?.(isDiditVerified);
+  }, [isDiditVerified, onIdVerificationChange]);
 
   return (
     <div className="w-full space-y-4">
@@ -106,13 +111,13 @@ export default function GuestForm({
       <DiditVerification
         guestId={guestId}
         bookingType="hotel_room"
-        onStatusChange={(isVerified) => onIdVerificationChange?.(isVerified)}
+        onStatusChange={setIsDiditVerified}
       />
 
       <input type="hidden" name="didit_required" value="true" />
 
       <p className="text-xs text-[#9f6c1e]">
-        Please complete ID verification before continuing.
+        Please complete Didit verification before continuing.
       </p>
     </div>
   );
