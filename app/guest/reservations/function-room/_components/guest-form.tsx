@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import BackIdUpload from "@/app/guest/reservations/_components/valid-id/back-id-upload";
 import FrontIDUpload from "@/app/guest/reservations/_components/valid-id/front-id-upload";
 import PhoneInput from "@/components/input/phone-input";
+import NextLink from "next/link";
 
 export default function GuestForm({
   onIdVerificationChange,
@@ -100,8 +101,15 @@ export default function GuestForm({
       </h3>
       <p className="text-xs text-[#6a6052]">
         We respect your privacy. Your ID will be used only for identity
-        verification, stored securely, and will not be shared without your
-        consent.
+        verification and booking review, stored securely, and handled according
+        to our{" "}
+        <NextLink
+          href="/guest/privacy-policy"
+          className="font-semibold text-[#8a6331] underline underline-offset-2"
+        >
+          Privacy Policy
+        </NextLink>
+        .
       </p>
 
       <FrontIDUpload setIsFrontId={setIsFrontId} />

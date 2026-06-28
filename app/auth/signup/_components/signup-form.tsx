@@ -298,8 +298,17 @@ export default function SignupForm({
       </h3>
       <p className="text-xs text-gray-500 dark:text-gray-400">
         We respect your privacy. Your ID will be used only for identity
-        verification, stored securely, and will not be shared without your
-        consent.
+        verification and account review, stored securely, and handled according
+        to our{" "}
+        <Link
+          color="primary"
+          href="/guest/privacy-policy"
+          size="sm"
+          className="font-semibold underline underline-offset-2"
+        >
+          Privacy Policy
+        </Link>
+        .
       </p>
 
       <ValidIdUploadField

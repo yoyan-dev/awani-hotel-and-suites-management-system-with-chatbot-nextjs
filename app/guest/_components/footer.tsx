@@ -54,6 +54,14 @@ export default function Footer() {
                 About Us
               </Link>
             </li>
+            <li>
+              <Link
+                href="/guest/privacy-policy"
+                className="transition-colors hover:text-[#f4e5cf]"
+              >
+                Privacy Policy
+              </Link>
+            </li>
           </ul>
         </div>
 
