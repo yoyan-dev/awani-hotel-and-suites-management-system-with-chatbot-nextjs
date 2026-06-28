@@ -17,8 +17,9 @@ import { Children } from "react";
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Awani Hotel & Suites",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "Ma. Awani Hotel and Suites",
+  description:
+    "Ma. Awani Hotel and Suites is a hotel in San Carlos City, Negros Occidental offering comfortable rooms, event reservations, and guest services.",
   navAdminItems: [
     {
       label: "Dashboard",

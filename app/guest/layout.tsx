@@ -23,7 +23,7 @@ export default function GuestLayout({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="relative z-10 mx-auto w-full max-w-[1440px] px-4 pb-20 sm:px-6 lg:px-10"
+        className="relative z-10 mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-10"
       >
         {children}
       </motion.main>

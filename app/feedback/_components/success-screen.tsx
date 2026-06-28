@@ -14,7 +14,7 @@ export default function SuccessScreen() {
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#6f624f] sm:text-base dark:text-[#b9a48a]">
           We appreciate your feedback and look forward to welcoming you again at
-          Awani Hotel.
+          Ma. Awani Hotel and Suites.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button

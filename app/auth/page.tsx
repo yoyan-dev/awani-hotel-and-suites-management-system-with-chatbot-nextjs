@@ -127,7 +127,7 @@ export default function Auth() {
       <div className="p-8 max-w-md w-full bg-white dark:bg-gray-800 rounded shadow space-y-4">
         <div className="flex flex-col items-center text-center">
           <Image src="/awani-logo.png" width={100} radius="full" />
-          Welcome to Awani Hotel and Suite.
+          Welcome to Ma. Awani Hotel and Suites.
           <span className="text-gray-500"> Please login to continue.</span>
         </div>
         <AuthForm

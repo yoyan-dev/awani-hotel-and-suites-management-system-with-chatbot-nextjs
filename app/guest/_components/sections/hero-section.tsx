@@ -50,7 +50,7 @@ export default function HeroBanner() {
             className="max-w-xl text-base leading-relaxed text-[#ede3d3] sm:text-lg"
           >
             Discover elevated comfort, refined spaces, and personalized service.
-            Book your next premium stay with confidence at Awani Hotel & Suites.
+            Book your next premium stay with confidence at Ma. Awani Hotel and Suites.
           </motion.p>
 
           <motion.div

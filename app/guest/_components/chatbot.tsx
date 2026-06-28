@@ -32,7 +32,7 @@ export default function Chatbot() {
   const [chat, setChat] = useState<ChatMessage[]>([
     {
       from: "bot",
-      text: "Hello! Welcome to Awani Hotel. I'm here to help you with information about our rooms, bookings, amenities, and more. What can I assist you with today?",
+      text: "Hello! Welcome to Ma. Awani Hotel and Suites. I'm here to help you with information about our rooms, bookings, amenities, and more. What can I assist you with today?",
     },
   ]);
   const scrollRef = useRef<HTMLDivElement>(null);

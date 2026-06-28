@@ -1,14 +1,20 @@
 import Link from "next/link";
 
-export default function Footer() {
+type FooterProps = {
+  className?: string;
+};
+
+export default function Footer({ className = "" }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-20 border-t border-[#dfd4c5] bg-[#1f1d19] text-[#efe6d8]">
+    <footer
+      className={`relative left-1/2 w-screen -translate-x-1/2 border-t border-[#dfd4c5] bg-[#1f1d19] text-[#efe6d8] ${className}`}
+    >
       <div className="mx-auto grid w-full max-w-[1320px] gap-10 px-6 py-14 md:grid-cols-[1.2fr_1fr_1fr]">
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-[0.2em] text-[#c6ac82]">
-            Awani Hotel & Suites
+            Ma. Awani Hotel and Suites
           </p>
           <h3 className="font-serif text-3xl leading-tight">
             Crafted for memorable stays and elevated hospitality.
@@ -77,7 +83,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-[#35312a] px-6 py-5 text-center text-xs text-[#b9ac98]">
-        Copyright {year} Ma. Awani Hotel & Suites. All rights reserved.
+        Copyright {year} Ma. Awani Hotel and Suites. All rights reserved.
       </div>
     </footer>
   );

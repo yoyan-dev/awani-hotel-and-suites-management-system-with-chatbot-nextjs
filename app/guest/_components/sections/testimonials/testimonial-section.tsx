@@ -35,8 +35,8 @@ export default function TestimonialsSection() {
           What our guests say
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-sm text-[#665c4f] sm:text-base">
-          Feedback from travelers and event guests who chose Awani Hotel &
-          Suites.
+          Feedback from travelers and event guests who chose Ma. Awani Hotel
+          and Suites.
         </p>
       </div>
 

@@ -11,7 +11,7 @@ export default function ContactSection() {
       <div className="max-w-5xl mx-auto">
         <PageHeader
           title="Contact Us"
-          subtitle="Reach out to Awani Hotel and Suites for inquiries or bookings"
+          subtitle="Reach out to Ma. Awani Hotel and Suites for inquiries or bookings"
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
