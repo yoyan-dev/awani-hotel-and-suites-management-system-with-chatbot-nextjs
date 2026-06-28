@@ -7,6 +7,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Link,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Search } from "lucide-react";
 import { FeedbackFetchParams } from "@/types/feedback";
@@ -45,6 +47,24 @@ export const TableTopContent: React.FC<Props> = ({
           onClear={() => setQuery({ ...query, query: "" })}
           onValueChange={(value) => setQuery({ ...query, query: value })}
         />
+        <Select
+          className="w-full sm:max-w-48"
+          label="Approval"
+          size="sm"
+          variant="bordered"
+          selectedKeys={[query.approval || "all"]}
+          onChange={(e) =>
+            setQuery({
+              ...query,
+              approval: e.target.value as FeedbackFetchParams["approval"],
+              page: 1,
+            })
+          }
+        >
+          <SelectItem key="all">All</SelectItem>
+          <SelectItem key="pending">Pending</SelectItem>
+          <SelectItem key="approved">Approved</SelectItem>
+        </Select>
         <div className="flex gap-3">
           {/* <Dropdown>
             <DropdownTrigger className="hidden sm:flex">
@@ -80,7 +100,7 @@ export const TableTopContent: React.FC<Props> = ({
       </div>
       <div className="flex justify-between items-center">
         <span className="text-default-600 dark:text-default-300 text-small">
-          Total {totalItems} packages
+          Total {totalItems} feedbacks
         </span>
         <label className="flex items-center text-default-600 dark:text-default-300 text-small">
           Rows per page: 10

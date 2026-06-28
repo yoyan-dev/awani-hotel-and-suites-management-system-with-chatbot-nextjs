@@ -48,6 +48,10 @@ const initialPreviewData: BookingPreviewData = {
   event_end: "",
 };
 
+function createGuestVerificationId() {
+  return crypto.randomUUID();
+}
+
 function formatDateTimeLabel(value: string) {
   if (!value) return "-";
   const date = new Date(value);
@@ -76,6 +80,7 @@ export default function BookingForm({
   setEventDuration,
   bookingIsLoading,
 }: BookingFormProps) {
+  const [guestId] = React.useState(createGuestVerificationId);
   const formRef = React.useRef<HTMLFormElement>(null);
   const minDate = React.useMemo(
     () => todayDate(getLocalTimeZone()).add({ days: 5 }),
@@ -341,10 +346,15 @@ export default function BookingForm({
           onSubmit={handleFormSubmit}
           className="w-full space-y-6"
         >
+          <input type="hidden" name="id" value={guestId} />
+
           <BookingFormStepIndicator step={step} />
 
           <div className={step === 1 ? "w-full" : "hidden"}>
-            <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
+            <GuestForm
+              guestId={guestId}
+              onIdVerificationChange={setIsGuestIdVerified}
+            />
           </div>
 
           <div className={step === 2 ? "w-full" : "hidden"}>

@@ -20,6 +20,7 @@ export async function GET(req: Request): Promise<NextResponse<ApiResponse>> {
     const result = await listFeedback({
       query: searchParams.get("q") || "",
       rating: searchParams.get("rating") || "0",
+      approval: searchParams.get("approval") || "all",
       page,
       limit,
     });

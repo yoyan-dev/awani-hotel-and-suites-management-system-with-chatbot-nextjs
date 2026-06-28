@@ -25,7 +25,8 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { User } from "@/types/users";
-import { signOut } from "next-auth/react";
+import React from "react";
+import LogoutConfirmationModal from "@/components/auth/logout-confirmation-modal";
 
 interface Props {
   user: User | undefined;
@@ -34,6 +35,7 @@ interface Props {
 
 export default function Navbar({ user, isLoading }: Props) {
   const pathname = usePathname();
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
 
   return (
     <HeroUINavbar
@@ -43,6 +45,10 @@ export default function Navbar({ user, isLoading }: Props) {
       className="top-0 z-50 border-b border-gray-200/50 dark:border-gray-800/50 
                  bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl shadow-sm"
     >
+      <LogoutConfirmationModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+      />
       <NavbarContent className="gap-3" justify="start">
         <NavbarBrand as="li">
           <NextLink
@@ -102,7 +108,7 @@ export default function Navbar({ user, isLoading }: Props) {
                   key={item.href}
                   onClick={() => {
                     if (isLogoutItem) {
-                      signOut({ callbackUrl: "/auth" });
+                      setLogoutOpen(true);
                     }
                   }}
                   as={!isLogoutItem ? NextLink : undefined}

@@ -16,13 +16,15 @@ const PUBLIC_API_EXACT_RULES: Array<{
   { pathname: "/api/chatbot", methods: ["POST"] },
   { pathname: "/api/guest", methods: ["POST"] },
   { pathname: "/api/feedback", methods: ["POST"] },
-  { pathname: "/api/feedback", methods: ["GET"] },
+  { pathname: "/api/feedback/public", methods: ["GET"] },
   { pathname: "/api/room-types", methods: ["GET"] },
   { pathname: "/api/room-types/available-room-types", methods: ["GET"] },
   { pathname: "/api/rooms/available-rooms", methods: ["GET"] },
   { pathname: "/api/function-rooms/available-rooms", methods: ["GET"] },
   { pathname: "/api/bookings/hotel-rooms", methods: ["POST"] },
   { pathname: "/api/bookings/function-hall", methods: ["POST"] },
+  { pathname: "/api/didit/session", methods: ["POST"] },
+  { pathname: "/api/didit/status", methods: ["GET"] },
 ];
 
 const PUBLIC_API_PREFIX_RULES: Array<{
@@ -80,6 +82,12 @@ export async function proxy(request: NextRequest) {
   const method = request.method.toUpperCase();
   const isApiRoute = pathname === "/api" || pathname.startsWith("/api/");
   const isAuthCallbackApiRoute = pathname.startsWith("/api/auth/");
+  const isDiditWebhook =
+    pathname === "/api/webhooks/didit" && method === "POST";
+
+  if (isDiditWebhook) {
+    return NextResponse.next();
+  }
 
   if (
     isApiRoute &&

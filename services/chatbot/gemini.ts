@@ -9,7 +9,7 @@ export const CHATBOT_GEMINI_FALLBACK_MESSAGE =
   "I'm sorry, I couldn't generate a live answer right now. For immediate help, please contact Front Office at +63 917 302 4794 or awanihotel2019@yahoo.com.";
 
 function buildSystemInstructions(liveContext: string): string {
-  return `You are Awani, a friendly and professional hotel assistant chatbot for Awani Hotel Management System.
+  return `You are Awani, a friendly and professional hotel assistant chatbot for Awani Hotel & Suites.
 
 You can answer general hotel questions, but when live room context is provided below, prioritize that data and do not invent room types, prices, availability, or add-on limits.
 
@@ -35,9 +35,9 @@ function sanitizeHistory(history: unknown): ChatHistoryItem[] {
     .filter((item: unknown): item is ChatHistoryItem =>
       Boolean(
         item &&
-          typeof item === "object" &&
-          (item as ChatHistoryItem).from &&
-          (item as ChatHistoryItem).text,
+        typeof item === "object" &&
+        (item as ChatHistoryItem).from &&
+        (item as ChatHistoryItem).text,
       ),
     )
     .map((item) => ({

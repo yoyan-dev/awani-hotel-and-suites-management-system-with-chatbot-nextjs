@@ -143,6 +143,7 @@ export type Database = {
           email: string;
           full_name: string;
           id: string;
+          is_approved: boolean;
           rating: number;
           recommend: string;
           room_number: string;
@@ -156,6 +157,7 @@ export type Database = {
           email: string;
           full_name: string;
           id?: string;
+          is_approved?: boolean;
           rating: number;
           recommend: string;
           room_number: string;
@@ -169,6 +171,7 @@ export type Database = {
           email?: string;
           full_name?: string;
           id?: string;
+          is_approved?: boolean;
           rating?: number;
           recommend?: string;
           room_number?: string;

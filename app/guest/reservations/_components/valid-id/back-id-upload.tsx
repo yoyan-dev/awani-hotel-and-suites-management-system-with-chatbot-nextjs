@@ -92,6 +92,7 @@ export default function BackIdUpload({
         id="back-id-upload"
         type="file"
         accept="image/*"
+        capture="environment"
         name="back"
         hidden
         onChange={(e) => e.target.files && handleFile(e.target.files[0])}

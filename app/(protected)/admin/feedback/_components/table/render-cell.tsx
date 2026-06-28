@@ -7,9 +7,10 @@ import {
   DropdownItem,
   Chip,
 } from "@heroui/react";
-import { Edit, EllipsisVertical, Eye, Trash } from "lucide-react";
+import { Check, Edit, EllipsisVertical, Eye, EyeOff, Trash } from "lucide-react";
 import ViewFeedbackModal from "../modals/view-feedback-modal";
 import DeleteFeedbackModal from "../modals/delete-feedback-modal";
+import { useGuestFeedback } from "@/hooks/use-feedback";
 
 interface Props {
   items: any[];
@@ -21,6 +22,14 @@ export const RenderCell: React.FC<Props> = ({ items, item, columnKey }) => {
   const cellValue = item[columnKey];
   const [viewOpen, setViewOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
+  const { updateGuestFeedback } = useGuestFeedback();
+
+  const handleToggleApproval = () => {
+    updateGuestFeedback({
+      id: item.id,
+      is_approved: !item.is_approved,
+    });
+  };
 
   switch (columnKey) {
     case "id":
@@ -64,6 +73,17 @@ export const RenderCell: React.FC<Props> = ({ items, item, columnKey }) => {
           className="capitalize"
         >
           {item.recommend}
+        </Chip>
+      );
+
+    case "is_approved":
+      return (
+        <Chip
+          size="sm"
+          variant="flat"
+          color={item.is_approved ? "success" : "warning"}
+        >
+          {item.is_approved ? "Approved" : "Pending"}
         </Chip>
       );
 
@@ -112,6 +132,18 @@ export const RenderCell: React.FC<Props> = ({ items, item, columnKey }) => {
                 >
                   Edit
                 </DropdownItem> */}
+
+                <DropdownItem
+                  key="approval"
+                  color={item.is_approved ? "warning" : "success"}
+                  className={item.is_approved ? "text-warning" : "text-success"}
+                  startContent={
+                    item.is_approved ? <EyeOff size={16} /> : <Check size={16} />
+                  }
+                  onClick={handleToggleApproval}
+                >
+                  {item.is_approved ? "Hide from Guest Page" : "Approve"}
+                </DropdownItem>
 
                 <DropdownItem
                   key="delete"

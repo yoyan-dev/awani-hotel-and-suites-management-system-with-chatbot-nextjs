@@ -87,6 +87,10 @@ function addDays(date: Date, days: number) {
   return next;
 }
 
+function createGuestVerificationId() {
+  return crypto.randomUUID();
+}
+
 export default function BookingForm({
   onSubmit,
   query,
@@ -102,6 +106,7 @@ export default function BookingForm({
   bookingIsLoading,
   addGuestIsLoading,
 }: BookingFormProps) {
+  const [guestId] = useState(createGuestVerificationId);
   const [policySignature, setPolicySignature] = useState("");
   const [isGuestIdVerified, setIsGuestIdVerified] = useState(false);
   const [guestBreakdown, setGuestBreakdown] = useState(() =>
@@ -294,6 +299,8 @@ export default function BookingForm({
       onSubmit={handleFormSubmit}
       className="flex-1 w-full space-y-6 rounded-3xl border border-[#e7dccd] bg-[#fffefb] p-4 sm:p-6"
     >
+      <input type="hidden" name="id" value={guestId} />
+
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <span
           className={`rounded-full px-3 py-1 font-medium ${
@@ -325,7 +332,10 @@ export default function BookingForm({
       </div>
 
       <div className={step === 1 ? "w-full" : "hidden"}>
-        <GuestForm onIdVerificationChange={setIsGuestIdVerified} />
+        <GuestForm
+          guestId={guestId}
+          onIdVerificationChange={setIsGuestIdVerified}
+        />
       </div>
 
       <div className={step === 2 ? "space-y-4 w-full" : "hidden"}>

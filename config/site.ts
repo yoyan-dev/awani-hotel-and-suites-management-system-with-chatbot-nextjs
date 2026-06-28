@@ -17,7 +17,7 @@ import { Children } from "react";
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Awani Hotel Management System",
+  name: "Awani Hotel & Suites",
   description: "Make beautiful websites regardless of your design experience.",
   navAdminItems: [
     {

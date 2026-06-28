@@ -1,4 +1,5 @@
 const guestTextFields = [
+  "id",
   "full_name",
   "contact_number",
   "address",
@@ -6,14 +7,20 @@ const guestTextFields = [
   "gender",
   "email",
   "id_type",
+  "didit_required",
 ] as const;
 
 export function buildGuestFormData(source: FormData) {
   const guestFormData = new FormData();
-  const generatedGuestId = crypto.randomUUID();
+  const sourceGuestId = source.get("id");
+  const generatedGuestId =
+    typeof sourceGuestId === "string" && sourceGuestId.trim()
+      ? sourceGuestId.trim()
+      : crypto.randomUUID();
   guestFormData.append("id", generatedGuestId);
 
   for (const field of guestTextFields) {
+    if (field === "id") continue;
     const value = source.get(field);
     if (typeof value === "string" && value.trim()) {
       guestFormData.append(field, value);

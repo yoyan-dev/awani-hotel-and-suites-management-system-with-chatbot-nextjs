@@ -7,7 +7,11 @@ import {
   updateGuestFeedback,
 } from "@/features/feedback/feedback-request-thunk";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { FeedbackFetchParams, FeedbackPayload } from "@/types/feedback";
+import {
+  FeedbackFetchParams,
+  FeedbackPayload,
+  FeedbackUpdatePayload,
+} from "@/types/feedback";
 
 export function useGuestFeedback() {
   const dispatch = useAppDispatch();
@@ -24,7 +28,7 @@ export function useGuestFeedback() {
     fetchGuestFeedback: (id: string) => dispatch(fetchGuestFeedback(id)),
     addGuestFeedback: (payload: FormData) =>
       dispatch(addGuestFeedback(payload)),
-    updateGuestFeedback: (payload: FeedbackPayload) =>
+    updateGuestFeedback: (payload: FeedbackUpdatePayload) =>
       dispatch(updateGuestFeedback(payload)),
     deleteGuestFeedback: (id: string) => dispatch(deleteGuestFeedback(id)),
     deleteSelectedGuestFeedback: (selectedKeys: Set<number> | "all") =>

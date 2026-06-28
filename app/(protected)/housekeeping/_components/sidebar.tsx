@@ -7,7 +7,7 @@ import { Image, Listbox, ListboxItem, cn } from "@heroui/react";
 import { siteConfig } from "@/config/site";
 import { useState } from "react";
 import UserPopover from "./user-popover";
-import { signOut } from "next-auth/react";
+import LogoutConfirmationModal from "@/components/auth/logout-confirmation-modal";
 
 export const ListboxWrapper = ({ children, collapsed }: any) => {
   return (
@@ -25,9 +25,14 @@ export const ListboxWrapper = ({ children, collapsed }: any) => {
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
     <aside className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl hidden lg:flex shadow-xl">
+      <LogoutConfirmationModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+      />
       <ListboxWrapper collapsed={collapsed}>
         <button
           onClick={() => setCollapsed(!collapsed)}
@@ -67,7 +72,7 @@ export default function Sidebar() {
                     key={item.href}
                     onClick={() => {
                       if (isLogoutItem) {
-                        signOut({ callbackUrl: "/auth" });
+                        setLogoutOpen(true);
                       }
                     }}
                     as={

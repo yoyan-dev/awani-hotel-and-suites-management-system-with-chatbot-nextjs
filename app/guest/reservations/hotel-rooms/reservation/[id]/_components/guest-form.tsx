@@ -3,23 +3,23 @@
 import { Input, Textarea } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/react";
 import { Flag, Home, MailIcon, Transgender, User } from "lucide-react";
-import React, { useEffect, useState } from "react";
-import FrontIDUpload from "../../../../_components/valid-id/front-id-upload";
-import BackIDUpload from "../../../../_components/valid-id/back-id-upload";
+import React from "react";
 import PhoneInput from "@/components/input/phone-input";
+import DiditVerification from "@/app/guest/reservations/_components/valid-id/didit-verification";
 
 export default function GuestForm({
+  guestId,
   onIdVerificationChange,
 }: {
+  guestId: string;
   onIdVerificationChange?: (isVerified: boolean) => void;
 }) {
-  const [isBackId, setIsBackId] = useState(false);
-  const [isFrontId, setIsFrontId] = useState<boolean | null>(false);
   const [phone, setPhone] = React.useState("");
+  const [isDiditVerified, setIsDiditVerified] = React.useState(false);
 
-  useEffect(() => {
-    onIdVerificationChange?.(isBackId && Boolean(isFrontId));
-  }, [isBackId, isFrontId, onIdVerificationChange]);
+  React.useEffect(() => {
+    onIdVerificationChange?.(isDiditVerified);
+  }, [isDiditVerified, onIdVerificationChange]);
 
   return (
     <div className="w-full space-y-4">
@@ -95,18 +95,6 @@ export default function GuestForm({
         </Select>
       </div>
 
-      <h3 className="text-sm font-medium text-[#675d50]">
-        Upload your valid ID
-      </h3>
-      <p className="text-xs text-[#6a6052]">
-        We respect your privacy. Your ID will be used only for identity
-        verification, stored securely, and will not be shared without your
-        consent.
-      </p>
-
-      <FrontIDUpload setIsFrontId={setIsFrontId} />
-      <BackIDUpload setIsBackId={setIsBackId} />
-
       <Input
         isRequired
         startContent={<MailIcon className="shrink-0 text-default-600" />}
@@ -120,11 +108,17 @@ export default function GuestForm({
         radius="lg"
       />
 
-      {!isBackId || !Boolean(isFrontId) ? (
-        <p className="text-xs text-[#9f6c1e]">
-          Please upload and verify both front and back ID images to continue.
-        </p>
-      ) : null}
+      <DiditVerification
+        guestId={guestId}
+        bookingType="hotel_room"
+        onStatusChange={setIsDiditVerified}
+      />
+
+      <input type="hidden" name="didit_required" value="true" />
+
+      <p className="text-xs text-[#9f6c1e]">
+        Please complete Didit verification before continuing.
+      </p>
     </div>
   );
 }
