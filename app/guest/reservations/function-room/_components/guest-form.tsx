@@ -117,7 +117,7 @@ export default function GuestForm({
       <input type="hidden" name="didit_required" value="true" />
 
       <p className="text-xs text-[#9f6c1e]">
-        Please complete Didit verification before continuing.
+        Please complete verification before continuing.
       </p>
     </div>
   );
