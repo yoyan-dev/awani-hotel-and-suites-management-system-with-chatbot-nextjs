@@ -6,6 +6,7 @@ const dbTable = "feedback";
 type ListFeedbackParams = {
   query?: string;
   rating?: string;
+  approval?: string;
   page: number;
   limit: number;
 };
@@ -13,6 +14,7 @@ type ListFeedbackParams = {
 export async function listFeedback({
   query = "",
   rating = "0",
+  approval = "all",
   page,
   limit,
 }: ListFeedbackParams) {
@@ -29,6 +31,14 @@ export async function listFeedback({
 
   if (rating) {
     request = request.gte("rating", Number(rating));
+  }
+
+  if (approval === "approved") {
+    request = request.eq("is_approved", true);
+  }
+
+  if (approval === "pending") {
+    request = request.eq("is_approved", false);
   }
 
   const { data, error, count } = await request

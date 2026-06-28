@@ -5,6 +5,7 @@ import {
   FeedbackFetchParams,
   FeedbackPagination,
   FeedbackPayload,
+  FeedbackUpdatePayload,
 } from "@/types/feedback";
 
 const apiUrl = "/api/feedback";
@@ -18,8 +19,10 @@ export const fetchGuestFeedbacks = createAsyncThunk<
     if (params?.page) searchParams.append("page", String(params.page));
     if (params?.query) searchParams.append("q", params.query);
     if (params?.rating) searchParams.append("rating", String(params.rating));
+    if (params?.approval) searchParams.append("approval", params.approval);
 
-    const res = await apiFetch(`${apiUrl}?${searchParams.toString()}`);
+    const endpoint = params?.publicOnly ? `${apiUrl}/public` : apiUrl;
+    const res = await apiFetch(`${endpoint}?${searchParams.toString()}`);
     const data = await res.json();
 
     if (!res.ok || !data.success) {
@@ -93,7 +96,7 @@ export const addGuestFeedback = createAsyncThunk<FeedbackPayload, FormData>(
 // UPDATE
 export const updateGuestFeedback = createAsyncThunk<
   FeedbackPayload,
-  FeedbackPayload,
+  FeedbackUpdatePayload,
   { rejectValue: string }
 >(
   "inventory/updateGuestFeedback",

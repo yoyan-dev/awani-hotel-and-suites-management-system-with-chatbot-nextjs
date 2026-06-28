@@ -4,10 +4,12 @@ import { usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import Link from "next/link";
 import { cn } from "@heroui/react";
-import { signOut } from "next-auth/react";
+import { useState } from "react";
+import LogoutConfirmationModal from "@/components/auth/logout-confirmation-modal";
 
 export default function FooterNav() {
   const pathname = usePathname();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
     <footer
@@ -15,6 +17,10 @@ export default function FooterNav() {
                  bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200/50 dark:border-gray-800/50
                  px-4 py-2 sm:hidden"
     >
+      <LogoutConfirmationModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+      />
       {siteConfig.housekeepingNavMenuItems.map((item) => {
         const isActive = pathname === item.href;
         const isLogoutItem = item.href === "/api/auth/signout";
@@ -26,7 +32,7 @@ export default function FooterNav() {
             onClick={(e) => {
               if (isLogoutItem) {
                 e.preventDefault();
-                signOut({ callbackUrl: "/auth" });
+                setLogoutOpen(true);
               }
             }}
             className={cn(

@@ -22,7 +22,12 @@ export interface FeedbackCore {
 export interface FeedbackPayload extends GuestInfo, StayDetails, FeedbackCore {
   id?: string;
   created_at?: string;
+  is_approved?: boolean;
 }
+
+export type FeedbackUpdatePayload = Partial<FeedbackPayload> & {
+  id: string;
+};
 
 export interface FeedbackPagination {
   page: number;
@@ -35,6 +40,8 @@ export interface FeedbackFetchParams {
   page?: number;
   query?: string;
   rating?: number;
+  approval?: "all" | "pending" | "approved";
+  publicOnly?: boolean;
 }
 
 export interface GuestFeedbackState {

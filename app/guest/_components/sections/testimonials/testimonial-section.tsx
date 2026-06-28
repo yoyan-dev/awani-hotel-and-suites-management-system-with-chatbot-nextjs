@@ -12,7 +12,7 @@ export default function TestimonialsSection() {
     useGuestFeedback();
 
   useEffect(() => {
-    fetchGuestFeedbacks({});
+    fetchGuestFeedbacks({ publicOnly: true });
   }, []);
 
   if (isLoading) {
@@ -40,23 +40,29 @@ export default function TestimonialsSection() {
         </p>
       </div>
 
-      <Carousel
-        autoScroll
-        itemsPerView={1}
-        responsive={{ sm: 1, md: 2, lg: 3 }}
-        autoScrollInterval={4600}
-        hasButton={false}
-      >
-        {guest_feedbacks.map((feedback) => (
-          <TestimonialCard
-            key={feedback.id}
-            name={feedback.full_name}
-            role="Guest"
-            rating={feedback.rating}
-            comment={feedback.comments || ""}
-          />
-        ))}
-      </Carousel>
+      {guest_feedbacks.length ? (
+        <Carousel
+          autoScroll
+          itemsPerView={1}
+          responsive={{ sm: 1, md: 2, lg: 3 }}
+          autoScrollInterval={4600}
+          hasButton={false}
+        >
+          {guest_feedbacks.map((feedback) => (
+            <TestimonialCard
+              key={feedback.id}
+              name={feedback.full_name}
+              role="Guest"
+              rating={feedback.rating}
+              comment={feedback.comments || ""}
+            />
+          ))}
+        </Carousel>
+      ) : (
+        <div className="rounded-4xl border border-[#e5d9c9] bg-[#fffdf8] p-8 text-center text-[#6a5e4f]">
+          No guest testimonials are available yet.
+        </div>
+      )}
     </section>
   );
 }

@@ -3,7 +3,6 @@
 import React from "react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,6 +12,7 @@ import {
 
 import { Image, Listbox, ListboxItem, Link, cn } from "@heroui/react";
 import { siteConfig } from "@/config/site";
+import LogoutConfirmationModal from "@/components/auth/logout-confirmation-modal";
 
 export const ListboxWrapper = ({ children, collapsed }: any) => (
   <div
@@ -29,12 +29,17 @@ export default function AdminSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
 
   const toggleExpand = (label: string) =>
     setExpandedItem((prev) => (prev === label ? null : label));
 
   return (
     <aside className="hidden lg:flex shadow-xl">
+      <LogoutConfirmationModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+      />
       <ListboxWrapper collapsed={collapsed}>
         <button
           onClick={() => setCollapsed(!collapsed)}
@@ -71,11 +76,19 @@ export default function AdminSidebar() {
                       item.isExpandable
                         ? toggleExpand(item.label)
                         : isLogoutItem
-                          ? signOut({ callbackUrl: "/auth" })
+                          ? setLogoutOpen(true)
                           : null
                     }
-                    as={!item.isExpandable ? NextLink : undefined}
-                    href={!item.isExpandable ? item.href : undefined}
+                    as={
+                      !item.isExpandable && !isLogoutItem
+                        ? NextLink
+                        : undefined
+                    }
+                    href={
+                      !item.isExpandable && !isLogoutItem
+                        ? item.href
+                        : undefined
+                    }
                     className={cn(
                       "group flex items-center gap-3 py-3 px-3 rounded-lg cursor-pointer transition-all duration-200",
                       isActive

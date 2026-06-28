@@ -26,7 +26,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import { ChevronDown } from "lucide-react";
 import { User } from "@/types/users";
 import { NotificationContainer } from "@/components/notification-ui/notification-container";
-import { signOut } from "next-auth/react";
+import LogoutConfirmationModal from "@/components/auth/logout-confirmation-modal";
 
 interface Props {
   user: User | undefined;
@@ -37,6 +37,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [expandedItem, setExpandedItem] = React.useState<string | null>(null);
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
 
   const toggleExpand = (label: string) =>
     setExpandedItem((prev) => (prev === label ? null : label));
@@ -48,6 +49,10 @@ export default function AdminNavbar({ user, isLoading }: Props) {
       isMenuOpen={menuOpen}
       onMenuOpenChange={setMenuOpen}
     >
+      <LogoutConfirmationModal
+        isOpen={logoutOpen}
+        onClose={() => setLogoutOpen(false)}
+      />
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
@@ -104,7 +109,7 @@ export default function AdminNavbar({ user, isLoading }: Props) {
                     if (item.isExpandable) {
                       toggleExpand(item.label);
                     } else if (isLogoutItem) {
-                      signOut({ callbackUrl: "/auth" });
+                      setLogoutOpen(true);
                     }
                   }}
                   as={

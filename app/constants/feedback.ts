@@ -11,6 +11,7 @@ export const columns: ColumnType[] = [
   { name: "Rating", uid: "rating" },
   { name: "Guest Feedback", uid: "comments" },
   { name: "Recommendation", uid: "recommend" },
+  { name: "Approval", uid: "is_approved" },
   { name: "Actions", uid: "actions" },
 ];
 
@@ -35,5 +36,6 @@ export const INITIAL_VISIBLE_COLUMNS = [
   "rating",
   "comments",
   "recommend",
+  "is_approved",
   "actions",
 ];

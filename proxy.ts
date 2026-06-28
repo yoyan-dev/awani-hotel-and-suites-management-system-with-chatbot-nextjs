@@ -16,7 +16,7 @@ const PUBLIC_API_EXACT_RULES: Array<{
   { pathname: "/api/chatbot", methods: ["POST"] },
   { pathname: "/api/guest", methods: ["POST"] },
   { pathname: "/api/feedback", methods: ["POST"] },
-  { pathname: "/api/feedback", methods: ["GET"] },
+  { pathname: "/api/feedback/public", methods: ["GET"] },
   { pathname: "/api/room-types", methods: ["GET"] },
   { pathname: "/api/room-types/available-room-types", methods: ["GET"] },
   { pathname: "/api/rooms/available-rooms", methods: ["GET"] },
