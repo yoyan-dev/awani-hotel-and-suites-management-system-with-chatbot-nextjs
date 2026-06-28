@@ -80,6 +80,12 @@ export async function proxy(request: NextRequest) {
   const method = request.method.toUpperCase();
   const isApiRoute = pathname === "/api" || pathname.startsWith("/api/");
   const isAuthCallbackApiRoute = pathname.startsWith("/api/auth/");
+  const isDiditWebhook =
+    pathname === "/api/webhooks/didit" && method === "POST";
+
+  if (isDiditWebhook) {
+    return NextResponse.next();
+  }
 
   if (
     isApiRoute &&
