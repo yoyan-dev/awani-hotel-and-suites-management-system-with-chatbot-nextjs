@@ -14,6 +14,9 @@ type DiditVerificationProps = {
 };
 
 type DiditStatusResponse = {
+  message?: {
+    description?: string;
+  };
   status: string;
   session_id: string | null;
   verified_at: string | null;
@@ -50,7 +53,11 @@ export default function DiditVerification({
         `/api/didit/status?vendorData=${encodeURIComponent(guestId)}`,
       );
       const data = (await res.json()) as DiditStatusResponse;
-      if (!res.ok) throw new Error("Could not load verification status");
+      if (!res.ok) {
+        throw new Error(
+          data?.message?.description || "Could not load verification status",
+        );
+      }
       setStatus(data.status);
       onStatusChange(data.status === "Approved");
     } catch (error: any) {
