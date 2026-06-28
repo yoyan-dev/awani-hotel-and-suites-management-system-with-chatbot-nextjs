@@ -22,9 +22,9 @@ export default function LocationPreviewSection() {
             Stay in the city center with convenient access to everything.
           </h2>
           <p className="text-sm leading-relaxed text-[#675c4f] sm:text-base">
-            Awani Hotel & Suites is located at Corner-East Euzkara Avenue, San
-            Carlos City, Philippines 6127. Reach business areas, local dining,
-            and city landmarks within minutes.
+            Ma. Awani Hotel and Suites is located at Corner-East Euzkara
+            Avenue, San Carlos City, Philippines 6127. Reach business areas,
+            local dining, and city landmarks within minutes.
           </p>
           <div className="inline-flex items-center gap-2 rounded-full bg-[#f0e4d3] px-4 py-2 text-sm font-medium text-[#6d5534]">
             <MapPin size={16} />

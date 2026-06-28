@@ -54,13 +54,13 @@ export default function Navbar() {
           className="flex items-center gap-3"
           onClick={closeMenus}
         >
-          <Image src="/awani-logo.png" alt="Awani Hotel" width={44} />
+          <Image src="/awani-logo.png" alt="Ma. Awani Hotel and Suites" width={44} />
           <div className="leading-tight">
             <p className="text-xs uppercase tracking-[0.25em] text-[#7c6a52]">
               Luxury Stay
             </p>
             <p className="font-serif text-lg font-semibold text-[#1f1e1b]">
-              Ma. Awani Hotel
+              Ma. Awani Hotel and Suites
             </p>
           </div>
         </NextLink>

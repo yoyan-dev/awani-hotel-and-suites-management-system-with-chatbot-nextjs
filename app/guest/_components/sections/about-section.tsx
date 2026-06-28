@@ -42,7 +42,7 @@ export default function About() {
             Timeless luxury, modern convenience, and heartfelt care.
           </h2>
           <p className="text-sm leading-relaxed text-[#655a4d] sm:text-base">
-            Since 2019, Awani Hotel & Suites has welcomed guests with a blend of
+            Since 2019, Ma. Awani Hotel and Suites has welcomed guests with a blend of
             thoughtful design, warm hospitality, and efficient service. Every
             stay is curated to feel effortless, polished, and memorable.
           </p>

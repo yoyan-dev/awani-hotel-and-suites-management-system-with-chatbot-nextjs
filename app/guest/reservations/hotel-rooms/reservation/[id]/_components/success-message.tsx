@@ -16,12 +16,12 @@ export default function SuccessMessage() {
             <br />
             Our front desk will contact you shortly for confirmation.
             <br />
-            Thank you for choosing Awani Hotel & Suites.
+            Thank you for choosing Ma. Awani Hotel and Suites.
             <br />
             <br />
             Best Regards,
             <br />
-            Awani Hotel & Suites
+            Ma. Awani Hotel and Suites
             <br />
           </p>
         </div>

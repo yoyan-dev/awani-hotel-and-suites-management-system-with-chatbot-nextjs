@@ -172,7 +172,7 @@ export default function FeedbackForm({
               Recommendation
             </p>
             <RadioGroup
-              label="Would you recommend Awani Hotel?"
+              label="Would you recommend Ma. Awani Hotel and Suites?"
               orientation="horizontal"
               value={recommend}
               onValueChange={(value) =>
